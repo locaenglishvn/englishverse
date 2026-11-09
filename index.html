@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EnglishVerse</title>
+<style>
+:root{--panel:rgba(255,255,255,.95);--ink:#1f2937;--accent:#e8590c;--ok:#2f9e44;--bad:#c92a2a;color-scheme:light dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--panel:rgba(32,34,42,.95);--ink:#f1f3f5}}
+:root[data-theme="dark"]{--panel:rgba(32,34,42,.95);--ink:#f1f3f5}
+html,body{margin:0;height:100%;overflow:hidden;background:#cfe8ff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block}
+.chip{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);padding:6px 14px;border-radius:999px;font-weight:700;font-size:15px}
+#stick{position:fixed;left:24px;bottom:calc(28px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,.2);touch-action:none}
+#knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.9)}
+button{font:inherit;cursor:pointer}
+#talk{position:fixed;right:24px;bottom:calc(52px + env(safe-area-inset-bottom,0px));display:none;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:16px 24px;font-size:18px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#dlg{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:560px;margin:0 auto}
+#who{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:4px}
+#say{font-size:19px;font-weight:600;margin-bottom:12px}
+.opt{display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px;border-radius:12px;border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);font-size:16px}
+.opt.ok{border-color:var(--ok)}.opt.bad{border-color:var(--bad)}
+#fb{margin-top:10px;font-size:15px;min-height:20px}
+#mic{display:none;margin-top:10px;background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
+#heard{margin-top:8px;font-size:14px;opacity:.85}
+#next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="chip">⭐ <span id="score">0</span></div>
+<div id="stick"><div id="knob"></div></div>
+<button id="talk">💬 Talk</button>
+<div id="dlg">
+  <div id="who"></div><div id="say"></div><div id="choices"></div><button id="mic">🎤 Nói câu trả lời</button><div id="heard"></div><div id="fb"></div>
+  <button id="next">Next ▶</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="lessons.js"></script>
+<script>
+/* ===== 2. DỰNG CẢNH 3D ===== */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xcfe8ff);
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 100);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+sun.position.set(5, 10, 6);
+scene.add(sun);
+
+function box(w, h, d, color, x, y, z) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color }));
+  m.position.set(x, y, z);
+  scene.add(m);
+  return m;
+}
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 13), new THREE.MeshLambertMaterial({ color: 0xe9d8b4 }));
+floor.rotation.x = -Math.PI / 2;
+floor.position.set(0, 0, 0.5);
+scene.add(floor);
+box(16, 1.6, 0.3, 0xf4a261, 0, 0.8, -6);      // tường sau
+box(0.3, 1.6, 13, 0xf4a261, -8, 0.8, 0.5);    // tường trái
+box(0.3, 1.6, 13, 0xf4a261, 8, 0.8, 0.5);     // tường phải
+const obstacles = [];
+function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
+function blocked(x, z) {
+  if (x < -7.3 || x > 7.3 || z < -5.4 || z > 6.5) return true;
+  return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
+}
+box(10.2, 0.08, 1.2, 0xf1f3f5, 0, 1.04, -3.2);
+box(3, 1.4, 1, 0x6c4a2f, -6.5, 0.7, -3.2);
+box(3, 1.4, 1, 0x6c4a2f, 6.5, 0.7, -3.2);
+box(0.7, 0.5, 0.5, 0x343a40, 1.4, 1.33, -3.3);
+solid(0, -3.2, 5, 0.5); solid(-6.5, -3.2, 1.5, 0.5); solid(6.5, -3.2, 1.5, 0.5);
+box(10, 1, 1, 0xd62828, 0, 0.5, -3.2);         // quầy
+function chair(x, z, side) {
+  box(0.5, 0.08, 0.5, 0xc9a227, x, 0.45, z);
+  box(0.08, 0.5, 0.5, 0xc9a227, x + side * 0.22, 0.75, z);
+  box(0.12, 0.4, 0.12, 0x6c757d, x, 0.2, z);
+  solid(x, z, 0.3, 0.3);
+}
+function table(x, z) {
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.1, 20), new THREE.MeshLambertMaterial({ color: 0x8d5524 }));
+  top.position.set(x, 0.8, z);
+  const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8), new THREE.MeshLambertMaterial({ color: 0x495057 }));
+  leg.position.set(x, 0.4, z);
+  scene.add(top, leg);
+  solid(x, z, 0.7, 0.7);
+  chair(x - 1.15, z, -1);
+  chair(x + 1.15, z, 1);
+}
+[[-4.5, 0.5], [4.5, 0.5], [-4.5, 4.5]].forEach(q => table(q[0], q[1]));   // bàn
+table(4.5, 4.5);
+
+function makeChar(bodyColor) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.1, 16), new THREE.MeshLambertMaterial({ color: bodyColor }));
+  body.position.y = 0.55;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), new THREE.MeshLambertMaterial({ color: 0xffd8b5 }));
+  head.position.y = 1.4;
+  g.add(body, head);
+  scene.add(g);
+  return g;
+}
+const player = makeChar(0x3b82f6);
+player.position.set(0, 0, 5.5);
+LESSONS.forEach(L => {
+  L.mesh = makeChar(L.color);
+  L.mesh.position.set(L.x, 0, L.z);
+  L.mark = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
+  scene.add(L.mark);
+  solid(L.x, L.z, 0.4, 0.4);
+});
+
+/* ===== 3. ĐIỀU KHIỂN (joystick cảm ứng + bàn phím) ===== */
+const input = { x: 0, z: 0 };
+const keys = {};
+addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+const stick = document.getElementById("stick"), knob = document.getElementById("knob");
+let dragging = false;
+function moveKnob(e) {
+  const r = stick.getBoundingClientRect();
+  let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+  const len = Math.hypot(dx, dy), max = 40;
+  if (len > max) { dx = dx / len * max; dy = dy / len * max; }
+  knob.style.transform = "translate(" + dx + "px," + dy + "px)";
+  input.x = dx / max; input.z = dy / max;
+}
+stick.addEventListener("pointerdown", e => { dragging = true; stick.setPointerCapture(e.pointerId); moveKnob(e); });
+stick.addEventListener("pointermove", e => { if (dragging) moveKnob(e); });
+function endDrag() { dragging = false; input.x = 0; input.z = 0; knob.style.transform = ""; }
+stick.addEventListener("pointerup", endDrag);
+stick.addEventListener("pointercancel", endDrag);
+
+/* Xoay camera: kéo ngón tay (hoặc chuột) trên màn hình; phím Q/E trên máy tính */
+let camAngle = 0, look = null;
+const cv = renderer.domElement;
+cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX }; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener("pointermove", e => {
+  if (look && look.id === e.pointerId) { camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX; }
+});
+const endLook = e => { if (look && look.id === e.pointerId) look = null; };
+cv.addEventListener("pointerup", endLook);
+cv.addEventListener("pointercancel", endLook);
+
+/* ===== 4. HỘI THOẠI + GIỌNG ĐỌC ===== */
+const $ = id => document.getElementById(id);
+let score = 0, step = 0, talking = false, gained = 0, NPC = LESSONS[0], near = null;
+function speak(t) {
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.speak(u); } catch (e) {}
+}
+function showStep() {
+  const s = NPC.steps[step];
+  $("who").textContent = NPC.name;
+  $("say").textContent = s.say;
+  $("fb").textContent = "";
+  $("heard").textContent = "";
+  $("mic").style.display = SR ? "inline-block" : "none";
+  $("next").style.display = "none";
+  $("choices").innerHTML = "";
+  speak(s.say);
+  s.choices.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = c.t; c.btn = b;
+    b.onclick = () => {
+      document.querySelectorAll(".opt").forEach(o => o.disabled = true);
+      b.classList.add(c.ok ? "ok" : "bad");
+      $("fb").textContent = c.fb;
+      $("fb").style.color = c.ok ? "var(--ok)" : "var(--bad)";
+      if (c.ok) { score += 10; gained += 10; $("score").textContent = score; }
+      $("mic").style.display = "none";
+      $("next").style.display = "inline-block";
+    };
+    $("choices").appendChild(b);
+  });
+}
+function finish() {
+  $("say").textContent = "Thanks for coming! See you again.";
+  $("mic").style.display = "none";
+  $("heard").textContent = "";
+  $("choices").innerHTML = "";
+  $("fb").style.color = "var(--ink)";
+  $("fb").textContent = "Round score: " + gained + " / " + NPC.steps.length * 10;
+  $("next").textContent = "Close ✕";
+  $("next").style.display = "inline-block";
+  speak("Thanks for coming! See you again.");
+}
+$("next").onclick = () => {
+  if ($("next").textContent.indexOf("Close") === 0) { $("dlg").style.display = "none"; talking = false; return; }
+  step++;
+  step < NPC.steps.length ? showStep() : finish();
+};
+$("talk").onclick = () => {
+  NPC = near; talking = true; step = 0; gained = 0;
+  $("next").textContent = "Next ▶";
+  $("talk").style.display = "none";
+  $("dlg").style.display = "block";
+  showStep();
+};
+
+/* ===== 4b. NHẬN DIỆN GIỌNG NÓI (Web Speech API, miễn phí, chạy trong trình duyệt) ===== */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function norm(s) { return s.toLowerCase().replace(/[’']/g, "").replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean); }
+function lcs(a, b) {  // dãy từ chung dài nhất, GIỮ THỨ TỰ từ nên nói sai trật tự sẽ bị nhận ra
+  const d = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = a[i - 1] === b[j - 1] ? d[i - 1][j - 1] + 1 : Math.max(d[i - 1][j], d[i][j - 1]);
+  return d[a.length][b.length];
+}
+function match(choice, heard) {  // 0..1: câu nói giống đáp án bao nhiêu
+  const A = norm(choice), B = norm(heard);
+  if (!A.length || !B.length) return 0;
+  const l = lcs(A, B);
+  return l / B.length >= 0.5 ? l / A.length : 0;
+}
+function listen() {
+  if (!SR) return;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const r = new SR();
+  r.lang = "en-US"; r.interimResults = false; r.maxAlternatives = 3;
+  $("mic").textContent = "🎙️ Listening…"; $("mic").disabled = true;
+  const done = () => { $("mic").textContent = "🎤 Nói câu trả lời"; $("mic").disabled = false; };
+  r.onresult = e => {
+    const alts = Array.from(e.results[0]).map(a => a.transcript);
+    $("heard").textContent = "Heard: “" + alts[0] + "”";
+    let best = null, bs = 0;
+    NPC.steps[step].choices.forEach(c => alts.forEach(h => { const m = match(c.t, h); if (m > bs) { bs = m; best = c; } }));
+    if (best && bs >= 0.6) best.btn.click();
+    else $("heard").textContent += " – chưa khớp, thử nói lại nhé!";
+  };
+  r.onerror = e => {
+    $("heard").textContent = (e.error === "not-allowed" || e.error === "service-not-allowed")
+      ? "Chưa được cấp quyền micro. Hãy cho phép micro, hoặc chọn đáp án bằng tay."
+      : "Không nghe được, thử lại hoặc chọn bằng tay.";
+  };
+  r.onend = done;
+  try { r.start(); } catch (err) { done(); }
+}
+$("mic").onclick = listen;
+
+/* ===== 5. VÒNG LẶP GAME (chạy ~60 lần/giây) ===== */
+const clock = new THREE.Clock();
+function loop() {
+  requestAnimationFrame(loop);
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  let mx = input.x, mz = input.z;
+  if (keys["a"] || keys["arrowleft"]) mx -= 1;
+  if (keys["d"] || keys["arrowright"]) mx += 1;
+  if (keys["w"] || keys["arrowup"]) mz -= 1;
+  if (keys["s"] || keys["arrowdown"]) mz += 1;
+  const len = Math.hypot(mx, mz);
+  if (keys["q"]) camAngle -= 1.8 * dt;
+  if (keys["e"]) camAngle += 1.8 * dt;
+  if (!talking && len > 0.1) {
+    const k = Math.min(len, 1) / len * 4 * dt;
+    const c = Math.cos(camAngle), s = Math.sin(camAngle);
+    const wx = (mx * c + mz * s) * k, wz = (-mx * s + mz * c) * k;
+    if (!blocked(player.position.x + wx, player.position.z)) player.position.x += wx;
+    if (!blocked(player.position.x, player.position.z + wz)) player.position.z += wz;
+    player.rotation.y = Math.atan2(wx, wz);
+  }
+  LESSONS.forEach(L => L.mark.position.set(L.x, 2.2 + Math.sin(t * 3) * 0.12, L.z));
+  if (!talking) {
+    near = null;
+    let best = 3.3;
+    LESSONS.forEach(L => { const d = player.position.distanceTo(L.mesh.position); if (d < best) { best = d; near = L; } });
+    $("talk").style.display = near ? "block" : "none";
+  }
+  const p = player.position;
+  camera.position.lerp(new THREE.Vector3(p.x + Math.sin(camAngle) * 8, 8, p.z + Math.cos(camAngle) * 8), 0.1);
+  camera.lookAt(p.x, 0.8, p.z);
+  renderer.render(scene, camera);
+}
+loop();
+addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
