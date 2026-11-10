@@ -64,10 +64,13 @@ scene.add(floor);
 box(16, 1.6, 0.3, 0xf4a261, 0, 0.8, -6);      // tường sau
 box(0.3, 1.6, 13, 0xf4a261, -8, 0.8, 0.5);    // tường trái
 box(0.3, 1.6, 13, 0xf4a261, 8, 0.8, 0.5);     // tường phải
+box(6.5, 1.6, 0.3, 0xf4a261, -4.75, 0.8, 7);  // tường trước (trái cửa)
+box(6.5, 1.6, 0.3, 0xf4a261, 4.75, 0.8, 7);   // tường trước (phải cửa)
 const obstacles = [];
 function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
+solid(-8, 0.5, 0.15, 6.5); solid(8, 0.5, 0.15, 6.5); solid(-4.75, 7, 3.25, 0.15); solid(4.75, 7, 3.25, 0.15);
 function blocked(x, z) {
-  if (x < -7.3 || x > 7.3 || z < -5.4 || z > 6.5) return true;
+  if (x < -34 || x > 34 || z < -5.4 || z > 48) return true;   // ranh giới thị trấn
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
 box(10.2, 0.08, 1.2, 0xf1f3f5, 0, 1.04, -3.2);
@@ -94,6 +97,60 @@ function table(x, z) {
 }
 [[-4.5, 0.5], [4.5, 0.5], [-4.5, 4.5]].forEach(q => table(q[0], q[1]));   // bàn
 table(4.5, 4.5);
+
+/* ===== 2b. THỊ TRẤN BÊN NGOÀI QUÁN (mỗi khu sẽ là một "trạm") ===== */
+scene.fog = new THREE.Fog(0xcfe8ff, 30, 70);
+function flat(w, d, color, x, z, y) {   // mặt phẳng nằm trên đất: cỏ, đường, quảng trường
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color }));
+  m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); scene.add(m);
+}
+flat(72, 58, 0x8fd17a, 0, 21, -0.02);     // cỏ
+flat(3, 11, 0xbfb6a8, 0, 12.5, 0.01);      // đường: quán → quảng trường
+flat(14, 14, 0xdedad2, 0, 24, 0.01);       // quảng trường
+flat(14, 3, 0xbfb6a8, 14, 24, 0.01);       // đường: → nhà ga
+flat(14, 3, 0xbfb6a8, -14, 24, 0.01);      // đường: → cổng mê cung
+flat(3, 5, 0xbfb6a8, 0, 33.5, 0.01);       // đường: → công viên
+function sign(text, x, z, w) {   // biển tên có chữ, quay về phía camera lúc đầu
+  const c = document.createElement("canvas"); c.width = 512; c.height = 128;
+  const g = c.getContext("2d");
+  g.fillStyle = "#fff8e7"; g.fillRect(0, 0, 512, 128);
+  g.strokeStyle = "#6c4a2f"; g.lineWidth = 12; g.strokeRect(6, 6, 500, 116);
+  g.fillStyle = "#3b2a1a"; g.font = "bold 60px system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
+  g.fillText(text, 256, 68);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w / 4), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), side: THREE.DoubleSide }));
+  m.position.set(x, 2.6, z); scene.add(m);
+  box(0.12, 2.6, 0.12, 0x6c4a2f, x - w / 2 + 0.15, 1.3, z);
+  box(0.12, 2.6, 0.12, 0x6c4a2f, x + w / 2 - 0.15, 1.3, z);
+}
+function tree(x, z) {
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.25, 1.4, 8), new THREE.MeshLambertMaterial({ color: 0x8d5524 }));
+  trunk.position.set(x, 0.7, z);
+  const leaf = new THREE.Mesh(new THREE.SphereGeometry(1.1, 10, 10), new THREE.MeshLambertMaterial({ color: 0x2f9e44 }));
+  leaf.position.set(x, 2.1, z);
+  scene.add(trunk, leaf); solid(x, z, 0.3, 0.3);
+}
+sign("Sunny Café", 0, 7.4, 3.4);
+// Quảng trường + đài phun nước
+box(4.4, 0.6, 4.4, 0xadb5bd, 0, 0.3, 24);
+box(3.8, 0.62, 3.8, 0x4dabf7, 0, 0.31, 24);
+box(0.6, 1.8, 0.6, 0xadb5bd, 0, 0.9, 24);
+solid(0, 24, 2.2, 2.2);
+sign("Plaza", 4.5, 19, 2.6);
+// Nhà ga (phía đông)
+box(8, 3.5, 6, 0x8ecae6, 24, 1.75, 24);
+box(9, 0.4, 7, 0x264653, 24, 3.7, 24);
+solid(24, 24, 4, 3);
+sign("Train Station", 24, 28, 4.4);
+// Cổng mê cung (phía tây) – trạm mini-game sẽ làm sau
+box(1, 4, 1, 0x495057, -24, 2, 21.5);
+box(1, 4, 1, 0x495057, -24, 2, 26.5);
+box(1, 1, 6, 0x495057, -24, 4.5, 24);
+solid(-24, 21.5, 0.5, 0.5); solid(-24, 26.5, 0.5, 0.5);
+for (let z = 17; z <= 31; z += 2) if (z < 21 || z > 27) { box(0.8, 1.5, 2, 0x2b8a3e, -24, 0.75, z); solid(-24, z, 0.4, 1); }
+sign("Maze (soon)", -20, 28, 4);
+// Công viên (phía nam)
+[[-6, 38], [-3, 42], [3, 42], [6, 38], [-8, 44], [8, 44], [0, 46], [-10, 39], [10, 39]].forEach(q => tree(q[0], q[1]));
+sign("Park", 3.5, 35, 2.6);
 
 function makeChar(bodyColor) {
   const g = new THREE.Group();

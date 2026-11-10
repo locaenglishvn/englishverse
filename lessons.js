@@ -21,7 +21,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tom – Tourist", color: 0x2b8a3e, x: -2.5, z: 1.5,
+  name: "Tom – Tourist", color: 0x2b8a3e, x: -4, z: 20,
   steps: [
     { say: "Excuse me! Is there a train station near here?",
       choices: [
