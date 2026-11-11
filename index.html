@@ -616,9 +616,16 @@ function buildMaze(seed, ox, oz) {
     if (c.n) wall(x0 + C / 2, z0, C + T, T);
     if (c.w) wall(x0, z0 + C / 2, T, C + T);
     if (j === H - 1) wall(x0 + C / 2, z0 + C, C + T, T);
-    if (i === W - 1) wall(x0 + C, z0 + C / 2, T, C + T);
+    if (i === W - 1 && j !== H - 1) wall(x0 + C, z0 + C / 2, T, C + T);   // ô cuối: chừa lối ra ở tường phía đông
   }
-  const exit = { x: ox + (W - 0.5) * C, z: oz + (H - 0.5) * C };
+  const exit = { x: ox + W * C + 1.6, z: oz + (H - 0.5) * C };   // đích nằm NGAY NGOÀI lối ra
+  const gx = ox + W * C, red = new THREE.MeshLambertMaterial({ color: 0xe03131 });   // cổng EXIT đỏ ở lối ra
+  [oz + (H - 1) * C, oz + H * C].forEach(z => { const post = new THREE.Mesh(new THREE.BoxGeometry(0.5, 3.4, 0.5), red); post.position.set(gx, 1.7, z); g.add(post); });
+  const beam = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, C + 0.5), red); beam.position.set(gx, 3.2, exit.z); g.add(beam);
+  const ec = document.createElement("canvas"); ec.width = 256; ec.height = 96;
+  const ex = ec.getContext("2d"); ex.fillStyle = "#fff"; ex.fillRect(0, 0, 256, 96); ex.fillStyle = "#e03131"; ex.font = "bold 64px system-ui, sans-serif"; ex.textAlign = "center"; ex.textBaseline = "middle"; ex.fillText("EXIT", 128, 52);
+  const plate = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 0.9), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(ec), side: THREE.DoubleSide }));
+  plate.rotation.y = Math.PI / 2; plate.position.set(gx - 0.3, 3.2, exit.z); g.add(plate);
   const goal = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.1, 20), new THREE.MeshBasicMaterial({ color: 0x40c057 }));
   goal.position.set(exit.x, 0.06, exit.z); g.add(goal);
   scene.add(g);
@@ -643,10 +650,10 @@ function enterMaze(m, me) {
     camera.updateProjectionMatrix();
     $("guide").textContent = "🚶 Wait for your guide. Ask: “Where now?”";
   } else {
-    player.position.set(O.x - 3, 0, O.z - 3);   // guide đứng ngoài mê cung
+    player.position.set(O.x - 3, 0, O.z - 3); player.visible = false;   // guide đứng ngoài mê cung, ẩn nhân vật
     scene.fog = null;
     $("stick").style.display = "none";
-    $("guide").textContent = "🗺️ The blue arrow is your teammate. Guide them to the green circle!";
+    $("guide").textContent = "🗺️ The blue arrow is your teammate. Guide them out through the red EXIT gate!";
   }
   $("guide").style.display = "block";
   ["askBtn", "albumBtn", "askp", "chatp"].forEach(id => $(id).style.display = "none");
@@ -949,7 +956,7 @@ function loop() {
     camera.position.set(p.x, 1.5, p.z);
     camera.lookAt(p.x - Math.sin(camAngle), 1.4, p.z - Math.cos(camAngle));
   } else if (maze) {   // guide: nhìn thẳng từ trên cao xuống cả mê cung
-    const cx = maze.ox + MZ.W * MZ.C / 2, cz = maze.oz + MZ.H * MZ.C / 2, half = MZ.W * MZ.C / 2 + 1.5;
+    const cx = maze.ox + MZ.W * MZ.C / 2, cz = maze.oz + MZ.H * MZ.C / 2, half = MZ.W * MZ.C / 2 + 4;
     const vt = Math.tan(camera.fov * Math.PI / 360), ht = vt * camera.aspect;
     camera.position.set(cx, half / Math.min(vt, ht), cz + 0.01);
     camera.lookAt(cx, 0, cz);
