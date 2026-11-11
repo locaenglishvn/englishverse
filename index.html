@@ -134,7 +134,7 @@ button{font:inherit;cursor:pointer}
 /* ===== 2. DỰNG CẢNH 3D ===== */
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xcfe8ff);
-const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 220);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
@@ -194,6 +194,22 @@ table(4.5, 4.5);
 
 /* ===== 2b. THỊ TRẤN BÊN NGOÀI QUÁN (mỗi khu sẽ là một "trạm") ===== */
 scene.fog = new THREE.Fog(0xcfe8ff, 30, 70);
+const skyC = document.createElement("canvas"); skyC.width = 2; skyC.height = 256;   // bầu trời: xanh đậm trên đỉnh → nhạt ở chân trời
+const skyG = skyC.getContext("2d"), grd = skyG.createLinearGradient(0, 0, 0, 256);
+grd.addColorStop(0, "#2f80ed"); grd.addColorStop(0.6, "#8cc4ff"); grd.addColorStop(1, "#cfe8ff");
+skyG.fillStyle = grd; skyG.fillRect(0, 0, 2, 256);
+const sky = new THREE.Mesh(new THREE.SphereGeometry(150, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+  new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(skyC), side: THREE.BackSide, fog: false, depthWrite: false }));
+sky.renderOrder = -1; scene.add(sky);
+const clouds = [];
+for (let i = 0; i < 10; i++) {   // mây: vài quả cầu trắng ghép lại, trôi chậm
+  const c = new THREE.Group(), mat = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x888888, fog: false });
+  for (let k = 0; k < 4; k++) { const b = new THREE.Mesh(new THREE.SphereGeometry(3 + Math.random() * 2.5, 12, 10), mat); b.position.set(k * 3.5 - 5, Math.random() * 1.5, Math.random() * 2); b.scale.y = 0.6; c.add(b); }
+  const a = i / 10 * Math.PI * 2, r = 70 + Math.random() * 40;
+  c.position.set(Math.cos(a) * r, 35 + Math.random() * 15, 20 + Math.sin(a) * r); c.userData.a = a; c.userData.r = r;
+  scene.add(c); clouds.push(c);
+}
+flat(400, 400, 0x8fd17a, 0, 20, -0.04);   // cỏ trải tới chân trời
 function flat(w, d, color, x, z, y) {   // mặt phẳng nằm trên đất: cỏ, đường, quảng trường
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color }));
   m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); scene.add(m);
@@ -246,15 +262,47 @@ sign("Maze", -20, 28, 3);
 [[-6, 38], [-3, 42], [3, 42], [6, 38], [-8, 44], [8, 44], [0, 46], [-10, 39], [10, 39]].forEach(q => tree(q[0], q[1]));
 sign("Park", 3.5, 35, 2.6);
 
-function makeChar(bodyColor) {
-  const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.1, 16), new THREE.MeshLambertMaterial({ color: bodyColor }));
-  body.position.y = 0.55;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), new THREE.MeshLambertMaterial({ color: 0xffd8b5 }));
-  head.position.y = 1.4;
-  g.add(body, head);
-  scene.add(g);
+const chars = [];   // mọi nhân vật chibi (để tạo dáng đi)
+const HAIR = [0x3b2a1a, 0x5c3d2e, 0x111111, 0xa0522d, 0xe0b04f];
+function makeChar(bodyColor) {   // nhân vật chibi: đầu to, thân nhỏ, tay chân vung khi đi
+  const g = new THREE.Group(), M = c => new THREE.MeshLambertMaterial({ color: c });
+  const skin = M(0xffd8b5), dark = new THREE.MeshBasicMaterial({ color: 0x1f1f1f }), white = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.34, 0.55, 16), M(bodyColor));   // children[0] = áo (đổi màu được)
+  body.position.y = 0.66; g.add(body);
+  const limb = (r, h, mat, x, y) => {   // tay/chân: xoay quanh khớp ở đầu trên
+    const pivot = new THREE.Group(); pivot.position.set(x, y, 0);
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 10), mat); m.position.y = -h / 2; pivot.add(m);
+    g.add(pivot); return pivot;
+  };
+  const legs = [limb(0.1, 0.38, M(0x34495e), -0.13, 0.4), limb(0.1, 0.38, M(0x34495e), 0.13, 0.4)];
+  legs.forEach(l => { const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.1, 0.28), M(0x343a40)); shoe.position.set(0, -0.38, 0.04); l.add(shoe); });
+  const arms = [limb(0.075, 0.42, M(bodyColor), -0.36, 0.9), limb(0.075, 0.42, M(bodyColor), 0.36, 0.9)];
+  arms.forEach(a => { const hand = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), skin); hand.position.y = -0.44; a.add(hand); });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 20, 16), skin); head.position.y = 1.32; g.add(head);
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.48, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.55), M(HAIR[bodyColor % HAIR.length]));
+  hair.position.set(0, 1.36, -0.04); hair.rotation.x = -0.25; g.add(hair);
+  [-0.16, 0.16].forEach(x => {
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), dark); eye.scale.set(1, 1.35, 0.6); eye.position.set(x, 1.28, 0.41); g.add(eye);
+    const shine = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), white); shine.position.set(x + 0.025, 1.32, 0.455); g.add(shine);
+    const blush = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffa8a8 })); blush.scale.set(1.2, 0.6, 0.4); blush.position.set(x * 1.65, 1.17, 0.36); g.add(blush);
+  });
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.015, 6, 12, Math.PI), dark); mouth.position.set(0, 1.15, 0.43); mouth.rotation.z = Math.PI; g.add(mouth);
+  g.userData = { arms, legs, last: new THREE.Vector3(), phase: 0 };
+  scene.add(g); chars.push(g);
   return g;
+}
+function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
+  for (let i = chars.length - 1; i >= 0; i--) {
+    const g = chars[i], u = g.userData;
+    if (!g.parent) { chars.splice(i, 1); continue; }
+    const sp = Math.hypot(g.position.x - u.last.x, g.position.z - u.last.z) / Math.max(dt, 0.001);
+    u.last.copy(g.position);
+    const amp = Math.min(1, sp / 3) * 0.7;
+    u.phase += dt * (4 + sp * 2);
+    const sw = Math.sin(u.phase) * amp;
+    u.legs[0].rotation.x = sw; u.legs[1].rotation.x = -sw;
+    u.arms[0].rotation.x = -sw; u.arms[1].rotation.x = sw;
+  }
 }
 const player = makeChar(0x3b82f6);
 player.position.set(0, 0, 5.5);
@@ -288,11 +336,13 @@ stick.addEventListener("pointerup", endDrag);
 stick.addEventListener("pointercancel", endDrag);
 
 /* Xoay camera: kéo ngón tay (hoặc chuột) trên màn hình; phím Q/E trên máy tính */
-let camAngle = 0, look = null;
+let camAngle = 0, camPitch = 0.75, look = null;   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
 const cv = renderer.domElement;
-cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX }; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener("pointermove", e => {
-  if (look && look.id === e.pointerId) { camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX; }
+  if (look && look.id === e.pointerId) { camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;
+    if (!maze) camPitch = Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera
+    look.y = e.clientY; }
 });
 const endLook = e => { if (look && look.id === e.pointerId) look = null; };
 cv.addEventListener("pointerup", endLook);
@@ -1149,6 +1199,8 @@ function loop() {
   updateMazeGate();
   updateMaze();
   updateGhosts(dt, t);
+  animateChars(dt);
+  clouds.forEach(c => { c.userData.a += dt * 0.004; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = 20 + Math.sin(c.userData.a) * c.userData.r; });
   if (!talking) {
     near = null;
     let best = 3.3;
@@ -1165,9 +1217,13 @@ function loop() {
     camera.position.set(cx, half / Math.min(vt, ht), cz + 0.01);
     camera.lookAt(cx, 0, cz);
   } else {
-    camera.position.lerp(new THREE.Vector3(p.x + Math.sin(camAngle) * 8, 8, p.z + Math.cos(camAngle) * 8), 0.1);
-    camera.lookAt(p.x, 0.8, p.z);
+    if (keys["r"]) camPitch = Math.max(0.1, camPitch - 1.2 * dt);
+    if (keys["f"]) camPitch = Math.min(1.35, camPitch + 1.2 * dt);
+    const D = 11, ch = Math.cos(camPitch) * D;
+    camera.position.lerp(new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(camPitch) * D, p.z + Math.cos(camAngle) * ch), 0.12);
+    camera.lookAt(p.x, 0.9 + (1 - camPitch / 1.35) * 1.4, p.z);   // càng nhìn ngang càng ngẩng lên thấy trời
   }
+  sky.position.set(camera.position.x, 0, camera.position.z);   // trời luôn bao quanh camera
   renderer.render(scene, camera);
 }
 loop();
