@@ -199,48 +199,14 @@ function box(w, h, d, color, x, y, z) {
   if (h >= 1.5 || y > 2.5) camBlockers.push(m);   // tường cao hoặc mái
   return m;
 }
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 13), new THREE.MeshLambertMaterial({ color: 0xe9d8b4 }));
-floor.rotation.x = -Math.PI / 2;
-floor.position.set(0, 0, 0.5);
-scene.add(floor);
-box(16, 1.6, 0.3, 0xf4a261, 0, 0.8, -6);      // tường sau
-box(0.3, 1.6, 13, 0xf4a261, -8, 0.8, 0.5);    // tường trái
-box(0.3, 1.6, 13, 0xf4a261, 8, 0.8, 0.5);     // tường phải
-box(6.5, 1.6, 0.3, 0xf4a261, -4.75, 0.8, 7);  // tường trước (trái cửa)
-box(6.5, 1.6, 0.3, 0xf4a261, 4.75, 0.8, 7);   // tường trước (phải cửa)
 const obstacles = [];
 function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
-solid(-8, 0.5, 0.15, 6.5); solid(8, 0.5, 0.15, 6.5); solid(-4.75, 7, 3.25, 0.15); solid(4.75, 7, 3.25, 0.15);
 function blocked(x, z) {
   if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
   if (room) return Math.abs(x - room.cx) > room.w / 2 - 0.6 || Math.abs(z - room.cz) > room.d / 2 - 0.6 || room.solids.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);   // đang ở trong nhà
   if (x < -64 || x > 64 || z < -46 || z > 62) return true;   // ranh giới thành phố
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
-box(10.2, 0.08, 1.2, 0xf1f3f5, 0, 1.04, -3.2);
-box(3, 1.4, 1, 0x6c4a2f, -6.5, 0.7, -3.2);
-box(3, 1.4, 1, 0x6c4a2f, 6.5, 0.7, -3.2);
-box(0.7, 0.5, 0.5, 0x343a40, 1.4, 1.33, -3.3);
-solid(0, -3.2, 5, 0.5); solid(-6.5, -3.2, 1.5, 0.5); solid(6.5, -3.2, 1.5, 0.5);
-box(10, 1, 1, 0xd62828, 0, 0.5, -3.2);         // quầy
-function chair(x, z, side) {
-  box(0.5, 0.08, 0.5, 0xc9a227, x, 0.45, z);
-  box(0.08, 0.5, 0.5, 0xc9a227, x + side * 0.22, 0.75, z);
-  box(0.12, 0.4, 0.12, 0x6c757d, x, 0.2, z);
-  solid(x, z, 0.3, 0.3);
-}
-function table(x, z) {
-  const top = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.1, 20), new THREE.MeshLambertMaterial({ color: 0x8d5524 }));
-  top.position.set(x, 0.8, z);
-  const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8), new THREE.MeshLambertMaterial({ color: 0x495057 }));
-  leg.position.set(x, 0.4, z);
-  scene.add(top, leg);
-  solid(x, z, 0.7, 0.7);
-  chair(x - 1.15, z, -1);
-  chair(x + 1.15, z, 1);
-}
-[[-4.5, 0.5], [4.5, 0.5], [-4.5, 4.5]].forEach(q => table(q[0], q[1]));   // bàn
-table(4.5, 4.5);
 
 /* ===== 2b. THỊ TRẤN BÊN NGOÀI QUÁN (mỗi khu sẽ là một "trạm") ===== */
 scene.fog = new THREE.Fog(0xcfe8ff, 30, 70);
@@ -267,7 +233,13 @@ function flat(w, d, color, x, z, y) {   // mặt phẳng nằm trên đất: c�
 }
 flat(72, 58, 0x8fd17a, 0, 21, -0.02);     // cỏ
 flat(3, 11, 0xbfb6a8, 0, 12.5, 0.01);      // đường: quán → quảng trường
-flat(14, 14, 0xdedad2, 0, 24, 0.01);       // quảng trường
+{ // quảng trường lát gạch
+  const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
+  x.fillStyle = "#e9e2d0"; x.fillRect(0, 0, 128, 128); x.fillStyle = "#d8cfb8"; x.fillRect(0, 0, 64, 64); x.fillRect(64, 64, 64, 64);
+  x.strokeStyle = "#c9bfa6"; x.lineWidth = 3; x.strokeRect(0, 0, 128, 128); x.strokeRect(64, 0, 64, 64); x.strokeRect(0, 64, 64, 64);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(7, 7);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.MeshLambertMaterial({ map: t })); m.rotation.x = -Math.PI / 2; m.position.set(0, 0.011, 24); m.userData.flat = true; scene.add(m);
+}
 flat(14, 3, 0xbfb6a8, 14, 24, 0.01);       // đường: → nhà ga
 flat(14, 3, 0xbfb6a8, -14, 24, 0.01);      // đường: → cổng mê cung
 flat(3, 5, 0xbfb6a8, 0, 33.5, 0.01);       // đường: → công viên
@@ -278,7 +250,6 @@ flat(4, 26, 0xbfb6a8, -14, -1, 0.012);     // đường nối West
 flat(4, 26, 0xbfb6a8, 14, -1, 0.012);      // đường nối East
 flat(34, 4, 0xbfb6a8, 45, 24, 0.012);      // đường: nhà ga → bệnh viện
 flat(4, 8, 0xbfb6a8, 44, 28, 0.012);       // lối vào bệnh viện
-solid(0, -6, 8, 0.15);                     // tường sau quán (giờ phía sau có thành phố)
 [[-30, -6], [30, -6], [-50, 16], [50, 16], [-30, 18], [-50, -8], [50, -8], [22, -22], [-22, -22], [56, 40], [32, 46]].forEach(q => tree(q[0], q[1]));
 function sign(text, x, z, w) {   // biển tên có chữ, quay về phía camera lúc đầu
   const c = document.createElement("canvas"); c.width = 512; c.height = 128;
@@ -299,18 +270,42 @@ function tree(x, z) {
   leaf.position.set(x, 2.1, z);
   scene.add(trunk, leaf); solid(x, z, 0.3, 0.3);
 }
-sign("Sunny Café", 0, 7.4, 3.4);
 // Quảng trường + đài phun nước
-box(4.4, 0.6, 4.4, 0xadb5bd, 0, 0.3, 24);
-box(3.8, 0.62, 3.8, 0x4dabf7, 0, 0.31, 24);
-box(0.6, 1.8, 0.6, 0xadb5bd, 0, 0.9, 24);
-solid(0, 24, 2.2, 2.2);
-sign("Plaza", 4.5, 19, 2.6);
+let fountainSpray = null;
+{ // đài phun nước tròn 2 tầng, có tia nước động
+  const stone = new THREE.MeshLambertMaterial({ color: 0xd5d0c4 }), water = new THREE.MeshLambertMaterial({ color: 0x4dabf7, transparent: true, opacity: 0.85 });
+  const cyl = (rt, rb, h, mat, y) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, 32), mat); m.position.set(0, y, 24); m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
+  cyl(2.5, 2.7, 0.6, stone, 0.3); cyl(2.2, 2.2, 0.06, water, 0.58);   // bồn lớn + mặt nước
+  cyl(0.35, 0.5, 1.5, stone, 1.05); cyl(1.1, 0.55, 0.35, stone, 1.85); cyl(0.95, 0.95, 0.05, water, 2.02);   // trụ + bồn trên
+  cyl(0.15, 0.25, 0.5, stone, 2.25);
+  fountainSpray = new THREE.Mesh(new THREE.ConeGeometry(0.55, 1.1, 16, 1, true), new THREE.MeshLambertMaterial({ color: 0xa5d8ff, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
+  fountainSpray.rotation.x = Math.PI; fountainSpray.position.set(0, 2.85, 24); scene.add(fountainSpray);   // tia nước (hình nón úp)
+}
+solid(0, 24, 2.7, 2.7);
 // Nhà ga (phía đông)
-box(8, 3.5, 6, 0x8ecae6, 24, 1.75, 24);
-box(9, 0.4, 7, 0x264653, 24, 3.7, 24);
-solid(24, 24, 4, 3);
-sign("Train Station", 24, 28, 4.4);
+{ // nhà ga (cửa quay về hướng tây, phía quảng trường)
+  box(8.4, 0.4, 6.4, 0x8d7b68, 24, 0.2, 24);   // chân tường
+  box(8, 4.2, 6, 0xeadfcf, 24, 2.3, 24);
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(5.2, 2.2, 4), new THREE.MeshLambertMaterial({ color: 0x3d5a80 }));
+  roof.rotation.y = Math.PI / 4; roof.scale.set(9 / 7.35, 1, 7 / 7.35); roof.position.set(24, 5.5, 24); roof.castShadow = true; scene.add(roof); camBlockers.push(roof);
+  box(0.16, 2.8, 2, 0x7f4f24, 19.95, 1.6, 24);   // cửa lớn
+  [21.6, 26.4].forEach(z => { box(0.12, 1.5, 1.5, 0xffffff, 19.97, 2.4, z); box(0.14, 1.3, 1.3, 0xa5d8ff, 19.98, 2.4, z); });   // cửa sổ
+  const pl = textPlate("TRAIN STATION", 5, 0.8, "#ffffff", "#3d5a80"); pl.rotation.y = -Math.PI / 2; pl.position.set(19.9, 3.75, 24); scene.add(pl);
+  const clk = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.12, 24), new THREE.MeshBasicMaterial({ color: 0xffffff })); clk.rotation.z = Math.PI / 2; clk.position.set(19.85, 5.0, 24); scene.add(clk);   // đồng hồ
+  box(0.06, 0.55, 0.08, 0x212529, 19.78, 5.15, 24); box(0.06, 0.08, 0.42, 0x212529, 19.78, 5.0, 24.15);
+  solid(24, 24, 4.2, 3.2);
+  flat(18, 3.4, 0xc9c9c9, 26, 29.4, 0.15);   // sân ga
+  [[18, 28.4], [34, 28.4], [18, 30.4], [34, 30.4]].forEach(([x, z]) => { box(0.18, 3.2, 0.18, 0x495057, x, 1.6, z); solid(x, z, 0.15, 0.15); });   // cột mái che
+  const canopy = box(17, 0.15, 3, 0x3d5a80, 26, 3.25, 29.4);
+  for (let x = 12; x <= 41; x += 1.2) flat(0.35, 2.2, 0x6f4e37, x, 32, 0.02);   // tà vẹt
+  [31.4, 32.6].forEach(z => box(29, 0.12, 0.12, 0x868e96, 26.5, 0.1, z));   // đường ray
+  const loco = [[4.5, 2.2, 2.2, 0xc92a2a, 18, 1.45], [1.8, 1.2, 2.2, 0x9b1c1c, 16.6, 3.1], [5.5, 2, 2.1, 0x2b8a3e, 23.4, 1.35], [5.5, 2, 2.1, 0x1c7ed6, 29.2, 1.35]];
+  loco.forEach(([w, h, d, c, x, y]) => box(w, h, d, c, x, y, 32));   // đầu máy + 2 toa
+  const chim = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.35, 1, 12), new THREE.MeshLambertMaterial({ color: 0x343a40 })); chim.position.set(19.4, 3, 32); chim.castShadow = true; scene.add(chim);
+  [23.4, 29.2].forEach(x => [-1.6, 0, 1.6].forEach(dx => [31, 33].forEach(z => box(1, 0.7, 0.06, 0xd0ebff, x + dx, 1.7, z))));   // cửa sổ toa
+  [16.8, 19.2, 21.6, 25.2, 27.6, 30.6].forEach(x => [30.9, 33.1].forEach(z => { const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.2, 16), new THREE.MeshLambertMaterial({ color: 0x212529 })); wh.rotation.x = Math.PI / 2; wh.position.set(x, 0.45, z); scene.add(wh); }));   // bánh xe
+  solid(23.5, 32, 8.6, 1.3);
+}
 // Cổng mê cung (phía tây) – trạm mini-game sẽ làm sau
 box(1, 4, 1, 0x495057, -24, 2, 21.5);
 box(1, 4, 1, 0x495057, -24, 2, 26.5);
@@ -414,13 +409,13 @@ let myAvatar = null;
 try { myAvatar = localStorage.getItem("ev_avatar"); } catch (e) {}
 if (!AVATARS[myAvatar]) myAvatar = AV_KEYS[Math.floor(Math.random() * AV_KEYS.length)];
 const player = makeChar(0x3b82f6, myAvatar);
-player.position.set(0, 0, 5.5);
+player.position.set(0, 0, 10);   // xuất hiện trước cửa Sunny Café
 LESSONS.forEach(L => {
   L.mesh = makeChar(L.color);
   L.mesh.position.set(L.x, 0, L.z);
   L.mark = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
   scene.add(L.mark);
-  solid(L.x, L.z, 0.4, 0.4);
+  if (!L.place) solid(L.x, L.z, 0.4, 0.4);   // NPC trong nhà: va chạm đặt sau khi dựng phòng
 });
 
 /* ===== 3. ĐIỀU KHIỂN (joystick cảm ứng + bàn phím) ===== */
@@ -1056,28 +1051,22 @@ function updateEconomy(dt) {   // năng lượng tự hồi 1 điểm / 15 giây
 
 /* ===== 4c. HỎI ĐƯỜNG: "Where is …?" – AI hướng dẫn chỉ đường bằng tiếng Anh ===== */
 const PLACES = [   // các địa điểm trong thị trấn (NPC lấy tự động từ LESSONS)
-  { name: "Sunny Café", say: "the café", keys: ["cafe", "café", "coffee", "sunny"], x: 0, z: 2 },
   { name: "the plaza", say: "the plaza", keys: ["plaza", "fountain", "square"], x: 0, z: 19 },
   { name: "the train station", say: "the train station", keys: ["station", "train"], x: 19, z: 24 },
   { name: "the maze", say: "the maze", keys: ["maze", "gate"], x: -21, z: 24 },
   { name: "the park", say: "the park", keys: ["park", "tree"], x: 0, z: 37 }
 ];
 function targets() {
-  const npcs = LESSONS.map(L => { const n = L.name.split(/\s|–/)[0]; return { name: n, say: n, keys: [n.toLowerCase()], x: L.x, z: L.z, npc: true }; });
+  const npcs = LESSONS.map(L => { const n = L.name.split(/\s|–/)[0], P = L.inPlace;   // NPC trong nhà → dẫn tới cửa nhà đó
+    return { name: n, say: n, keys: [n.toLowerCase()], x: P ? P.doorPos.x : L.x, z: P ? P.doorPos.z : L.z, npc: true, inName: P && P.name }; });
   const city = CITY.filter(P => P.doorPos).map(P => ({ name: P.name, say: "the " + P.type.replace("townhall", "town hall").replace("clothes", "clothes shop"), keys: P.name.toLowerCase().split(" ").filter(w => w.length > 3).concat([P.type, P.type === "townhall" ? "town hall" : P.type]), x: P.doorPos.x, z: P.doorPos.z }));
   return npcs.concat(PLACES, city);   // địa điểm thành phố: dẫn tới trước cửa
 }
-const inCafe = (x, z) => Math.abs(x) < 8 && z < 7;
 let goal = null;   // nơi người chơi đang được dẫn tới
 const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
 arrow.geometry.rotateX(Math.PI / 2);   // mũi nhọn chỉ về phía trước
 arrow.visible = false; scene.add(arrow);
-function waypoint() {   // nếu phải đi ra/vào quán thì dẫn tới cửa trước
-  const p = player.position, inP = inCafe(p.x, p.z), inG = inCafe(goal.x, goal.z);
-  if (inP && !inG) return { x: 0, z: 6, door: true };
-  if (!inP && inG) return { x: 0, z: 8.5, door: true };
-  return goal;
-}
+function waypoint() { return goal; }   // (mọi đích đều ở ngoài phố; nhà thì dẫn tới cửa)
 function directions() {
   const p = player.position, w = waypoint();
   const dx = w.x - p.x, dz = w.z - p.z, c = Math.cos(camAngle), s = Math.sin(camAngle);
@@ -1085,12 +1074,12 @@ function directions() {
   const ang = Math.atan2(right, ahead) * 180 / Math.PI;
   const turn = Math.abs(ang) < 35 ? "Go straight" : Math.abs(ang) > 120 ? "Turn around" : ang > 0 ? "Turn right" : "Turn left";
   const m = Math.max(1, Math.round(Math.hypot(dx, dz)));
-  return (w.door ? "First, go to the café door. " : "") + turn + " and walk about " + m + " meters.";
+  return turn + " and walk about " + m + " meters.";
 }
 function nearPlace(t) {   // mô tả vị trí NPC theo địa điểm gần nhất
   let best = PLACES[0], bd = 1e9;
   PLACES.forEach(P => { const d = Math.hypot(P.x - t.x, P.z - t.z); if (d < bd) { bd = d; best = P; } });
-  return inCafe(t.x, t.z) ? "in Sunny Café" : "near " + best.say;
+  return t.inName ? "in " + t.inName : "near " + best.say;
 }
 function guideTo(t) {
   goal = t;
@@ -1443,6 +1432,13 @@ function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng
     fur("couch_pillows", cx - 4.6, cz + 3.4, 0, 1, 1.5, 0.75);   // ghế chờ
     fur("table_medium_long", cx + 4.6, cz + 2.4, 0, 1, 1.5, 1); fur("chair_B_wood", cx + 3.8, cz + 3.8, Math.PI, 1, 0.35, 0.35); fur("chair_B_wood", cx + 5.4, cz + 3.8, Math.PI, 1, 0.35, 0.35);
   }
+  if (P.type === "cafe") {
+    counter(0xd62828);
+    addBox(g, 0.8, 0.6, 0.6, 0x343a40, cx + 1.6, 1.25, back + 3.4); addBox(g, 0.5, 0.25, 0.4, 0xadb5bd, cx - 1.8, 1.07, back + 3.4);   // máy pha cà phê, máy tính tiền
+    fur("cabinet_medium", cx - 4.6, back + 0.55, 0, 1.2, 1.25, 0.6); goods(cx - 4.6, ["☕", "🧋", "🥛", "☕", "🍵", "🧁"]);
+    fur("cabinet_medium", cx + 4.6, back + 0.55, 0, 1.2, 1.25, 0.6); goods(cx + 4.6, ["🍰", "🥐", "🍪", "🧋", "☕", "🍩"]);
+    [[-4.6, 1.2], [4.6, 1.2], [-4.6, 4.2], [4.6, 4.2]].forEach(([dx, dz]) => { fur("table_small", cx + dx, cz + dz - 1.5, 0, 1, 0.6, 0.6); fur("chair_A_wood", cx + dx - 1.1, cz + dz - 1.5, Math.PI / 2, 1, 0.35, 0.35); fur("chair_A_wood", cx + dx + 1.1, cz + dz - 1.5, -Math.PI / 2, 1, 0.35, 0.35); });
+  }
   if (P.type === "hospital") {
     counter(0xffffff);
     [-5.6, 5.6].forEach(dx => { fur("bed_single_A", cx + dx, cz + 1.8, 0, 1, 0.8, 1.5); fur("table_small", cx + dx + (dx < 0 ? 1.4 : -1.4), cz + 0.6, 0, 0.6, 0.4, 0.4); });
@@ -1464,14 +1460,23 @@ function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay v�
   addBox(g, 2.4, 0.04, 1.4, 0xc92a2a, cx, 0.02, cz + D / 2 - 0.8);   // thảm cửa
   const plate = textPlate(P.name, 6, 0.9, "#ffffff", "#343a40"); plate.position.set(cx, 3, cz - D / 2 + 0.03); g.add(plate);
   furnish(P, g, cx, cz, W, D);
-  const k = makeChar(P.keeper.color); k.position.set(cx, 0, cz - D / 2 + 2.4); k.add(nameTag(P.keeper.name.split(" – ")[0])); P.keeperMesh = k;
-  P.room.solids.push({ x: cx, z: cz - D / 2 + 2.4, hw: 0.4, hd: 0.4 });
+  let k = null;
+  if (P.keeper) {   // người bán (nếu có)
+    k = makeChar(P.keeper.color); k.position.set(cx, 0, cz - D / 2 + 2.4); k.add(nameTag(P.keeper.name.split(" – ")[0]));
+    P.room.solids.push({ x: cx, z: cz - D / 2 + 2.4, hw: 0.4, hd: 0.4 });
+  }
+  P.keeperMesh = k;
   P.room.exit = { x: cx, z: cz + D / 2 - 1 };
   shade(g); scene.add(g);
-  g.add(k); k.position.set(cx, 0, cz - D / 2 + 2.4);
+  if (k) { g.add(k); k.position.set(cx, 0, cz - D / 2 + 2.4); }
   P.int = g; g.visible = false;
 }
 CITY.forEach((P, i) => { buildHouse(P); buildInterior(P, i); });
+LESSONS.forEach(L => {   // NPC có place: đứng trong nhà đó (x, z tính từ giữa phòng)
+  const P = L.place && CITY.find(c => c.id === L.place); if (!P) return;
+  L.x += P.room.cx; L.z += P.room.cz; L.inPlace = P;
+  L.mesh.position.set(L.x, 0, L.z); P.room.solids.push({ x: L.x, z: L.z, hw: 0.4, hd: 0.4 });
+});
 /* Đồ trang trí phố: nhà phố (không vào được), đèn đường, ghế, chậu cây, xe đậu, đèn giao thông, trụ nước */
 const PROPS = [];
 function prop(name, x, z, ry, sc, hw, hd, noShadow) {
@@ -1518,7 +1523,7 @@ function updateCity(dt) {
   if (maze || talking) { $("doorBtn").style.display = "none"; $("shopBtn").style.display = "none"; return; }
   if (room) {
     if (Math.hypot(player.position.x - room.exit.x, player.position.z - room.exit.z) < 1.8) nearDoor = room.P;
-    if (Math.hypot(player.position.x - room.P.keeperMesh.position.x, player.position.z - room.P.keeperMesh.position.z) < 4.3) nearKeeper = room.P;   // người bán đứng sau quầy nên cho phép xa hơn chút
+    if (room.P.keeperMesh && Math.hypot(player.position.x - room.P.keeperMesh.position.x, player.position.z - room.P.keeperMesh.position.z) < 4.3) nearKeeper = room.P;   // người bán đứng sau quầy nên cho phép xa hơn chút
   } else CITY.forEach(P => { if (Math.hypot(player.position.x - P.doorPos.x, player.position.z - P.doorPos.z) < 2) nearDoor = P; });
   $("doorBtn").textContent = room ? "🚪 Exit" : nearDoor ? "🚪 Enter " + nearDoor.name : "";
   $("doorBtn").style.display = nearDoor ? "block" : "none";
@@ -1616,6 +1621,7 @@ function loop() {
   updateCity(dt);
   sun.position.set(player.position.x + 12, 22, player.position.z + 9); sun.target.position.copy(player.position);   // vùng bóng đổ đi theo người chơi
   animateChars(dt);
+  if (fountainSpray) { fountainSpray.scale.set(1 + Math.sin(t * 5) * 0.06, 1 + Math.sin(t * 7) * 0.12, 1 + Math.sin(t * 5) * 0.06); fountainSpray.rotation.y += dt; }
   clouds.forEach(c => { c.userData.a += dt * 0.004; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = 20 + Math.sin(c.userData.a) * c.userData.r; });
   if (!talking) {
     near = null;

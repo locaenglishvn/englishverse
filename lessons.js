@@ -1,9 +1,11 @@
 /* ===== 1. DỮ LIỆU BÀI HỌC (sửa phần này để đổi nội dung, không cần đụng code) ===== */
-/* Mỗi bước có thể có "card": trả lời đúng bước đó thì người chơi nhận thẻ từ vựng.
+/* x, z = vị trí NPC trên bản đồ. Nếu có place: "id" (id trong places.js) thì NPC đứng TRONG nhà đó,
+   và x, z tính từ giữa phòng (z âm = phía quầy).
+   Mỗi bước có thể có "card": trả lời đúng bước đó thì người chơi nhận thẻ từ vựng.
    w = từ/cụm từ, pic = hình (emoji), ex = câu ví dụ. */
 const LESSONS = [
 {
-  name: "Mia – Barista", color: 0xe03131, x: 0, z: -4.6,
+  name: "Mia – Barista", color: 0xe03131, place: "cafe", x: 0, z: -3.6,
   steps: [
     { say: "Hi! Welcome to Sunny Café. What would you like to drink?",
       card: { w: "I’d like…", pic: "☕", ex: "I’d like a coffee, please." },
