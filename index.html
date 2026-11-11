@@ -43,7 +43,7 @@ button{font:inherit;cursor:pointer}
 #namep .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:20px;width:100%;max-width:360px;text-align:center}
 #nameIn{width:100%;box-sizing:border-box;font:inherit;font-size:20px;padding:12px;border-radius:12px;border:2px solid rgba(128,128,128,.4);margin-top:12px;text-align:center;background:transparent;color:var(--ink);user-select:text;-webkit-user-select:text}
 #nameGo{margin-top:12px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 24px;font-weight:700;font-size:17px}
-#sayBtn{position:fixed;right:24px;bottom:calc(124px + env(safe-area-inset-bottom,0px));background:#1c7ed6;color:#fff;border:0;border-radius:999px;padding:12px 18px;font-size:16px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#sayBtn{position:fixed;right:24px;bottom:calc(144px + env(safe-area-inset-bottom,0px));background:#1c7ed6;color:#fff;border:0;border-radius:999px;padding:12px 18px;font-size:16px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 #chatp{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.3);z-index:5}
 #chatList{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 #chatList button{border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:999px;padding:8px 12px;font-size:15px}
@@ -54,6 +54,9 @@ button{font:inherit;cursor:pointer}
 .team{border-radius:12px;padding:10px;margin-top:8px;border:3px solid}
 .team.red{border-color:#e03131}.team.blue{border-color:#1c7ed6}
 #mazeHud{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:none;background:#212529;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-size:15px;white-space:nowrap}
+#talkBtn{position:fixed;right:18px;bottom:calc(24px + env(safe-area-inset-bottom,0px));display:none;width:104px;height:104px;border-radius:50%;border:0;background:#e8590c;color:#fff;font-size:15px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.35);touch-action:none;-webkit-touch-callout:none}
+#talkBtn.rec{background:#c92a2a;transform:scale(1.1)}
+#liveText{position:fixed;right:12px;left:12px;bottom:calc(200px + env(safe-area-inset-bottom,0px));display:none;text-align:right;font-size:16px;font-weight:600;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 #mazeLeave{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;display:none;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700}
 .me{background:rgba(250,176,5,.25);border-radius:6px;padding:0 4px}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
@@ -75,6 +78,8 @@ button{font:inherit;cursor:pointer}
 <div id="matchp" class="panel"></div>
 <div id="mazeHud"></div>
 <button id="mazeLeave">✕ Leave</button>
+<button id="talkBtn">🎤<br>Hold to talk</button>
+<div id="liveText"></div>
 <div id="chatp">
   <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
     <button id="chatMic">🎤 Nói tiếng Anh</button>
@@ -447,6 +452,7 @@ function goOnline() {
   chan.on("broadcast", { event: "chat" }, ({ payload: m }) => {
     const o = others[m.id]; if (!o) return;
     const t = cleanChat(m.t); if (!t) return;
+    if (maze && m.v) maze.voice[m.id] = (maze.voice[m.id] || 0) + 1;   // câu tự nói, không phải câu có sẵn
     showBubble(o.g, t);
     if (maze && m.id === maze.mate) { $("guide").textContent = (maze.role === "walker" ? "🗺️ " : "🚶 ") + String(o.n || "") + ": " + t; $("guide").style.display = "block"; speak(t); return; }
     if (!talking && o.g.position.distanceTo(player.position) < 12) speak(t);   // người ở gần thì nghe được giọng đọc
@@ -625,6 +631,7 @@ function enterMaze(m, me) {
   maze.ch = sb.channel("match-" + m.match, { config: { broadcast: { self: true } } });   // kênh riêng của trận: báo đội thắng
   maze.ch.on("broadcast", { event: "win" }, ({ payload }) => endMaze(payload.team));
   maze.ch.subscribe();
+  maze.voice = {};
   savedFog = scene.fog;
   goal = null; arrow.visible = false;   // tắt chỉ đường "Where is" nếu đang bật
   if (me.role === "walker") {
@@ -644,6 +651,7 @@ function enterMaze(m, me) {
   $("guide").style.display = "block";
   ["askBtn", "albumBtn", "askp", "chatp"].forEach(id => $(id).style.display = "none");
   $("mazeHud").style.display = "block"; $("mazeLeave").style.display = "block";
+  if (SR) { $("talkBtn").style.display = "block"; $("sayBtn").textContent = "💡 Phrases"; }
   speak(me.role === "walker" ? "Go! Listen to your guide." : "Go! Tell your teammate the way.");
 }
 function mmss(ms) { const s = Math.floor(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
@@ -672,9 +680,14 @@ function endMaze(winTeam) {
   else if (duo) { title = "🎉 You escaped in " + t + "!"; pts = 30; }
   else if (winTeam === maze.team) { title = "🏆 Your team wins! (" + t + ")"; pts = 30; }
   else { title = "😅 Team " + (winTeam === "red" ? "Red" : "Blue") + " wins. Good try!"; pts = 10; }
+  const talk = maze.m.players.map(p => ({ id: p.id, n: p.n, k: maze.voice[p.id] || 0 })).sort((a, b) => b.k - a.k);
+  const best = talk[0].k > 0 ? talk[0] : null;   // người tự nói nhiều câu nhất
+  if (best && best.id === myId) pts += 10;
   score += pts; $("score").textContent = score;
-  speak(title.replace(/[^\w\s!’'.]/g, ""));
+  speak(title.replace(/[^\w\s!’'.]/g, "") + (best ? " Best speaker: " + best.n + "!" : ""));
   $("matchp").innerHTML = '<b style="font-size:22px">' + title + '</b><div style="margin-top:6px">+' + pts + ' ⭐</div>' +
+    '<div style="margin-top:8px">🎤 <b>Sentences spoken:</b> ' + talk.map(x => x.n + " " + x.k).join(" · ") + "</div>" +
+    (best ? '<div style="margin-top:4px">🏅 <b>Best speaker: ' + best.n + "</b>" + (best.id === myId ? " (+10 ⭐)" : "") + "</div>" : '<div style="font-size:13px;margin-top:4px">Lần sau hãy giữ nút 🎤 để tự nói nhé!</div>') +
     "<button class='big' id='matchBack' style='background:#2b8a3e;text-align:center'>Back to town</button>";
   $("matchp").style.display = "block";
   $("matchBack").onclick = leaveMaze;
@@ -689,9 +702,39 @@ function leaveMaze() {
   camera.fov = 55; camera.updateProjectionMatrix();
   player.position.set(GATE.x + 2.5, 0, GATE.z); camAngle = 0;
   ["askBtn", "albumBtn", "stick"].forEach(id => $(id).style.display = "block");
-  ["mazeHud", "mazeLeave", "matchp", "guide", "chatp"].forEach(id => $(id).style.display = "none");
+  ["mazeHud", "mazeLeave", "matchp", "guide", "chatp", "talkBtn", "liveText"].forEach(id => $(id).style.display = "none");
+  $("sayBtn").textContent = "🗨️ Say";
 }
 $("mazeLeave").onclick = leaveMaze;
+
+/* ===== 6c. GIỮ ĐỂ NÓI trong mê cung =====
+   Giữ nút 🎤 → nói tiếng Anh → thả tay. Đồng đội chỉ nhận được phần máy nghe ra là tiếng Anh.
+   Câu tự nói được +2 ⭐ và tính vào "Best speaker"; câu có sẵn (💡 Phrases) không được điểm. */
+let holdRec = null;
+function holdStart(e) {
+  e.preventDefault();
+  if (!SR || holdRec || !maze) return;
+  try { speechSynthesis.cancel(); } catch (err) {}
+  const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.continuous = true;
+  let heard = "", conf = 1;
+  r.onresult = ev => {
+    heard = ""; for (const res of ev.results) { heard += res[0].transcript; if (res.isFinal && res[0].confidence > 0) conf = Math.min(conf, res[0].confidence); }
+    $("liveText").textContent = "🎙️ " + heard; $("liveText").style.display = "block";
+  };
+  r.onerror = ev => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed") { $("liveText").textContent = "Hãy cho phép micro để nói nhé!"; $("liveText").style.display = "block"; } };
+  r.onend = () => {
+    holdRec = null; $("talkBtn").classList.remove("rec");
+    const t = heard.trim();
+    if (t && conf >= 0.4) { score += 2; $("score").textContent = score; sendChat(t.charAt(0).toUpperCase() + t.slice(1), true); $("liveText").style.display = "none"; }
+    else { $("liveText").textContent = t ? "“" + t + "” – chưa rõ, nói lại nhé!" : "Không nghe thấy, giữ nút và nói to hơn nhé!"; $("liveText").style.display = "block"; }
+  };
+  holdRec = r; $("talkBtn").classList.add("rec");
+  try { r.start(); } catch (err) { holdRec = null; $("talkBtn").classList.remove("rec"); }
+}
+function holdEnd() { if (holdRec) try { holdRec.stop(); } catch (err) {} }
+$("talkBtn").addEventListener("pointerdown", holdStart);
+["pointerup", "pointercancel", "pointerleave"].forEach(ev => $("talkBtn").addEventListener(ev, holdEnd));
+$("talkBtn").addEventListener("contextmenu", e => e.preventDefault());   // giữ lâu trên điện thoại không mở menu
 
 /* ===== 4f. CHÀO HỎI NHANH: chỉ câu tiếng Anh có sẵn, hoặc câu nói tiếng Anh máy nghe được (không có ô gõ tự do) ===== */
 const QUICK = ["Hi!", "Hello! I’m {name}.", "How are you?", "I’m fine, thanks!", "Nice to meet you!", "Follow me!",
@@ -713,12 +756,13 @@ function showBubble(g, text) {   // bong bóng lời nói trên đầu nhân v�
   clearTimeout(g.bubbleT); g.bubbleT = setTimeout(() => { if (g.bubble === s) { g.remove(s); g.bubble = null; } }, 4000);
 }
 let lastChat = 0;
-function sendChat(text) {
+function sendChat(text, voice) {   // voice = true: câu tự nói qua micro
   const t = cleanChat(text); if (!t) return;
   if (performance.now() - lastChat < 1500) return;   // chống spam: tối đa 1 câu / 1,5 giây
   lastChat = performance.now();
   showBubble(player, t);
-  if (online) chan.send({ type: "broadcast", event: "chat", payload: { id: myId, t } });
+  if (maze && voice) maze.voice[myId] = (maze.voice[myId] || 0) + 1;
+  if (online) chan.send({ type: "broadcast", event: "chat", payload: { id: myId, t, v: voice ? 1 : 0 } });
   $("chatp").style.display = "none";
 }
 $("sayBtn").onclick = () => {
@@ -742,7 +786,7 @@ $("chatMic").onclick = () => {
     const t = e.results[0][0].transcript;
     if (e.results[0][0].confidence > 0 && e.results[0][0].confidence < 0.5) { $("chatHeard").textContent = "Heard: “" + t + "” – chưa rõ, thử nói lại nhé!"; return; }
     score += 2; $("score").textContent = score;
-    sendChat(t.charAt(0).toUpperCase() + t.slice(1));
+    sendChat(t.charAt(0).toUpperCase() + t.slice(1), true);
   };
   r.onerror = () => { $("chatHeard").textContent = "Không nghe được, thử lại hoặc chọn câu có sẵn."; };
   r.onend = () => { $("chatMic").textContent = "🎤 Nói tiếng Anh"; $("chatMic").disabled = false; };
