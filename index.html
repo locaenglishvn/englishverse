@@ -59,6 +59,12 @@ button{font:inherit;cursor:pointer}
 #liveText{position:fixed;right:12px;left:12px;bottom:calc(200px + env(safe-area-inset-bottom,0px));display:none;text-align:right;font-size:16px;font-weight:600;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 #mazeLeave{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;display:none;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700}
 .me{background:rgba(250,176,5,.25);border-radius:6px;padding:0 4px}
+#atkBtn{position:fixed;right:24px;bottom:calc(52px + env(safe-area-inset-bottom,0px));display:none;background:#7048e8;color:#fff;border:0;border-radius:999px;padding:16px 24px;font-size:18px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#fightp .hp{height:10px;border-radius:5px;background:rgba(128,128,128,.3);overflow:hidden;margin-top:6px}#fightp .hp div{height:100%;background:#e03131;transition:width .3s}
+#fightSay{font-size:22px;font-weight:700;margin-top:12px;text-align:center}
+#fightTime{height:6px;border-radius:3px;background:#7048e8;margin-top:10px;transition:width .1s linear}
+#fightMic{display:block;margin:12px auto 0;width:110px;height:110px;border-radius:50%;border:0;background:#7048e8;color:#fff;font-size:15px;font-weight:700;touch-action:none;-webkit-touch-callout:none}
+#fightMic.rec{background:#c92a2a;transform:scale(1.08)}#fightMic:disabled{background:#868e96}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
 </style>
 </head>
@@ -80,6 +86,17 @@ button{font:inherit;cursor:pointer}
 <button id="mazeLeave">✕ Leave</button>
 <button id="talkBtn">🎤<br>Hold to talk</button>
 <div id="liveText"></div>
+<button id="atkBtn">📢 Attack</button>
+<div id="fightp" class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b id="fightName">👻 Echo Ghost</b><button id="fightRun" style="border:0;background:transparent;color:var(--ink);font-weight:700">🏃 Run</button></div>
+  <div class="hp"><div id="fightHp" style="width:100%"></div></div>
+  <div style="font-size:13px;margin-top:8px;opacity:.8">📢 Repeat after the ghost to free it! / Lặp lại câu con ma nói để giải thoát nó!</div>
+  <div id="fightSay"></div>
+  <div style="text-align:center"><button id="fightListen" style="border:0;background:transparent;color:var(--ink);font-size:15px">🔊 Listen again</button></div>
+  <div id="fightTime"></div>
+  <button id="fightMic">📢<br>Hold &amp; repeat</button>
+  <div id="fightFb" style="text-align:center;margin-top:8px;min-height:22px;font-weight:600"></div>
+</div>
 <div id="chatp">
   <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
     <button id="chatMic">🎤 Nói tiếng Anh</button>
@@ -911,6 +928,192 @@ function updateGuide(dt, t) {
   if ((guideTick += dt) > 1) { guideTick = 0; $("guide").textContent = "🧭 " + directions(); }   // cập nhật chữ, không đọc lại
 }
 
+/* ===== 7. ĐÁNH QUÁI: ECHO GHOST (bản thử đầu tiên) =====
+   Quái của The Mute = "lời chưa được nói ra". Vũ khí: 📢 Loa. Chiêu: LẶP LẠI câu con ma nói.
+   Đề chọn riêng cho từng người: phần lớn là câu trong thẻ đã sưu tầm (ôn tập), một phần khó hơn chút (i+1).
+   Bị đánh bại → quái hóa thành Word Spirit (tinh linh) đi theo người chơi.
+   Bản thử: quái chỉ có trên máy mỗi người; bước sau sẽ đồng bộ để cả cộng đồng cùng đánh một con. */
+const ECHO_LINES = [   // câu theo độ khó: 1 = rất dễ, 2 = dễ, 3 = khó hơn
+  [1, "Hello!"], [1, "Thank you!"], [1, "Good morning!"], [1, "I am happy."], [1, "Nice to meet you."],
+  [2, "Where is the park?"], [2, "I like green tea."], [2, "Can you help me?"], [2, "It is a sunny day."], [2, "How much is it?"],
+  [3, "I would like an iced coffee, please."], [3, "Could you tell me the way to the station?"], [3, "I am not afraid of making mistakes."]
+];
+const GHOST_ZONE = { x0: -12, x1: 12, z0: 36, z1: 46 };   // ma xuất hiện ở công viên
+flat(26, 12, 0x9aa5b1, 0, 41, 0.005);   // nền xám: khu bị sương The Mute bao phủ
+sign("Misty Park", -6, 34.5, 3.4);
+const ghosts = [];
+function makeGhost(lv) {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshLambertMaterial({ color: 0xdee2e6, transparent: true, opacity: 0.85 });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 12), mat); head.position.y = 1.5;
+  const body = new THREE.Mesh(new THREE.ConeGeometry(0.6, 1.3, 16, 1, true), mat); body.position.y = 0.85; body.rotation.x = Math.PI;
+  const eyeM = new THREE.MeshBasicMaterial({ color: 0x212529 });
+  [-0.2, 0.2].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), eyeM); e.position.set(x, 1.6, 0.52); g.add(e); });
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.03, 6, 12), eyeM); mouth.position.set(0, 1.35, 0.55); g.add(mouth);
+  g.add(head, body);
+  const tag = nameTag("Echo Ghost Lv." + lv); tag.position.y = 2.5; g.add(tag);
+  scene.add(g);
+  const G = { g, mat, lv, hpMax: 40 + lv * 30, hp: 0, tx: 0, tz: 0, alive: true };
+  spawnGhost(G);
+  ghosts.push(G);
+  return G;
+}
+function spawnGhost(G) {
+  const z = GHOST_ZONE;
+  G.g.position.set(z.x0 + Math.random() * (z.x1 - z.x0), 0, z.z0 + Math.random() * (z.z1 - z.z0));
+  G.hp = G.hpMax; G.alive = true; G.g.visible = true; G.mat.opacity = 0.85; G.mat.color.setHex(0xdee2e6);
+  G.tx = G.g.position.x; G.tz = G.g.position.z;
+}
+[1, 1, 2].forEach(makeGhost);
+function playerLevel() { return 1 + Math.floor(score / 60); }   // tạm: cấp = theo số sao
+function pickLine(G) {   // chọn đề riêng cho người chơi này
+  const mine = allCards().filter(c => owned.indexOf(c.w) >= 0).map(c => c.ex);   // câu trong thẻ đã có → ôn tập
+  const want = Math.min(3, Math.max(1, Math.ceil((playerLevel() + G.lv) / 2)));
+  const r = Math.random();
+  let pool;
+  if (mine.length && r < 0.5) pool = mine;
+  else if (r < 0.8) pool = ECHO_LINES.filter(l => l[0] === want).map(l => l[1]);
+  else pool = ECHO_LINES.filter(l => l[0] === Math.min(3, want + 1)).map(l => l[1]);   // i+1: khó hơn một chút
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+let fight = null, nearGhost = null, fightRec = null;
+function updateGhosts(dt, t) {
+  nearGhost = null;
+  ghosts.forEach(G => {
+    if (!G.alive) return;
+    const p = G.g.position;
+    if (fight && fight.G === G) G.g.lookAt(player.position.x, 0, player.position.z);
+    else {   // đi lang thang chậm trong công viên
+      if (Math.hypot(G.tx - p.x, G.tz - p.z) < 0.3) { const z = GHOST_ZONE; G.tx = z.x0 + Math.random() * (z.x1 - z.x0); G.tz = z.z0 + Math.random() * (z.z1 - z.z0); }
+      const dx = G.tx - p.x, dz = G.tz - p.z, d = Math.hypot(dx, dz) || 1;
+      p.x += dx / d * 0.8 * dt; p.z += dz / d * 0.8 * dt;
+      G.g.rotation.y = Math.atan2(dx, dz);
+    }
+    p.y = 0.25 + Math.sin(t * 2 + G.hpMax) * 0.15;   // bay lơ lửng
+    if (!fight && !maze && Math.hypot(player.position.x - p.x, player.position.z - p.z) < 4) nearGhost = G;
+  });
+  $("atkBtn").style.display = nearGhost && !talking ? "block" : "none";
+  if (nearGhost && !talking) $("talk").style.display = "none";
+  if (fight && !fight.muted && !fightRec) {   // đồng hồ: hết giờ thì ma "Shhh!" làm mình câm vài giây
+    fight.left -= dt;
+    $("fightTime").style.width = Math.max(0, fight.left / fight.limit * 100) + "%";
+    if (fight.left <= 0) muteMe();
+  }
+  waves.forEach(w => { w.t += dt; const k = w.t / 0.45; w.m.position.lerpVectors(w.a, w.b, Math.min(1, k)); w.m.scale.setScalar(1 + k * 2); w.m.material.opacity = 1 - k; if (k >= 1) { scene.remove(w.m); w.done = true; } });
+  waves = waves.filter(w => !w.done);
+  pops.forEach(q => { q.t += dt; q.s.position.y += dt * 1.2; q.s.material.opacity = 1 - q.t; if (q.t >= 1) { scene.remove(q.s); q.done = true; } });
+  pops = pops.filter(q => !q.done);
+  spirits.forEach((sp, i) => {   // tinh linh bay vòng quanh người chơi
+    const a = t * 1.5 + i * 2.1;
+    sp.position.lerp(new THREE.Vector3(player.position.x + Math.cos(a) * 1.1, 1.9 + Math.sin(t * 3 + i) * 0.15, player.position.z + Math.sin(a) * 1.1), 0.1);
+    sp.visible = player.visible;
+  });
+}
+function nextLine() {
+  fight.line = pickLine(fight.G);
+  fight.limit = 8 + fight.line.split(" ").length * 1.5; fight.left = fight.limit;
+  $("fightSay").textContent = "“" + fight.line + "”";
+  speak(fight.line);
+}
+$("atkBtn").onclick = () => {
+  if (!nearGhost) return;
+  if (!SR) { $("toast").innerHTML = "🎤 Cần micro + Chrome/Safari để đánh quái bằng giọng nói"; $("toast").classList.add("show"); setTimeout(() => $("toast").classList.remove("show"), 2500); return; }
+  fight = { G: nearGhost, muted: false };
+  talking = true; $("atkBtn").style.display = "none"; $("chatp").style.display = "none";
+  $("fightName").textContent = "👻 Echo Ghost Lv." + fight.G.lv + (fight.G.lv > playerLevel() + 1 ? " – too strong!" : "");
+  $("fightHp").style.width = fight.G.hp / fight.G.hpMax * 100 + "%";
+  $("fightp").style.display = "block";
+  nextLine();
+};
+$("fightListen").onclick = () => fight && speak(fight.line);
+$("fightRun").onclick = endFight;
+function endFight() {
+  if (fightRec) try { fightRec.abort(); } catch (e) {}
+  fight = null; talking = false; $("fightp").style.display = "none";
+}
+function muteMe() {   // bị trúng chiêu "Shhh!" của The Mute: micro khóa 3 giây
+  fight.muted = true; $("fightMic").disabled = true;
+  $("fightFb").textContent = "🤐 Shhh! The ghost muted you!"; $("fightFb").style.color = "var(--bad)";
+  speak("Shhh!");
+  setTimeout(() => { if (!fight) return; fight.muted = false; $("fightMic").disabled = false; nextLine(); }, 3000);
+}
+let waves = [], pops = [];
+function soundWave(to) {   // sóng âm từ loa bay vào quái
+  const m = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.07, 8, 24), new THREE.MeshBasicMaterial({ color: 0x9775fa, transparent: true }));
+  const a = player.position.clone().setY(1.2), b = to.clone().setY(1.5);
+  m.lookAt(b); scene.add(m); waves.push({ m, a, b, t: 0 });
+}
+function popText(text, pos, color) {   // số sát thương bay lên
+  const c = document.createElement("canvas"); c.width = 256; c.height = 96;
+  const x = c.getContext("2d"); x.font = "bold 64px system-ui, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
+  x.lineWidth = 8; x.strokeStyle = "#fff"; x.strokeText(text, 128, 50); x.fillStyle = color; x.fillText(text, 128, 50);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+  s.scale.set(1.8, 0.68, 1); s.position.copy(pos).setY(2.6); scene.add(s); pops.push({ s, t: 0 });
+}
+function hitGhost(acc) {
+  const G = fight.G, words = fight.line.split(" ").length;
+  let dmg = Math.round(acc * (12 + words * 4) * (1 + playerLevel() * 0.1));
+  if (G.lv > playerLevel() + 1) dmg = Math.round(dmg * 0.3);   // quái quá mạnh: phải lên cấp trước
+  soundWave(G.g.position);
+  setTimeout(() => {
+    if (!fight) return;
+    G.hp = Math.max(0, G.hp - dmg);
+    $("fightHp").style.width = G.hp / G.hpMax * 100 + "%";
+    popText("-" + dmg, G.g.position, "#7048e8");
+    G.mat.color.setHex(0xb197fc); setTimeout(() => G.mat.color.setHex(0xdee2e6), 150);
+    if (G.hp <= 0) freeGhost(G); else nextLine();
+  }, 450);
+}
+const spirits = [];
+let spiritCount = 0;
+try { spiritCount = +localStorage.getItem("ev_spirits") || 0; } catch (e) {}
+function addSpirit() {
+  if (spirits.length >= 3) return;   // tối đa 3 tinh linh bay theo
+  const sp = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), new THREE.MeshBasicMaterial({ color: 0xfff3bf }));
+  const glow = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: 0.35 }));
+  sp.add(glow); sp.position.copy(player.position).setY(1.9); scene.add(sp); spirits.push(sp);
+}
+for (let i = 0; i < Math.min(3, spiritCount); i++) addSpirit();
+function freeGhost(G) {   // ma được giải thoát → hóa thành Word Spirit
+  G.alive = false;
+  const line = fight.line;
+  endFight();
+  G.mat.color.setHex(0xfff3bf);
+  let k = 0;
+  const rise = setInterval(() => { k++; G.g.position.y += 0.08; G.mat.opacity = 0.85 - k * 0.04; if (k > 20) { clearInterval(rise); G.g.visible = false; } }, 40);
+  score += 15; $("score").textContent = score;
+  spiritCount++; try { localStorage.setItem("ev_spirits", spiritCount); } catch (e) {}
+  addSpirit();
+  $("toast").innerHTML = '<div style="font-size:13px;font-weight:700;color:#7048e8">GHOST FREED! +15 ⭐</div><div style="font-size:48px">✨</div><div style="font-size:18px;font-weight:700">A Word Spirit joins you!</div><div style="font-size:14px">“' + line + '”</div>';
+  $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
+  speak("Thank you! You set me free!");
+  setTimeout(() => spawnGhost(G), 20000);   // 20 giây sau sương lại sinh ra ma mới
+}
+function fightStart(e) {
+  e.preventDefault();
+  if (!fight || fight.muted || fightRec || !SR) return;
+  try { speechSynthesis.cancel(); } catch (err) {}
+  const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.continuous = true; r.maxAlternatives = 3;
+  let alts = [];
+  r.onresult = ev => {
+    alts = [""]; for (const res of ev.results) alts[0] += res[0].transcript;
+    const last = ev.results[ev.results.length - 1]; for (let i = 1; i < last.length; i++) alts.push(last[i].transcript);
+    $("fightFb").textContent = "🎙️ " + alts[0]; $("fightFb").style.color = "var(--ink)";
+  };
+  r.onend = () => {
+    fightRec = null; $("fightMic").classList.remove("rec");
+    if (!fight) return;
+    const acc = Math.max(0, ...alts.map(h => match(fight.line, h)));
+    if (acc >= 0.5) { $("fightFb").textContent = (acc > 0.9 ? "💥 Perfect!" : "👍 Good!") + " “" + alts[0] + "”"; $("fightFb").style.color = "var(--ok)"; hitGhost(acc); }
+    else { $("fightFb").textContent = alts[0] ? "😕 “" + alts[0] + "” – try again!" : "Giữ nút và nói to hơn nhé!"; $("fightFb").style.color = "var(--bad)"; }
+  };
+  fightRec = r; $("fightMic").classList.add("rec");
+  try { r.start(); } catch (err) { fightRec = null; $("fightMic").classList.remove("rec"); }
+}
+$("fightMic").addEventListener("pointerdown", fightStart);
+["pointerup", "pointercancel", "pointerleave"].forEach(ev => $("fightMic").addEventListener(ev, () => { if (fightRec) try { fightRec.stop(); } catch (e) {} }));
+$("fightMic").addEventListener("contextmenu", e => e.preventDefault());
+
 /* ===== 5. VÒNG LẶP GAME (chạy ~60 lần/giây) ===== */
 const clock = new THREE.Clock();
 function loop() {
@@ -945,6 +1148,7 @@ function loop() {
   updateOnline(dt);
   updateMazeGate();
   updateMaze();
+  updateGhosts(dt, t);
   if (!talking) {
     near = null;
     let best = 3.3;
