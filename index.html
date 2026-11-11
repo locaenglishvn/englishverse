@@ -70,6 +70,12 @@ button{font:inherit;cursor:pointer}
 #fightTime{height:6px;border-radius:3px;background:#7048e8;margin-top:10px;transition:width .1s linear}
 #fightMic{display:block;margin:12px auto 0;width:110px;height:110px;border-radius:50%;border:0;background:#7048e8;color:#fff;font-size:15px;font-weight:700;touch-action:none;-webkit-touch-callout:none}
 #fightMic.rec{background:#c92a2a;transform:scale(1.08)}#fightMic:disabled{background:#868e96}
+#doorBtn,#shopBtn{position:fixed;right:24px;bottom:calc(52px + env(safe-area-inset-bottom,0px));display:none;color:#fff;border:0;border-radius:999px;padding:16px 22px;font-size:17px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3);max-width:70vw}
+#doorBtn{background:#8d5a2b}#shopBtn{background:#e8590c}
+#shopp .item{border:2px solid rgba(128,128,128,.35);border-radius:14px;padding:8px;text-align:center;background:transparent;color:var(--ink)}
+#shopp .item .pic{font-size:30px}#shopp .item .n{font-weight:700;font-size:14px}#shopp .item .d{font-size:11px;opacity:.8}
+#shopMic{display:none;margin:10px auto 0;width:96px;height:96px;border-radius:50%;border:0;background:#e8590c;color:#fff;font-size:14px;font-weight:700;touch-action:none;-webkit-touch-callout:none}
+#shopMic.rec{background:#c92a2a;transform:scale(1.08)}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
 </style>
 </head>
@@ -99,6 +105,16 @@ button{font:inherit;cursor:pointer}
 <button id="talkBtn">🎤<br>Hold to talk</button>
 <div id="liveText"></div>
 <button id="atkBtn">📢 Attack</button>
+<button id="doorBtn"></button>
+<button id="shopBtn">🛒 Talk</button>
+<div id="shopp" class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b id="shopWho"></b><span><span id="shopCoins" style="font-weight:700;margin-right:10px"></span><button id="shopClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button></span></div>
+  <div id="shopSay" style="font-size:18px;font-weight:600;margin-top:8px"></div>
+  <div id="shopHint" style="font-size:14px;margin-top:6px"></div>
+  <button id="shopMic">🎤<br>Hold &amp; ask</button>
+  <div id="shopFb" style="text-align:center;margin-top:6px;min-height:20px;font-weight:600"></div>
+  <div id="shopList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:8px"></div>
+</div>
 <div id="fightp" class="panel">
   <div style="display:flex;justify-content:space-between;align-items:center"><b id="fightName">👻 Echo Ghost</b><button id="fightRun" style="border:0;background:transparent;color:var(--ink);font-weight:700">🏃 Run</button></div>
   <div class="hp"><div id="fightHp" style="width:100%"></div></div>
@@ -160,7 +176,8 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 sun.castShadow = true;
 sun.shadow.mapSize.set(1024, 1024);
 Object.assign(sun.shadow.camera, { left: -22, right: 22, top: 22, bottom: -22, near: 1, far: 70 });
-sun.shadow.bias = -0.0008;
+sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.05;   // tránh vệt tối trên tường lớn
+const roomLight = new THREE.AmbientLight(0xfff4e6, 0); scene.add(roomLight);   // đèn trong nhà (bật khi vào nhà)
 scene.add(sun, sun.target);
 function shade(obj) {   // bật đổ bóng cho mọi khối trong obj (trừ mặt phẳng nằm đất)
   obj.traverse(m => { if (m.isMesh) { m.castShadow = !m.userData.flat; m.receiveShadow = true; } });
@@ -187,7 +204,8 @@ function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
 solid(-8, 0.5, 0.15, 6.5); solid(8, 0.5, 0.15, 6.5); solid(-4.75, 7, 3.25, 0.15); solid(4.75, 7, 3.25, 0.15);
 function blocked(x, z) {
   if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
-  if (x < -34 || x > 34 || z < -5.4 || z > 48) return true;   // ranh giới thị trấn
+  if (room) return Math.abs(x - room.cx) > room.w / 2 - 0.6 || Math.abs(z - room.cz) > room.d / 2 - 0.6 || room.solids.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);   // đang ở trong nhà
+  if (x < -64 || x > 64 || z < -46 || z > 62) return true;   // ranh giới thành phố
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
 box(10.2, 0.08, 1.2, 0xf1f3f5, 0, 1.04, -3.2);
@@ -244,6 +262,15 @@ flat(14, 14, 0xdedad2, 0, 24, 0.01);       // quảng trường
 flat(14, 3, 0xbfb6a8, 14, 24, 0.01);       // đường: → nhà ga
 flat(14, 3, 0xbfb6a8, -14, 24, 0.01);      // đường: → cổng mê cung
 flat(3, 5, 0xbfb6a8, 0, 33.5, 0.01);       // đường: → công viên
+flat(130, 130, 0x8fd17a, 0, 8, -0.025);    // cỏ thành phố
+flat(124, 4, 0xbfb6a8, 0, 12, 0.012);      // Market Street (phố mua sắm)
+flat(124, 4, 0xbfb6a8, 0, -14, 0.012);     // North Avenue (khu hành chính)
+flat(4, 26, 0xbfb6a8, -14, -1, 0.012);     // đường nối West
+flat(4, 26, 0xbfb6a8, 14, -1, 0.012);      // đường nối East
+flat(34, 4, 0xbfb6a8, 45, 24, 0.012);      // đường: nhà ga → bệnh viện
+flat(4, 8, 0xbfb6a8, 44, 28, 0.012);       // lối vào bệnh viện
+solid(0, -6, 8, 0.15);                     // tường sau quán (giờ phía sau có thành phố)
+[[-30, -6], [30, -6], [-50, 16], [50, 16], [-30, 18], [-50, -8], [50, -8], [22, -22], [-22, -22], [56, 40], [32, 46]].forEach(q => tree(q[0], q[1]));
 function sign(text, x, z, w) {   // biển tên có chữ, quay về phía camera lúc đầu
   const c = document.createElement("canvas"); c.width = 512; c.height = 128;
   const g = c.getContext("2d");
@@ -968,7 +995,8 @@ const PLACES = [   // các địa điểm trong thị trấn (NPC lấy tự đ�
 ];
 function targets() {
   const npcs = LESSONS.map(L => { const n = L.name.split(/\s|–/)[0]; return { name: n, say: n, keys: [n.toLowerCase()], x: L.x, z: L.z, npc: true }; });
-  return npcs.concat(PLACES);
+  const city = CITY.filter(P => P.doorPos).map(P => ({ name: P.name, say: "the " + P.type.replace("townhall", "town hall").replace("clothes", "clothes shop"), keys: P.name.toLowerCase().split(" ").filter(w => w.length > 3).concat([P.type, P.type === "townhall" ? "town hall" : P.type]), x: P.doorPos.x, z: P.doorPos.z }));
+  return npcs.concat(PLACES, city);   // địa điểm thành phố: dẫn tới trước cửa
 }
 const inCafe = (x, z) => Math.abs(x) < 8 && z < 7;
 let goal = null;   // nơi người chơi đang được dẫn tới
@@ -1245,6 +1273,183 @@ $("fightMic").addEventListener("pointerdown", fightStart);
 ["pointerup", "pointercancel", "pointerleave"].forEach(ev => $("fightMic").addEventListener(ev, () => { if (fightRec) try { fightRec.stop(); } catch (e) {} }));
 $("fightMic").addEventListener("contextmenu", e => e.preventDefault());
 
+/* ===== 8. THÀNH PHỐ: nhà có mái, đi vào được, mua hàng bằng giọng nói =====
+   Dữ liệu (tên, vị trí, màu, người bán, món bán) nằm trong places.js → CITY.
+   Nội thất mỗi nhà là một "phòng" riêng đặt xa bản đồ; bước qua cửa = dịch chuyển vào phòng.
+   Chỉ vẽ những nhà ở gần người chơi cho nhẹ máy. */
+let room = null, nearDoor = null, nearKeeper = null, shopRec = null;
+const ROT = { south: 0, north: Math.PI, east: Math.PI / 2, west: -Math.PI / 2 };
+function textPlate(text, w, h, bg, fg) {   // bảng chữ (biển hiệu)
+  const c = document.createElement("canvas"); c.width = 512; c.height = Math.round(512 * h / w);
+  const x = c.getContext("2d"); x.fillStyle = bg; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = fg; x.textAlign = "center"; x.textBaseline = "middle";
+  let fs = c.height * 0.6; do { x.font = "bold " + fs + "px system-ui, sans-serif"; fs -= 4; } while (x.measureText(text).width > c.width * 0.9);
+  x.fillText(text, c.width / 2, c.height / 2 + 2);
+  return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c) }));
+}
+function emojiSprite(e, size) {   // món hàng trưng bày (emoji)
+  const c = document.createElement("canvas"); c.width = c.height = 96;
+  const x = c.getContext("2d"); x.font = "72px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(e, 48, 54);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c) })); s.scale.set(size, size, 1); return s;
+}
+function addBox(g, w, h, d, color, x, y, z) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color })); m.position.set(x, y, z); g.add(m); return m;
+}
+function buildHouse(P) {   // ngoại thất: tường, mái dốc, cửa, cửa sổ, mái hiên, biển tên
+  const g = new THREE.Group(), H = P.type === "townhall" || P.type === "hospital" ? 4.2 : 3.4, w = P.w, d = P.d;
+  addBox(g, w, H, d, P.color, 0, H / 2, 0);
+  const tri = new THREE.Shape(); tri.moveTo(-w / 2 - 0.5, 0); tri.lineTo(w / 2 + 0.5, 0); tri.lineTo(0, Math.min(3, w * 0.28)); tri.lineTo(-w / 2 - 0.5, 0);
+  const roofGeo = new THREE.ExtrudeGeometry(tri, { depth: d + 0.8, bevelEnabled: false }); roofGeo.translate(0, 0, -(d + 0.8) / 2);
+  const roof = new THREE.Mesh(roofGeo, new THREE.MeshLambertMaterial({ color: P.roof })); roof.position.y = H; g.add(roof);
+  addBox(g, 1.7, 2.5, 0.15, 0x8d5a2b, 0, 1.25, d / 2 + 0.06);   // cửa
+  addBox(g, 0.12, 0.12, 0.08, 0xffd43b, 0.55, 1.25, d / 2 + 0.16);   // tay nắm
+  [-1, 1].forEach(sx => {   // cửa sổ có khung
+    addBox(g, 1.7, 1.3, 0.1, 0xffffff, sx * w * 0.3, 1.9, d / 2 + 0.04);
+    addBox(g, 1.5, 1.1, 0.1, 0xa5d8ff, sx * w * 0.3, 1.9, d / 2 + 0.07);
+    addBox(g, 1.9, 0.12, 0.35, P.awning, sx * w * 0.3, 1.2, d / 2 + 0.15);   // bậu cửa sổ
+  });
+  const aw = addBox(g, 3.2, 0.14, 1.3, P.awning, 0, 2.85, d / 2 + 0.65); aw.rotation.x = 0.18;   // mái hiên
+  const plate = textPlate(P.name, Math.min(w * 0.8, 7), 0.9, "#ffffff", "#343a40"); plate.position.set(0, H - 0.55, d / 2 + 0.03); g.add(plate);
+  if (P.type === "pharmacy" || P.type === "hospital") { const cr = textPlate("✚", 1, 1, "#ffffff", "#2f9e44"); cr.position.set(w / 2 - 0.9, H - 0.6, d / 2 + 0.03); g.add(cr); }
+  addBox(g, 2.4, 0.12, 1.2, 0xadb5bd, 0, 0.06, d / 2 + 0.6);   // bậc thềm
+  g.position.set(P.x, 0, P.z); g.rotation.y = ROT[P.door];
+  shade(g); scene.add(g);
+  const swap = P.door === "east" || P.door === "west";
+  solid(P.x, P.z, (swap ? d : w) / 2, (swap ? w : d) / 2);
+  const out = new THREE.Vector3(0, 0, d / 2 + 1.6).applyAxisAngle(new THREE.Vector3(0, 1, 0), ROT[P.door]);
+  P.doorPos = { x: P.x + out.x, z: P.z + out.z };   // chỗ đứng trước cửa
+  P.ext = g;
+}
+function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng (khối đơn giản, sẽ thay bằng mô hình đẹp sau)
+  const back = cz - D / 2;
+  const counter = (color) => { addBox(g, 6, 1.1, 1, color, cx, 0.55, back + 3.4); addBox(g, 6.2, 0.1, 1.2, 0xf1f3f5, cx, 1.12, back + 3.4); P.room.solids.push({ x: cx, z: back + 3.4, hw: 3, hd: 0.5 }); };
+  const shelf = (x, color, items) => {
+    addBox(g, 3, 2.4, 0.6, color, x, 1.2, back + 0.4);
+    [0.8, 1.6].forEach(y => addBox(g, 3, 0.08, 0.7, 0xffffff, x, y, back + 0.5));
+    (items || []).forEach((e, i) => { const sp = emojiSprite(e, 0.55); sp.position.set(x - 1 + (i % 3), 0.8 + 0.8 * Math.floor(i / 3) + 0.3, back + 0.75); g.add(sp); });
+    P.room.solids.push({ x, z: back + 0.4, hw: 1.5, hd: 0.3 });
+  };
+  const sells = P.sells.map(id => ITEMS[id].icon);
+  if (P.type === "bakery") { counter(0xa0522d); shelf(cx - 4.5, 0x8d5524, sells.concat(sells)); shelf(cx + 4.5, 0x8d5524, ["🥐", "🍰", "🧁", "🥖", "🍪", "🥐"]); }
+  if (P.type === "pharmacy") { counter(0xffffff); shelf(cx - 4.5, 0xe6fcf5, sells.concat(["💊", "🩹", "🧴", "💊"])); shelf(cx + 4.5, 0xe6fcf5, ["🧼", "🪥", "💊", "🩺", "🧴", "💊"]); }
+  if (P.type === "clothes") {
+    [-4, 4].forEach(dx => { addBox(g, 3, 0.08, 0.08, 0x868e96, cx + dx, 1.9, cz); [0xe64980, 0x4dabf7, 0xfab005, 0x51cf66].forEach((c, i) => addBox(g, 0.5, 0.9, 0.12, c, cx + dx - 1.1 + i * 0.73, 1.4, cz)); P.room.solids.push({ x: cx + dx, z: cz, hw: 1.5, hd: 0.2 }); });
+    counter(0xf8f0fc); addBox(g, 1.2, 2.2, 0.1, 0xd0ebff, cx + 5.5, 1.3, back + 0.2);   // gương
+  }
+  if (P.type === "townhall") {
+    counter(0x6f4e37);
+    const board = textPlate("QUEST BOARD – coming soon", 4, 1.6, "#c9a27e", "#3b2a1a"); board.position.set(cx - 4.5, 1.8, back + 0.08); g.add(board);
+    [-6, 6].forEach(dx => { addBox(g, 0.08, 3, 0.08, 0xadb5bd, cx + dx, 1.5, back + 1); addBox(g, 1, 0.7, 0.04, dx < 0 ? 0xda292e : 0x1c7ed6, cx + dx + 0.5, 2.6, back + 1); });
+  }
+  if (P.type === "hospital") {
+    counter(0xffffff);
+    [-5, 5].forEach(dx => { addBox(g, 1.6, 0.6, 2.8, 0xffffff, cx + dx, 0.4, cz + 1); addBox(g, 1.6, 0.25, 0.7, 0x74c0fc, cx + dx, 0.8, cz - 0.2); P.room.solids.push({ x: cx + dx, z: cz + 1, hw: 0.8, hd: 1.4 }); });
+    addBox(g, 3, 1, 1.2, 0xced4da, cx + 4.5, 0.5, back + 0.8);   // bàn thí nghiệm của Pasteur
+    ["🧪", "🔬", "🧫"].forEach((e, i) => { const sp = emojiSprite(e, 0.6); sp.position.set(cx + 3.5 + i, 1.4, back + 0.8); g.add(sp); });
+  }
+}
+function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay vào trong (camera ở ngoài vẫn nhìn xuyên vào được)
+  const W = 16, D = 12, cx = 300 + i * 40, cz = 300, H = 3.4, g = new THREE.Group();
+  P.room = { cx, cz, w: W, d: D, solids: [], P };
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshLambertMaterial({ color: P.floor })); fl.rotation.x = -Math.PI / 2; fl.position.set(cx, 0, cz); fl.userData.flat = true; g.add(fl);
+  const wallM = new THREE.MeshLambertMaterial({ color: P.wall });
+  [[0, -D / 2, 0, W], [0, D / 2, Math.PI, W], [-W / 2, 0, Math.PI / 2, D], [W / 2, 0, -Math.PI / 2, D]].forEach(([x, z, ry, len]) => {
+    const wm = new THREE.Mesh(new THREE.PlaneGeometry(len, H), wallM); wm.position.set(cx + x, H / 2, cz + z); wm.rotation.y = ry; wm.userData.flat = true; g.add(wm);
+  });
+  addBox(g, 16, 0.3, 0.05, P.awning, cx, 0.15, cz - D / 2 + 0.03);   // chân tường
+  const door = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 2.6), new THREE.MeshLambertMaterial({ color: 0x8d5a2b })); door.position.set(cx, 1.3, cz + D / 2 - 0.02); door.rotation.y = Math.PI; g.add(door);
+  addBox(g, 2.4, 0.04, 1.4, 0xc92a2a, cx, 0.02, cz + D / 2 - 0.8);   // thảm cửa
+  const plate = textPlate(P.name, 6, 0.9, "#ffffff", "#343a40"); plate.position.set(cx, 3, cz - D / 2 + 0.03); g.add(plate);
+  furnish(P, g, cx, cz, W, D);
+  const k = makeChar(P.keeper.color); k.position.set(cx, 0, cz - D / 2 + 2.4); k.add(nameTag(P.keeper.name.split(" – ")[0])); P.keeperMesh = k;
+  P.room.solids.push({ x: cx, z: cz - D / 2 + 2.4, hw: 0.4, hd: 0.4 });
+  P.room.exit = { x: cx, z: cz + D / 2 - 1 };
+  shade(g); scene.add(g);
+  g.add(k); k.position.set(cx, 0, cz - D / 2 + 2.4);
+  P.int = g; g.visible = false;
+}
+CITY.forEach((P, i) => { buildHouse(P); buildInterior(P, i); });
+const indoorBg = new THREE.Color(0x3b2f2a);
+function enterRoom(P) {
+  room = P.room; P.int.visible = true;
+  player.position.set(room.exit.x, 0, room.exit.z - 0.6); camAngle = 0; camPitch = 0.8;
+  sky.visible = false; clouds.forEach(c => c.visible = false); scene.background = indoorBg; scene.fog = null; roomLight.intensity = 0.22;
+  ["askBtn", "guide", "askp"].forEach(id => $(id).style.display = "none"); goal = null; arrow.visible = false;
+  speak("Welcome to " + P.name + "!");
+}
+function exitRoom() {
+  const P = room.P; P.int.visible = false; room = null;
+  player.position.set(P.doorPos.x, 0, P.doorPos.z); camAngle = ROT[P.door]; camPitch = 0.75;
+  roomLight.intensity = 0; sky.visible = true; clouds.forEach(c => c.visible = true); scene.background = new THREE.Color(0xcfe8ff); scene.fog = new THREE.Fog(0xcfe8ff, 30, 70);
+  $("askBtn").style.display = "block";
+}
+$("doorBtn").onclick = () => { if (room) exitRoom(); else if (nearDoor) enterRoom(nearDoor); };
+let lodT = 0;
+function updateCity(dt) {
+  if ((lodT += dt) > 0.5) {   // chỉ vẽ nhà trong bán kính 90 m
+    lodT = 0;
+    CITY.forEach(P => P.ext.visible = !room && Math.hypot(player.position.x - P.x, player.position.z - P.z) < 90);
+  }
+  nearDoor = null; nearKeeper = null;
+  if (maze || talking) { $("doorBtn").style.display = "none"; $("shopBtn").style.display = "none"; return; }
+  if (room) {
+    if (Math.hypot(player.position.x - room.exit.x, player.position.z - room.exit.z) < 1.8) nearDoor = room.P;
+    if (Math.hypot(player.position.x - room.P.keeperMesh.position.x, player.position.z - room.P.keeperMesh.position.z) < 3.6) nearKeeper = room.P;
+  } else CITY.forEach(P => { if (Math.hypot(player.position.x - P.doorPos.x, player.position.z - P.doorPos.z) < 2) nearDoor = P; });
+  $("doorBtn").textContent = room ? "🚪 Exit" : nearDoor ? "🚪 Enter " + nearDoor.name : "";
+  $("doorBtn").style.display = nearDoor ? "block" : "none";
+  $("shopBtn").style.display = nearKeeper ? "block" : "none";
+  if (nearDoor || nearKeeper) { $("talk").style.display = "none"; $("atkBtn").style.display = "none"; }
+}
+/* Cửa hàng: nói câu tiếng Anh để mua (giảm 10% + ⭐), hoặc bấm mua (giá thường) */
+function priceOf(id, voice) { return voice ? Math.max(1, Math.floor(ITEMS[id].price * 0.9)) : ITEMS[id].price; }
+function buy(id, voice, polite) {
+  const it = ITEMS[id], cost = priceOf(id, voice);
+  if (save.coins < cost) { $("shopFb").textContent = "😕 Not enough coins. / Không đủ xu."; speak("Sorry, you don't have enough coins."); return; }
+  save.coins -= cost; save.items[id] = (save.items[id] || 0) + 1;
+  if (voice) score += polite ? 4 : 2;
+  saveNow(); renderHud();
+  $("shopFb").innerHTML = "✅ " + it.icon + " " + it.name + " – " + cost + " 🪙" + (voice ? " (−10%" + (polite ? ", polite +4 ⭐)" : ", +2 ⭐)") : "");
+  $("shopFb").style.color = "var(--ok)";
+  speak(voice ? "Here you are! " + (polite ? "Thank you for saying please!" : "") : "Here you are!");
+  drawShop(false);
+}
+function drawShop(first) {
+  const P = room.P;
+  $("shopWho").textContent = P.keeper.name;
+  if (first) { $("shopSay").textContent = P.keeper.greet; speak(P.keeper.greet); $("shopFb").textContent = ""; }
+  $("shopHint").innerHTML = P.sells.length ? "💡 Try: “" + P.keeper.hint + "” <span style='opacity:.7'>(nói = giảm 10%)</span>" : "";
+  $("shopMic").style.display = P.sells.length && SR ? "block" : "none";
+  $("shopList").innerHTML = "";
+  P.sells.forEach(id => {
+    const it = ITEMS[id], b = document.createElement("button"); b.className = "item";
+    b.innerHTML = '<div class="pic">' + it.icon + '</div><div class="n">' + it.name + '</div><div class="d">' + it.desc + '</div><div style="margin-top:4px;font-weight:700">' + it.price + " 🪙 · Buy</div>";
+    b.onclick = () => buy(id, false);
+    $("shopList").appendChild(b);
+  });
+  $("shopCoins").textContent = "🪙 " + save.coins;
+}
+$("shopBtn").onclick = () => { talking = true; $("shopBtn").style.display = "none"; $("shopp").style.display = "block"; drawShop(true); };
+$("shopClose").onclick = () => { $("shopp").style.display = "none"; talking = false; };
+function shopStart(e) {
+  e.preventDefault(); if (!SR || shopRec || !room) return;
+  try { speechSynthesis.cancel(); } catch (err) {}
+  const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.continuous = true;
+  let heard = "";
+  r.onresult = ev => { heard = ""; for (const res of ev.results) heard += res[0].transcript; $("shopFb").textContent = "🎙️ " + heard; $("shopFb").style.color = "var(--ink)"; };
+  r.onend = () => {
+    shopRec = null; $("shopMic").classList.remove("rec");
+    const h = " " + heard.toLowerCase() + " ";
+    const id = room.P.sells.find(k => ITEMS[k].name.toLowerCase().split(" ").some(wd => wd.length >= 3 && h.indexOf(wd) >= 0));
+    if (id) buy(id, true, h.indexOf("please") >= 0);
+    else { $("shopFb").textContent = heard ? "😕 “" + heard + "” – Sorry, what would you like?" : "Giữ nút và nói to hơn nhé!"; $("shopFb").style.color = "var(--bad)"; if (heard) speak("Sorry, what would you like?"); }
+  };
+  shopRec = r; $("shopMic").classList.add("rec");
+  try { r.start(); } catch (err) { shopRec = null; $("shopMic").classList.remove("rec"); }
+}
+$("shopMic").addEventListener("pointerdown", shopStart);
+["pointerup", "pointercancel", "pointerleave"].forEach(ev => $("shopMic").addEventListener(ev, () => { if (shopRec) try { shopRec.stop(); } catch (e) {} }));
+
 /* ===== 5. VÒNG LẶP GAME (chạy ~60 lần/giây) ===== */
 const clock = new THREE.Clock();
 function loop() {
@@ -1281,6 +1486,7 @@ function loop() {
   updateMaze();
   updateGhosts(dt, t);
   updateEconomy(dt);
+  updateCity(dt);
   sun.position.set(player.position.x + 12, 22, player.position.z + 9); sun.target.position.copy(player.position);   // vùng bóng đổ đi theo người chơi
   animateChars(dt);
   clouds.forEach(c => { c.userData.a += dt * 0.004; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = 20 + Math.sin(c.userData.a) * c.userData.r; });
@@ -1302,7 +1508,8 @@ function loop() {
   } else {
     if (keys["r"]) camPitch = Math.max(0.1, camPitch - 1.2 * dt);
     if (keys["f"]) camPitch = Math.min(1.35, camPitch + 1.2 * dt);
-    const D = 11, ch = Math.cos(camPitch) * D;
+    if (room) camPitch = Math.max(0.7, camPitch);   // trong nhà: nhìn chếch xuống cho thấy cả phòng
+    const D = room ? 9 : 11, ch = Math.cos(camPitch) * D;
     camera.position.lerp(new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(camPitch) * D, p.z + Math.cos(camAngle) * ch), 0.12);
     camera.lookAt(p.x, 0.9 + (1 - camPitch / 1.35) * 1.4, p.z);   // càng nhìn ngang càng ngẩng lên thấy trời
   }
