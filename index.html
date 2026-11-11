@@ -43,6 +43,11 @@ button{font:inherit;cursor:pointer}
 #namep .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:20px;width:100%;max-width:360px;text-align:center}
 #nameIn{width:100%;box-sizing:border-box;font:inherit;font-size:20px;padding:12px;border-radius:12px;border:2px solid rgba(128,128,128,.4);margin-top:12px;text-align:center;background:transparent;color:var(--ink);user-select:text;-webkit-user-select:text}
 #nameGo{margin-top:12px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 24px;font-weight:700;font-size:17px}
+#sayBtn{position:fixed;right:24px;bottom:calc(124px + env(safe-area-inset-bottom,0px));background:#1c7ed6;color:#fff;border:0;border-radius:999px;padding:12px 18px;font-size:16px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#chatp{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.3);z-index:5}
+#chatList{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+#chatList button{border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:999px;padding:8px 12px;font-size:15px}
+#chatMic{background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:700}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
 </style>
 </head>
@@ -56,6 +61,15 @@ button{font:inherit;cursor:pointer}
 </div></div>
 <div id="toast"></div>
 <div id="online">⚪ connecting…</div>
+<button id="sayBtn">🗨️ Say</button>
+<div id="chatp">
+  <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+    <button id="chatMic">🎤 Nói tiếng Anh</button>
+    <button id="chatClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button>
+  </div>
+  <div id="chatHeard" style="margin-top:6px;font-size:14px"></div>
+  <div id="chatList"></div>
+</div>
 <div id="namep"><div class="box">
   <div style="font-size:22px;font-weight:700">Welcome to EnglishVerse! 👋</div>
   <div style="margin-top:8px">What’s your name?</div>
@@ -416,6 +430,12 @@ function goOnline() {
     o.tx = m.x; o.tz = m.z; o.ry = m.r; o.last = performance.now();
   });
   chan.on("broadcast", { event: "bye" }, ({ payload: m }) => removeOther(m.id));
+  chan.on("broadcast", { event: "chat" }, ({ payload: m }) => {
+    const o = others[m.id]; if (!o) return;
+    const t = cleanChat(m.t); if (!t) return;
+    showBubble(o.g, t);
+    if (!talking && o.g.position.distanceTo(player.position) < 12) speak(t);   // người ở gần thì nghe được giọng đọc
+  });
   chan.subscribe(st => { online = st === "SUBSCRIBED"; if (online) lastSent = ""; countOnline(); });
 }
 function updateOnline(dt) {
@@ -435,6 +455,62 @@ function updateOnline(dt) {
     sendT = 0; beatT = 0; lastSent = key;
   }
 }
+/* ===== 4f. CHÀO HỎI NHANH: chỉ câu tiếng Anh có sẵn, hoặc câu nói tiếng Anh máy nghe được (không có ô gõ tự do) ===== */
+const QUICK = ["Hi!", "Hello! I’m {name}.", "How are you?", "I’m fine, thanks!", "Nice to meet you!", "Follow me!",
+  "Wait for me!", "Where is Mia?", "Let’s go to the park!", "Good job!", "Thank you!", "Bye!"];
+const BAD = /\b(fuck\w*|shit\w*|bitch\w*|damn|stupid|idiot|sex\w*|kill)\b/gi;   // lọc từ xấu cơ bản cho trẻ em
+function cleanChat(t) { return String(t || "").replace(/[^A-Za-z0-9 ,.!?’'-]/g, "").slice(0, 60).replace(BAD, "***").trim(); }
+function showBubble(g, text) {   // bong bóng lời nói trên đầu nhân vật, tự tắt sau 4 giây
+  if (g.bubble) g.remove(g.bubble);
+  const c = document.createElement("canvas"); c.width = 512; c.height = 128;
+  const x = c.getContext("2d");
+  x.fillStyle = "#fff"; x.strokeStyle = "#1c7ed6"; x.lineWidth = 6;
+  x.beginPath(); x.roundRect ? x.roundRect(4, 4, 504, 104, 24) : x.rect(4, 4, 504, 104); x.fill(); x.stroke();
+  x.fillStyle = "#1f2937"; x.textAlign = "center"; x.textBaseline = "middle";
+  let size = 44; do { x.font = "bold " + size + "px system-ui, sans-serif"; size -= 2; } while (x.measureText(text).width > 480 && size > 18);
+  x.fillText(text, 256, 58);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+  s.scale.set(3, 0.75, 1); s.position.y = 2.8;
+  g.add(s); g.bubble = s;
+  clearTimeout(g.bubbleT); g.bubbleT = setTimeout(() => { if (g.bubble === s) { g.remove(s); g.bubble = null; } }, 4000);
+}
+let lastChat = 0;
+function sendChat(text) {
+  const t = cleanChat(text); if (!t) return;
+  if (performance.now() - lastChat < 1500) return;   // chống spam: tối đa 1 câu / 1,5 giây
+  lastChat = performance.now();
+  showBubble(player, t);
+  if (online) chan.send({ type: "broadcast", event: "chat", payload: { id: myId, t } });
+  $("chatp").style.display = "none";
+}
+$("sayBtn").onclick = () => {
+  if (talking) return;
+  $("chatList").innerHTML = ""; $("chatHeard").textContent = "";
+  QUICK.forEach(q => {
+    const b = document.createElement("button"); b.textContent = q.replace("{name}", myName || "new");
+    b.onclick = () => sendChat(b.textContent);
+    $("chatList").appendChild(b);
+  });
+  $("chatMic").style.display = SR ? "inline-block" : "none";
+  $("chatp").style.display = "block";
+};
+$("chatClose").onclick = () => $("chatp").style.display = "none";
+$("chatMic").onclick = () => {
+  if (!SR) return;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const r = new SR(); r.lang = "en-US";
+  $("chatMic").textContent = "🎙️ Listening…"; $("chatMic").disabled = true;
+  r.onresult = e => {
+    const t = e.results[0][0].transcript;
+    if (e.results[0][0].confidence > 0 && e.results[0][0].confidence < 0.5) { $("chatHeard").textContent = "Heard: “" + t + "” – chưa rõ, thử nói lại nhé!"; return; }
+    score += 2; $("score").textContent = score;
+    sendChat(t.charAt(0).toUpperCase() + t.slice(1));
+  };
+  r.onerror = () => { $("chatHeard").textContent = "Không nghe được, thử lại hoặc chọn câu có sẵn."; };
+  r.onend = () => { $("chatMic").textContent = "🎤 Nói tiếng Anh"; $("chatMic").disabled = false; };
+  try { r.start(); } catch (err) { r.onend(); }
+};
+
 addEventListener("pagehide", () => { if (online) chan.send({ type: "broadcast", event: "bye", payload: { id: myId } }); });
 function startWithName() {
   player.add(nameTag(myName));
