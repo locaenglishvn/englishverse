@@ -48,6 +48,12 @@ button{font:inherit;cursor:pointer}
 #chatList{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 #chatList button{border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:999px;padding:8px 12px;font-size:15px}
 #chatMic{background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:700}
+#mazeBtn{position:fixed;right:24px;bottom:calc(52px + env(safe-area-inset-bottom,0px));display:none;background:#2b8a3e;color:#fff;border:0;border-radius:999px;padding:16px 24px;font-size:18px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.panel{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.3);z-index:6}
+.panel .big{display:block;width:100%;margin-top:10px;padding:14px;border-radius:14px;border:0;color:#fff;font-size:17px;font-weight:700;text-align:left}
+.team{border-radius:12px;padding:10px;margin-top:8px;border:3px solid}
+.team.red{border-color:#e03131}.team.blue{border-color:#1c7ed6}
+.me{background:rgba(250,176,5,.25);border-radius:6px;padding:0 4px}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
 </style>
 </head>
@@ -62,6 +68,9 @@ button{font:inherit;cursor:pointer}
 <div id="toast"></div>
 <div id="online">⚪ connecting…</div>
 <button id="sayBtn">🗨️ Say</button>
+<button id="mazeBtn">🏁 Maze</button>
+<div id="lobbyp" class="panel"></div>
+<div id="matchp" class="panel"></div>
 <div id="chatp">
   <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
     <button id="chatMic">🎤 Nói tiếng Anh</button>
@@ -205,7 +214,7 @@ box(1, 4, 1, 0x495057, -24, 2, 26.5);
 box(1, 1, 6, 0x495057, -24, 4.5, 24);
 solid(-24, 21.5, 0.5, 0.5); solid(-24, 26.5, 0.5, 0.5);
 for (let z = 17; z <= 31; z += 2) if (z < 21 || z > 27) { box(0.8, 1.5, 2, 0x2b8a3e, -24, 0.75, z); solid(-24, z, 0.4, 1); }
-sign("Maze (soon)", -20, 28, 4);
+sign("Maze", -20, 28, 3);
 // Công viên (phía nam)
 [[-6, 38], [-3, 42], [3, 42], [6, 38], [-8, 44], [8, 44], [0, 46], [-10, 39], [10, 39]].forEach(q => tree(q[0], q[1]));
 sign("Park", 3.5, 35, 2.6);
@@ -402,7 +411,7 @@ player.children[0].material.color.setHex(myColor);
 let myName = "";
 try { myName = localStorage.getItem("ev_name") || ""; } catch (e) {}
 const others = {};   // người chơi khác: id → { g, tx, tz, ry, last }
-let chan = null, online = false, sendT = 0, beatT = 0, lastSent = "";
+let sb = null, chan = null, online = false, sendT = 0, beatT = 0, lastSent = "";
 function nameTag(text) {   // bảng tên nổi trên đầu nhân vật
   const c = document.createElement("canvas"); c.width = 256; c.height = 64;
   const g = c.getContext("2d");
@@ -417,7 +426,7 @@ function countOnline() { $("online").textContent = online ? "🟢 " + (Object.ke
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
 function goOnline() {
   if (!window.supabase) { countOnline(); return; }
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   chan = sb.channel("town", { config: { broadcast: { self: false } } });
   chan.on("broadcast", { event: "pos" }, ({ payload: m }) => {
     let o = others[m.id];
@@ -455,6 +464,92 @@ function updateOnline(dt) {
     sendT = 0; beatT = 0; lastSent = key;
   }
 }
+/* ===== 6a. TRẠM MÊ CUNG: phòng chờ + ghép đội (Supabase Presence) =====
+   Ai đứng ở cổng mê cung bấm 🏁 Maze → chọn chế độ → vào phòng chờ.
+   Người vào phòng sớm nhất làm "chủ phòng": khi đủ người, chủ phòng chia đội và báo cho cả nhóm. */
+const GATE = { x: -21, z: 24 };
+const MODES = {
+  duo:  { size: 2, title: "Practice – 2 players", vi: "Luyện tập: 2 người cùng đội" },
+  team: { size: 4, title: "Battle – 2 vs 2",      vi: "Thi đấu: 2 đội, mỗi đội 2 người" }
+};
+let lobby = null, lobbyMode = null, lobbyJoinT = 0, currentMatch = null;
+function nearGate() { return Math.hypot(player.position.x - GATE.x, player.position.z - GATE.z) < 4; }
+function updateMazeGate() {
+  const show = online && !talking && !lobby && !currentMatch && nearGate();
+  $("mazeBtn").style.display = show ? "block" : "none";
+  if (show) $("talk").style.display = "none";
+  if (lobby && !nearGate()) leaveLobby();   // đi khỏi cổng = rời phòng chờ
+}
+$("mazeBtn").onclick = () => {
+  $("lobbyp").innerHTML = '<b>🏁 The Maze</b><div style="font-size:14px;margin-top:4px">Một người nhìn bản đồ từ trên cao, một người đi trong mê cung. Người xem bản đồ phải chỉ đường bằng tiếng Anh!</div>' +
+    Object.keys(MODES).map(k => '<button class="big" data-m="' + k + '" style="background:' + (k === "team" ? "#e8590c" : "#2b8a3e") + '">' + MODES[k].title + '<div style="font-size:13px;font-weight:400">' + MODES[k].vi + "</div></button>").join("") +
+    '<button class="big" id="lobbyX" style="background:#868e96;text-align:center">✕ Close</button>';
+  $("lobbyp").querySelectorAll("[data-m]").forEach(b => b.onclick = () => joinLobby(b.dataset.m));
+  $("lobbyX").onclick = () => $("lobbyp").style.display = "none";
+  $("lobbyp").style.display = "block";
+};
+function joinLobby(mode) {
+  lobbyMode = mode; lobbyJoinT = Date.now();
+  lobby = sb.channel("maze-" + mode, { config: { presence: { key: myId }, broadcast: { self: true } } });
+  lobby.on("presence", { event: "sync" }, drawLobby);
+  lobby.on("broadcast", { event: "start" }, ({ payload: m }) => {
+    if (m.players.some(p => p.id === myId)) startMatch(m);
+  });
+  lobby.subscribe(st => { if (st === "SUBSCRIBED") lobby.track({ id: myId, n: myName, c: myColor, t: lobbyJoinT, lv: owned.length }); });
+  $("lobbyp").innerHTML = "<b>Connecting…</b>";
+}
+function leaveLobby() {
+  if (!lobby) return;
+  const ch = lobby; lobby = null;
+  try { ch.untrack(); sb.removeChannel(ch); } catch (e) {}
+  $("lobbyp").style.display = "none";
+}
+function waiting() {   // danh sách người đang chờ, xếp theo thứ tự vào phòng (giống nhau trên mọi máy)
+  const st = lobby ? lobby.presenceState() : {};
+  return Object.values(st).map(a => a[0]).sort((a, b) => a.t - b.t || (a.id < b.id ? -1 : 1));
+}
+function drawLobby() {
+  if (!lobby) return;
+  const M = MODES[lobbyMode], list = waiting();
+  $("lobbyp").innerHTML = "<b>⏳ Waiting for players… " + Math.min(list.length, M.size) + "/" + M.size + "</b>" +
+    '<div style="margin-top:8px">' + list.slice(0, M.size).map(p => '<div><span class="' + (p.id === myId ? "me" : "") + '">👤 ' + p.n + "</span></div>").join("") + "</div>" +
+    '<div style="font-size:13px;opacity:.8;margin-top:8px">Rủ bạn bè cùng vào! Bấm 🗨️ Say → “Let’s play the maze!”</div>' +
+    '<button class="big" id="lobbyLeave" style="background:#868e96;text-align:center">Leave</button>';
+  $("lobbyLeave").onclick = leaveLobby;
+  if (list.length >= M.size && list[0].id === myId && !lobby.sent) {
+    lobby.sent = true;   // chỉ chia đội một lần   // mình là chủ phòng → chia đội
+    const g = list.slice(0, M.size);
+    if (M.size === 4) {   // xếp theo cấp độ (số thẻ) để 2 đội cân sức: mạnh nhất + yếu nhất vs 2 người giữa
+      g.sort((a, b) => b.lv - a.lv);
+      [g[0].team, g[3].team, g[1].team, g[2].team] = ["red", "red", "blue", "blue"];
+    } else g.forEach(p => p.team = "red");
+    ["red", "blue"].forEach(t => g.filter(p => p.team === t).forEach((p, i) => p.role = i === 0 ? "guide" : "walker"));
+    lobby.send({ type: "broadcast", event: "start", payload: { match: myId + "-" + Date.now(), mode: lobbyMode, players: g } });
+  }
+}
+function startMatch(m) {
+  leaveLobby();
+  currentMatch = m;
+  const me = m.players.find(p => p.id === myId);
+  const role = me.role === "guide"
+    ? "🗺️ <b>You are the GUIDE.</b> You see the whole maze. Tell your teammate the way in English!<div style='font-size:13px'>Bạn thấy cả bản đồ. Hãy chỉ đường cho đồng đội bằng tiếng Anh.</div>"
+    : "🚶 <b>You are the WALKER.</b> You only see what is in front of you. Listen to your guide!<div style='font-size:13px'>Bạn chỉ thấy phía trước mặt. Hãy nghe đồng đội chỉ đường.</div>";
+  const teams = ["red", "blue"].filter(t => m.players.some(p => p.team === t)).map(t =>
+    '<div class="team ' + t + '"><b>Team ' + (t === "red" ? "Red 🔴" : "Blue 🔵") + "</b>" +
+    m.players.filter(p => p.team === t).map(p => '<div><span class="' + (p.id === myId ? "me" : "") + '">' + (p.role === "guide" ? "🗺️ " : "🚶 ") + p.n + " – " + p.role + "</span></div>").join("") + "</div>").join("");
+  $("matchp").innerHTML = '<b style="font-size:20px">🎉 Match found!</b>' + teams + '<div style="margin-top:10px">' + role + '</div><div id="countdown" style="font-size:22px;font-weight:700;text-align:center;margin-top:10px"></div>';
+  $("matchp").style.display = "block";
+  speak(me.role === "guide" ? "You are the guide." : "You are the walker.");
+  let n = 5;
+  const tick = () => {
+    if (n > 0) { $("countdown").textContent = "Starting in " + n + "…"; n--; setTimeout(tick, 1000); return; }
+    // Bước 6b sẽ mở màn chơi mê cung ở đây. Hiện tại: báo và quay về thị trấn.
+    $("countdown").innerHTML = "🚧 The maze opens in the next update!<br><button class='big' id='matchBack' style='background:#2b8a3e;text-align:center'>Back to town</button>";
+    $("matchBack").onclick = () => { $("matchp").style.display = "none"; currentMatch = null; };
+  };
+  tick();
+}
+
 /* ===== 4f. CHÀO HỎI NHANH: chỉ câu tiếng Anh có sẵn, hoặc câu nói tiếng Anh máy nghe được (không có ô gõ tự do) ===== */
 const QUICK = ["Hi!", "Hello! I’m {name}.", "How are you?", "I’m fine, thanks!", "Nice to meet you!", "Follow me!",
   "Wait for me!", "Where is Mia?", "Let’s go to the park!", "Good job!", "Thank you!", "Bye!"];
@@ -646,6 +741,7 @@ function loop() {
   LESSONS.forEach(L => L.mark.position.set(L.x, 2.2 + Math.sin(t * 3) * 0.12, L.z));
   updateGuide(dt, t);
   updateOnline(dt);
+  updateMazeGate();
   if (!talking) {
     near = null;
     let best = 3.3;
