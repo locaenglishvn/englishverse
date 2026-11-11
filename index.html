@@ -33,8 +33,23 @@ button{font:inherit;cursor:pointer}
 #bagBtn,#statusChip{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #bagBtn{left:100px}#statusChip{left:12px;top:calc(94px + env(safe-area-inset-top,0px));font-size:14px}
 #energyBar{display:inline-block;width:60px;height:8px;border-radius:4px;background:rgba(128,128,128,.3);vertical-align:middle;overflow:hidden}#energyBar div{height:100%;background:#fab005}
-#bag .item{border:2px solid rgba(128,128,128,.35);border-radius:14px;padding:10px;text-align:center;background:transparent;color:var(--ink)}
-#bag .item .pic{font-size:36px}#bag .item .n{font-weight:700}#bag .item .d{font-size:12px;opacity:.8}
+.over{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
+.over .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
+.x{border:0;background:transparent;color:var(--ink);font-size:20px}
+.slots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.slot{position:relative;aspect-ratio:1/1;border:2px solid rgba(128,128,128,.35);border-radius:10px;background:rgba(128,128,128,.13);font-size:28px;display:flex;align-items:center;justify-content:center;padding:0;color:var(--ink);min-width:0}
+.slot .c{position:absolute;right:4px;bottom:1px;font-size:12px;font-weight:700}
+.slot .lb{position:absolute;left:4px;top:1px;font-size:10px;opacity:.75}
+.slot.sel{outline:3px solid var(--accent);outline-offset:1px}
+.slot.empty{opacity:.55}
+.detail{margin-top:10px;border-radius:12px;padding:10px;background:rgba(128,128,128,.12);display:none}
+.detail .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.detail .acts button{border:0;border-radius:10px;padding:10px 16px;font-weight:700;color:#fff;background:var(--accent)}
+.rar{font-size:12px;font-weight:700}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:8px}
+.gal div{border:2px solid rgba(128,128,128,.3);border-radius:12px;padding:6px;text-align:center;font-size:12px}
+.gal .pic{font-size:30px}
+.bar{height:8px;border-radius:4px;background:rgba(128,128,128,.3);overflow:hidden;margin-top:4px}.bar div{height:100%;background:#fab005}
 #albumBtn{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #album{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 #album .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
@@ -44,8 +59,9 @@ button{font:inherit;cursor:pointer}
 .card.no{opacity:.55}.card.no .pic{filter:grayscale(1)}
 #toast{position:fixed;z-index:11;left:50%;top:30%;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;background:var(--panel);color:var(--ink);border:3px solid #fab005;border-radius:20px;padding:16px 24px;text-align:center;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.35)}
 #toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#mini{position:fixed;top:calc(90px + env(safe-area-inset-top,0px));right:12px;width:112px;height:112px;border-radius:50%;border:3px solid var(--panel);box-shadow:0 2px 8px rgba(0,0,0,.3);background:#8fd17a}
 #online{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
-#namep{position:fixed;inset:0;z-index:12;display:none;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px}
+#namep{position:fixed;inset:0;z-index:12;display:none;background:linear-gradient(transparent 45%,rgba(0,0,0,.4));align-items:flex-end;justify-content:center;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
 #namep .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:20px;width:100%;max-width:360px;text-align:center}
 #nameIn{width:100%;box-sizing:border-box;font:inherit;font-size:20px;padding:12px;border-radius:12px;border:2px solid rgba(128,128,128,.4);margin-top:12px;text-align:center;background:transparent;color:var(--ink);user-select:text;-webkit-user-select:text}
 #nameGo{margin-top:12px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 24px;font-weight:700;font-size:17px}
@@ -73,8 +89,9 @@ button{font:inherit;cursor:pointer}
 #fightTime{height:6px;border-radius:3px;background:#7048e8;margin-top:10px;transition:width .1s linear}
 #fightMic{display:block;margin:12px auto 0;width:110px;height:110px;border-radius:50%;border:0;background:#7048e8;color:#fff;font-size:15px;font-weight:700;touch-action:none;-webkit-touch-callout:none}
 #fightMic.rec{background:#c92a2a;transform:scale(1.08)}#fightMic:disabled{background:#868e96}
-#doorBtn,#shopBtn{position:fixed;right:24px;bottom:calc(52px + env(safe-area-inset-bottom,0px));display:none;color:#fff;border:0;border-radius:999px;padding:16px 22px;font-size:17px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3);max-width:70vw}
-#doorBtn{background:#8d5a2b}#shopBtn{background:#e8590c}
+#doorBtn,#shopBtn,#actBtn{position:fixed;right:24px;bottom:calc(52px + env(safe-area-inset-bottom,0px));display:none;color:#fff;border:0;border-radius:999px;padding:16px 22px;font-size:17px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3);max-width:70vw}
+#doorBtn{background:#8d5a2b}#shopBtn{background:#e8590c}#actBtn{background:#7048e8}
+#shopList{max-height:38vh;overflow-y:auto}#askList{max-height:38vh;overflow-y:auto}
 #shopp .item{border:2px solid rgba(128,128,128,.35);border-radius:14px;padding:8px;text-align:center;background:transparent;color:var(--ink)}
 #shopp .item .pic{font-size:30px}#shopp .item .n{font-weight:700;font-size:14px}#shopp .item .d{font-size:11px;opacity:.8}
 #shopMic{display:none;margin:10px auto 0;width:96px;height:96px;border-radius:50%;border:0;background:#e8590c;color:#fff;font-size:14px;font-weight:700;touch-action:none;-webkit-touch-callout:none}
@@ -86,10 +103,27 @@ button{font:inherit;cursor:pointer}
 <div class="chip"><span id="lvl">Lv.1</span> · ⭐ <span id="score">0</span> · 🪙 <span id="coins">0</span></div>
 <button id="bagBtn">🎒</button>
 <div id="statusChip">⚡ <span id="energyBar"><div style="width:100%"></div></span> <span id="statusIcons"></span></div>
-<div id="bag" style="position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto"><div class="box" style="background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto">
-  <div style="display:flex;justify-content:space-between;align-items:center"><b>🎒 My Bag</b><button id="bagClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button></div>
+<div id="bag" class="over"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🎒 My Bag</b><button id="bagClose" class="x">✕</button></div>
   <div id="bagInfo" style="font-size:14px;margin-top:4px"></div>
-  <div id="bagItems" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px"></div>
+  <div style="font-size:13px;font-weight:700;margin-top:10px">Đang mặc / Wearing</div>
+  <div id="bagEquip" class="slots" style="grid-template-columns:repeat(4,1fr);margin-top:4px"></div>
+  <div id="bagStats" style="font-size:13px;margin-top:6px"></div>
+  <div style="font-size:13px;font-weight:700;margin-top:10px" id="bagTitle"></div>
+  <div id="bagItems" class="slots" style="margin-top:4px"></div>
+  <div id="bagDetail" class="detail"></div>
+</div></div>
+<div id="chest" class="over"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🧰 My Chest</b><button id="chestClose" class="x">✕</button></div>
+  <div style="font-size:13px;opacity:.8;margin-top:4px">Chạm vào món đồ để chuyển giữa túi 🎒 và rương 🧰. Tap an item to move it.</div>
+  <div style="font-size:13px;font-weight:700;margin-top:10px" id="chestBagT"></div>
+  <div id="chestBag" class="slots" style="margin-top:4px"></div>
+  <div style="font-size:13px;font-weight:700;margin-top:12px" id="chestT"></div>
+  <div id="chestItems" class="slots" style="margin-top:4px"></div>
+</div></div>
+<div id="gallery" class="over"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🖼️ My Gallery</b><button id="galleryClose" class="x">✕</button></div>
+  <div id="galleryBody"></div>
 </div></div>
 <button id="albumBtn">🎴 <span id="cardCount">0</span></button>
 <div id="album"><div class="box">
@@ -99,6 +133,10 @@ button{font:inherit;cursor:pointer}
 </div></div>
 <div id="toast"></div>
 <div id="online">⚪ connecting…</div>
+<canvas id="mini" width="240" height="240"></canvas>
+<div id="bigmap" class="over"><div class="box" style="padding:10px"><div style="display:flex;justify-content:space-between;align-items:center"><b>🗺️ Verse City</b><button class="x" id="bigClose">✕</button></div>
+  <div style="font-size:12px;opacity:.8">Chạm vào một địa điểm để được chỉ đường. Tap a place to get directions. (N = north ↑)</div>
+  <div id="bigWrap" style="overflow:auto;max-height:70vh;margin-top:6px;border-radius:12px;touch-action:pan-x pan-y"><canvas id="bigCv" style="display:block"></canvas></div></div></div>
 <button id="sayBtn">🗨️ Say</button>
 <button id="mazeBtn">🏁 Maze</button>
 <div id="lobbyp" class="panel"></div>
@@ -110,6 +148,7 @@ button{font:inherit;cursor:pointer}
 <button id="atkBtn">📢 Attack</button>
 <button id="doorBtn"></button>
 <button id="shopBtn">🛒 Talk</button>
+<button id="actBtn"></button>
 <div id="shopp" class="panel">
   <div style="display:flex;justify-content:space-between;align-items:center"><b id="shopWho"></b><span><span id="shopCoins" style="font-weight:700;margin-right:10px"></span><button id="shopClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button></span></div>
   <div id="shopSay" style="font-size:18px;font-weight:600;margin-top:8px"></div>
@@ -137,8 +176,9 @@ button{font:inherit;cursor:pointer}
   <div id="chatList"></div>
 </div>
 <div id="namep"><div class="box">
-  <div style="font-size:22px;font-weight:700">Welcome to EnglishVerse! 👋</div>
-  <div style="margin-top:8px">Choose your character:</div>
+  <div style="font-size:20px;font-weight:700">Welcome to EnglishVerse! 👋</div>
+  <div style="font-size:13px;opacity:.8;margin-top:2px">Trang phục đẹp hơn: mua ở Style Box hoặc giành bằng thành tích tiếng Anh!</div>
+  <div style="margin-top:6px">Choose your face &amp; hair:</div>
   <div id="avPick" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px"></div>
   <div style="margin-top:10px">What’s your name?</div>
   <input id="nameIn" maxlength="12" placeholder="e.g. Lily" autocomplete="off">
@@ -160,10 +200,11 @@ button{font:inherit;cursor:pointer}
   <button id="next">Next ▶</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/dist/umd/supabase.js"></script>
+<!-- Thư viện để ngay trong repo (thư mục lib/), không tải từ CDN bên ngoài: trình duyệt chặn theo dõi (Safari, Edge, Brave…) không cảnh báo nữa -->
+<script src="lib/three.min.js"></script>
+<script src="lib/GLTFLoader.js"></script>
+<script src="lib/SkeletonUtils.js"></script>
+<script src="lib/supabase.js"></script>
 <script src="lessons.js"></script>
 <script src="places.js"></script>
 <script>
@@ -204,7 +245,7 @@ function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
 function blocked(x, z) {
   if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
   if (room) return Math.abs(x - room.cx) > room.w / 2 - 0.6 || Math.abs(z - room.cz) > room.d / 2 - 0.6 || room.solids.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);   // đang ở trong nhà
-  if (x < -64 || x > 64 || z < -46 || z > 62) return true;   // ranh giới thành phố
+  if (x < -104 || x > 104 || z < -86 || z > 90) return true;   // ranh giới thành phố
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
 
@@ -232,7 +273,9 @@ function flat(w, d, color, x, z, y) {   // mặt phẳng nằm trên đất: c�
   m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); m.userData.flat = true; scene.add(m);
 }
 flat(72, 58, 0x8fd17a, 0, 21, -0.02);     // cỏ
-flat(3, 11, 0xbfb6a8, 0, 12.5, 0.01);      // đường: quán → quảng trường
+const ROADS = [];   // đường đi (để vẽ bản đồ nhỏ)
+function road(w, d, x, z, y) { flat(w, d, 0xbfb6a8, x, z, y || 0.012); ROADS.push({ x, z, w, d }); }
+road(3, 11, 0, 12.5, 0.01);      // đường: quán → quảng trường
 { // quảng trường lát gạch
   const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
   x.fillStyle = "#e9e2d0"; x.fillRect(0, 0, 128, 128); x.fillStyle = "#d8cfb8"; x.fillRect(0, 0, 64, 64); x.fillRect(64, 64, 64, 64);
@@ -240,17 +283,25 @@ flat(3, 11, 0xbfb6a8, 0, 12.5, 0.01);      // đường: quán → quảng trư�
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(7, 7);
   const m = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.MeshLambertMaterial({ map: t })); m.rotation.x = -Math.PI / 2; m.position.set(0, 0.011, 24); m.userData.flat = true; scene.add(m);
 }
-flat(14, 3, 0xbfb6a8, 14, 24, 0.01);       // đường: → nhà ga
-flat(14, 3, 0xbfb6a8, -14, 24, 0.01);      // đường: → cổng mê cung
-flat(3, 5, 0xbfb6a8, 0, 33.5, 0.01);       // đường: → công viên
-flat(130, 130, 0x8fd17a, 0, 8, -0.025);    // cỏ thành phố
-flat(124, 4, 0xbfb6a8, 0, 12, 0.012);      // Market Street (phố mua sắm)
-flat(124, 4, 0xbfb6a8, 0, -14, 0.012);     // North Avenue (khu hành chính)
-flat(4, 26, 0xbfb6a8, -14, -1, 0.012);     // đường nối West
-flat(4, 26, 0xbfb6a8, 14, -1, 0.012);      // đường nối East
-flat(34, 4, 0xbfb6a8, 45, 24, 0.012);      // đường: nhà ga → bệnh viện
-flat(4, 8, 0xbfb6a8, 44, 28, 0.012);       // lối vào bệnh viện
-[[-30, -6], [30, -6], [-50, 16], [50, 16], [-30, 18], [-50, -8], [50, -8], [22, -22], [-22, -22], [56, 40], [32, 46]].forEach(q => tree(q[0], q[1]));
+road(14, 3, 14, 24, 0.01);       // đường: → nhà ga
+road(14, 3, -14, 24, 0.01);      // đường: → cổng mê cung
+road(3, 5, 0, 33.5, 0.01);       // đường: → công viên
+flat(214, 182, 0x8fd17a, 0, 2, -0.025);    // cỏ thành phố
+road(204, 4, 0, 12);      // Market Street (phố mua sắm)
+road(204, 4, 0, -14);     // North Avenue (khu hành chính)
+road(4, 26, -14, -1);     // đường nối West
+road(4, 26, 14, -1);      // đường nối East
+road(34, 4, 45, 24);      // đường: nhà ga → bệnh viện
+road(4, 8, 44, 28);       // lối vào bệnh viện
+road(204, 4, 0, -44);     // Hill Road (phía bắc: sân vận động, nhà máy điện, sân bay)
+road(204, 4, 0, 56);      // South Road (phía nam: nông trại, sở thú)
+road(4, 56, -66, -16); road(4, 56, 66, -16);     // đường dọc: Hill Road ↔ Market Street
+road(4, 30, -14, -29); road(4, 30, 14, -29);     // Town Hall ↔ Hill Road
+road(4, 42, -54, 35); road(4, 42, 56, 40);       // Market Street ↔ South Road
+road(4, 10, 0, -49); road(4, 10, -72, -49); road(4, 10, 72, -49);   // lối vào sân vận động, nhà máy điện, sân bay
+road(4, 8, -72, 60); road(4, 8, 70, 60);          // lối vào nông trại, sở thú
+[[-30, -6], [30, -6], [-50, 16], [50, 16], [-30, 18], [-50, -8], [50, -8], [22, -22], [-22, -22], [61, 34], [32, 46],
+ [-84, -6], [-60, -6], [84, -6], [60, -6], [-96, 30], [-86, 44], [-30, 40], [-40, 48], [30, 50], [92, 40], [96, 30], [-96, -38], [96, -38], [-36, -38], [36, -38], [-20, 66], [20, 66], [0, 80], [-40, 84], [40, 84], [-100, 60], [100, 60]].forEach(q => tree(q[0], q[1]));
 function sign(text, x, z, w) {   // biển tên có chữ, quay về phía camera lúc đầu
   const c = document.createElement("canvas"); c.width = 512; c.height = 128;
   const g = c.getContext("2d");
@@ -319,9 +370,12 @@ sign("Park", 3.5, 35, 2.6);
 
 const chars = [];   // mọi nhân vật chibi (để tạo dáng đi)
 const HAIR = [0x3b2a1a, 0x5c3d2e, 0x111111, 0xa0522d, 0xe0b04f];
-/* Nhân vật 3D có hoạt ảnh (bộ KayKit, xem assets/CREDITS.md). Trong lúc tải: hiện chibi đơn giản. */
+/* Nhân vật 3D có hoạt ảnh (bộ KayKit, xem assets/CREDITS.md). Trong lúc tải: hiện chibi đơn giản.
+   NPC: dùng nguyên bộ nhân vật (look = tên file). Người chơi: "ghép" từ nhiều bộ phận (look = { head, hat, top, legs, cape })
+   vì mọi nhân vật KayKit dùng chung một bộ xương → lấy áo của Knight, giày của Mage, mũ của Viking… ghép vào một người. */
 const AVATARS = { Mage: "Wizard", Knight: "Knight", Rogue: "Explorer", Barbarian: "Viking", Rogue_Hooded: "Ninja" };   // tên file → tên hiển thị (tiếng Anh)
 const AV_KEYS = Object.keys(AVATARS);
+const FACES = { Rogue: "Alex", Knight: "Sam", Mage: "Robin", Barbarian: "Max" };   // khuôn mặt + kiểu tóc (đầu của từng bộ)
 const modelTpl = {}, modelWait = {};
 function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật cùng loại
   if (modelTpl[name] || modelWait[name] || !THREE.GLTFLoader) return;
@@ -329,18 +383,76 @@ function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật
   new THREE.GLTFLoader().load("assets/characters/" + name + ".glb", gltf => {
     const box = new THREE.Box3().setFromObject(gltf.scene);
     modelTpl[name] = { scene: gltf.scene, clips: gltf.animations, scale: 1.9 / (box.max.y - box.min.y) };
-    modelWait[name].forEach(attachModel); modelWait[name] = null;
+    const w = modelWait[name]; modelWait[name] = null; w.forEach(attachModel);
   }, undefined, () => { modelWait[name] = null; });   // lỗi tải: giữ chibi
 }
+function lookParts(look) {   // danh sách bộ phận cần ghép: { file, mesh, tint, plain }
+  const it = id => (typeof ITEMS !== "undefined" && ITEMS[id] && ITEMS[id].slot) ? ITEMS[id] : null;
+  const top = it(look.top) || ITEMS.tee_white, legs = it(look.legs) || ITEMS.pants_plain, hat = it(look.hat), cape = it(look.cape);
+  const head = FACES[look.head] ? look.head : "Rogue", parts = [];
+  const add = (I, names) => names.forEach(n => parts.push({ file: I.model, mesh: I.model.replace("_Hooded", "") + "_" + n, tint: I.tint, plain: I.plain }));
+  if (hat && hat.hood) parts.push({ file: "Rogue_Hooded", mesh: "Rogue_Head_Hooded", tint: hat.tint });   // mũ trùm thay cả đầu
+  else parts.push({ file: head, mesh: head + "_Head" });
+  add(top, ["Body", "ArmLeft", "ArmRight"]); add(legs, ["LegLeft", "LegRight"]);
+  if (hat && !hat.hood) parts.push({ file: hat.model, mesh: hat.part, tint: hat.tint });
+  if (cape) add(cape, ["Cape"]);
+  return parts;
+}
+const matCache = {}, grayCache = {};
+function grayMap(t) {   // bản đen trắng của vải (giữ màu da) → nhuộm màu tùy ý cho áo trơn
+  if (grayCache[t.uuid]) return grayCache[t.uuid];
+  const img = t.image, c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+  const x = c.getContext("2d"); x.drawImage(img, 0, 0);
+  const d = x.getImageData(0, 0, c.width, c.height), a = d.data;
+  for (let i = 0; i < a.length; i += 4) {
+    const r = a[i], g = a[i + 1], b = a[i + 2];
+    if (r > 175 && r > g + 15 && g > b + 5 && r - b > 40 && r - b < 130) continue;   // màu da: giữ nguyên
+    const v = 170 + (0.3 * r + 0.59 * g + 0.11 * b) * 0.33; a[i] = a[i + 1] = a[i + 2] = v;
+  }
+  x.putImageData(d, 0, 0);
+  const n = new THREE.CanvasTexture(c); n.flipY = t.flipY; n.encoding = t.encoding; n.wrapS = t.wrapS; n.wrapT = t.wrapT; n.magFilter = t.magFilter;
+  return grayCache[t.uuid] = n;
+}
+function partMat(src, tint, plain) {
+  if (tint == null && !plain) return src.material;
+  const key = src.material.uuid + "|" + tint + "|" + !!plain;
+  if (!matCache[key]) { const m = src.material.clone(); if (plain && m.map) try { m.map = grayMap(m.map); } catch (e) {} if (tint != null) m.color = new THREE.Color(tint); matCache[key] = m; }
+  return matCache[key];
+}
+function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương của Rogue
+  const tpl = modelTpl.Rogue, root = THREE.SkeletonUtils.clone(tpl.scene), dead = [];
+  root.traverse(o => { if (o.isMesh) dead.push(o); });
+  dead.forEach(o => o.parent.remove(o));   // bỏ hết áo quần gốc, chỉ giữ xương
+  const rig = root.getObjectByName("Rig") || root;
+  lookParts(look).forEach(P => {
+    const T = modelTpl[P.file]; if (!T) return;
+    const src = T.scene.getObjectByName(P.mesh); if (!src) return;
+    const c = src.clone(); c.material = partMat(src, P.tint, P.plain);
+    if (src.isSkinnedMesh) {   // gắn vào bộ xương mới theo tên xương
+      const bones = src.skeleton.bones.map(b => root.getObjectByName(b.name));
+      if (bones.some(b => !b)) return;
+      rig.add(c); c.bind(new THREE.Skeleton(bones, src.skeleton.boneInverses), src.bindMatrix);
+    } else { const bone = root.getObjectByName(src.parent.name); if (bone) bone.add(c); }   // mũ, áo choàng: gắn vào xương đầu/ngực
+  });
+  root.scale.setScalar(tpl.scale);
+  return root;
+}
+function lookFiles(look) { return typeof look === "object" ? ["Rogue"].concat(lookParts(look).map(p => p.file)) : [look]; }
 function attachModel(g) {
-  const tpl = modelTpl[g.userData.model]; if (!tpl) { if (modelWait[g.userData.model]) modelWait[g.userData.model].push(g); return; }
+  const look = g.userData.model, files = lookFiles(look).filter((f, i, a) => a.indexOf(f) === i);
+  for (const f of files) {   // còn bộ nào chưa tải xong: chờ
+    if (!modelTpl[f]) { loadModel(f); if (modelWait[f] && modelWait[f].indexOf(g) < 0) modelWait[f].push(g); return; }
+  }
+  if (g.userData.model !== look) return;
   if (g.userData.mesh) g.remove(g.userData.mesh);
-  const m = THREE.SkeletonUtils.clone(tpl.scene); m.scale.setScalar(tpl.scale);
+  let m;
+  if (typeof look === "object") m = buildComposite(look);
+  else { const tpl = modelTpl[look]; m = THREE.SkeletonUtils.clone(tpl.scene); m.scale.setScalar(tpl.scale); }
   m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = false; o.frustumCulled = false; } });
   g.add(m); g.userData.mesh = m;
   g.userData.chibi.forEach(c => c.visible = false);
   const mixer = new THREE.AnimationMixer(m), acts = {};
-  tpl.clips.forEach(c => acts[c.name] = mixer.clipAction(c));
+  modelTpl[files[0]].clips.forEach(c => acts[c.name] = mixer.clipAction(c));
   g.userData.mixer = mixer; g.userData.acts = acts; g.userData.cur = null;
   playLoop(g, "Idle");
 }
@@ -356,7 +468,12 @@ function charAct(g, name) {   // hoạt ảnh một lần: reo mừng, niệm ph
   if (u.cur && u.acts[u.cur] && u.cur !== name) u.acts[u.cur].fadeOut(0.15);
   u.cur = name; u.busy = a.getClip().duration - 0.2;
 }
-function setAvatar(g, name) { if (!AVATARS[name]) return; g.userData.model = name; loadModel(name); attachModel(g); }
+function setAvatar(g, look) {   // look: tên bộ nhân vật (NPC) hoặc { head, hat, top, legs, cape } (người chơi)
+  if (typeof look === "object" && look) look = { head: look.head, hat: look.hat || null, top: look.top, legs: look.legs, cape: look.cape || null };
+  else if (!AVATARS[look]) return;
+  g.userData.model = look; attachModel(g);
+}
+function sameLook(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 function makeChar(bodyColor, avatar) {   // nhân vật: tạo khung chibi ngay, rồi thay bằng mô hình 3D khi tải xong
   const g = new THREE.Group(), M = c => new THREE.MeshLambertMaterial({ color: c });
   const skin = M(0xffd8b5), dark = new THREE.MeshBasicMaterial({ color: 0x1f1f1f }), white = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -383,7 +500,7 @@ function makeChar(bodyColor, avatar) {   // nhân vật: tạo khung chibi ngay,
   g.userData = { arms, legs, last: new THREE.Vector3(), phase: 0, chibi: g.children.slice() };
   scene.add(g); chars.push(g); shade(g);
   g.traverse(m => { if (m.isMesh) m.receiveShadow = false; });   // nhân vật không nhận bóng (tránh vệt lạ trên mặt/tóc)
-  setAvatar(g, AVATARS[avatar] ? avatar : AV_KEYS[bodyColor % AV_KEYS.length]);
+  setAvatar(g, typeof avatar === "object" && avatar ? avatar : AVATARS[avatar] ? avatar : AV_KEYS[bodyColor % AV_KEYS.length]);
   return g;
 }
 function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
@@ -405,14 +522,24 @@ function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
     u.arms[0].rotation.x = -sw; u.arms[1].rotation.x = sw;
   }
 }
-let myAvatar = null;
-try { myAvatar = localStorage.getItem("ev_avatar"); } catch (e) {}
-if (!AVATARS[myAvatar]) myAvatar = AV_KEYS[Math.floor(Math.random() * AV_KEYS.length)];
-const player = makeChar(0x3b82f6, myAvatar);
+/* Tiến độ lưu trên máy (localStorage): ⭐, xu, năng lượng, túi đồ, rương, trang phục đang mặc, khuôn mặt… */
+let save = null;
+try { save = JSON.parse(localStorage.getItem("ev_save") || "null"); } catch (e) {}
+if (!save) save = { xp: 0, coins: STARTER.coins, energy: 100, items: Object.assign({}, STARTER.items), poisonUntil: 0, protectUntil: 0 };
+if (!save.equip) {   // người chơi cũ (trước khi có trang phục) hoặc người mới: mặc đồ cơ bản
+  save.equip = Object.assign({}, STARTER.equip);
+  let old = null; try { old = localStorage.getItem("ev_avatar"); } catch (e) {}
+  save.head = FACES[old] ? old : old === "Rogue_Hooded" ? "Rogue" : null;
+}
+save.chest = save.chest || {}; save.decor = save.decor || []; save.spoken = save.spoken || 0; save.legends = save.legends || [];
+if (!FACES[save.head]) save.head = Object.keys(FACES)[Math.floor(Math.random() * 4)];
+function myLook() { return Object.assign({ head: save.head }, save.equip); }
+const player = makeChar(0x3b82f6, myLook());
 player.position.set(0, 0, 10);   // xuất hiện trước cửa Sunny Café
 LESSONS.forEach(L => {
   L.mesh = makeChar(L.color);
   L.mesh.position.set(L.x, 0, L.z);
+  { const I = npcInfo(L.name); L.mesh.add(nameTag(I.short, I.job)); }   // tên + nghề nghiệp trên đầu
   L.mark = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
   scene.add(L.mark);
   if (!L.place) solid(L.x, L.z, 0.4, 0.4);   // NPC trong nhà: va chạm đặt sau khi dựng phòng
@@ -455,8 +582,25 @@ cv.addEventListener("pointercancel", endLook);
 /* ===== 4. HỘI THOẠI + GIỌNG ĐỌC ===== */
 const $ = id => document.getElementById(id);
 let score = 0, step = 0, talking = false, gained = 0, NPC = LESSONS[0], near = null;
+/* Giọng đọc: chọn giọng tiếng Anh tự nhiên nhất mà máy có (giọng "Natural/Neural" của Edge, "Google" của Chrome,
+   giọng "Enhanced/Premium" của iPhone…), bỏ qua giọng máy móc. */
+let VOICE = null;
+function pickVoice() {
+  let vs = []; try { vs = speechSynthesis.getVoices().filter(v => /^en([-_]|$)/i.test(v.lang)); } catch (e) { return; }
+  const rate = v => { const n = v.name; let s = 0;
+    if (/natural|neural/i.test(n)) s += 60;
+    if (/premium|enhanced|siri/i.test(n)) s += 45;
+    if (/online/i.test(n)) s += 20;
+    if (/google/i.test(n)) s += 30;
+    if (/samantha|ava|allison|susan|zoe|evan|nathan|jenny|aria|guy|emma|libby|sonia|ryan|michelle|ana|christopher|eric/i.test(n)) s += 15;
+    if (/en[-_]US/i.test(v.lang)) s += 8; else if (/en[-_](GB|AU|CA)/i.test(v.lang)) s += 5;
+    if (/compact|espeak|novelty|zarvox|whisper|bad news|good news|bells|bubbles|cellos|trinoids|albert|jester|organ|superstar|wobble|boing|bahh|junior|ralph|fred|kathy|grandpa|grandma|rocko|shelley|flo|eddy|reed|sandy|hysterical|deranged/i.test(n)) s -= 100;
+    return s; };
+  VOICE = vs.sort((a, b) => rate(b) - rate(a))[0] || null;
+}
+try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
 function speak(t) {
-  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.speak(u); } catch (e) {}
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = VOICE ? VOICE.lang : "en-US"; if (VOICE) u.voice = VOICE; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {}
 }
 function showStep() {
   const s = NPC.steps[step];
@@ -552,7 +696,7 @@ holdMic($("mic"), t => $("heard").textContent = "🎙️ " + t, (alts, conf, err
   let best = null, bs = 0;
   NPC.steps[step].choices.forEach(c => alts.forEach(h => { const m = match(c.t, h); if (m > bs) { bs = m; best = c; } }));
   $("heard").textContent = "Heard: “" + alts[0] + "”";
-  if (best && bs >= 0.6 && !best.btn.disabled) best.btn.click();
+  if (best && bs >= 0.6 && !best.btn.disabled) { if (best.ok) spokeOk(); best.btn.click(); }
   else $("heard").textContent += " – chưa khớp, thử nói lại nhé!";
 });
 
@@ -561,7 +705,7 @@ holdMic($("mic"), t => $("heard").textContent = "🎙️ " + t, (alts, conf, err
 let owned = [];
 try { owned = JSON.parse(localStorage.getItem("ev_cards") || "[]"); } catch (e) {}
 function allCards() {
-  return LESSONS.flatMap(L => L.steps.filter(s => s.card).map(s => Object.assign({ from: L.name.split(/\s|–/)[0] }, s.card)));
+  return LESSONS.flatMap(L => L.steps.filter(s => s.card).map(s => Object.assign({ from: npcInfo(L.name).short }, s.card)));
 }
 function updateCardCount() { $("cardCount").textContent = owned.length + "/" + allCards().length; }
 let toastTimer = null;
@@ -602,15 +746,29 @@ let myName = "";
 try { myName = localStorage.getItem("ev_name") || ""; } catch (e) {}
 const others = {};   // người chơi khác: id → { g, tx, tz, ry, last }
 let sb = null, chan = null, online = false, sendT = 0, beatT = 0, lastSent = "";
-function nameTag(text) {   // bảng tên nổi trên đầu nhân vật
-  const c = document.createElement("canvas"); c.width = 256; c.height = 64;
+function nameTag(text, job) {   // bảng tên nổi trên đầu nhân vật; NPC có thêm dòng nghề nghiệp (job)
+  const c = document.createElement("canvas"); c.width = 320; c.height = job ? 112 : 64;
   const g = c.getContext("2d");
-  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0, 8, 256, 48);
-  g.fillStyle = "#fff"; g.font = "bold 34px system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
-  g.fillText(text, 128, 33);
+  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0, 8, 320, c.height - 16);
+  g.textAlign = "center"; g.textBaseline = "middle";
+  const fit = (t, size, max) => { do { g.font = "bold " + size + "px system-ui, sans-serif"; size -= 2; } while (g.measureText(t).width > max && size > 14); };
+  g.fillStyle = "#fff"; fit(text, 34, 300); g.fillText(text, 160, job ? 38 : 33);
+  if (job) { g.fillStyle = "#ffd43b"; fit(job, 26, 300); g.fillText(job, 160, 78); }
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
-  s.scale.set(1.8, 0.45, 1); s.position.y = 2.1;
+  const sw = job ? 2.25 : 1.9; s.scale.set(sw, sw * c.height / 320, 1); s.position.y = job ? 2.3 : 2.1;
   return s;
+}
+function npcInfo(full) {   // "Ms. Hoa – Teacher" → tên ngắn, nghề, từ khóa để hỏi đường
+  const TITLES = ["mr", "ms", "mrs", "dr", "aunt", "uncle", "officer", "captain", "coach", "farmer", "chef", "nurse"];
+  const [short, job] = String(full).split(" – ");
+  const keys = short.toLowerCase().replace(/[^a-z ]/g, "").split(" ").filter(w => w.length > 1 && TITLES.indexOf(w) < 0);
+  return { short, job: job || "", keys: keys.length ? keys : [short.toLowerCase()] };
+}
+function safeLook(a) {   // kiểm tra trang phục người khác gửi tới (chỉ nhận món có thật)
+  if (typeof a === "string") return AVATARS[a] ? a : "Rogue";
+  if (!a || typeof a !== "object") return "Rogue";
+  const ok = (id, slot) => ITEMS[id] && ITEMS[id].slot === slot ? id : null;
+  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "top") || "tee_white", legs: ok(a.legs, "legs") || "pants_plain", cape: ok(a.cape, "cape") };
 }
 function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
@@ -621,12 +779,13 @@ function goOnline() {
   chan.on("broadcast", { event: "pos" }, ({ payload: m }) => {
     let o = others[m.id];
     if (!o) {
-      o = others[m.id] = { g: makeChar(m.c, m.a), n: String(m.n).slice(0, 12) };
+      o = others[m.id] = { g: makeChar(m.c, safeLook(m.a)), n: String(m.n).slice(0, 12) };
       o.g.add(nameTag(String(m.n).slice(0, 12)));
       o.g.position.set(m.x, 0, m.z);
       countOnline();
     }
     o.tx = m.x; o.tz = m.z; o.ry = m.r; o.last = performance.now();
+    const lk = safeLook(m.a); if (!sameLook(lk, o.g.userData.model)) setAvatar(o.g, lk);   // người kia vừa thay đồ
   });
   chan.on("broadcast", { event: "bye" }, ({ payload: m }) => removeOther(m.id));
   chan.on("broadcast", { event: "chat" }, ({ payload: m }) => {
@@ -652,7 +811,7 @@ function updateOnline(dt) {
   sendT += dt; beatT += dt;
   const p = player.position, key = p.x.toFixed(1) + "," + p.z.toFixed(1) + "," + player.rotation.y.toFixed(1);
   if (sendT > 0.2 && (key !== lastSent || beatT > 3)) {   // tối đa 5 lần/giây, chỉ gửi khi di chuyển (hoặc 3 giây/lần để báo "vẫn ở đây")
-    chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, c: myColor, a: myAvatar, x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
+    chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, c: myColor, a: myLook(), x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
     sendT = 0; beatT = 0; lastSent = key;
   }
 }
@@ -745,7 +904,7 @@ function startMatch(m) {
    Mọi máy trong trận tạo CÙNG một mê cung từ mã trận đấu. Mỗi đội chơi trong một bản sao riêng (không đụng nhau).
    Walker nhìn ngang tầm mắt; guide nhìn từ trên cao nhưng không điều khiển được gì. Walker tới ô xanh = đội thắng. */
 const MZ = { W: 7, H: 7, C: 3 };   // 7 x 7 ô, mỗi ô rộng 3 m
-const ORIGIN = { red: { x: -110, z: 0 }, blue: { x: -110, z: 40 } };   // nằm ngoài thị trấn
+const ORIGIN = { red: { x: -200, z: 0 }, blue: { x: -200, z: 40 } };   // nằm ngoài thị trấn
 const MAZE_GUIDE = ["Go straight!", "Turn left!", "Turn right!", "Stop!", "Turn around!", "Go back!", "Keep going!", "You’re close!", "Great job!"];
 const MAZE_WALK = ["Left or right?", "Where now?", "I see a wall.", "Wait!", "I’m lost!", "OK!", "Can you say that again?", "Thank you!"];
 let maze = null, savedFog = null;
@@ -914,7 +1073,7 @@ function holdStart(e) {
   r.onend = () => {
     holdRec = null; $("talkBtn").classList.remove("rec");
     const t = heard.trim();
-    if (t && conf >= 0.4) { score += 2; $("score").textContent = score; sendChat(t.charAt(0).toUpperCase() + t.slice(1), true); $("liveText").style.display = "none"; }
+    if (t && conf >= 0.4) { score += 2; $("score").textContent = score; spokeOk(); sendChat(t.charAt(0).toUpperCase() + t.slice(1), true); $("liveText").style.display = "none"; }
     else { $("liveText").textContent = t ? "“" + t + "” – chưa rõ, nói lại nhé!" : "Không nghe thấy, giữ nút và nói to hơn nhé!"; $("liveText").style.display = "block"; }
   };
   holdRec = r; $("talkBtn").classList.add("rec");
@@ -971,39 +1130,40 @@ holdMic($("chatMic"), t => $("chatHeard").textContent = "🎙️ " + t, (alts, c
   if (!alts.length) { $("chatHeard").textContent = "Không nghe thấy – giữ nút và nói to hơn nhé!"; return; }
   const t = alts[0].trim();
   if (conf < 0.5) { $("chatHeard").textContent = "Heard: “" + t + "” – chưa rõ, thử nói lại nhé!"; return; }
-  score += 2; $("score").textContent = score;
+  score += 2; $("score").textContent = score; spokeOk();
   sendChat(t.charAt(0).toUpperCase() + t.slice(1), true);
 });
 
 addEventListener("pagehide", () => { if (online) chan.send({ type: "broadcast", event: "bye", payload: { id: myId } }); });
 function startWithName() {
   player.add(nameTag(myName));
-  $("namep").style.display = "none";
+  $("namep").style.display = "none"; creating = false;
   goOnline();
 }
-AV_KEYS.forEach(k => {   // nút chọn nhân vật
-  const b = document.createElement("button"); b.textContent = AVATARS[k]; b.dataset.k = k;
-  b.style.cssText = "border:2px solid rgba(128,128,128,.4);background:transparent;color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700";
-  b.onclick = () => { myAvatar = k; setAvatar(player, k); document.querySelectorAll("#avPick button").forEach(x => x.style.borderColor = x.dataset.k === k ? "var(--accent)" : "rgba(128,128,128,.4)"); };
+/* Tạo nhân vật: chỉ chọn KHUÔN MẶT + KIỂU TÓC. Ai cũng bắt đầu với áo thun trắng, quần xám;
+   trang phục đẹp phải mua ở Style Box hoặc giành bằng thành tích → mặc đồ mới mới có ý nghĩa. */
+let creating = false;
+Object.keys(FACES).forEach(k => {   // nút chọn khuôn mặt
+  const b = document.createElement("button"); b.textContent = FACES[k]; b.dataset.k = k;
+  b.style.cssText = "border:2px solid rgba(128,128,128,.4);background:transparent;color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:700";
+  b.onclick = () => { save.head = k; setAvatar(player, myLook()); markFace(); };
   $("avPick").appendChild(b);
 });
-document.querySelectorAll("#avPick button").forEach(x => x.style.borderColor = x.dataset.k === myAvatar ? "var(--accent)" : "rgba(128,128,128,.4)");
+function markFace() { document.querySelectorAll("#avPick button").forEach(x => x.style.borderColor = x.dataset.k === save.head ? "var(--accent)" : "rgba(128,128,128,.4)"); }
+markFace();
 $("nameGo").onclick = () => {
   const n = $("nameIn").value.trim();
   if (!/^[A-Za-z][A-Za-z ]{1,11}$/.test(n)) { $("nameErr").textContent = "Use English letters only, 2–12 letters. (Chỉ dùng chữ cái tiếng Anh, không dấu.)"; return; }
   myName = n;
-  try { localStorage.setItem("ev_avatar", myAvatar); } catch (e) {}
   try { localStorage.setItem("ev_name", n); } catch (e) {}
+  saveNow();
   startWithName();
 };
-if (myName) startWithName(); else $("namep").style.display = "flex";
+if (myName) startWithName(); else { $("namep").style.display = "flex"; creating = true; }
 
 /* ===== 4g. KINH TẾ: xu 🪙, năng lượng ⚡, trúng độc ☠️, túi đồ 🎒 =====
    Lưu trên máy (localStorage). Khi có tài khoản sẽ lưu lên server. Vật phẩm định nghĩa trong places.js. */
-let save = null;
-try { save = JSON.parse(localStorage.getItem("ev_save") || "null"); } catch (e) {}
-if (!save) save = { xp: 0, coins: STARTER.coins, energy: 100, items: Object.assign({}, STARTER.items), poisonUntil: 0, protectUntil: 0 };
-score = save.xp || 0;
+score = save.xp || 0;   // (save được nạp ở mục 2, trước khi tạo nhân vật)
 function saveNow() { save.xp = score; try { localStorage.setItem("ev_save", JSON.stringify(save)); } catch (e) {} }
 function addCoins(n) { save.coins += n; saveNow(); renderHud(); }
 function useEnergy(n) { save.energy = Math.max(0, save.energy - n); saveNow(); renderHud(); }
@@ -1018,10 +1178,39 @@ function renderHud() {
   $("energyBar").firstElementChild.style.width = save.energy + "%";
   $("statusIcons").textContent = (isPoisoned() ? "☠️ " : "") + (isProtected() ? "🛡️" : "");
 }
+/* TÚI ĐỒ 🎒 dạng ô (như trong game): mỗi loại đồ chiếm 1 ô, cùng loại thì cộng dồn. Túi đầy → cất bớt vào rương 🧰 ở nhà. */
+const BAG_SIZE = 20, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Hat", top: "👕 Top", legs: "👟 Shoes", cape: "🎒 Cape" };
+const STAT_ICON = { voice: "🗣️ Voice", ears: "👂 Ears", stamina: "💪 Stamina", resist: "🛡️ Resist", luck: "🍀 Luck" };
+function addItem(store, size, id, n) { if (!store[id] && Object.keys(store).length >= size) return false; store[id] = (store[id] || 0) + (n || 1); return true; }
+function takeItem(store, id) { if (!store[id]) return false; if (--store[id] <= 0) delete store[id]; return true; }
+function gear() {   // tổng chỉ số từ trang phục đang mặc
+  const g = { voice: 0, ears: 0, stamina: 0, resist: 0, luck: 0 };
+  Object.values(save.equip).forEach(id => { const it = ITEMS[id]; if (it && it.stats) for (const k in it.stats) g[k] += it.stats[k]; });
+  return g;
+}
+function statsText(st) { return Object.keys(st || {}).filter(k => st[k]).map(k => STAT_ICON[k].split(" ")[0] + " +" + st[k]).join("  ") || "–"; }
+function rarityTag(it) { const r = RARITY[it.rarity]; return r ? '<span class="rar" style="color:' + r.color + '">' + r.name + (it.lv > 1 ? " · Lv." + it.lv : "") + "</span>" : ""; }
+function slotBtn(id, count, label) {   // một ô đồ
+  const b = document.createElement("button"), it = id && ITEMS[id];
+  b.className = "slot" + (it ? "" : " empty");
+  if (it && it.rarity) b.style.borderColor = RARITY[it.rarity].color;
+  b.innerHTML = (it ? it.icon : "") + (label ? '<span class="lb">' + label + "</span>" : "") + (count > 1 ? '<span class="c">' + count + "</span>" : "");
+  return b;
+}
+function drawSlots(el, store, size, onPick, sel) {
+  el.innerHTML = "";
+  const ids = Object.keys(store);
+  for (let i = 0; i < size; i++) {
+    const id = ids[i], b = slotBtn(id, id ? store[id] : 0);
+    if (id) { b.onclick = () => onPick(id, b); if (id === sel) b.classList.add("sel"); }
+    el.appendChild(b);
+  }
+}
 function useItem(id) {
   const it = ITEMS[id]; if (!it || !save.items[id]) return;
+  if (it.slot) { wear(id); return; }
   if (it.energy && save.energy >= 100 && !it.cure) { flash("You are full! / Bạn đang no rồi."); return; }
-  save.items[id]--; if (!save.items[id]) delete save.items[id];
+  takeItem(save.items, id);
   if (it.energy) save.energy = Math.min(100, save.energy + it.energy);
   if (it.cure) save.poisonUntil = 0;
   if (it.protect) save.protectUntil = Date.now() + it.protect * 1000;
@@ -1029,23 +1218,73 @@ function useItem(id) {
   charAct(player, "Use_Item");
   speak(it.energy ? "Yummy! " + it.name + "." : "I feel better!");
 }
+function refreshLook() { setAvatar(player, myLook()); lastSent = ""; saveNow(); }   // lastSent = "" → gửi ngay cho người khác thấy
+function wear(id) {   // mặc đồ: lấy từ túi, đồ cũ cùng ô quay về túi
+  const it = ITEMS[id]; if (!it || !it.slot || !save.items[id]) return;
+  if (playerLevel() < it.lv) { flash("🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv); return; }
+  const prev = save.equip[it.slot];
+  if (prev && !save.items[prev] && save.items[id] > 1 && Object.keys(save.items).length >= BAG_SIZE) { flash("🎒 Bag is full! / Túi đầy!"); return; }
+  takeItem(save.items, id); save.equip[it.slot] = id;
+  if (prev) addItem(save.items, BAG_SIZE, prev);
+  refreshLook(); charAct(player, "Cheer"); speak("You look great in the " + it.name + "!");
+  bagSel = null; drawBag();
+}
+function takeOff(slot) {   // cởi mũ / áo choàng (áo và quần thì phải luôn mặc)
+  const id = save.equip[slot]; if (!id) return;
+  if (slot === "top" || slot === "legs") { flash("Choose another " + (slot === "top" ? "top" : "pair of shoes") + " to change. / Chọn món khác trong túi để thay."); return; }
+  if (!addItem(save.items, BAG_SIZE, id)) { flash("🎒 Bag is full! / Túi đầy!"); return; }
+  save.equip[slot] = null; refreshLook(); drawBag();
+}
+let bagSel = null;
 function drawBag() {
   $("bagInfo").innerHTML = "🪙 " + save.coins + " coins · ⚡ " + Math.round(save.energy) + "/100" + (isPoisoned() ? " · ☠️ Poisoned" : "") + (isProtected() ? " · 🛡️ Protected" : "");
-  const ids = Object.keys(save.items);
-  $("bagItems").innerHTML = ids.length ? "" : "<div style='opacity:.7'>Your bag is empty. Visit a shop!</div>";
-  ids.forEach(id => {
-    const it = ITEMS[id]; if (!it) return;
-    const b = document.createElement("button"); b.className = "item";
-    b.innerHTML = '<div class="pic">' + it.icon + '</div><div class="n">' + it.name + " ×" + save.items[id] + '</div><div class="d">' + it.desc + '</div><div style="margin-top:6px;font-weight:700;color:var(--accent)">Use</div>';
-    b.onclick = () => useItem(id);
-    $("bagItems").appendChild(b);
+  $("bagEquip").innerHTML = "";
+  Object.keys(SLOT_NAMES).forEach(sl => {
+    const id = save.equip[sl], b = slotBtn(id, 0, SLOT_NAMES[sl].split(" ")[1]);
+    b.onclick = () => { bagSel = "eq:" + sl; drawBag(); };
+    if (bagSel === "eq:" + sl) b.classList.add("sel");
+    $("bagEquip").appendChild(b);
+  });
+  $("bagStats").textContent = "Stats: " + statsText(gear());
+  $("bagTitle").textContent = "Items " + Object.keys(save.items).length + "/" + BAG_SIZE;
+  drawSlots($("bagItems"), save.items, BAG_SIZE, id => { bagSel = id; drawBag(); }, bagSel);
+  const d = $("bagDetail");
+  let id = bagSel, worn = false;
+  if (id && id.indexOf("eq:") === 0) { worn = id.slice(3); id = save.equip[worn]; }
+  const it = id && ITEMS[id];
+  if (!it || (!worn && !save.items[id])) { d.style.display = "none"; return; }
+  d.style.display = "block";
+  d.innerHTML = "<div style='font-size:17px;font-weight:700'>" + it.icon + " " + it.name + "</div>" + (it.rarity ? rarityTag(it) + "<div style='font-size:13px'>" + SLOT_NAMES[it.slot] + " · " + statsText(it.stats) + "</div>" : "") +
+    "<div style='font-size:13px;opacity:.85;margin-top:4px'>" + it.desc + "</div><div class='acts'></div>";
+  const act = (t, f, bg) => { const b = document.createElement("button"); b.textContent = t; b.onclick = f; if (bg) b.style.background = bg; d.querySelector(".acts").appendChild(b); };
+  if (worn) { if (worn === "hat" || worn === "cape") act("Take off / Cởi ra", () => takeOff(worn), "#868e96"); }
+  else act(it.slot ? "Wear / Mặc" + (playerLevel() < it.lv ? " 🔒 Lv." + it.lv : "") : "Use / Dùng", () => useItem(id));
+}
+$("bagBtn").onclick = () => { bagSel = null; drawBag(); $("bag").style.display = "block"; };
+$("bagClose").onclick = () => $("bag").style.display = "none";
+function drawChest() {   // rương ở nhà: chạm để chuyển đồ qua lại
+  $("chestBagT").textContent = "🎒 Bag " + Object.keys(save.items).length + "/" + BAG_SIZE;
+  $("chestT").textContent = "🧰 Chest " + Object.keys(save.chest).length + "/" + CHEST_SIZE;
+  const move = (from, to, size) => id => { const n = from[id]; if (!to[id] && Object.keys(to).length >= size) { flash("Full! / Đầy rồi!"); return; } delete from[id]; to[id] = (to[id] || 0) + n; saveNow(); drawChest(); };
+  drawSlots($("chestBag"), save.items, BAG_SIZE, move(save.items, save.chest, CHEST_SIZE));
+  drawSlots($("chestItems"), save.chest, CHEST_SIZE, move(save.chest, save.items, BAG_SIZE));
+}
+$("chestClose").onclick = () => $("chest").style.display = "none";
+$("galleryClose").onclick = () => $("gallery").style.display = "none";
+function spokeOk() { save.spoken++; checkLegends(); }   // mỗi câu TỰ NÓI đúng qua micro: tính vào thành tích
+function checkLegends() {   // đồ huyền thoại: tự trao khi đạt thành tích
+  LEGENDS.forEach(L => {
+    if (save.legends.indexOf(L.item) >= 0 || spiritCount < L.need.spirits || save.spoken < L.need.spoken) return;
+    save.legends.push(L.item);
+    if (!addItem(save.items, BAG_SIZE, L.item)) addItem(save.chest, CHEST_SIZE, L.item);
+    saveNow(); charAct(player, "Cheer");
+    flash("🏆 LEGENDARY! " + ITEMS[L.item].icon + " " + ITEMS[L.item].name + "<div style='font-size:13px'>" + L.title + "</div>");
+    speak("Amazing! You earned the " + ITEMS[L.item].name + "!");
   });
 }
-$("bagBtn").onclick = () => { drawBag(); $("bag").style.display = "block"; };
-$("bagClose").onclick = () => $("bag").style.display = "none";
 let hudT = 0;
 function updateEconomy(dt) {   // năng lượng tự hồi 1 điểm / 15 giây; cập nhật thanh trạng thái
-  save.energy = Math.min(100, save.energy + dt / 15);
+  save.energy = Math.min(100, save.energy + dt / 15 * (1 + gear().stamina / 30));   // 💪 Stamina: hồi nhanh hơn
   if ((hudT += dt) > 1) { hudT = 0; renderHud(); saveNow(); }
 }
 
@@ -1057,10 +1296,12 @@ const PLACES = [   // các địa điểm trong thị trấn (NPC lấy tự đ�
   { name: "the park", say: "the park", keys: ["park", "tree"], x: 0, z: 37 }
 ];
 function targets() {
-  const npcs = LESSONS.map(L => { const n = L.name.split(/\s|–/)[0], P = L.inPlace;   // NPC trong nhà → dẫn tới cửa nhà đó
-    return { name: n, say: n, keys: [n.toLowerCase()], x: P ? P.doorPos.x : L.x, z: P ? P.doorPos.z : L.z, npc: true, inName: P && P.name }; });
-  const city = CITY.filter(P => P.doorPos).map(P => ({ name: P.name, say: "the " + P.type.replace("townhall", "town hall").replace("clothes", "clothes shop"), keys: P.name.toLowerCase().split(" ").filter(w => w.length > 3).concat([P.type, P.type === "townhall" ? "town hall" : P.type]), x: P.doorPos.x, z: P.doorPos.z }));
-  return npcs.concat(PLACES, city);   // địa điểm thành phố: dẫn tới trước cửa
+  const npcs = LESSONS.map(L => { const I = npcInfo(L.name), n = I.short, P = L.inPlace;   // NPC trong nhà → dẫn tới cửa nhà đó
+    return { name: n, say: n, keys: I.keys.concat(I.job ? [I.job.toLowerCase()] : []), x: P ? P.doorPos.x : L.x, z: P ? P.doorPos.z : L.z, npc: true, inName: P && P.name }; });
+  const ENTRY = { zoo: -12, farm: -12, stadium: 14, power: 11, airfield: 11, market: -1, busstop: 1.5 };   // đứng ở lối vào khu ngoài trời
+  const spots = SPOTS.map(S => ({ name: S.name, say: "the " + S.name.replace("City ", "").replace("Green ", "").toLowerCase(), keys: S.keys.concat([S.name.toLowerCase()]), x: S.x, z: S.z + (ENTRY[S.type] || 0) }));
+  const city = CITY.filter(P => P.doorPos).sort((a, b) => (b.id === "home") - (a.id === "home")).map(P => ({ name: P.name, say: P.type === "home" ? "your home" : "the " + P.type.replace("townhall", "town hall").replace("clothes", "clothes shop"), keys: P.name.toLowerCase().split(" ").filter(w => w.length > 3).concat([P.type, P.type === "townhall" ? "town hall" : P.type]), x: P.doorPos.x, z: P.doorPos.z }));
+  return npcs.concat(PLACES, spots, city);   // địa điểm thành phố: dẫn tới trước cửa
 }
 let goal = null;   // nơi người chơi đang được dẫn tới
 const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
@@ -1109,8 +1350,8 @@ holdMic($("askMic"), t => $("askHeard").textContent = "🎙️ " + t, (alts, con
   if (!alts.length) { $("askHeard").textContent = "Không nghe thấy – giữ nút và nói to hơn, hoặc bấm 💡 Gợi ý."; return; }
   const low = alts.map(a => a.toLowerCase());
   $("askHeard").textContent = "Heard: “" + alts[0] + "”";
-  const t = targets().find(T => T.keys.some(k => low.some(h => h.indexOf(k) >= 0)));
-  if (t) { score += 5; $("score").textContent = score; guideTo(t); }
+  const t = targets().find(T => T.keys.some(k => low.some(h => (" " + h.replace(/[^a-z ]/g, " ") + " ").indexOf(" " + k + " ") >= 0)));   // khớp nguyên từ (để "Tan" không khớp "station")
+  if (t) { score += 5; $("score").textContent = score; spokeOk(); guideTo(t); }
   else { $("askHeard").textContent += " – Sorry, who or where? Thử: “Where is Mia?”"; speak("Sorry, who or where?"); $("askList").style.display = "flex"; }
 });
 $("askHint").onclick = () => $("askList").style.display = "flex";
@@ -1208,15 +1449,10 @@ function updateGhosts(dt, t) {
   waves = waves.filter(w => !w.done);
   pops.forEach(q => { q.t += dt; q.s.position.y += dt * 1.2; q.s.material.opacity = 1 - q.t; if (q.t >= 1) { scene.remove(q.s); q.done = true; } });
   pops = pops.filter(q => !q.done);
-  spirits.forEach((sp, i) => {   // tinh linh bay vòng quanh người chơi
-    const a = t * 1.5 + i * 2.1;
-    sp.position.lerp(new THREE.Vector3(player.position.x + Math.cos(a) * 1.1, 1.9 + Math.sin(t * 3 + i) * 0.15, player.position.z + Math.sin(a) * 1.1), 0.1);
-    sp.visible = player.visible;
-  });
 }
 function nextLine() {
   fight.line = pickLine(fight.G);
-  fight.limit = 8 + fight.line.split(" ").length * 1.5; fight.left = fight.limit;
+  fight.limit = 8 + fight.line.split(" ").length * 1.5 + gear().ears; fight.left = fight.limit;   // 👂 Ears: thêm giây
   $("fightSay").textContent = "“" + fight.line + "”";
   speak(fight.line);
 }
@@ -1239,7 +1475,8 @@ function endFight() {
 }
 function muteMe() {   // bị trúng chiêu "Shhh!" của The Mute: micro khóa 3 giây
   charAct(player, "Hit_A");
-  if (Math.random() < 0.35 && !isProtected()) { save.poisonUntil = Date.now() + 5 * 60 * 1000; saveNow(); flash("☠️ Mute poison! Your voice is weak. Buy medicine at the pharmacy."); }   // 35%: trúng độc 5 phút
+  // 🛡️ Resist: khó trúng độc hơn
+  if (Math.random() < 0.35 * (1 - Math.min(80, gear().resist) / 100) && !isProtected()) { save.poisonUntil = Date.now() + 5 * 60 * 1000; saveNow(); flash("☠️ Mute poison! Your voice is weak. Buy medicine at the pharmacy."); }   // 35%: trúng độc 5 phút
   fight.muted = true; $("fightMic").disabled = true;
   $("fightFb").textContent = "🤐 Shhh! The ghost muted you!"; $("fightFb").style.color = "var(--bad)";
   speak("Shhh!");
@@ -1261,8 +1498,10 @@ function popText(text, pos, color) {   // số sát thương bay lên
 function hitGhost(acc) {
   charAct(player, "Spellcast_Shoot");   // tung chiêu
   const G = fight.G, words = fight.line.split(" ").length;
-  let dmg = Math.round(acc * (12 + words * 4) * (1 + playerLevel() * 0.1));
-  useEnergy(4);
+  const gr = gear();
+  let dmg = Math.round(acc * (12 + words * 4) * (1 + playerLevel() * 0.1) * (1 + gr.voice / 100));   // 🗣️ Voice: sát thương cao hơn
+  useEnergy(Math.max(2, 4 - Math.floor(gr.stamina / 6)));   // 💪 Stamina: tốn ít năng lượng hơn
+  spokeOk();
   if (isPoisoned()) dmg = Math.round(dmg * 0.5);   // trúng độc: giọng yếu, sát thương giảm một nửa
   if (G.lv > playerLevel() + 1) dmg = Math.round(dmg * 0.3);   // quái quá mạnh: phải lên cấp trước
   soundWave(G.g.position);
@@ -1275,16 +1514,8 @@ function hitGhost(acc) {
     if (G.hp <= 0) freeGhost(G); else nextLine();
   }, 450);
 }
-const spirits = [];
-let spiritCount = 0;
+let spiritCount = 0;   // số Word Spirit đã giải thoát: không bay theo người nữa, mà được trưng trong nhà riêng (🏠 My Home)
 try { spiritCount = +localStorage.getItem("ev_spirits") || 0; } catch (e) {}
-function addSpirit() {
-  if (spirits.length >= 3) return;   // tối đa 3 tinh linh bay theo
-  const sp = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), new THREE.MeshBasicMaterial({ color: 0xfff3bf }));
-  const glow = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: 0.35 }));
-  sp.add(glow); sp.position.copy(player.position).setY(1.9); scene.add(sp); spirits.push(sp);
-}
-for (let i = 0; i < Math.min(3, spiritCount); i++) addSpirit();
 function freeGhost(G) {   // ma được giải thoát → hóa thành Word Spirit
   charAct(player, "Cheer");
   G.alive = false;
@@ -1292,11 +1523,12 @@ function freeGhost(G) {   // ma được giải thoát → hóa thành Word Spir
   G.mat.color.setHex(0xfff3bf);
   let k = 0;
   const rise = setInterval(() => { k++; G.g.position.y += 0.08; G.mat.opacity = 0.85 - k * 0.04; if (k > 20) { clearInterval(rise); G.g.visible = false; } }, 40);
-  score += 15; $("score").textContent = score; addCoins(10);
+  const coins = Math.round(10 * (1 + gear().luck / 100));   // 🍀 Luck: thêm xu
+  score += 15; $("score").textContent = score; addCoins(coins);
   spiritCount++; try { localStorage.setItem("ev_spirits", spiritCount); } catch (e) {}
-  addSpirit();
   popText("+15 ⭐", G.g.position, "#f08c00");   // chỉ hiện phần thưởng bay lên, không thông báo/lời cảm ơn
-  setTimeout(() => popText("+10 🪙", G.g.position.clone().add(new THREE.Vector3(0, 0.6, 0)), "#e67700"), 300);
+  checkLegends();
+  setTimeout(() => popText("+" + coins + " 🪙", G.g.position.clone().add(new THREE.Vector3(0, 0.6, 0)), "#e67700"), 300);
   setTimeout(() => spawnGhost(G), 20000);   // 20 giây sau sương lại sinh ra ma mới
 }
 function fightStart(e) {
@@ -1328,7 +1560,7 @@ $("fightMic").addEventListener("contextmenu", e => e.preventDefault());
    Dữ liệu (tên, vị trí, màu, người bán, món bán) nằm trong places.js → CITY.
    Nội thất mỗi nhà là một "phòng" riêng đặt xa bản đồ; bước qua cửa = dịch chuyển vào phòng.
    Chỉ vẽ những nhà ở gần người chơi cho nhẹ máy. */
-let room = null, nearDoor = null, nearKeeper = null, shopRec = null;
+let room = null, nearDoor = null, nearKeeper = null, nearSpot = null, shopRec = null;
 const ROT = { south: 0, north: Math.PI, east: Math.PI / 2, west: -Math.PI / 2 };
 function textPlate(text, w, h, bg, fg) {   // bảng chữ (biển hiệu)
   const c = document.createElement("canvas"); c.width = 512; c.height = Math.round(512 * h / w);
@@ -1421,6 +1653,7 @@ function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng
     counter(0xf8f0fc);
     [-4, 4].forEach(dx => { addBox(g, 3, 0.08, 0.08, 0x868e96, cx + dx, 1.9, cz); [0xe64980, 0x4dabf7, 0xfab005, 0x51cf66].forEach((c, i) => addBox(g, 0.5, 0.9, 0.12, c, cx + dx - 1.1 + i * 0.73, 1.4, cz)); P.room.solids.push({ x: cx + dx, z: cz, hw: 1.5, hd: 0.2 }); });
     addBox(g, 1.2, 2.2, 0.1, 0xd0ebff, cx + 5.6, 1.3, back + 0.1);   // gương
+    P.room.spots = [{ x: cx + 5.6, z: back + 1.4, label: "🪞 Try on / Mặc thử", fn: () => { bagSel = null; drawBag(); $("bag").style.display = "block"; } }];
     fur("cabinet_small_decorated", cx - 5, back + 0.5, 0, 1.1, 1, 0.5);
     fur("armchair", cx + 5.6, cz + 3, -Math.PI / 2, 1, 0.9, 0.8);
   }
@@ -1446,6 +1679,88 @@ function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng
     fur("table_medium", cx + 4.6, back + 1.3, 0, 1, 1, 1);   // bàn thí nghiệm của Pasteur
     ["🧪", "🔬", "🧫"].forEach((e, i) => { const sp = emojiSprite(e, 0.6); sp.position.set(cx + 3.8 + i * 0.8, 1.35, back + 1.3); g.add(sp); });
   }
+  /* Các địa điểm mới: bày nội thất theo "layout" trong places.js */
+  const G = P.goods || [], L = P.layout, sprite = (e, sz, x, y, z) => { const sp = emojiSprite(e, sz); sp.position.set(x, y, z); g.add(sp); };
+  const cabinets = () => { fur("cabinet_medium", cx - 4.6, back + 0.55, 0, 1.2, 1.25, 0.6); goods(cx - 4.6, G); fur("cabinet_medium", cx + 4.6, back + 0.55, 0, 1.2, 1.25, 0.6); goods(cx + 4.6, G.slice(3).concat(G.slice(0, 3))); };
+  const desk = (x, z) => { fur("table_medium", x, z, 0, 1, 1, 0.7); fur("chair_B_wood", x, z + 1.1, Math.PI, 1, 0.35, 0.35); };
+  if (L === "shop") { counter(P.awning); cabinets(); fur("couch_pillows", cx - 4.6, cz + 3.4, 0, 1, 1.5, 0.75); }
+  if (L === "tables") { counter(P.awning); cabinets();
+    [[-4.6, -0.3], [4.6, -0.3], [-4.6, 2.7], [4.6, 2.7]].forEach(([dx, dz]) => { fur("table_medium", cx + dx, cz + dz, 0, 1, 1, 0.7); fur("chair_A_wood", cx + dx - 1.3, cz + dz, Math.PI / 2, 1, 0.35, 0.35); fur("chair_A_wood", cx + dx + 1.3, cz + dz, -Math.PI / 2, 1, 0.35, 0.35); sprite(G[(dx > 0 ? 1 : 0) + (dz > 0 ? 2 : 0)] || "🍽️", 0.45, cx + dx, 1.05, cz + dz); }); }
+  if (L === "shelves") { counter(P.awning); cabinets();
+    [-1.6, 1.8].forEach((dz, k) => [-1, 1].forEach(sx => { fur("shelf_B_large_decorated", cx + sx * (W / 2 - 0.5), cz + dz, -sx * Math.PI / 2, 1, 0.5, 1.1); G.slice(k * 3, k * 3 + 3).forEach((e, i) => sprite(e, 0.45, cx + sx * (W / 2 - 1.2), 0.9 + i * 0.6, cz + dz)); })); }
+  if (L === "desks") { counter(P.awning); cabinets();
+    if (P.type === "school") { const b = textPlate("A b c  ·  1 2 3  ·  Hello!", 5, 1.6, "#2b4c3f", "#ffffff"); b.position.set(cx, 2.1, back + 0.05); g.add(b); }
+    [[-3.6, 0.2], [0, 0.2], [3.6, 0.2], [-3.6, 3], [0, 3], [3.6, 3]].forEach(([dx, dz]) => desk(cx + dx, cz + dz)); }
+  if (L === "lab") { counter(P.awning); cabinets();
+    [-4.4, 4.4].forEach((dx, k) => { fur("table_medium", cx + dx, cz + 1.4, 0, 1.2, 1.2, 0.8); G.slice(k * 3, k * 3 + 3).forEach((e, i) => sprite(e, 0.55, cx + dx - 0.7 + i * 0.7, 1.35, cz + 1.4)); }); }
+  if (L === "salon") { counter(P.awning); cabinets();
+    [-1, 1].forEach(sx => [-0.5, 2.8].forEach(dz => { addBox(g, 0.08, 1.6, 1.1, 0xd0ebff, cx + sx * (W / 2 - 0.06), 1.6, cz + dz); fur("armchair", cx + sx * (W / 2 - 1.3), cz + dz, -sx * Math.PI / 2, 1, 0.8, 0.8); })); }
+  if (L === "showroom") { counter(P.awning);
+    [["couch_pillows", -4.6, 0, 0, 1.5, 0.75], ["armchair_pillows", 4.6, 0, 0, 0.8, 0.8], ["shelf_B_large_decorated", -6.8, 2.6, Math.PI / 2, 0.5, 1.1], ["table_medium", 4.6, 3, 0, 1, 0.7], ["lamp_standing", 6.8, 3.6, 0, 0.35, 0.35], ["cabinet_medium_decorated", -4.6, -D / 2 + 0.55, 0, 1.25, 0.6]]
+      .forEach(([n, dx, dz, r, hw, hd]) => fur(n, cx + dx, cz + dz, r, 1, hw, hd)); }
+  if (L === "museum") {   // không có quầy: bục trưng bày + hiện vật
+    [[-5, -3], [0, -4.4], [5, -3], [-5, 1.6], [5, 1.6], [0, 2.6]].forEach(([dx, dz], i) => { addBox(g, 1.2, 1, 1.2, 0xdee2e6, cx + dx, 0.5, cz + dz); P.room.solids.push({ x: cx + dx, z: cz + dz, hw: 0.6, hd: 0.6 }); sprite(G[i] || "🏺", 1.1, cx + dx, 1.65, cz + dz); });
+    addBox(g, 3, 0.04, 0.6, 0xc92a2a, cx, 0.02, cz - 0.6); }
+  if (L === "cinema") { counter(P.awning);
+    const sc = textPlate("NOW SHOWING: The Brave Voice", 9, 2.2, "#0b1d3a", "#ffd43b"); sc.position.set(cx, 2.3, back + 0.05); g.add(sc);
+    G.slice(0, 2).forEach((e, i) => sprite(e, 0.5, cx - 2 + i * 4, 1.15, back + 3.4));
+    [0.6, 2.4, 4.2].forEach(dz => [-5, -3.8, -2.6, 2.6, 3.8, 5].forEach(dx => fur("chair_B_wood", cx + dx, cz + dz, Math.PI, 1, 0.35, 0.35))); }
+  if (L === "home") furnishHome(P, g, cx, cz, W, D, fur);
+}
+/* NHÀ RIÊNG 🏠: giường, rương 🧰 cất đồ, gương 🪞 thay đồ, phòng trưng bày 🖼️ (thẻ, tinh linh, trang phục, cúp), đồ nội thất đã mua */
+const DECOR_SPOTS = [[-5.4, 2.6, Math.PI / 2], [5.4, 2.6, -Math.PI / 2], [-2.6, 4.4, Math.PI], [2.6, 4.4, Math.PI], [-6.6, 0, Math.PI / 2], [6.6, 0, -Math.PI / 2], [-1.5, 1.2, 0], [1.5, 1.2, 0]];
+function furnishHome(P, g, cx, cz, W, D, fur) {
+  const back = cz - D / 2;
+  fur("bed_single_A", cx - 6, back + 1.6, 0, 1, 0.8, 1.5);
+  addBox(g, 1.6, 0.9, 0.9, 0x8d5a2b, cx + 6.2, 0.45, back + 0.8); addBox(g, 1.7, 0.18, 1, 0x6f4e37, cx + 6.2, 0.95, back + 0.8);   // rương
+  addBox(g, 1.8, 0.1, 0.12, 0xfab005, cx + 6.2, 0.7, back + 1.26);
+  const cl = emojiSprite("🧰", 0.6); cl.position.set(cx + 6.2, 1.5, back + 0.8); g.add(cl);
+  P.room.solids.push({ x: cx + 6.2, z: back + 0.8, hw: 0.85, hd: 0.5 });
+  addBox(g, 0.1, 2.2, 1.2, 0xd0ebff, cx - W / 2 + 0.06, 1.4, cz + 1.4); addBox(g, 0.12, 2.4, 1.4, 0x8d5a2b, cx - W / 2 + 0.03, 1.4, cz + 1.4);   // gương soi
+  const gt = textPlate("MY GALLERY", 3, 0.5, "#fff8e7", "#6c4a2f"); gt.position.set(cx, 3, back + 0.04); g.add(gt);
+  P.room.spots = [
+    { x: cx + 6.2, z: back + 2, label: "🧰 Open chest", fn: () => { drawChest(); $("chest").style.display = "block"; } },
+    { x: cx - W / 2 + 1.2, z: cz + 1.4, label: "🪞 Wardrobe", fn: () => { bagSel = null; drawBag(); $("bag").style.display = "block"; } },
+    { x: cx, z: back + 1.6, label: "🖼️ My Gallery", fn: openGallery }
+  ];
+  P.dyn = new THREE.Group(); g.add(P.dyn);
+}
+function homeRefresh(P) {   // vẽ lại phần thay đổi: thẻ trên tường, tinh linh, đồ nội thất đã mua
+  const R = P.room, back = R.cz - R.d / 2, dyn = P.dyn; if (!dyn) return;
+  while (dyn.children.length) dyn.remove(dyn.children[0]);
+  R.solids = R.solids.filter(o => !o.decor);
+  const cards = allCards().filter(c => owned.indexOf(c.w) >= 0);
+  cards.slice(0, 14).forEach((c, i) => {   // khung thẻ trên tường sau
+    const x = R.cx - 4.55 + (i % 7) * 1.5, y = 1.35 + Math.floor(i / 7) * 1.05;
+    const fr = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.9, 0.06), new THREE.MeshLambertMaterial({ color: 0x8d5a2b })); fr.position.set(x, y, back + 0.05); dyn.add(fr);
+    const sp = emojiSprite(c.pic, 0.6); sp.position.set(x, y, back + 0.2); dyn.add(sp);
+  });
+  for (let i = 0; i < Math.min(8, spiritCount); i++) {   // tinh linh trên bục cạnh tường phải
+    const x = R.cx + 7.3, z = R.cz - 2.2 + i * 0.75;
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 0.9, 12), new THREE.MeshLambertMaterial({ color: 0xdee2e6 })); ped.position.set(x, 0.45, z); dyn.add(ped);
+    const sp = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), new THREE.MeshBasicMaterial({ color: 0xfff3bf })); sp.position.set(x, 1.15, z); sp.userData.spirit = i; dyn.add(sp);
+    const gl = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: 0.35 })); sp.add(gl);
+  }
+  if (spiritCount > 8) { const t = textPlate("✨ × " + spiritCount, 1.2, 0.4, "#fff8e7", "#e67700"); t.position.set(R.cx + R.w / 2 - 0.04, 2.2, R.cz + 0.4); t.rotation.y = -Math.PI / 2; dyn.add(t); }
+  save.decor.forEach((id, i) => {   // đồ nội thất đã mua ở Home & Co
+    const it = ITEMS[id], S = DECOR_SPOTS[i]; if (!it || !S) return;
+    gltfModel("furniture", it.decor, m => { m.position.set(R.cx + S[0], 0, R.cz + S[1]); m.rotation.y = S[2]; dyn.add(m); shade(m); });
+    R.solids.push({ x: R.cx + S[0], z: R.cz + S[1], hw: 0.6, hd: 0.6, decor: true });
+  });
+}
+function openGallery() {   // phòng trưng bày: các bộ sưu tập + đồ huyền thoại
+  const all = allCards(), outfits = Object.keys(ITEMS).filter(k => ITEMS[k].slot);
+  const have = k => save.items[k] || save.chest[k] || Object.values(save.equip).indexOf(k) >= 0;
+  const sec = (t, html) => "<div style='font-weight:700;margin-top:12px'>" + t + "</div>" + html;
+  let h = sec("🎴 Cards " + owned.length + "/" + all.length, "<div class='gal'>" + all.map(c => "<div" + (owned.indexOf(c.w) < 0 ? " style='opacity:.35'" : "") + "><div class='pic'>" + (owned.indexOf(c.w) >= 0 ? c.pic : "❔") + "</div>" + (owned.indexOf(c.w) >= 0 ? c.w : "???") + "</div>").join("") + "</div>");
+  h += sec("✨ Word Spirits: " + spiritCount, "<div style='font-size:13px;opacity:.8'>Free Echo Ghosts in Misty Park to collect more. / Giải thoát ma ở Misty Park để có thêm.</div>");
+  h += sec("👕 Outfits " + outfits.filter(have).length + "/" + outfits.length, "<div class='gal'>" + outfits.map(k => { const it = ITEMS[k]; return "<div style='border-color:" + RARITY[it.rarity].color + (have(k) ? "" : ";opacity:.35") + "'><div class='pic'>" + it.icon + "</div>" + it.name + "</div>"; }).join("") + "</div>");
+  h += sec("🏆 Legendary", LEGENDS.map(L => { const it = ITEMS[L.item], got = save.legends.indexOf(L.item) >= 0;
+    const p1 = Math.min(1, spiritCount / L.need.spirits), p2 = Math.min(1, save.spoken / L.need.spoken);
+    return "<div style='border:2px solid #fab005;border-radius:12px;padding:8px;margin-top:6px'><b>" + it.icon + " " + it.name + "</b> – " + L.title + (got ? " ✅" : "") +
+      "<div style='font-size:13px'>" + L.desc + "</div><div style='font-size:12px;margin-top:4px'>✨ Spirits " + Math.min(spiritCount, L.need.spirits) + "/" + L.need.spirits + "</div><div class='bar'><div style='width:" + p1 * 100 + "%'></div></div>" +
+      "<div style='font-size:12px;margin-top:4px'>🎤 Sentences spoken " + Math.min(save.spoken, L.need.spoken) + "/" + L.need.spoken + "</div><div class='bar'><div style='width:" + p2 * 100 + "%'></div></div></div>"; }).join(""));
+  $("galleryBody").innerHTML = h; $("gallery").style.display = "block";
 }
 function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay vào trong (camera ở ngoài vẫn nhìn xuyên vào được)
   const W = 16, D = 12, cx = 300 + i * 40, cz = 300, H = 3.4, g = new THREE.Group();
@@ -1462,7 +1777,7 @@ function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay v�
   furnish(P, g, cx, cz, W, D);
   let k = null;
   if (P.keeper) {   // người bán (nếu có)
-    k = makeChar(P.keeper.color); k.position.set(cx, 0, cz - D / 2 + 2.4); k.add(nameTag(P.keeper.name.split(" – ")[0]));
+    k = makeChar(P.keeper.color); k.position.set(cx, 0, cz - D / 2 + 2.4); { const I = npcInfo(P.keeper.name); k.add(nameTag(I.short, I.job)); }
     P.room.solids.push({ x: cx, z: cz - D / 2 + 2.4, hw: 0.4, hd: 0.4 });
   }
   P.keeperMesh = k;
@@ -1485,16 +1800,92 @@ function prop(name, x, z, ry, sc, hw, hd, noShadow) {
   cityModel(name, m => { m.scale.setScalar(sc || 4.6); g.add(m); if (noShadow) m.traverse(o => { o.castShadow = false; o.receiveShadow = true; }); else shade(m); });
   if (hw) { const sw = Math.abs(Math.sin(ry || 0)) > 0.7; solid(x, z, sw ? hd : hw, sw ? hw : hd); }
 }
-[["building_B", -30, -24], ["building_C", -44, -24], ["building_E", 30, -24], ["building_C", 44, -24], ["building_B", 42, 4], ["building_E", -56, 4]]
-  .forEach(([n, x, z]) => prop(n, x, z, 0, 5, 5, 5));   // nhà phố nền (chưa vào được)
-for (let x = -56; x <= 56; x += 16) prop("streetlight", x, 14.8, Math.PI, 4.6, 0.25, 0.25, true);   // đèn đường Market Street
-for (let x = -56; x <= 56; x += 16) if (Math.abs(x) > 10) prop("streetlight", x, -11.2, Math.PI, 4.6, 0.25, 0.25, true);   // North Avenue
+for (let x = -88; x <= 88; x += 16) prop("streetlight", x, 14.8, Math.PI, 4.6, 0.25, 0.25, true);   // đèn đường Market Street
+for (let x = -88; x <= 88; x += 16) if (Math.abs(x) > 10) prop("streetlight", x, -11.2, Math.PI, 4.6, 0.25, 0.25, true);   // North Avenue
+[-92, -50, -32, 32, 50, 92].forEach(x => prop("streetlight", x, -41.2, Math.PI, 4.6, 0.25, 0.25, true));   // Hill Road
+for (let x = -88; x <= 88; x += 22) prop("streetlight", x, 53.2, 0, 4.6, 0.25, 0.25, true);   // South Road
 [[-5, 20, 0], [5, 20, 0], [-5, 28, Math.PI], [5, 28, Math.PI], [-4, 35.5, 0], [4, 35.5, 0]].forEach(([x, z, r]) => prop("bench", x, z, r, 5, 1, 0.4, true));   // ghế quảng trường, công viên
 [[-32, 9.6], [-20, 9.6], [-48, 9.6], [-36, 9.6], [20, 9.6], [32, 9.6], [-6, -18.6], [6, -18.6]].forEach(([x, z]) => prop("bush", x, z, 0, 4.5, 0.4, 0.4, true));   // chậu cây trước cửa hàng
 [["car_sedan", -48, 13, Math.PI / 2], ["car_taxi", 36, 10.9, -Math.PI / 2], ["car_hatchback", 52, 13, Math.PI / 2], ["car_police", -40, -12.9, Math.PI / 2], ["car_sedan", 22, -15.1, -Math.PI / 2]]
   .forEach(([n, x, z, r]) => prop(n, x, z, r, 4.6, 1, 2.2));   // xe đậu ven đường
 [[-14, 12], [14, 12], [-14, -14], [14, -14]].forEach(([x, z]) => prop("trafficlight_A", x + 2.4, z + 2.4, Math.PI, 4.6, 0.3, 0.3, true));   // đèn giao thông ở ngã tư
 [[-30, 10.4], [30, 10.4], [-8, -19]].forEach(([x, z]) => prop("firehydrant", x, z, 0, 4.6, 0.3, 0.3, true));
+/* ĐỊA ĐIỂM NGOÀI TRỜI (SPOTS trong places.js): dựng tạm bằng khối đơn giản, sẽ thay mô hình đẹp sau */
+const spinners = [];   // cánh quạt gió (quay liên tục)
+function cyl(rt, rb, h, color, x, y, z, seg) { const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 16), new THREE.MeshLambertMaterial({ color })); m.position.set(x, y, z); scene.add(m); return m; }
+function emo(e, size, x, y, z) { const sp = emojiSprite(e, size); sp.position.set(x, y, z); scene.add(sp); return sp; }
+function fence(x0, z0, x1, z1, gap) {   // hàng rào chữ nhật, chừa cổng ở cạnh phía bắc (gap = rộng cổng)
+  const c = 0xa0522d, h = 1.1;
+  const seg = (x, z, w, d) => { box(w, h, d, c, x, h / 2, z); solid(x, z, w / 2, d / 2); };
+  const mx = (x0 + x1) / 2, half = (x1 - x0 - gap) / 2;
+  seg(x0 + half / 2, z0, half, 0.15); seg(x1 - half / 2, z0, half, 0.15);
+  seg(mx, z1, x1 - x0, 0.15); seg(x0, (z0 + z1) / 2, 0.15, z1 - z0); seg(x1, (z0 + z1) / 2, 0.15, z1 - z0);
+}
+const SPOT_BUILD = {
+  busstop: S => {   // nhà chờ xe buýt + xe buýt
+    [-1.6, 1.6].forEach(dx => { box(0.12, 2.6, 0.12, 0x495057, S.x + dx, 1.3, S.z + 0.8); solid(S.x + dx, S.z + 0.8, 0.1, 0.1); });
+    box(3.8, 0.12, 1.8, 0x1c7ed6, S.x, 2.65, S.z + 0.2); box(3.4, 1.6, 0.08, 0xa5d8ff, S.x, 1.4, S.z + 1);
+    const pl = textPlate("BUS STOP 🚌", 2.4, 0.5, "#1c7ed6", "#ffffff"); pl.position.set(S.x, 3.05, S.z + 0.2); pl.rotation.y = Math.PI; scene.add(pl);
+    prop("bench", S.x, S.z + 0.5, Math.PI, 5, 1, 0.4, true);
+    box(8, 2.4, 2.6, 0xfab005, S.x + 3, 1.5, S.z + 5); box(7.6, 0.8, 2.64, 0xa5d8ff, S.x + 3, 2, S.z + 5); solid(S.x + 3, S.z + 5, 4, 1.3);   // xe buýt đậu sau nhà chờ
+    [-1.5, 1.5].forEach(dx => [-1.3, 1.3].forEach(dz => { const w = cyl(0.45, 0.45, 0.25, 0x212529, S.x + 3 + dx * 1.6, 0.45, S.z + 5 + dz); w.rotation.x = Math.PI / 2; }));
+  },
+  market: S => {   // chợ: 6 sạp có mái bạt và hàng hóa
+    const fruit = [["🥭", "🍉", "🍍"], ["🥬", "🥕", "🌽"], ["🐟", "🦐", "🦀"], ["🍌", "🍊", "🍇"], ["🌶️", "🧄", "🥔"], ["🌸", "🌼", "🌻"]], col = [0xe03131, 0x2f9e44, 0x1c7ed6, 0xfab005, 0xe8590c, 0xae3ec9];
+    [[-7, 3], [0, 3], [7, 3], [-7, 9], [0, 9], [7, 9]].forEach(([dx, dz], i) => {
+      const x = S.x + dx, z = S.z + dz;
+      box(4, 0.9, 1.6, 0x8d5a2b, x, 0.45, z); solid(x, z, 2, 0.8);
+      [-1.8, 1.8].forEach(px => box(0.1, 2.4, 0.1, 0x6c4a2f, x + px, 1.2, z - 0.7));
+      const roof = box(4.4, 0.1, 2.4, col[i], x, 2.45, z + 0.2); roof.rotation.x = -0.15;
+      fruit[i].forEach((e, k) => emo(e, 0.6, x - 1.2 + k * 1.2, 1.25, z - 0.3));
+    });
+    sign("Wet Market", S.x - 11, S.z - 1, 3.4);
+  },
+  zoo: S => {   // sở thú: hàng rào, chuồng thú
+    fence(S.x - 14, S.z - 10, S.x + 14, S.z + 10, 5);
+    sign("City Zoo", S.x + 5.5, S.z - 10.5, 3);
+    [["🐘", -9, -4], ["🦒", -9, 4], ["🦁", 0, 5], ["🐒", 9, 4], ["🐧", 9, -4], ["🦓", 0, -3]].forEach(([e, dx, dz]) => {
+      flat(6, 5, 0xb2f2bb, S.x + dx, S.z + dz, 0.02); emo(e, 2.2, S.x + dx, 1.4, S.z + dz); solid(S.x + dx, S.z + dz, 1, 1);
+    });
+    tree(S.x - 12, S.z + 8); tree(S.x + 12, S.z + 8);
+  },
+  farm: S => {   // nông trại: luống rau + nhà kho đỏ
+    fence(S.x - 14, S.z - 10, S.x + 14, S.z + 10, 5);
+    sign("Green Farm", S.x + 5.5, S.z - 10.5, 3.2);
+    ["🥕", "🍅", "🌽", "🥬"].forEach((e, i) => { flat(14, 1.6, 0x8d5a2b, S.x - 4, S.z - 5 + i * 3, 0.02); for (let k = 0; k < 6; k++) emo(e, 0.6, S.x - 10 + k * 2.4, 0.4, S.z - 5 + i * 3); });
+    box(6, 4, 5, 0xc92a2a, S.x + 8.5, 2, S.z + 3); solid(S.x + 8.5, S.z + 3, 3, 2.5);
+    const r = new THREE.Mesh(new THREE.ConeGeometry(4.3, 2, 4), new THREE.MeshLambertMaterial({ color: 0x5c3d2e })); r.rotation.y = Math.PI / 4; r.scale.set(1, 1, 0.85); r.position.set(S.x + 8.5, 5, S.z + 3); scene.add(r);
+    box(2, 2.6, 0.1, 0xffffff, S.x + 8.5, 1.3, S.z + 0.45);
+    emo("🐄", 1.6, S.x + 2, 1, S.z + 7); emo("🐔", 0.9, S.x - 2, 0.6, S.z + 7.5); emo("🐖", 1.2, S.x - 6, 0.8, S.z + 7);
+  },
+  stadium: S => {   // sân vận động: sân cỏ, đường chạy, khán đài
+    const track = new THREE.Mesh(new THREE.CircleGeometry(1, 40), new THREE.MeshLambertMaterial({ color: 0xc0583a })); track.rotation.x = -Math.PI / 2; track.scale.set(16, 11, 1); track.position.set(S.x, 0.02, S.z); track.userData.flat = true; scene.add(track);
+    flat(22, 13, 0x51cf66, S.x, S.z, 0.03); flat(0.2, 13, 0xffffff, S.x, S.z, 0.04);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(1.8, 2, 32), new THREE.MeshBasicMaterial({ color: 0xffffff })); ring.rotation.x = -Math.PI / 2; ring.position.set(S.x, 0.045, S.z); scene.add(ring);
+    [-1, 1].forEach(sx => { box(0.15, 2, 0.15, 0xffffff, S.x + sx * 10.5, 1, S.z - 1.8); box(0.15, 2, 0.15, 0xffffff, S.x + sx * 10.5, 1, S.z + 1.8); box(0.15, 0.15, 3.7, 0xffffff, S.x + sx * 10.5, 2, S.z); });
+    [[0, -12.5, 26, 2], [-17.5, 0, 2, 20], [17.5, 0, 2, 20]].forEach(([dx, dz, w, d]) => { for (let k = 0; k < 3; k++) { const o = k * 0.8 * (dx ? Math.sign(dx) : -1); box(w, 0.8 + k * 0.8, d, [0xe03131, 0x1c7ed6, 0xfab005][k], S.x + dx + (dx ? o : 0), (0.8 + k * 0.8) / 2, S.z + dz + (dx ? 0 : o)); } solid(S.x + dx, S.z + dz, w / 2 + 1.2, d / 2 + 1.2); });   // khán đài 3 bậc (phía nam để trống làm lối vào)
+    sign("Stadium", S.x + 6, S.z + 13.5, 3); emo("⚽", 0.7, S.x + 3, 0.4, S.z + 1);
+  },
+  power: S => {   // nhà máy điện: nhà xưởng, ống khói, pin mặt trời, cối xay gió
+    box(10, 5, 7, 0xadb5bd, S.x, 2.5, S.z - 4); solid(S.x, S.z - 4, 5, 3.5);
+    [-3, 3].forEach(dx => { cyl(0.8, 1.1, 9, 0xe9ecef, S.x + dx, 4.5, S.z - 7); });
+    const pl = textPlate("POWER PLANT ⚡", 5, 0.8, "#fab005", "#212529"); pl.position.set(S.x, 4, S.z - 0.45); scene.add(pl);
+    [-9, -6, 6, 9].forEach(dx => [3, 6].forEach(dz => { const p = box(2.6, 0.1, 1.8, 0x1c3d6e, S.x + dx, 1, S.z + dz); p.rotation.x = -0.5; box(0.1, 0.9, 0.1, 0x868e96, S.x + dx, 0.45, S.z + dz); solid(S.x + dx, S.z + dz, 1.3, 0.9); }));
+    [[-12, -4], [12, -4]].forEach(([dx, dz]) => { cyl(0.2, 0.35, 10, 0xf8f9fa, S.x + dx, 5, S.z + dz); solid(S.x + dx, S.z + dz, 0.4, 0.4);
+      const hub = new THREE.Group(); hub.position.set(S.x + dx, 10, S.z + dz + 0.4); scene.add(hub); spinners.push(hub);
+      for (let k = 0; k < 3; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.35, 4, 0.08), new THREE.MeshLambertMaterial({ color: 0xffffff })); b.position.y = 2; const arm = new THREE.Group(); arm.rotation.z = k * Math.PI * 2 / 3; arm.add(b); hub.add(arm); } });
+  },
+  airfield: S => {   // sân bay nhỏ: đường băng, máy bay, tháp điều khiển
+    flat(44, 8, 0x495057, S.x, S.z - 4, 0.03); for (let k = -20; k <= 20; k += 4) flat(2, 0.3, 0xffffff, S.x + k, S.z - 4, 0.04);
+    const fus = cyl(0.9, 0.7, 9, 0xf8f9fa, S.x - 6, 1.5, S.z - 4, 16); fus.rotation.z = Math.PI / 2;
+    box(2.4, 0.15, 10, 0x1c7ed6, S.x - 6, 1.5, S.z - 4); box(1.2, 1.8, 0.15, 0x1c7ed6, S.x - 10, 2.6, S.z - 4); box(1.2, 0.15, 3.4, 0x1c7ed6, S.x - 10, 1.8, S.z - 4);
+    solid(S.x - 6, S.z - 4, 4.6, 5);
+    box(3, 7, 3, 0xdee2e6, S.x + 14, 3.5, S.z + 5); box(3.6, 1.4, 3.6, 0x74c0fc, S.x + 14, 7.7, S.z + 5); box(4, 0.3, 4, 0x495057, S.x + 14, 8.55, S.z + 5); solid(S.x + 14, S.z + 5, 1.6, 1.6);
+    const ws = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.6, 10, 1, true), new THREE.MeshLambertMaterial({ color: 0xfd7e14, side: THREE.DoubleSide })); ws.rotation.z = Math.PI / 2; ws.position.set(S.x - 19, 3.2, S.z + 4); scene.add(ws); box(0.1, 3.4, 0.1, 0x868e96, S.x - 18.2, 1.7, S.z + 4);
+    sign("Airfield", S.x + 5, S.z + 8.5, 3);
+  }
+};
+SPOTS.forEach(S => { if (SPOT_BUILD[S.type]) SPOT_BUILD[S.type](S); });
 const indoorBg = new THREE.Color(0x3b2f2a);
 function enterRoom(P) {
   room = P.room; P.int.visible = true;
@@ -1502,7 +1893,8 @@ function enterRoom(P) {
   camera.fov = Math.min(80, 2 * Math.atan(Math.tan(38 * Math.PI / 180) / camera.aspect) * 180 / Math.PI); camera.updateProjectionMatrix();   // trong nhà: góc nhìn rộng để thấy cả phòng
   sky.visible = false; clouds.forEach(c => c.visible = false); scene.background = indoorBg; scene.fog = null; roomLight.intensity = 0.22;
   ["askBtn", "guide", "askp"].forEach(id => $(id).style.display = "none"); goal = null; arrow.visible = false;
-  speak("Welcome to " + P.name + "!");
+  if (P.type === "home") homeRefresh(P);
+  speak(P.type === "home" ? "Welcome home, " + (myName || "friend") + "!" : "Welcome to " + P.name + "!");
 }
 function exitRoom() {
   const P = room.P; P.int.visible = false; room = null;
@@ -1511,6 +1903,7 @@ function exitRoom() {
   roomLight.intensity = 0; sky.visible = true; clouds.forEach(c => c.visible = true); scene.background = new THREE.Color(0xcfe8ff); scene.fog = new THREE.Fog(0xcfe8ff, 30, 70);
   $("askBtn").style.display = "block";
 }
+$("actBtn").onclick = () => { if (nearSpot) nearSpot.fn(); };
 $("doorBtn").onclick = () => { if (room) exitRoom(); else if (nearDoor) enterRoom(nearDoor); };
 let lodT = 0;
 function updateCity(dt) {
@@ -1519,29 +1912,40 @@ function updateCity(dt) {
     CITY.forEach(P => P.ext.visible = !room && Math.hypot(player.position.x - P.x, player.position.z - P.z) < 90);
     PROPS.forEach(g => g.visible = !room && Math.hypot(player.position.x - g.position.x, player.position.z - g.position.z) < 70);
   }
-  nearDoor = null; nearKeeper = null;
-  if (maze || talking) { $("doorBtn").style.display = "none"; $("shopBtn").style.display = "none"; return; }
+  nearDoor = null; nearKeeper = null; nearSpot = null;
+  if (maze || talking) { $("doorBtn").style.display = "none"; $("shopBtn").style.display = "none"; $("actBtn").style.display = "none"; return; }
   if (room) {
     if (Math.hypot(player.position.x - room.exit.x, player.position.z - room.exit.z) < 1.8) nearDoor = room.P;
     if (room.P.keeperMesh && Math.hypot(player.position.x - room.P.keeperMesh.position.x, player.position.z - room.P.keeperMesh.position.z) < 4.3) nearKeeper = room.P;   // người bán đứng sau quầy nên cho phép xa hơn chút
+    (room.spots || []).forEach(S => { if (Math.hypot(player.position.x - S.x, player.position.z - S.z) < 1.8) nearSpot = S; });   // rương, gương, phòng trưng bày…
   } else CITY.forEach(P => { if (Math.hypot(player.position.x - P.doorPos.x, player.position.z - P.doorPos.z) < 2) nearDoor = P; });
   $("doorBtn").textContent = room ? "🚪 Exit" : nearDoor ? "🚪 Enter " + nearDoor.name : "";
   $("doorBtn").style.display = nearDoor ? "block" : "none";
   $("shopBtn").style.display = nearKeeper ? "block" : "none";
-  if (nearDoor || nearKeeper) { $("talk").style.display = "none"; $("atkBtn").style.display = "none"; }
+  if (nearSpot && !nearDoor && !nearKeeper) { $("actBtn").textContent = nearSpot.label; $("actBtn").style.display = "block"; } else $("actBtn").style.display = "none";
+  if (nearDoor || nearKeeper || nearSpot) { $("talk").style.display = "none"; $("atkBtn").style.display = "none"; }
 }
 /* Cửa hàng: nói câu tiếng Anh để mua (giảm 10% + ⭐), hoặc bấm mua (giá thường) */
 function priceOf(id, voice) { return voice ? Math.max(1, Math.floor(ITEMS[id].price * 0.9)) : ITEMS[id].price; }
 function buy(id, voice, polite) {
   const it = ITEMS[id], cost = priceOf(id, voice);
-  if (save.coins < cost) { $("shopFb").textContent = "😕 Not enough coins. / Không đủ xu."; speak("Sorry, you don't have enough coins."); return; }
-  save.coins -= cost; save.items[id] = (save.items[id] || 0) + 1;
+  if (it.lv > playerLevel()) { $("shopFb").textContent = "🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv; $("shopFb").style.color = "var(--bad)"; speak("Sorry, you need level " + it.lv + " for that."); return; }
+  if (save.coins < cost) { $("shopFb").textContent = "😕 Not enough coins. / Không đủ xu."; $("shopFb").style.color = "var(--bad)"; speak("Sorry, you don't have enough coins."); return; }
+  if (it.head) {   // dịch vụ cắt tóc: đổi ngay khuôn mặt + kiểu tóc
+    if (save.head === it.head) { $("shopFb").textContent = "You already have this style!"; return; }
+    save.head = it.head; refreshLook();
+  } else if (it.decor) {   // đồ nội thất: chuyển thẳng về nhà
+    if (save.decor.length >= DECOR_SPOTS.length) { $("shopFb").textContent = "🏠 Your home is full! / Nhà đã đầy đồ."; return; }
+    save.decor.push(id);
+  } else if (!addItem(save.items, BAG_SIZE, id)) { $("shopFb").textContent = "🎒 Bag is full! Store things in your chest at home. / Túi đầy, hãy cất bớt vào rương ở nhà."; $("shopFb").style.color = "var(--bad)"; speak("Your bag is full."); return; }
+  save.coins -= cost;
   if (voice) score += polite ? 4 : 2;
   charAct(room.P.keeperMesh, "Interact");
   saveNow(); renderHud();
-  $("shopFb").innerHTML = "✅ " + it.icon + " " + it.name + " – " + cost + " 🪙" + (voice ? " (−10%" + (polite ? ", polite +4 ⭐)" : ", +2 ⭐)") : "");
+  $("shopFb").innerHTML = "✅ " + it.icon + " " + it.name + " – " + cost + " 🪙" + (voice ? " (−10%" + (polite ? ", polite +4 ⭐)" : ", +2 ⭐)") : "") +
+    (it.slot ? "<div style='font-size:13px'>Mở 🎒 để mặc thử! / Open your bag to wear it.</div>" : it.decor ? "<div style='font-size:13px'>Delivered to 🏠 My Home!</div>" : "");
   $("shopFb").style.color = "var(--ok)";
-  speak(voice ? "Here you are! " + (polite ? "Thank you for saying please!" : "") : "Here you are!");
+  speak(it.head ? "Wow, you look so cool!" : voice ? "Here you are! " + (polite ? "Thank you for saying please!" : "") : "Here you are!");
   drawShop(false);
 }
 function drawShop(first) {
@@ -1552,12 +1956,21 @@ function drawShop(first) {
   $("shopMic").style.display = P.sells.length && SR ? "block" : "none";
   $("shopList").innerHTML = "";
   P.sells.forEach(id => {
-    const it = ITEMS[id], b = document.createElement("button"); b.className = "item";
-    b.innerHTML = '<div class="pic">' + it.icon + '</div><div class="n">' + it.name + '</div><div class="d">' + it.desc + '</div><div style="margin-top:4px;font-weight:700">' + it.price + " 🪙 · Buy</div>";
+    const it = ITEMS[id], b = document.createElement("button"), lock = it.lv > playerLevel();
+    b.className = "item"; if (it.rarity) b.style.borderColor = RARITY[it.rarity].color; if (lock) b.style.opacity = 0.6;
+    b.innerHTML = '<div class="pic">' + it.icon + '</div><div class="n">' + it.name + "</div>" + (it.rarity ? rarityTag(it) + '<div class="d">' + statsText(it.stats) + "</div>" : '<div class="d">' + it.desc + "</div>") +
+      '<div style="margin-top:4px;font-weight:700">' + (lock ? "🔒 Lv." + it.lv : it.price + " 🪙 · Buy") + "</div>";
     b.onclick = () => buy(id, false);
     $("shopList").appendChild(b);
   });
   $("shopCoins").textContent = "🪙 " + save.coins;
+}
+function heardItem(heard, list) {   // món nào khớp nhiều từ nhất với câu người chơi nói
+  const h = " " + heard.toLowerCase().replace(/-/g, " ") + " ";
+  let best = null, bs = 0;
+  list.forEach(k => { const ws = ITEMS[k].name.toLowerCase().replace(/-/g, " ").split(" ").filter(w => w.length >= 3);
+    const sc = ws.filter(w => h.indexOf(w) >= 0).length / (ws.length + 0.5); if (sc > bs) { bs = sc; best = k; } });
+  return best;
 }
 $("shopBtn").onclick = () => { talking = true; $("shopBtn").style.display = "none"; $("shopp").style.display = "block"; drawShop(true); };
 $("shopClose").onclick = () => { $("shopp").style.display = "none"; talking = false; };
@@ -1569,9 +1982,8 @@ function shopStart(e) {
   r.onresult = ev => { heard = ""; for (const res of ev.results) heard += res[0].transcript; $("shopFb").textContent = "🎙️ " + heard; $("shopFb").style.color = "var(--ink)"; };
   r.onend = () => {
     shopRec = null; $("shopMic").classList.remove("rec");
-    const h = " " + heard.toLowerCase() + " ";
-    const id = room.P.sells.find(k => ITEMS[k].name.toLowerCase().split(" ").some(wd => wd.length >= 3 && h.indexOf(wd) >= 0));
-    if (id) buy(id, true, h.indexOf("please") >= 0);
+    const id = heardItem(heard, room.P.sells);
+    if (id) { spokeOk(); buy(id, true, /please/i.test(heard)); }
     else { $("shopFb").textContent = heard ? "😕 “" + heard + "” – Sorry, what would you like?" : "Giữ nút và nói to hơn nhé!"; $("shopFb").style.color = "var(--bad)"; if (heard) speak("Sorry, what would you like?"); }
   };
   shopRec = r; $("shopMic").classList.add("rec");
@@ -1580,6 +1992,71 @@ function shopStart(e) {
 $("shopMic").addEventListener("pointerdown", shopStart);
 ["pointerup", "pointercancel", "pointerleave"].forEach(ev => $("shopMic").addEventListener(ev, () => { if (shopRec) try { shopRec.stop(); } catch (e) {} }));
 
+/* ===== 8b. BẢN ĐỒ NHỎ (góc phải) + BẢN ĐỒ LỚN (chạm vào bản đồ nhỏ) =====
+   Bản đồ nhỏ xoay theo camera: phía trên bản đồ = phía trước mặt mình. Bản đồ lớn: phía bắc ở trên, có tên địa điểm. */
+function mapRect(P) { const sw = P.door === "east" || P.door === "west"; return { x: P.x, z: P.z, w: sw ? P.d : P.w, d: sw ? P.w : P.d }; }
+function drawCity(x) {   // vẽ thành phố trong hệ tọa độ thế giới (x, z)
+  x.fillStyle = "#8fd17a"; x.fillRect(-110, -90, 220, 185);
+  x.fillStyle = "#9aa5b1"; x.fillRect(-13, 35, 26, 12);   // Misty Park (sương mù)
+  x.fillStyle = "#e9e2d0"; ROADS.forEach(r => x.fillRect(r.x - r.w / 2, r.z - r.d / 2, r.w, r.d));
+  x.fillStyle = "#e9e2d0"; x.fillRect(-7, 17, 14, 14);   // quảng trường
+  x.fillStyle = "#74c0fc"; x.beginPath(); x.arc(0, 24, 2.7, 0, 7); x.fill();
+  x.fillStyle = "#3d5a80"; x.fillRect(20, 21, 8, 6); x.fillStyle = "#868e96"; x.fillRect(12, 31, 29, 2);   // nhà ga, đường ray
+  x.fillStyle = "#2b8a3e"; x.fillRect(-24.5, 17, 1, 14);   // cổng mê cung
+  SPOTS.forEach(S => { x.fillStyle = { zoo: "#b2f2bb", farm: "#d9b38c", stadium: "#51cf66", airfield: "#868e96", power: "#ced4da", market: "#ffd8a8", busstop: "#74c0fc" }[S.type] || "#ced4da";
+    const r = { zoo: [28, 20], farm: [28, 20], stadium: [36, 26], airfield: [44, 18], power: [26, 18], market: [22, 12], busstop: [4, 3] }[S.type] || [6, 6];
+    x.fillRect(S.x - r[0] / 2, S.z - (S.type === "market" ? 0 : r[1] / 2), r[0], r[1]); });
+  CITY.forEach(P => { const r = mapRect(P); x.fillStyle = "#" + P.roof.toString(16).padStart(6, "0"); x.fillRect(r.x - r.w / 2, r.z - r.d / 2, r.w, r.d);
+    if (P.id === "home") { x.strokeStyle = "#ffd43b"; x.lineWidth = 1.2; x.strokeRect(r.x - r.w / 2, r.z - r.d / 2, r.w, r.d); } });
+}
+function drawDots(x, sz) {   // NPC (vàng), người chơi khác (xanh), đích (đỏ), mình (mũi tên cam)
+  LESSONS.forEach(L => { const P = L.inPlace, X = P ? P.x : L.x, Z = P ? P.z : L.z; x.fillStyle = "#ffd43b"; x.strokeStyle = "#5c3d00"; x.lineWidth = sz * 0.25; x.beginPath(); x.arc(X, Z, sz * 0.9, 0, 7); x.fill(); x.stroke(); });
+  for (const id in others) { const g = others[id].g.position; x.fillStyle = "#1c7ed6"; x.beginPath(); x.arc(g.x, g.z, sz, 0, 7); x.fill(); }
+  if (goal) { x.fillStyle = "#e03131"; x.beginPath(); x.arc(goal.x, goal.z, sz * 1.4, 0, 7); x.fill(); }
+  const p = room ? room.P.doorPos : player.position, a = room ? 0 : player.rotation.y, fx = Math.sin(a), fz = Math.cos(a);
+  x.fillStyle = "#e8590c"; x.strokeStyle = "#fff"; x.lineWidth = sz * 0.4; x.beginPath();
+  x.moveTo(p.x + fx * sz * 2.4, p.z + fz * sz * 2.4); x.lineTo(p.x - fx * sz * 1.4 + fz * sz * 1.5, p.z - fz * sz * 1.4 - fx * sz * 1.5); x.lineTo(p.x - fx * sz * 1.4 - fz * sz * 1.5, p.z - fz * sz * 1.4 + fx * sz * 1.5); x.closePath(); x.stroke(); x.fill();
+}
+const miniX = $("mini").getContext("2d");
+let miniT = 0;
+function updateMini(dt) {
+  if ((miniT += dt) < 0.1) return; miniT = 0;   // vẽ 10 lần/giây cho nhẹ máy
+  const show = !maze && !creating; $("mini").style.display = show ? "block" : "none"; if (!show) return;
+  const x = miniX, c = 120, k = 120 / 40, p = room ? room.P.doorPos : player.position;   // bán kính hiển thị 40 m
+  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, 240, 240);
+  x.save(); x.translate(c, c); x.rotate(room ? 0 : camAngle); x.scale(k, k); x.translate(-p.x, -p.z);
+  drawCity(x, k); drawDots(x, 1.3);
+  x.restore();
+  const n = room ? 0 : camAngle;   // chữ N chỉ hướng bắc (thế giới: bắc = phía z âm)
+  x.font = "bold 22px system-ui"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#c92a2a";
+  x.lineWidth = 5; x.strokeStyle = "#fff"; x.strokeText("N", c + Math.sin(n) * 98, c - Math.cos(n) * 98); x.fillText("N", c + Math.sin(n) * 98, c - Math.cos(n) * 98);
+}
+let bigK = 1;
+function drawBig() {   // bản đồ lớn cả thành phố (phóng to, kéo để xem), phía bắc ở trên
+  const cv = $("bigCv"), w = Math.max(600, ($("bigWrap").clientWidth || 320) * 2), h = Math.round(w * 185 / 220), dpr = Math.min(2, devicePixelRatio || 1);
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+  const x = cv.getContext("2d"); bigK = w / 220;
+  x.setTransform(dpr * bigK, 0, 0, dpr * bigK, dpr * 110 * bigK, dpr * 90 * bigK);
+  drawCity(x, bigK, true); drawDots(x, 1.3);
+  x.setTransform(dpr, 0, 0, dpr, 0, 0);   // chữ: cỡ cố định theo pixel
+  x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 11px system-ui, sans-serif"; x.lineJoin = "round";
+  const lab = (t, X, Z) => { const ws = t.split(" "), lines = []; ws.forEach(wd => { const L = lines[lines.length - 1]; if (L && (L + " " + wd).length <= 8) lines[lines.length - 1] = L + " " + wd; else lines.push(wd); });
+    lines.forEach((l, i) => { const px = (X + 110) * bigK, py = (Z + 90) * bigK + (i - (lines.length - 1) / 2) * 12; x.lineWidth = 3; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(l, px, py); x.fillStyle = "#212529"; x.fillText(l, px, py); }); };
+  CITY.forEach(P => lab((P.id === "home" ? "🏠 " : "") + P.name, P.x, P.z));
+  SPOTS.forEach(S => lab(S.name, S.x, S.z + (S.type === "market" ? 6 : 0)));
+  PLACES.forEach(P => lab(P.name.replace("the ", "").replace(/^./, c => c.toUpperCase()), P.x, P.z + 3));
+  const p = room ? room.P.doorPos : player.position, wr = $("bigWrap");
+  wr.scrollLeft = (p.x + 110) * bigK - wr.clientWidth / 2; wr.scrollTop = (p.z + 90) * bigK - wr.clientHeight / 2;   // cuộn tới chỗ mình đang đứng
+}
+$("mini").onclick = () => { if (maze) return; $("bigmap").style.display = "block"; drawBig(); };
+$("bigClose").onclick = () => $("bigmap").style.display = "none";
+$("bigCv").onclick = e => {   // chạm địa điểm trên bản đồ lớn → chỉ đường tới đó
+  const r = $("bigCv").getBoundingClientRect(), wx = (e.clientX - r.left) / bigK - 110, wz = (e.clientY - r.top) / bigK - 90;
+  let best = null, bd = 9;
+  targets().filter(t => !t.npc).forEach(t => { const P = CITY.find(c => c.name === t.name), d = P ? Math.hypot(P.x - wx, P.z - wz) : Math.hypot(t.x - wx, t.z - wz); if (d < bd) { bd = d; best = t; } });
+  if (!best || room) return;
+  $("bigmap").style.display = "none"; guideTo(best);
+};
 /* ===== 5. VÒNG LẶP GAME (chạy ~60 lần/giây) ===== */
 const clock = new THREE.Clock();
 const camRay = new THREE.Raycaster();
@@ -1611,7 +2088,7 @@ function loop() {
     if (!blocked(player.position.x, player.position.z + wz)) player.position.z += wz;
     player.rotation.y = Math.atan2(wx, wz);
   }
-  LESSONS.forEach(L => L.mark.position.set(L.x, 2.2 + Math.sin(t * 3) * 0.12, L.z));
+  LESSONS.forEach(L => L.mark.position.set(L.x, 3.05 + Math.sin(t * 3) * 0.12, L.z));
   updateGuide(dt, t);
   updateOnline(dt);
   updateMazeGate();
@@ -1619,8 +2096,10 @@ function loop() {
   updateGhosts(dt, t);
   updateEconomy(dt);
   updateCity(dt);
+  updateMini(dt);
   sun.position.set(player.position.x + 12, 22, player.position.z + 9); sun.target.position.copy(player.position);   // vùng bóng đổ đi theo người chơi
   animateChars(dt);
+  spinners.forEach(h => h.rotation.z += dt * 1.2);
   if (fountainSpray) { fountainSpray.scale.set(1 + Math.sin(t * 5) * 0.06, 1 + Math.sin(t * 7) * 0.12, 1 + Math.sin(t * 5) * 0.06); fountainSpray.rotation.y += dt; }
   clouds.forEach(c => { c.userData.a += dt * 0.004; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = 20 + Math.sin(c.userData.a) * c.userData.r; });
   if (!talking) {
@@ -1642,8 +2121,8 @@ function loop() {
     if (keys["r"]) camPitch = Math.max(0.1, camPitch - 1.2 * dt);
     if (keys["f"]) camPitch = Math.min(1.35, camPitch + 1.2 * dt);
     if (room) camPitch = Math.max(0.7, camPitch);   // trong nhà: nhìn chếch xuống cho thấy cả phòng
-    const D = room ? 9 : 11, ch = Math.cos(camPitch) * D;
-    const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(camPitch) * D, p.z + Math.cos(camAngle) * ch);
+    const D = creating ? 5.5 : room ? 9 : 11, ch = Math.cos(creating ? 0.25 : camPitch) * D;
+    const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(creating ? 0.25 : camPitch) * D, p.z + Math.cos(camAngle) * ch);
     if (!room) {   // có tường/nhà chắn giữa nhân vật và camera → kéo camera lại gần
       const head = camRay.ray.origin.set(p.x, 1.5, p.z), dir = camRay.ray.direction.copy(want).sub(head), dist = dir.length();
       dir.normalize(); camRay.far = dist;
@@ -1651,6 +2130,7 @@ function loop() {
       if (hit) { want.copy(head).addScaledVector(dir, Math.max(0.8, hit.distance - 0.4)); camera.position.copy(want); }
     }
     if (camSnap) { camera.position.copy(want); camSnap = false; } else camera.position.lerp(want, 0.12);
+    if (creating) camera.lookAt(p.x, 0.35, p.z); else
     camera.lookAt(p.x, 0.9 + (1 - camPitch / 1.35) * 1.4, p.z);   // càng nhìn ngang càng ngẩng lên thấy trời
   }
   sky.position.set(camera.position.x, 0, camera.position.z);   // trời luôn bao quanh camera
