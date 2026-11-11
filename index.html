@@ -135,7 +135,9 @@ button{font:inherit;cursor:pointer}
 </div>
 <div id="namep"><div class="box">
   <div style="font-size:22px;font-weight:700">Welcome to EnglishVerse! 👋</div>
-  <div style="margin-top:8px">What’s your name?</div>
+  <div style="margin-top:8px">Choose your character:</div>
+  <div id="avPick" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px"></div>
+  <div style="margin-top:10px">What’s your name?</div>
   <input id="nameIn" maxlength="12" placeholder="e.g. Lily" autocomplete="off">
   <div id="nameErr" style="font-size:14px;margin-top:8px;color:var(--bad)"></div>
   <button id="nameGo">Let’s go! ▶</button>
@@ -156,6 +158,8 @@ button{font:inherit;cursor:pointer}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/dist/umd/supabase.js"></script>
 <script src="lessons.js"></script>
 <script src="places.js"></script>
@@ -315,7 +319,45 @@ sign("Park", 3.5, 35, 2.6);
 
 const chars = [];   // mọi nhân vật chibi (để tạo dáng đi)
 const HAIR = [0x3b2a1a, 0x5c3d2e, 0x111111, 0xa0522d, 0xe0b04f];
-function makeChar(bodyColor) {   // nhân vật chibi: đầu to, thân nhỏ, tay chân vung khi đi
+/* Nhân vật 3D có hoạt ảnh (bộ KayKit, xem assets/CREDITS.md). Trong lúc tải: hiện chibi đơn giản. */
+const AVATARS = { Mage: "Wizard", Knight: "Knight", Rogue: "Explorer", Barbarian: "Viking", Rogue_Hooded: "Ninja" };   // tên file → tên hiển thị (tiếng Anh)
+const AV_KEYS = Object.keys(AVATARS);
+const modelTpl = {}, modelWait = {};
+function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật cùng loại
+  if (modelTpl[name] || modelWait[name] || !THREE.GLTFLoader) return;
+  modelWait[name] = [];
+  new THREE.GLTFLoader().load("assets/characters/" + name + ".glb", gltf => {
+    const box = new THREE.Box3().setFromObject(gltf.scene);
+    modelTpl[name] = { scene: gltf.scene, clips: gltf.animations, scale: 1.9 / (box.max.y - box.min.y) };
+    modelWait[name].forEach(attachModel); modelWait[name] = null;
+  }, undefined, () => { modelWait[name] = null; });   // lỗi tải: giữ chibi
+}
+function attachModel(g) {
+  const tpl = modelTpl[g.userData.model]; if (!tpl) { if (modelWait[g.userData.model]) modelWait[g.userData.model].push(g); return; }
+  if (g.userData.mesh) g.remove(g.userData.mesh);
+  const m = THREE.SkeletonUtils.clone(tpl.scene); m.scale.setScalar(tpl.scale);
+  m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = false; o.frustumCulled = false; } });
+  g.add(m); g.userData.mesh = m;
+  g.userData.chibi.forEach(c => c.visible = false);
+  const mixer = new THREE.AnimationMixer(m), acts = {};
+  tpl.clips.forEach(c => acts[c.name] = mixer.clipAction(c));
+  g.userData.mixer = mixer; g.userData.acts = acts; g.userData.cur = null;
+  playLoop(g, "Idle");
+}
+function playLoop(g, name) {   // hoạt ảnh lặp: đứng / đi / chạy
+  const u = g.userData, a = u.acts && u.acts[name]; if (!a || u.cur === name) return;
+  a.reset().setLoop(THREE.LoopRepeat).fadeIn(0.2).play();
+  if (u.cur && u.acts[u.cur]) u.acts[u.cur].fadeOut(0.2);
+  u.cur = name;
+}
+function charAct(g, name) {   // hoạt ảnh một lần: reo mừng, niệm phép, bị trúng...
+  const u = g.userData, a = u.acts && u.acts[name]; if (!a) return;
+  a.reset().setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = false; a.fadeIn(0.15).play();
+  if (u.cur && u.acts[u.cur] && u.cur !== name) u.acts[u.cur].fadeOut(0.15);
+  u.cur = name; u.busy = a.getClip().duration - 0.2;
+}
+function setAvatar(g, name) { if (!AVATARS[name]) return; g.userData.model = name; loadModel(name); attachModel(g); }
+function makeChar(bodyColor, avatar) {   // nhân vật: tạo khung chibi ngay, rồi thay bằng mô hình 3D khi tải xong
   const g = new THREE.Group(), M = c => new THREE.MeshLambertMaterial({ color: c });
   const skin = M(0xffd8b5), dark = new THREE.MeshBasicMaterial({ color: 0x1f1f1f }), white = new THREE.MeshBasicMaterial({ color: 0xffffff });
   const body = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.34, 0.55, 16), M(bodyColor));   // children[0] = áo (đổi màu được)
@@ -338,9 +380,10 @@ function makeChar(bodyColor) {   // nhân vật chibi: đầu to, thân nhỏ, t
     const blush = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffa8a8 })); blush.scale.set(1.2, 0.6, 0.4); blush.position.set(x * 1.65, 1.17, 0.36); g.add(blush);
   });
   const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.015, 6, 12, Math.PI), dark); mouth.position.set(0, 1.15, 0.43); mouth.rotation.z = Math.PI; g.add(mouth);
-  g.userData = { arms, legs, last: new THREE.Vector3(), phase: 0 };
+  g.userData = { arms, legs, last: new THREE.Vector3(), phase: 0, chibi: g.children.slice() };
   scene.add(g); chars.push(g); shade(g);
   g.traverse(m => { if (m.isMesh) m.receiveShadow = false; });   // nhân vật không nhận bóng (tránh vệt lạ trên mặt/tóc)
+  setAvatar(g, AVATARS[avatar] ? avatar : AV_KEYS[bodyColor % AV_KEYS.length]);
   return g;
 }
 function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
@@ -349,6 +392,12 @@ function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
     if (!g.parent) { chars.splice(i, 1); continue; }
     const sp = Math.hypot(g.position.x - u.last.x, g.position.z - u.last.z) / Math.max(dt, 0.001);
     u.last.copy(g.position);
+    if (u.mixer) {   // mô hình 3D: chọn hoạt ảnh theo tốc độ
+      if (u.busy > 0) u.busy -= dt;
+      else playLoop(g, sp > 3.3 ? "Running_A" : sp > 0.4 ? "Walking_A" : "Idle");
+      if (g.visible) u.mixer.update(dt);
+      continue;
+    }
     const amp = Math.min(1, sp / 3) * 0.7;
     u.phase += dt * (4 + sp * 2);
     const sw = Math.sin(u.phase) * amp;
@@ -356,7 +405,10 @@ function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
     u.arms[0].rotation.x = -sw; u.arms[1].rotation.x = sw;
   }
 }
-const player = makeChar(0x3b82f6);
+let myAvatar = null;
+try { myAvatar = localStorage.getItem("ev_avatar"); } catch (e) {}
+if (!AVATARS[myAvatar]) myAvatar = AV_KEYS[Math.floor(Math.random() * AV_KEYS.length)];
+const player = makeChar(0x3b82f6, myAvatar);
 player.position.set(0, 0, 5.5);
 LESSONS.forEach(L => {
   L.mesh = makeChar(L.color);
@@ -449,6 +501,7 @@ $("next").onclick = () => {
 };
 $("talk").onclick = () => {
   NPC = near; talking = true; step = 0; gained = 0;
+  if (NPC.mesh) charAct(NPC.mesh, "Interact");
   $("next").textContent = "Next ▶";
   $("talk").style.display = "none";
   $("dlg").style.display = "block";
@@ -560,7 +613,7 @@ function goOnline() {
   chan.on("broadcast", { event: "pos" }, ({ payload: m }) => {
     let o = others[m.id];
     if (!o) {
-      o = others[m.id] = { g: makeChar(m.c), n: String(m.n).slice(0, 12) };
+      o = others[m.id] = { g: makeChar(m.c, m.a), n: String(m.n).slice(0, 12) };
       o.g.add(nameTag(String(m.n).slice(0, 12)));
       o.g.position.set(m.x, 0, m.z);
       countOnline();
@@ -569,9 +622,9 @@ function goOnline() {
   });
   chan.on("broadcast", { event: "bye" }, ({ payload: m }) => removeOther(m.id));
   chan.on("broadcast", { event: "chat" }, ({ payload: m }) => {
+    if (maze && m.v) maze.voice[m.id] = Math.max((maze.voice[m.id] || 0) + 1, m.k || 0);   // câu tự nói; m.k = tổng của người nói (bù tin bị rơi)
     const o = others[m.id]; if (!o) return;
     const t = cleanChat(m.t); if (!t) return;
-    if (maze && m.v) maze.voice[m.id] = (maze.voice[m.id] || 0) + 1;   // câu tự nói, không phải câu có sẵn
     showBubble(o.g, t);
     if (maze && m.id === maze.mate) { $("guide").textContent = (maze.role === "walker" ? "🗺️ " : "🚶 ") + String(o.n || "") + ": " + t; $("guide").style.display = "block"; speak(t); return; }
     if (!talking && o.g.position.distanceTo(player.position) < 12) speak(t);   // người ở gần thì nghe được giọng đọc
@@ -591,7 +644,7 @@ function updateOnline(dt) {
   sendT += dt; beatT += dt;
   const p = player.position, key = p.x.toFixed(1) + "," + p.z.toFixed(1) + "," + player.rotation.y.toFixed(1);
   if (sendT > 0.2 && (key !== lastSent || beatT > 3)) {   // tối đa 5 lần/giây, chỉ gửi khi di chuyển (hoặc 3 giây/lần để báo "vẫn ở đây")
-    chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, c: myColor, x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
+    chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, c: myColor, a: myAvatar, x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
     sendT = 0; beatT = 0; lastSent = key;
   }
 }
@@ -801,6 +854,7 @@ function updateMaze() {
 function endMaze(winTeam) {
   if (!maze || maze.ended) return;
   maze.ended = maze.over = true;
+  if (winTeam === maze.team) charAct(player, "Cheer");
   const t = mmss(performance.now() - maze.t0), duo = maze.m.mode === "duo";
   let title, pts;
   if (winTeam === null) { title = "⏰ Time’s up!"; pts = 5; }
@@ -889,7 +943,7 @@ function sendChat(text, voice) {   // voice = true: câu tự nói qua micro
   lastChat = performance.now();
   showBubble(player, t);
   if (maze && voice) maze.voice[myId] = (maze.voice[myId] || 0) + 1;
-  if (online) chan.send({ type: "broadcast", event: "chat", payload: { id: myId, t, v: voice ? 1 : 0 } });
+  if (online) chan.send({ type: "broadcast", event: "chat", payload: { id: myId, t, v: voice ? 1 : 0, k: maze && voice ? maze.voice[myId] : 0 } });
   $("chatp").style.display = "none";
 }
 $("sayBtn").onclick = () => {
@@ -926,10 +980,18 @@ function startWithName() {
   $("namep").style.display = "none";
   goOnline();
 }
+AV_KEYS.forEach(k => {   // nút chọn nhân vật
+  const b = document.createElement("button"); b.textContent = AVATARS[k]; b.dataset.k = k;
+  b.style.cssText = "border:2px solid rgba(128,128,128,.4);background:transparent;color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700";
+  b.onclick = () => { myAvatar = k; setAvatar(player, k); document.querySelectorAll("#avPick button").forEach(x => x.style.borderColor = x.dataset.k === k ? "var(--accent)" : "rgba(128,128,128,.4)"); };
+  $("avPick").appendChild(b);
+});
+document.querySelectorAll("#avPick button").forEach(x => x.style.borderColor = x.dataset.k === myAvatar ? "var(--accent)" : "rgba(128,128,128,.4)");
 $("nameGo").onclick = () => {
   const n = $("nameIn").value.trim();
   if (!/^[A-Za-z][A-Za-z ]{1,11}$/.test(n)) { $("nameErr").textContent = "Use English letters only, 2–12 letters. (Chỉ dùng chữ cái tiếng Anh, không dấu.)"; return; }
   myName = n;
+  try { localStorage.setItem("ev_avatar", myAvatar); } catch (e) {}
   try { localStorage.setItem("ev_name", n); } catch (e) {}
   startWithName();
 };
@@ -963,6 +1025,7 @@ function useItem(id) {
   if (it.cure) save.poisonUntil = 0;
   if (it.protect) save.protectUntil = Date.now() + it.protect * 1000;
   saveNow(); renderHud(); drawBag();
+  charAct(player, "Use_Item");
   speak(it.energy ? "Yummy! " + it.name + "." : "I feel better!");
 }
 function drawBag() {
@@ -1188,6 +1251,7 @@ function endFight() {
   fight = null; talking = false; $("fightp").style.display = "none";
 }
 function muteMe() {   // bị trúng chiêu "Shhh!" của The Mute: micro khóa 3 giây
+  charAct(player, "Hit_A");
   if (Math.random() < 0.35 && !isProtected()) { save.poisonUntil = Date.now() + 5 * 60 * 1000; saveNow(); flash("☠️ Mute poison! Your voice is weak. Buy medicine at the pharmacy."); }   // 35%: trúng độc 5 phút
   fight.muted = true; $("fightMic").disabled = true;
   $("fightFb").textContent = "🤐 Shhh! The ghost muted you!"; $("fightFb").style.color = "var(--bad)";
@@ -1208,6 +1272,7 @@ function popText(text, pos, color) {   // số sát thương bay lên
   s.scale.set(1.8, 0.68, 1); s.position.copy(pos).setY(2.6); scene.add(s); pops.push({ s, t: 0 });
 }
 function hitGhost(acc) {
+  charAct(player, "Spellcast_Shoot");   // tung chiêu
   const G = fight.G, words = fight.line.split(" ").length;
   let dmg = Math.round(acc * (12 + words * 4) * (1 + playerLevel() * 0.1));
   useEnergy(4);
@@ -1234,6 +1299,7 @@ function addSpirit() {
 }
 for (let i = 0; i < Math.min(3, spiritCount); i++) addSpirit();
 function freeGhost(G) {   // ma được giải thoát → hóa thành Word Spirit
+  charAct(player, "Cheer");
   G.alive = false;
   const line = fight.line;
   endFight();
@@ -1408,6 +1474,7 @@ function buy(id, voice, polite) {
   if (save.coins < cost) { $("shopFb").textContent = "😕 Not enough coins. / Không đủ xu."; speak("Sorry, you don't have enough coins."); return; }
   save.coins -= cost; save.items[id] = (save.items[id] || 0) + 1;
   if (voice) score += polite ? 4 : 2;
+  charAct(room.P.keeperMesh, "Interact");
   saveNow(); renderHud();
   $("shopFb").innerHTML = "✅ " + it.icon + " " + it.name + " – " + cost + " 🪙" + (voice ? " (−10%" + (polite ? ", polite +4 ⭐)" : ", +2 ⭐)") : "");
   $("shopFb").style.color = "var(--ok)";
