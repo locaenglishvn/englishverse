@@ -24,16 +24,32 @@ button{font:inherit;cursor:pointer}
 #mic{display:none;margin-top:10px;background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
 #heard{margin-top:8px;font-size:14px;opacity:.85}
 #askBtn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:8px 16px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-#askp{position:fixed;top:calc(56px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+#askp{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
 #askp .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 #askp .q{border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:999px;padding:8px 12px;font-size:15px}
 #askMic{background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
-#guide{position:fixed;top:calc(56px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#guide{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#albumBtn{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#album{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
+#album .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
+#cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:12px}
+.card{border:2px solid rgba(128,128,128,.35);border-radius:14px;padding:10px;text-align:center;background:transparent;color:var(--ink)}
+.card .pic{font-size:40px;line-height:1.2}.card .w{font-weight:700;margin-top:4px}.card .ex{font-size:13px;opacity:.8;margin-top:4px}
+.card.no{opacity:.55}.card.no .pic{filter:grayscale(1)}
+#toast{position:fixed;z-index:11;left:50%;top:30%;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;background:var(--panel);color:var(--ink);border:3px solid #fab005;border-radius:20px;padding:16px 24px;text-align:center;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
 </style>
 </head>
 <body>
 <div class="chip">⭐ <span id="score">0</span></div>
+<button id="albumBtn">🎴 <span id="cardCount">0</span></button>
+<div id="album"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🎴 My Cards</b><button class="q" id="albumClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button></div>
+  <div style="font-size:14px;opacity:.8;margin-top:4px">Chạm vào thẻ để nghe lại. Thẻ còn thiếu: hỏi 🧭 Ask để tìm người tặng thẻ!</div>
+  <div id="cards"></div>
+</div></div>
+<div id="toast"></div>
 <div id="stick"><div id="knob"></div></div>
 <button id="talk">💬 Talk</button>
 <button id="askBtn">🧭 Ask</button>
@@ -242,7 +258,7 @@ function showStep() {
       b.classList.add(c.ok ? "ok" : "bad");
       $("fb").textContent = c.fb;
       $("fb").style.color = c.ok ? "var(--ok)" : "var(--bad)";
-      if (c.ok) { score += 10; gained += 10; $("score").textContent = score; }
+      if (c.ok) { score += 10; gained += 10; $("score").textContent = score; if (s.card) gainCard(s.card); }
       $("mic").style.display = "none";
       $("next").style.display = "inline-block";
     };
@@ -312,6 +328,40 @@ function listen() {
   try { r.start(); } catch (err) { done(); }
 }
 $("mic").onclick = listen;
+
+/* ===== 4d. THẺ TỪ VỰNG: trả lời đúng thì nhận thẻ, xem lại trong sổ 🎴 =====
+   Tạm lưu trên máy (localStorage). Khi có server sẽ lưu theo tài khoản. */
+let owned = [];
+try { owned = JSON.parse(localStorage.getItem("ev_cards") || "[]"); } catch (e) {}
+function allCards() {
+  return LESSONS.flatMap(L => L.steps.filter(s => s.card).map(s => Object.assign({ from: L.name.split(/\s|–/)[0] }, s.card)));
+}
+function updateCardCount() { $("cardCount").textContent = owned.length + "/" + allCards().length; }
+let toastTimer = null;
+function gainCard(card) {
+  if (owned.indexOf(card.w) >= 0) return;
+  owned.push(card.w);
+  try { localStorage.setItem("ev_cards", JSON.stringify(owned)); } catch (e) {}
+  updateCardCount();
+  $("toast").innerHTML = '<div style="font-size:13px;font-weight:700;color:#e67700">NEW CARD!</div><div style="font-size:56px">' + card.pic + '</div><div style="font-size:20px;font-weight:700">' + card.w + "</div>";
+  $("toast").classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
+}
+$("albumBtn").onclick = () => {
+  $("cards").innerHTML = "";
+  allCards().forEach(c => {
+    const has = owned.indexOf(c.w) >= 0, d = document.createElement("button");
+    d.className = "card" + (has ? "" : " no");
+    d.innerHTML = has
+      ? '<div class="pic">' + c.pic + '</div><div class="w">' + c.w + '</div><div class="ex">' + c.ex + "</div>"
+      : '<div class="pic">❔</div><div class="w">???</div><div class="ex">Talk to ' + c.from + "</div>";
+    d.onclick = () => speak(has ? c.w + ". " + c.ex : "Where is " + c.from + "?");
+    $("cards").appendChild(d);
+  });
+  $("album").style.display = "block";
+};
+$("albumClose").onclick = () => $("album").style.display = "none";
+updateCardCount();
 
 /* ===== 4c. HỎI ĐƯỜNG: "Where is …?" – AI hướng dẫn chỉ đường bằng tiếng Anh ===== */
 const PLACES = [   // các địa điểm trong thị trấn (NPC lấy tự động từ LESSONS)
