@@ -24,11 +24,16 @@ button{font:inherit;cursor:pointer}
 #mic{display:none;margin-top:10px;background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
 #heard{margin-top:8px;font-size:14px;opacity:.85}
 #askBtn{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:8px 16px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-#askp{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+#askp{position:fixed;top:calc(140px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:18px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
 #askp .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 #askp .q{border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:999px;padding:8px 12px;font-size:15px}
 #askMic{background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
-#guide{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#guide{position:fixed;top:calc(140px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#bagBtn,#statusChip{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#bagBtn{left:100px}#statusChip{left:12px;top:calc(94px + env(safe-area-inset-top,0px));font-size:14px}
+#energyBar{display:inline-block;width:60px;height:8px;border-radius:4px;background:rgba(128,128,128,.3);vertical-align:middle;overflow:hidden}#energyBar div{height:100%;background:#fab005}
+#bag .item{border:2px solid rgba(128,128,128,.35);border-radius:14px;padding:10px;text-align:center;background:transparent;color:var(--ink)}
+#bag .item .pic{font-size:36px}#bag .item .n{font-weight:700}#bag .item .d{font-size:12px;opacity:.8}
 #albumBtn{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #album{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 #album .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
@@ -38,7 +43,7 @@ button{font:inherit;cursor:pointer}
 .card.no{opacity:.55}.card.no .pic{filter:grayscale(1)}
 #toast{position:fixed;z-index:11;left:50%;top:30%;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;background:var(--panel);color:var(--ink);border:3px solid #fab005;border-radius:20px;padding:16px 24px;text-align:center;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.35)}
 #toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-#online{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
+#online{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
 #namep{position:fixed;inset:0;z-index:12;display:none;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px}
 #namep .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:20px;width:100%;max-width:360px;text-align:center}
 #nameIn{width:100%;box-sizing:border-box;font:inherit;font-size:20px;padding:12px;border-radius:12px;border:2px solid rgba(128,128,128,.4);margin-top:12px;text-align:center;background:transparent;color:var(--ink);user-select:text;-webkit-user-select:text}
@@ -53,11 +58,11 @@ button{font:inherit;cursor:pointer}
 .panel .big{display:block;width:100%;margin-top:10px;padding:14px;border-radius:14px;border:0;color:#fff;font-size:17px;font-weight:700;text-align:left}
 .team{border-radius:12px;padding:10px;margin-top:8px;border:3px solid}
 .team.red{border-color:#e03131}.team.blue{border-color:#1c7ed6}
-#mazeHud{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:none;background:#212529;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-size:15px;white-space:nowrap}
+#mazeHud{position:fixed;top:calc(94px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:none;background:#212529;color:#fff;padding:6px 12px;border-radius:999px;font-weight:700;font-size:13px;white-space:nowrap}
 #talkBtn{position:fixed;right:18px;bottom:calc(24px + env(safe-area-inset-bottom,0px));display:none;width:104px;height:104px;border-radius:50%;border:0;background:#e8590c;color:#fff;font-size:15px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.35);touch-action:none;-webkit-touch-callout:none}
 #talkBtn.rec{background:#c92a2a;transform:scale(1.1)}
 #liveText{position:fixed;right:12px;left:12px;bottom:calc(200px + env(safe-area-inset-bottom,0px));display:none;text-align:right;font-size:16px;font-weight:600;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
-#mazeLeave{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;display:none;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700}
+#mazeLeave{position:fixed;top:calc(94px + env(safe-area-inset-top,0px));right:12px;display:none;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700}
 .me{background:rgba(250,176,5,.25);border-radius:6px;padding:0 4px}
 #atkBtn{position:fixed;right:24px;bottom:calc(52px + env(safe-area-inset-bottom,0px));display:none;background:#7048e8;color:#fff;border:0;border-radius:999px;padding:16px 24px;font-size:18px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 #fightp .hp{height:10px;border-radius:5px;background:rgba(128,128,128,.3);overflow:hidden;margin-top:6px}#fightp .hp div{height:100%;background:#e03131;transition:width .3s}
@@ -69,7 +74,14 @@ button{font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="chip">⭐ <span id="score">0</span></div>
+<div class="chip"><span id="lvl">Lv.1</span> · ⭐ <span id="score">0</span> · 🪙 <span id="coins">0</span></div>
+<button id="bagBtn">🎒</button>
+<div id="statusChip">⚡ <span id="energyBar"><div style="width:100%"></div></span> <span id="statusIcons"></span></div>
+<div id="bag" style="position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto"><div class="box" style="background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🎒 My Bag</b><button id="bagClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button></div>
+  <div id="bagInfo" style="font-size:14px;margin-top:4px"></div>
+  <div id="bagItems" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px"></div>
+</div></div>
 <button id="albumBtn">🎴 <span id="cardCount">0</span></button>
 <div id="album"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center"><b>🎴 My Cards</b><button class="q" id="albumClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button></div>
@@ -130,6 +142,7 @@ button{font:inherit;cursor:pointer}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/dist/umd/supabase.js"></script>
 <script src="lessons.js"></script>
+<script src="places.js"></script>
 <script>
 /* ===== 2. DỰNG CẢNH 3D ===== */
 const scene = new THREE.Scene();
@@ -139,14 +152,24 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
-scene.add(new THREE.AmbientLight(0xffffff, 0.75));
-const sun = new THREE.DirectionalLight(0xffffff, 0.6);
-sun.position.set(5, 10, 6);
-scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xdff0ff, 0x9bc47a, 0.62));   // ánh sáng trời + phản chiếu từ cỏ
+const sun = new THREE.DirectionalLight(0xfff0d6, 0.75);   // nắng ấm
+sun.position.set(12, 22, 9);
+renderer.shadowMap.enabled = true;   // bóng đổ mềm
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+Object.assign(sun.shadow.camera, { left: -22, right: 22, top: 22, bottom: -22, near: 1, far: 70 });
+sun.shadow.bias = -0.0008;
+scene.add(sun, sun.target);
+function shade(obj) {   // bật đổ bóng cho mọi khối trong obj (trừ mặt phẳng nằm đất)
+  obj.traverse(m => { if (m.isMesh) { m.castShadow = !m.userData.flat; m.receiveShadow = true; } });
+}
 
 function box(w, h, d, color, x, y, z) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color }));
   m.position.set(x, y, z);
+  m.castShadow = m.receiveShadow = true;
   scene.add(m);
   return m;
 }
@@ -200,19 +223,20 @@ grd.addColorStop(0, "#2f80ed"); grd.addColorStop(0.6, "#8cc4ff"); grd.addColorSt
 skyG.fillStyle = grd; skyG.fillRect(0, 0, 2, 256);
 const sky = new THREE.Mesh(new THREE.SphereGeometry(150, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2),
   new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(skyC), side: THREE.BackSide, fog: false, depthWrite: false }));
-sky.renderOrder = -1; scene.add(sky);
+sky.renderOrder = -1; sky.userData.flat = true; scene.add(sky);
 const clouds = [];
 for (let i = 0; i < 10; i++) {   // mây: vài quả cầu trắng ghép lại, trôi chậm
   const c = new THREE.Group(), mat = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x888888, fog: false });
   for (let k = 0; k < 4; k++) { const b = new THREE.Mesh(new THREE.SphereGeometry(3 + Math.random() * 2.5, 12, 10), mat); b.position.set(k * 3.5 - 5, Math.random() * 1.5, Math.random() * 2); b.scale.y = 0.6; c.add(b); }
   const a = i / 10 * Math.PI * 2, r = 70 + Math.random() * 40;
   c.position.set(Math.cos(a) * r, 35 + Math.random() * 15, 20 + Math.sin(a) * r); c.userData.a = a; c.userData.r = r;
+  c.traverse(m => m.userData.flat = true);   // mây không đổ bóng
   scene.add(c); clouds.push(c);
 }
 flat(400, 400, 0x8fd17a, 0, 20, -0.04);   // cỏ trải tới chân trời
 function flat(w, d, color, x, z, y) {   // mặt phẳng nằm trên đất: cỏ, đường, quảng trường
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color }));
-  m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); scene.add(m);
+  m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); m.userData.flat = true; scene.add(m);
 }
 flat(72, 58, 0x8fd17a, 0, 21, -0.02);     // cỏ
 flat(3, 11, 0xbfb6a8, 0, 12.5, 0.01);      // đường: quán → quảng trường
@@ -288,7 +312,8 @@ function makeChar(bodyColor) {   // nhân vật chibi: đầu to, thân nhỏ, t
   });
   const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.015, 6, 12, Math.PI), dark); mouth.position.set(0, 1.15, 0.43); mouth.rotation.z = Math.PI; g.add(mouth);
   g.userData = { arms, legs, last: new THREE.Vector3(), phase: 0 };
-  scene.add(g); chars.push(g);
+  scene.add(g); chars.push(g); shade(g);
+  g.traverse(m => { if (m.isMesh) m.receiveShadow = false; });   // nhân vật không nhận bóng (tránh vệt lạ trên mặt/tóc)
   return g;
 }
 function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
@@ -372,7 +397,7 @@ function showStep() {
       b.classList.add(c.ok ? "ok" : "bad");
       $("fb").textContent = c.fb;
       $("fb").style.color = c.ok ? "var(--ok)" : "var(--bad)";
-      if (c.ok) { score += 10; gained += 10; $("score").textContent = score; if (s.card) gainCard(s.card); }
+      if (c.ok) { score += 10; gained += 10; $("score").textContent = score; addCoins(2); if (s.card) gainCard(s.card); }
       $("mic").style.display = "none";
       $("next").style.display = "inline-block";
     };
@@ -695,6 +720,7 @@ function buildMaze(seed, ox, oz) {
   plate.rotation.y = Math.PI / 2; plate.position.set(gx - 0.3, 3.2, exit.z); g.add(plate);
   const goal = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.1, 20), new THREE.MeshBasicMaterial({ color: 0x40c057 }));
   goal.position.set(exit.x, 0.06, exit.z); g.add(goal);
+  shade(g);
   scene.add(g);
   return { group: g, solids, exit, at };
 }
@@ -757,7 +783,7 @@ function endMaze(winTeam) {
   const talk = maze.m.players.map(p => ({ id: p.id, n: p.n, k: maze.voice[p.id] || 0 })).sort((a, b) => b.k - a.k);
   const best = talk[0].k > 0 ? talk[0] : null;   // người tự nói nhiều câu nhất
   if (best && best.id === myId) pts += 10;
-  score += pts; $("score").textContent = score;
+  score += pts; $("score").textContent = score; addCoins(Math.round(pts / 2));
   speak(title.replace(/[^\w\s!’'.]/g, "") + (best ? " Best speaker: " + best.n + "!" : ""));
   $("matchp").innerHTML = '<b style="font-size:22px">' + title + '</b><div style="margin-top:6px">+' + pts + ' ⭐</div>' +
     '<div style="margin-top:8px">🎤 <b>Sentences spoken:</b> ' + talk.map(x => x.n + " " + x.k).join(" · ") + "</div>" +
@@ -882,6 +908,56 @@ $("nameGo").onclick = () => {
 };
 if (myName) startWithName(); else $("namep").style.display = "flex";
 
+/* ===== 4g. KINH TẾ: xu 🪙, năng lượng ⚡, trúng độc ☠️, túi đồ 🎒 =====
+   Lưu trên máy (localStorage). Khi có tài khoản sẽ lưu lên server. Vật phẩm định nghĩa trong places.js. */
+let save = null;
+try { save = JSON.parse(localStorage.getItem("ev_save") || "null"); } catch (e) {}
+if (!save) save = { xp: 0, coins: STARTER.coins, energy: 100, items: Object.assign({}, STARTER.items), poisonUntil: 0, protectUntil: 0 };
+score = save.xp || 0;
+function saveNow() { save.xp = score; try { localStorage.setItem("ev_save", JSON.stringify(save)); } catch (e) {} }
+function addCoins(n) { save.coins += n; saveNow(); renderHud(); }
+function useEnergy(n) { save.energy = Math.max(0, save.energy - n); saveNow(); renderHud(); }
+const isPoisoned = () => Date.now() < save.poisonUntil;
+const isProtected = () => Date.now() < save.protectUntil;
+function flash(html) {   // thông báo nhanh giữa màn hình
+  $("toast").innerHTML = '<div style="font-size:16px;font-weight:700;max-width:260px">' + html + "</div>";
+  $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
+}
+function renderHud() {
+  $("score").textContent = score; $("coins").textContent = save.coins; $("lvl").textContent = "Lv." + playerLevel();
+  $("energyBar").firstElementChild.style.width = save.energy + "%";
+  $("statusIcons").textContent = (isPoisoned() ? "☠️ " : "") + (isProtected() ? "🛡️" : "");
+}
+function useItem(id) {
+  const it = ITEMS[id]; if (!it || !save.items[id]) return;
+  if (it.energy && save.energy >= 100 && !it.cure) { flash("You are full! / Bạn đang no rồi."); return; }
+  save.items[id]--; if (!save.items[id]) delete save.items[id];
+  if (it.energy) save.energy = Math.min(100, save.energy + it.energy);
+  if (it.cure) save.poisonUntil = 0;
+  if (it.protect) save.protectUntil = Date.now() + it.protect * 1000;
+  saveNow(); renderHud(); drawBag();
+  speak(it.energy ? "Yummy! " + it.name + "." : "I feel better!");
+}
+function drawBag() {
+  $("bagInfo").innerHTML = "🪙 " + save.coins + " coins · ⚡ " + Math.round(save.energy) + "/100" + (isPoisoned() ? " · ☠️ Poisoned" : "") + (isProtected() ? " · 🛡️ Protected" : "");
+  const ids = Object.keys(save.items);
+  $("bagItems").innerHTML = ids.length ? "" : "<div style='opacity:.7'>Your bag is empty. Visit a shop!</div>";
+  ids.forEach(id => {
+    const it = ITEMS[id]; if (!it) return;
+    const b = document.createElement("button"); b.className = "item";
+    b.innerHTML = '<div class="pic">' + it.icon + '</div><div class="n">' + it.name + " ×" + save.items[id] + '</div><div class="d">' + it.desc + '</div><div style="margin-top:6px;font-weight:700;color:var(--accent)">Use</div>';
+    b.onclick = () => useItem(id);
+    $("bagItems").appendChild(b);
+  });
+}
+$("bagBtn").onclick = () => { drawBag(); $("bag").style.display = "block"; };
+$("bagClose").onclick = () => $("bag").style.display = "none";
+let hudT = 0;
+function updateEconomy(dt) {   // năng lượng tự hồi 1 điểm / 15 giây; cập nhật thanh trạng thái
+  save.energy = Math.min(100, save.energy + dt / 15);
+  if ((hudT += dt) > 1) { hudT = 0; renderHud(); saveNow(); }
+}
+
 /* ===== 4c. HỎI ĐƯỜNG: "Where is …?" – AI hướng dẫn chỉ đường bằng tiếng Anh ===== */
 const PLACES = [   // các địa điểm trong thị trấn (NPC lấy tự động từ LESSONS)
   { name: "Sunny Café", say: "the café", keys: ["cafe", "café", "coffee", "sunny"], x: 0, z: 2 },
@@ -1003,6 +1079,7 @@ function makeGhost(lv) {
   g.add(head, body);
   const tag = nameTag("Echo Ghost Lv." + lv); tag.position.y = 2.5; g.add(tag);
   scene.add(g);
+  shade(g);
   const G = { g, mat, lv, hpMax: 40 + lv * 30, hp: 0, tx: 0, tz: 0, alive: true };
   spawnGhost(G);
   ghosts.push(G);
@@ -1067,6 +1144,7 @@ function nextLine() {
 }
 $("atkBtn").onclick = () => {
   if (!nearGhost) return;
+  if (save.energy < 4) { flash("😫 You are tired! Eat something. / Hết năng lượng, hãy ăn gì đó (🎒)."); speak("I am hungry."); return; }
   if (!SR) { $("toast").innerHTML = "🎤 Cần micro + Chrome/Safari để đánh quái bằng giọng nói"; $("toast").classList.add("show"); setTimeout(() => $("toast").classList.remove("show"), 2500); return; }
   fight = { G: nearGhost, muted: false };
   talking = true; $("atkBtn").style.display = "none"; $("chatp").style.display = "none";
@@ -1082,6 +1160,7 @@ function endFight() {
   fight = null; talking = false; $("fightp").style.display = "none";
 }
 function muteMe() {   // bị trúng chiêu "Shhh!" của The Mute: micro khóa 3 giây
+  if (Math.random() < 0.35 && !isProtected()) { save.poisonUntil = Date.now() + 5 * 60 * 1000; saveNow(); flash("☠️ Mute poison! Your voice is weak. Buy medicine at the pharmacy."); }   // 35%: trúng độc 5 phút
   fight.muted = true; $("fightMic").disabled = true;
   $("fightFb").textContent = "🤐 Shhh! The ghost muted you!"; $("fightFb").style.color = "var(--bad)";
   speak("Shhh!");
@@ -1103,6 +1182,8 @@ function popText(text, pos, color) {   // số sát thương bay lên
 function hitGhost(acc) {
   const G = fight.G, words = fight.line.split(" ").length;
   let dmg = Math.round(acc * (12 + words * 4) * (1 + playerLevel() * 0.1));
+  useEnergy(4);
+  if (isPoisoned()) dmg = Math.round(dmg * 0.5);   // trúng độc: giọng yếu, sát thương giảm một nửa
   if (G.lv > playerLevel() + 1) dmg = Math.round(dmg * 0.3);   // quái quá mạnh: phải lên cấp trước
   soundWave(G.g.position);
   setTimeout(() => {
@@ -1131,7 +1212,7 @@ function freeGhost(G) {   // ma được giải thoát → hóa thành Word Spir
   G.mat.color.setHex(0xfff3bf);
   let k = 0;
   const rise = setInterval(() => { k++; G.g.position.y += 0.08; G.mat.opacity = 0.85 - k * 0.04; if (k > 20) { clearInterval(rise); G.g.visible = false; } }, 40);
-  score += 15; $("score").textContent = score;
+  score += 15; $("score").textContent = score; addCoins(10);
   spiritCount++; try { localStorage.setItem("ev_spirits", spiritCount); } catch (e) {}
   addSpirit();
   $("toast").innerHTML = '<div style="font-size:13px;font-weight:700;color:#7048e8">GHOST FREED! +15 ⭐</div><div style="font-size:48px">✨</div><div style="font-size:18px;font-weight:700">A Word Spirit joins you!</div><div style="font-size:14px">“' + line + '”</div>';
@@ -1199,6 +1280,8 @@ function loop() {
   updateMazeGate();
   updateMaze();
   updateGhosts(dt, t);
+  updateEconomy(dt);
+  sun.position.set(player.position.x + 12, 22, player.position.z + 9); sun.target.position.copy(player.position);   // vùng bóng đổ đi theo người chơi
   animateChars(dt);
   clouds.forEach(c => { c.userData.a += dt * 0.004; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = 20 + Math.sin(c.userData.a) * c.userData.r; });
   if (!talking) {
@@ -1226,6 +1309,7 @@ function loop() {
   sky.position.set(camera.position.x, 0, camera.position.z);   // trời luôn bao quanh camera
   renderer.render(scene, camera);
 }
+shade(scene); renderHud();
 loop();
 addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
