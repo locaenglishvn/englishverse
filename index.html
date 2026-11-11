@@ -53,6 +53,8 @@ button{font:inherit;cursor:pointer}
 .panel .big{display:block;width:100%;margin-top:10px;padding:14px;border-radius:14px;border:0;color:#fff;font-size:17px;font-weight:700;text-align:left}
 .team{border-radius:12px;padding:10px;margin-top:8px;border:3px solid}
 .team.red{border-color:#e03131}.team.blue{border-color:#1c7ed6}
+#mazeHud{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:none;background:#212529;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-size:15px;white-space:nowrap}
+#mazeLeave{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;display:none;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700}
 .me{background:rgba(250,176,5,.25);border-radius:6px;padding:0 4px}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
 </style>
@@ -71,6 +73,8 @@ button{font:inherit;cursor:pointer}
 <button id="mazeBtn">🏁 Maze</button>
 <div id="lobbyp" class="panel"></div>
 <div id="matchp" class="panel"></div>
+<div id="mazeHud"></div>
+<button id="mazeLeave">✕ Leave</button>
 <div id="chatp">
   <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
     <button id="chatMic">🎤 Nói tiếng Anh</button>
@@ -137,6 +141,7 @@ const obstacles = [];
 function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
 solid(-8, 0.5, 0.15, 6.5); solid(8, 0.5, 0.15, 6.5); solid(-4.75, 7, 3.25, 0.15); solid(4.75, 7, 3.25, 0.15);
 function blocked(x, z) {
+  if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
   if (x < -34 || x > 34 || z < -5.4 || z > 48) return true;   // ranh giới thị trấn
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
@@ -431,7 +436,7 @@ function goOnline() {
   chan.on("broadcast", { event: "pos" }, ({ payload: m }) => {
     let o = others[m.id];
     if (!o) {
-      o = others[m.id] = { g: makeChar(m.c) };
+      o = others[m.id] = { g: makeChar(m.c), n: String(m.n).slice(0, 12) };
       o.g.add(nameTag(String(m.n).slice(0, 12)));
       o.g.position.set(m.x, 0, m.z);
       countOnline();
@@ -443,6 +448,7 @@ function goOnline() {
     const o = others[m.id]; if (!o) return;
     const t = cleanChat(m.t); if (!t) return;
     showBubble(o.g, t);
+    if (maze && m.id === maze.mate) { $("guide").textContent = (maze.role === "walker" ? "🗺️ " : "🚶 ") + String(o.n || "") + ": " + t; $("guide").style.display = "block"; speak(t); return; }
     if (!talking && o.g.position.distanceTo(player.position) < 12) speak(t);   // người ở gần thì nghe được giọng đọc
   });
   chan.subscribe(st => { online = st === "SUBSCRIBED"; if (online) lastSent = ""; countOnline(); });
@@ -458,7 +464,7 @@ function updateOnline(dt) {
   }
   if (!online) return;
   sendT += dt; beatT += dt;
-  const p = player.position, key = p.x.toFixed(1) + "," + p.z.toFixed(1);
+  const p = player.position, key = p.x.toFixed(1) + "," + p.z.toFixed(1) + "," + player.rotation.y.toFixed(1);
   if (sendT > 0.2 && (key !== lastSent || beatT > 3)) {   // tối đa 5 lần/giây, chỉ gửi khi di chuyển (hoặc 3 giây/lần để báo "vẫn ở đây")
     chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, c: myColor, x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
     sendT = 0; beatT = 0; lastSent = key;
@@ -543,12 +549,141 @@ function startMatch(m) {
   let n = 5;
   const tick = () => {
     if (n > 0) { $("countdown").textContent = "Starting in " + n + "…"; n--; setTimeout(tick, 1000); return; }
-    // Bước 6b sẽ mở màn chơi mê cung ở đây. Hiện tại: báo và quay về thị trấn.
-    $("countdown").innerHTML = "🚧 The maze opens in the next update!<br><button class='big' id='matchBack' style='background:#2b8a3e;text-align:center'>Back to town</button>";
-    $("matchBack").onclick = () => { $("matchp").style.display = "none"; currentMatch = null; };
+    $("matchp").style.display = "none";
+    enterMaze(m, me);
   };
   tick();
 }
+
+/* ===== 6b. MÀN CHƠI MÊ CUNG =====
+   Mọi máy trong trận tạo CÙNG một mê cung từ mã trận đấu. Mỗi đội chơi trong một bản sao riêng (không đụng nhau).
+   Walker nhìn ngang tầm mắt; guide nhìn từ trên cao nhưng không điều khiển được gì. Walker tới ô xanh = đội thắng. */
+const MZ = { W: 7, H: 7, C: 3 };   // 7 x 7 ô, mỗi ô rộng 3 m
+const ORIGIN = { red: { x: -110, z: 0 }, blue: { x: -110, z: 40 } };   // nằm ngoài thị trấn
+const MAZE_GUIDE = ["Go straight!", "Turn left!", "Turn right!", "Stop!", "Turn around!", "Go back!", "Keep going!", "You’re close!", "Great job!"];
+const MAZE_WALK = ["Left or right?", "Where now?", "I see a wall.", "Wait!", "I’m lost!", "OK!", "Can you say that again?", "Thank you!"];
+let maze = null, savedFog = null;
+const mateArrow = new THREE.Mesh(new THREE.ConeGeometry(0.9, 2, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
+mateArrow.geometry.rotateX(Math.PI / 2); mateArrow.visible = false; scene.add(mateArrow);
+function rng(str) {   // số ngẫu nhiên "có hạt giống": cùng mã → cùng dãy số trên mọi máy
+  let a = 0; for (const ch of str) a = Math.imul(a ^ ch.charCodeAt(0), 2654435761) >>> 0;
+  return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function makeMazeGrid(seed) {   // thuật toán "đào hầm": luôn có đúng 1 đường tới đích
+  const R = rng(seed), W = MZ.W, H = MZ.H;
+  const cells = Array.from({ length: W * H }, () => ({ n: true, s: true, e: true, w: true, v: false }));
+  const at = (i, j) => cells[j * W + i];
+  const stack = [[0, 0]]; at(0, 0).v = true;
+  while (stack.length) {
+    const [i, j] = stack[stack.length - 1];
+    const nb = [[i, j - 1, "n", "s"], [i, j + 1, "s", "n"], [i + 1, j, "e", "w"], [i - 1, j, "w", "e"]]
+      .filter(([a, b]) => a >= 0 && b >= 0 && a < W && b < H && !at(a, b).v);
+    if (!nb.length) { stack.pop(); continue; }
+    const [a, b, d, o] = nb[Math.floor(R() * nb.length)];
+    at(i, j)[d] = false; at(a, b)[o] = false; at(a, b).v = true; stack.push([a, b]);
+  }
+  return at;
+}
+function buildMaze(seed, ox, oz) {
+  const at = makeMazeGrid(seed), C = MZ.C, W = MZ.W, H = MZ.H, g = new THREE.Group(), solids = [];
+  const T = 0.4, WH = 2.6;
+  const matA = new THREE.MeshLambertMaterial({ color: 0x40c057 }), matB = new THREE.MeshLambertMaterial({ color: 0x2b8a3e });   // 2 màu tường để thấy rõ góc rẽ
+  const wall = (x, z, w, d) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, WH, d), w > d ? matA : matB); m.position.set(x, WH / 2, z); g.add(m);
+    solids.push({ x, z, hw: w / 2, hd: d / 2 });
+  };
+  const cv2 = document.createElement("canvas"); cv2.width = cv2.height = 64;   // sàn ô bàn cờ: nhìn thấy mình đang di chuyển
+  const fx = cv2.getContext("2d"); fx.fillStyle = "#e9dcb8"; fx.fillRect(0, 0, 64, 64); fx.fillStyle = "#d6c497"; fx.fillRect(0, 0, 32, 32); fx.fillRect(32, 32, 32, 32);
+  const tex = new THREE.CanvasTexture(cv2); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set((W * C + 6) / 3, (H * C + 6) / 3);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(W * C + 6, H * C + 6), new THREE.MeshLambertMaterial({ map: tex }));
+  fl.rotation.x = -Math.PI / 2; fl.position.set(ox + W * C / 2, 0.005, oz + H * C / 2); g.add(fl);
+  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+    const c = at(i, j), x0 = ox + i * C, z0 = oz + j * C;
+    if (c.n) wall(x0 + C / 2, z0, C + T, T);
+    if (c.w) wall(x0, z0 + C / 2, T, C + T);
+    if (j === H - 1) wall(x0 + C / 2, z0 + C, C + T, T);
+    if (i === W - 1) wall(x0 + C, z0 + C / 2, T, C + T);
+  }
+  const exit = { x: ox + (W - 0.5) * C, z: oz + (H - 0.5) * C };
+  const goal = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.1, 20), new THREE.MeshBasicMaterial({ color: 0x40c057 }));
+  goal.position.set(exit.x, 0.06, exit.z); g.add(goal);
+  scene.add(g);
+  return { group: g, solids, exit, at };
+}
+function enterMaze(m, me) {
+  const O = ORIGIN[me.team];
+  maze = Object.assign(buildMaze(m.match, O.x, O.z), { ox: O.x, oz: O.z, role: me.role, team: me.team, m, t0: performance.now(),
+    mate: (m.players.find(p => p.team === me.team && p.id !== myId) || {}).id });
+  maze.ch = sb.channel("match-" + m.match, { config: { broadcast: { self: true } } });   // kênh riêng của trận: báo đội thắng
+  maze.ch.on("broadcast", { event: "win" }, ({ payload }) => endMaze(payload.team));
+  maze.ch.subscribe();
+  savedFog = scene.fog;
+  goal = null; arrow.visible = false;   // tắt chỉ đường "Where is" nếu đang bật
+  if (me.role === "walker") {
+    player.position.set(O.x + MZ.C / 2, 0, O.z + MZ.C / 2);
+    camAngle = maze.at(0, 0).s ? -Math.PI / 2 : Math.PI;   // quay mặt về phía có lối đi
+    player.visible = false;
+    scene.fog = new THREE.Fog(0xcfe8ff, 4, 24);
+    camera.fov = Math.min(100, 2 * Math.atan(Math.tan(40 * Math.PI / 180) / camera.aspect) * 180 / Math.PI);   // màn hình dọc: mở rộng góc nhìn
+    camera.updateProjectionMatrix();
+    $("guide").textContent = "🚶 Wait for your guide. Ask: “Where now?”";
+  } else {
+    player.position.set(O.x - 3, 0, O.z - 3);   // guide đứng ngoài mê cung
+    scene.fog = null;
+    $("stick").style.display = "none";
+    $("guide").textContent = "🗺️ The yellow arrow is your teammate. Guide them to the green circle!";
+  }
+  $("guide").style.display = "block";
+  ["askBtn", "albumBtn", "askp", "chatp"].forEach(id => $(id).style.display = "none");
+  $("mazeHud").style.display = "block"; $("mazeLeave").style.display = "block";
+  speak(me.role === "walker" ? "Go! Listen to your guide." : "Go! Tell your teammate the way.");
+}
+function mmss(ms) { const s = Math.floor(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+function updateMaze() {
+  if (!maze) return;
+  const ms = performance.now() - maze.t0;
+  $("mazeHud").textContent = (maze.role === "guide" ? "🗺️ Guide" : "🚶 Walker") + " · " + (maze.team === "red" ? "🔴" : "🔵") + " · ⏱ " + mmss(ms);
+  if (maze.role === "guide") {   // mũi tên vàng: vị trí + hướng nhìn của đồng đội
+    const o = others[maze.mate];
+    mateArrow.visible = !!o;
+    if (o) { mateArrow.position.set(o.g.position.x, 3.2, o.g.position.z); mateArrow.rotation.y = o.ry || 0; }
+  }
+  if (maze.over) return;
+  if (maze.role === "walker" && Math.hypot(player.position.x - maze.exit.x, player.position.z - maze.exit.z) < 1.2) {
+    maze.over = true;
+    maze.ch.send({ type: "broadcast", event: "win", payload: { team: maze.team } });
+  }
+  if (ms > 5 * 60 * 1000) endMaze(null);   // tối đa 5 phút
+}
+function endMaze(winTeam) {
+  if (!maze || maze.ended) return;
+  maze.ended = maze.over = true;
+  const t = mmss(performance.now() - maze.t0), duo = maze.m.mode === "duo";
+  let title, pts;
+  if (winTeam === null) { title = "⏰ Time’s up!"; pts = 5; }
+  else if (duo) { title = "🎉 You escaped in " + t + "!"; pts = 30; }
+  else if (winTeam === maze.team) { title = "🏆 Your team wins! (" + t + ")"; pts = 30; }
+  else { title = "😅 Team " + (winTeam === "red" ? "Red" : "Blue") + " wins. Good try!"; pts = 10; }
+  score += pts; $("score").textContent = score;
+  speak(title.replace(/[^\w\s!’'.]/g, ""));
+  $("matchp").innerHTML = '<b style="font-size:22px">' + title + '</b><div style="margin-top:6px">+' + pts + ' ⭐</div>' +
+    "<button class='big' id='matchBack' style='background:#2b8a3e;text-align:center'>Back to town</button>";
+  $("matchp").style.display = "block";
+  $("matchBack").onclick = leaveMaze;
+}
+function leaveMaze() {
+  if (!maze) return;
+  scene.remove(maze.group);
+  maze.group.traverse(o => { if (o.geometry) o.geometry.dispose(); });
+  try { sb.removeChannel(maze.ch); } catch (e) {}
+  maze = null; currentMatch = null;
+  scene.fog = savedFog; player.visible = true; mateArrow.visible = false;
+  camera.fov = 55; camera.updateProjectionMatrix();
+  player.position.set(GATE.x + 2.5, 0, GATE.z); camAngle = 0;
+  ["askBtn", "albumBtn", "stick"].forEach(id => $(id).style.display = "block");
+  ["mazeHud", "mazeLeave", "matchp", "guide", "chatp"].forEach(id => $(id).style.display = "none");
+}
+$("mazeLeave").onclick = leaveMaze;
 
 /* ===== 4f. CHÀO HỎI NHANH: chỉ câu tiếng Anh có sẵn, hoặc câu nói tiếng Anh máy nghe được (không có ô gõ tự do) ===== */
 const QUICK = ["Hi!", "Hello! I’m {name}.", "How are you?", "I’m fine, thanks!", "Nice to meet you!", "Follow me!",
@@ -581,7 +716,7 @@ function sendChat(text) {
 $("sayBtn").onclick = () => {
   if (talking) return;
   $("chatList").innerHTML = ""; $("chatHeard").textContent = "";
-  QUICK.forEach(q => {
+  (maze ? (maze.role === "guide" ? MAZE_GUIDE : MAZE_WALK) : QUICK).forEach(q => {
     const b = document.createElement("button"); b.textContent = q.replace("{name}", myName || "new");
     b.onclick = () => sendChat(b.textContent);
     $("chatList").appendChild(b);
@@ -730,7 +865,15 @@ function loop() {
   const len = Math.hypot(mx, mz);
   if (keys["q"]) camAngle -= 1.8 * dt;
   if (keys["e"]) camAngle += 1.8 * dt;
-  if (!talking && len > 0.1) {
+  if (maze && maze.role === "walker") {   // góc nhìn thứ nhất: trái/phải = xoay người, lên/xuống = đi tới/lùi
+    camAngle -= mx * 2.2 * dt;
+    if (Math.abs(mz) > 0.1) {
+      const k = -Math.max(-1, Math.min(1, mz)) * 3 * dt, wx = -Math.sin(camAngle) * k, wz = -Math.cos(camAngle) * k;
+      if (!blocked(player.position.x + wx, player.position.z)) player.position.x += wx;
+      if (!blocked(player.position.x, player.position.z + wz)) player.position.z += wz;
+    }
+    player.rotation.y = camAngle + Math.PI;
+  } else if (!maze && !talking && len > 0.1) {
     const k = Math.min(len, 1) / len * 4 * dt;
     const c = Math.cos(camAngle), s = Math.sin(camAngle);
     const wx = (mx * c + mz * s) * k, wz = (-mx * s + mz * c) * k;
@@ -742,6 +885,7 @@ function loop() {
   updateGuide(dt, t);
   updateOnline(dt);
   updateMazeGate();
+  updateMaze();
   if (!talking) {
     near = null;
     let best = 3.3;
@@ -749,8 +893,18 @@ function loop() {
     $("talk").style.display = near ? "block" : "none";
   }
   const p = player.position;
-  camera.position.lerp(new THREE.Vector3(p.x + Math.sin(camAngle) * 8, 8, p.z + Math.cos(camAngle) * 8), 0.1);
-  camera.lookAt(p.x, 0.8, p.z);
+  if (maze && maze.role === "walker") {   // walker: nhìn ngang tầm mắt
+    camera.position.set(p.x, 1.5, p.z);
+    camera.lookAt(p.x - Math.sin(camAngle), 1.4, p.z - Math.cos(camAngle));
+  } else if (maze) {   // guide: nhìn thẳng từ trên cao xuống cả mê cung
+    const cx = maze.ox + MZ.W * MZ.C / 2, cz = maze.oz + MZ.H * MZ.C / 2, half = MZ.W * MZ.C / 2 + 1.5;
+    const vt = Math.tan(camera.fov * Math.PI / 360), ht = vt * camera.aspect;
+    camera.position.set(cx, half / Math.min(vt, ht), cz + 0.01);
+    camera.lookAt(cx, 0, cz);
+  } else {
+    camera.position.lerp(new THREE.Vector3(p.x + Math.sin(camAngle) * 8, 8, p.z + Math.cos(camAngle) * 8), 0.1);
+    camera.lookAt(p.x, 0.8, p.z);
+  }
   renderer.render(scene, camera);
 }
 loop();
