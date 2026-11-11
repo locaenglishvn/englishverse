@@ -187,11 +187,13 @@ function shade(obj) {   // bật đổ bóng cho mọi khối trong obj (trừ m
   obj.traverse(m => { if (m.isMesh) { m.castShadow = !m.userData.flat; m.receiveShadow = true; } });
 }
 
+const camBlockers = [];   // vật cản camera (tường, nhà): camera không xuyên qua
 function box(w, h, d, color, x, y, z) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color }));
   m.position.set(x, y, z);
   m.castShadow = m.receiveShadow = true;
   scene.add(m);
+  if (h >= 1.5 || y > 2.5) camBlockers.push(m);   // tường cao hoặc mái
   return m;
 }
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 13), new THREE.MeshLambertMaterial({ color: 0xe9d8b4 }));
@@ -1361,6 +1363,16 @@ function emojiSprite(e, size) {   // món hàng trưng bày (emoji)
 function addBox(g, w, h, d, color, x, y, z) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color })); m.position.set(x, y, z); g.add(m); return m;
 }
+const cityTpl = {}, cityWait = {};
+function cityModel(name, cb) {   // tải mô hình KayKit City (dùng chung), trả về bản sao
+  if (!THREE.GLTFLoader) return;
+  if (cityTpl[name]) { cb(cityTpl[name].clone()); return; }
+  if (cityWait[name]) { cityWait[name].push(cb); return; }
+  cityWait[name] = [cb];
+  new THREE.GLTFLoader().load("assets/city/" + name + ".gltf", gl => {
+    cityTpl[name] = gl.scene; cityWait[name].forEach(f => f(gl.scene.clone())); cityWait[name] = null;
+  }, undefined, () => { cityWait[name] = null; });
+}
 function buildHouse(P) {   // ngoại thất: tường, mái dốc, cửa, cửa sổ, mái hiên, biển tên
   const g = new THREE.Group(), H = P.type === "townhall" || P.type === "hospital" ? 4.2 : 3.4, w = P.w, d = P.d;
   addBox(g, w, H, d, P.color, 0, H / 2, 0);
@@ -1375,16 +1387,24 @@ function buildHouse(P) {   // ngoại thất: tường, mái dốc, cửa, cửa
     addBox(g, 1.9, 0.12, 0.35, P.awning, sx * w * 0.3, 1.2, d / 2 + 0.15);   // bậu cửa sổ
   });
   const aw = addBox(g, 3.2, 0.14, 1.3, P.awning, 0, 2.85, d / 2 + 0.65); aw.rotation.x = 0.18;   // mái hiên
-  const plate = textPlate(P.name, Math.min(w * 0.8, 7), 0.9, "#ffffff", "#343a40"); plate.position.set(0, H - 0.55, d / 2 + 0.03); g.add(plate);
-  if (P.type === "pharmacy" || P.type === "hospital") { const cr = textPlate("✚", 1, 1, "#ffffff", "#2f9e44"); cr.position.set(w / 2 - 0.9, H - 0.6, d / 2 + 0.03); g.add(cr); }
   addBox(g, 2.4, 0.12, 1.2, 0xadb5bd, 0, 0.06, d / 2 + 0.6);   // bậc thềm
+  const proc = g.children.slice();   // phần dựng tạm bằng khối (ẩn đi khi mô hình 3D tải xong)
+  const plate = textPlate(P.name, Math.min(w * 0.8, 7), 0.9, "#ffffff", "#343a40"); plate.position.set(0, H - 0.55, d / 2 + 0.03); g.add(plate);
+  let cr = null;
+  if (P.type === "pharmacy" || P.type === "hospital") { cr = textPlate("✚", 1, 1, "#ffffff", "#2f9e44"); cr.position.set(w / 2 - 0.9, H - 0.6, d / 2 + 0.03); g.add(cr); }
+  if (P.model) cityModel(P.model, m => {   // mô hình nhà phố KayKit
+    const sc = P.scale || 5; m.scale.setScalar(sc); g.add(m); shade(m);
+    proc.forEach(o => o.visible = false);
+    plate.position.set(0, 0.64 * sc, sc + 0.12);   // biển tên ngay trên mái hiên tầng trệt
+    if (cr) cr.position.set(sc * 0.75, 0.64 * sc, sc + 0.12);
+  });
   g.position.set(P.x, 0, P.z); g.rotation.y = ROT[P.door];
   shade(g); scene.add(g);
   const swap = P.door === "east" || P.door === "west";
   solid(P.x, P.z, (swap ? d : w) / 2, (swap ? w : d) / 2);
   const out = new THREE.Vector3(0, 0, d / 2 + 1.6).applyAxisAngle(new THREE.Vector3(0, 1, 0), ROT[P.door]);
   P.doorPos = { x: P.x + out.x, z: P.z + out.z };   // chỗ đứng trước cửa
-  P.ext = g;
+  P.ext = g; camBlockers.push(g);
 }
 function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng (khối đơn giản, sẽ thay bằng mô hình đẹp sau)
   const back = cz - D / 2;
@@ -1435,6 +1455,24 @@ function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay v�
   P.int = g; g.visible = false;
 }
 CITY.forEach((P, i) => { buildHouse(P); buildInterior(P, i); });
+/* Đồ trang trí phố: nhà phố (không vào được), đèn đường, ghế, chậu cây, xe đậu, đèn giao thông, trụ nước */
+const PROPS = [];
+function prop(name, x, z, ry, sc, hw, hd, noShadow) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry || 0; scene.add(g); PROPS.push(g);
+  if (name.indexOf("building") === 0) camBlockers.push(g);
+  cityModel(name, m => { m.scale.setScalar(sc || 4.6); g.add(m); if (noShadow) m.traverse(o => { o.castShadow = false; o.receiveShadow = true; }); else shade(m); });
+  if (hw) { const sw = Math.abs(Math.sin(ry || 0)) > 0.7; solid(x, z, sw ? hd : hw, sw ? hw : hd); }
+}
+[["building_B", -30, -24], ["building_C", -44, -24], ["building_E", 30, -24], ["building_C", 44, -24], ["building_B", 42, 4], ["building_E", -56, 4]]
+  .forEach(([n, x, z]) => prop(n, x, z, 0, 5, 5, 5));   // nhà phố nền (chưa vào được)
+for (let x = -56; x <= 56; x += 16) prop("streetlight", x, 14.8, Math.PI, 4.6, 0.25, 0.25, true);   // đèn đường Market Street
+for (let x = -56; x <= 56; x += 16) if (Math.abs(x) > 10) prop("streetlight", x, -11.2, Math.PI, 4.6, 0.25, 0.25, true);   // North Avenue
+[[-5, 20, 0], [5, 20, 0], [-5, 28, Math.PI], [5, 28, Math.PI], [-4, 35.5, 0], [4, 35.5, 0]].forEach(([x, z, r]) => prop("bench", x, z, r, 5, 1, 0.4, true));   // ghế quảng trường, công viên
+[[-32, 9.6], [-20, 9.6], [-48, 9.6], [-36, 9.6], [20, 9.6], [32, 9.6], [-6, -18.6], [6, -18.6]].forEach(([x, z]) => prop("bush", x, z, 0, 4.5, 0.4, 0.4, true));   // chậu cây trước cửa hàng
+[["car_sedan", -48, 13, Math.PI / 2], ["car_taxi", 36, 10.9, -Math.PI / 2], ["car_hatchback", 52, 13, Math.PI / 2], ["car_police", -40, -12.9, Math.PI / 2], ["car_sedan", 22, -15.1, -Math.PI / 2]]
+  .forEach(([n, x, z, r]) => prop(n, x, z, r, 4.6, 1, 2.2));   // xe đậu ven đường
+[[-14, 12], [14, 12], [-14, -14], [14, -14]].forEach(([x, z]) => prop("trafficlight_A", x + 2.4, z + 2.4, Math.PI, 4.6, 0.3, 0.3, true));   // đèn giao thông ở ngã tư
+[[-30, 10.4], [30, 10.4], [-8, -19]].forEach(([x, z]) => prop("firehydrant", x, z, 0, 4.6, 0.3, 0.3, true));
 const indoorBg = new THREE.Color(0x3b2f2a);
 function enterRoom(P) {
   room = P.room; P.int.visible = true;
@@ -1455,6 +1493,7 @@ function updateCity(dt) {
   if ((lodT += dt) > 0.5) {   // chỉ vẽ nhà trong bán kính 90 m
     lodT = 0;
     CITY.forEach(P => P.ext.visible = !room && Math.hypot(player.position.x - P.x, player.position.z - P.z) < 90);
+    PROPS.forEach(g => g.visible = !room && Math.hypot(player.position.x - g.position.x, player.position.z - g.position.z) < 70);
   }
   nearDoor = null; nearKeeper = null;
   if (maze || talking) { $("doorBtn").style.display = "none"; $("shopBtn").style.display = "none"; return; }
@@ -1519,6 +1558,7 @@ $("shopMic").addEventListener("pointerdown", shopStart);
 
 /* ===== 5. VÒNG LẶP GAME (chạy ~60 lần/giây) ===== */
 const clock = new THREE.Clock();
+const camRay = new THREE.Raycaster();
 function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
@@ -1577,7 +1617,14 @@ function loop() {
     if (keys["f"]) camPitch = Math.min(1.35, camPitch + 1.2 * dt);
     if (room) camPitch = Math.max(0.7, camPitch);   // trong nhà: nhìn chếch xuống cho thấy cả phòng
     const D = room ? 9 : 11, ch = Math.cos(camPitch) * D;
-    camera.position.lerp(new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(camPitch) * D, p.z + Math.cos(camAngle) * ch), 0.12);
+    const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(camPitch) * D, p.z + Math.cos(camAngle) * ch);
+    if (!room) {   // có tường/nhà chắn giữa nhân vật và camera → kéo camera lại gần
+      const head = camRay.ray.origin.set(p.x, 1.5, p.z), dir = camRay.ray.direction.copy(want).sub(head), dist = dir.length();
+      dir.normalize(); camRay.far = dist;
+      const hit = camRay.intersectObjects(camBlockers, true)[0];
+      if (hit) { want.copy(head).addScaledVector(dir, Math.max(0.8, hit.distance - 0.4)); camera.position.copy(want); }
+    }
+    camera.position.lerp(want, 0.12);
     camera.lookAt(p.x, 0.9 + (1 - camPitch / 1.35) * 1.4, p.z);   // càng nhìn ngang càng ngẩng lên thấy trời
   }
   sky.position.set(camera.position.x, 0, camera.position.z);   // trời luôn bao quanh camera
