@@ -23,7 +23,7 @@ const STARTER = { coins: 20, items: { banhmi: 1 } };
    x, z   = vị trí giữa tòa nhà trên bản đồ;  w, d = rộng, sâu (mét)
    door   = cửa quay về hướng nào: "south" (xuống), "north" (lên), "east", "west"
    color/roof/awning = màu tường / mái / mái hiên
-   keeper = người bán: tên, màu áo, câu chào, câu gợi ý cho người chơi nói
+   keeper = người bán: tên, màu áo, câu chào, câu gợi ý cho người chơi nói (null = không có người bán)
    sells  = các món bán (id trong ITEMS ở trên). Để trống [] nếu chưa bán gì
    model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5) */
 const CITY = [
@@ -46,5 +46,9 @@ const CITY = [
   { id: "hospital", name: "City Hospital", type: "hospital", x: 44, z: 36, w: 12, d: 12, door: "north", model: "building_D", scale: 6,
     color: 0xffffff, roof: 0xc92a2a, awning: 0xfa5252, floor: 0xe7f5ff, wall: 0xffffff,
     keeper: { name: "Nurse Mai", color: 0x74c0fc, greet: "Hello! Doctor Pasteur is working in his lab. He will need your help soon.", hint: "I feel sick." },
+    sells: [] },
+  { id: "cafe", name: "Sunny Café", type: "cafe", x: 0, z: 1, w: 12, d: 12, door: "south", model: "building_E", scale: 6,
+    color: 0xfff1e0, roof: 0xd62828, awning: 0xe8590c, floor: 0xe9d8b4, wall: 0xfff4e6,
+    keeper: null,   // không có người bán: Mia (trong lessons.js) đứng sau quầy và nói chuyện với khách
     sells: [] }
 ];
