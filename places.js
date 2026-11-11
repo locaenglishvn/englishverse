@@ -13,11 +13,86 @@ const ITEMS = {
   milk:       { name: "Milk",          icon: "🥛", price: 4,  energy: 10, desc: "A glass of fresh milk. +10 energy." },
   icedcoffee: { name: "Iced coffee",   icon: "🧋", price: 6,  energy: 20, desc: "Cold and strong. +20 energy." },
   syrup:      { name: "Throat syrup",  icon: "🧴", price: 12, cure: true, desc: "Cures Mute poison." },
-  vaccine:    { name: "Voice vaccine", icon: "💉", price: 25, cure: true, protect: 300, desc: "Cures poison and protects you for 5 minutes." }
+  vaccine:    { name: "Voice vaccine", icon: "💉", price: 25, cure: true, protect: 300, desc: "Cures poison and protects you for 5 minutes." },
+  apple:      { name: "Apple",         icon: "🍎", price: 3,  energy: 8,  desc: "A red, crunchy apple. +8 energy." },
+  banana:     { name: "Banana",        icon: "🍌", price: 3,  energy: 8,  desc: "Yellow and sweet. +8 energy." },
+  water:      { name: "Water",         icon: "💧", price: 2,  energy: 5,  desc: "A bottle of water. +5 energy." },
+  riceball:   { name: "Rice ball",     icon: "🍙", price: 6,  energy: 20, desc: "Rice with a little salt. +20 energy." },
+  pho:        { name: "Pho",           icon: "🍜", price: 15, energy: 50, desc: "Hot beef noodle soup. +50 energy." },
+  springroll: { name: "Spring rolls",  icon: "🌯", price: 10, energy: 30, desc: "Fresh rolls with shrimp. +30 energy." },
+  lemontea:   { name: "Lemon tea",     icon: "🍹", price: 5,  energy: 12, desc: "Cold lemon tea. +12 energy." },
+  popcorn:    { name: "Popcorn",       icon: "🍿", price: 6,  energy: 15, desc: "Salty popcorn for the movie. +15 energy." },
+  // 💇 Dịch vụ cắt tóc (Hair Salon): đổi khuôn mặt + kiểu tóc ngay, không vào túi
+  hair_Rogue:     { name: "Long hair",   icon: "👩", price: 12, head: "Rogue",     desc: "Long red hair (Alex style)." },
+  hair_Knight:    { name: "Short hair",  icon: "👱", price: 12, head: "Knight",    desc: "Short blond hair (Sam style)." },
+  hair_Mage:      { name: "Black hair",  icon: "🧑", price: 12, head: "Mage",      desc: "Thick black hair (Robin style)." },
+  hair_Barbarian: { name: "Beard style", icon: "🧔", price: 12, head: "Barbarian", desc: "Bald head with a big beard (Max style)." },
+  // 🛋️ Nội thất (Furniture Store): giao thẳng về nhà (🏠 My Home); decor = mô hình trong assets/furniture
+  d_couch:   { name: "Sofa",          icon: "🛋️", price: 60, decor: "couch_pillows",            desc: "A soft sofa for your home." },
+  d_chair:   { name: "Armchair",      icon: "💺", price: 35, decor: "armchair_pillows",         desc: "A cosy armchair." },
+  d_lamp:    { name: "Floor lamp",    icon: "💡", price: 25, decor: "lamp_standing",            desc: "A tall lamp." },
+  d_cactus:  { name: "Cactus",        icon: "🌵", price: 15, decor: "cactus_medium_A",          desc: "A plant that needs little water." },
+  d_shelf:   { name: "Bookshelf",     icon: "📚", price: 70, decor: "shelf_B_large_decorated",  desc: "A big shelf full of books." },
+  d_table:   { name: "Table",         icon: "🪑", price: 40, decor: "table_medium",             desc: "A wooden table." },
+  d_cabinet: { name: "Cabinet",       icon: "🗄️", price: 45, decor: "cabinet_medium_decorated", desc: "A cabinet with nice things on top." },
+  d_rug:     { name: "Round rug",     icon: "🟠", price: 20, decor: "rug_oval_A",               desc: "A round rug for the floor." }
 };
 
-/* Quà cho người chơi mới */
-const STARTER = { coins: 20, items: { banhmi: 1 } };
+/* TRANG PHỤC (mặc vào nhân vật, bán ở Style Box)
+   slot   = ô trang bị: hat (🧢 mũ), top (👕 áo), legs (👟 quần + giày), cape (🎒 phụ kiện: áo choàng)
+   model  = lấy bộ phận từ nhân vật nào: Rogue, Knight, Mage, Barbarian (hat thì thêm part = tên mũ; hood = mũ trùm thay cả đầu)
+   plain  = true: bản vải trơn (đen trắng) để nhuộm màu bằng tint; tint = màu nhuộm (0xRRGGBB)
+   rarity = common | uncommon | rare | epic | legendary;  lv = cấp cần có để mặc
+   stats  = voice (sát thương), ears (thêm giây trả lời), stamina (tốn ít năng lượng, hồi nhanh), resist (khó trúng độc), luck (thêm xu)
+   Legendary KHÔNG bán: chỉ nhận được bằng thành tích tiếng Anh (xem LEGENDS bên dưới). */
+const RARITY = {
+  common:    { name: "Common",    color: "#adb5bd" },
+  uncommon:  { name: "Uncommon",  color: "#40c057" },
+  rare:      { name: "Rare",      color: "#339af0" },
+  epic:      { name: "Epic",      color: "#9775fa" },
+  legendary: { name: "Legendary", color: "#fab005" }
+};
+Object.assign(ITEMS, {
+  // 👕 Áo
+  tee_white:   { name: "White T-shirt",   icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0xffffff, rarity: "common", lv: 1, price: 15, stats: {}, desc: "A simple white T-shirt." },
+  tee_red:     { name: "Red T-shirt",     icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0xff8787, rarity: "common", lv: 1, price: 20, stats: { stamina: 2 }, desc: "A bright red T-shirt." },
+  tee_blue:    { name: "Blue T-shirt",    icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0x74c0fc, rarity: "common", lv: 1, price: 20, stats: { ears: 1 }, desc: "A cool blue T-shirt." },
+  tee_yellow:  { name: "Yellow T-shirt",  icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0xffe066, rarity: "common", lv: 1, price: 25, stats: { luck: 2 }, desc: "A sunny yellow T-shirt." },
+  jacket:      { name: "Explorer Jacket", icon: "🧥", slot: "top", model: "Rogue", rarity: "uncommon", lv: 3, price: 90, stats: { stamina: 5, luck: 3 }, desc: "A jacket with many pockets." },
+  vest:        { name: "Viking Vest",     icon: "🦺", slot: "top", model: "Barbarian", rarity: "uncommon", lv: 3, price: 80, stats: { stamina: 8 }, desc: "Warm and strong." },
+  robe:        { name: "Wizard Robe",     icon: "🥻", slot: "top", model: "Mage", rarity: "rare", lv: 5, price: 280, stats: { voice: 10, ears: 2 }, desc: "Your words sound more powerful." },
+  armor:       { name: "Knight Armor",    icon: "🛡️", slot: "top", model: "Knight", rarity: "rare", lv: 5, price: 340, stats: { resist: 20 }, desc: "The Mute can’t poison you easily." },
+  royal:       { name: "Royal Armor",     icon: "👑", slot: "top", model: "Knight", tint: 0xd0b8ff, rarity: "epic", lv: 10, price: 900, stats: { voice: 15, resist: 25 }, desc: "Shiny purple armor for heroes." },
+  // 👟 Quần + giày
+  pants_plain: { name: "Grey Pants",      icon: "👖", slot: "legs", model: "Rogue", plain: true, tint: 0xb0bccb, rarity: "common", lv: 1, price: 15, stats: {}, desc: "Simple grey pants and shoes." },
+  jeans:       { name: "Blue Jeans",      icon: "👖", slot: "legs", model: "Rogue", plain: true, tint: 0x74a9e8, rarity: "common", lv: 1, price: 20, stats: { stamina: 1 }, desc: "Everyone loves jeans." },
+  boots_exp:   { name: "Explorer Boots",  icon: "🥾", slot: "legs", model: "Rogue", rarity: "uncommon", lv: 3, price: 60, stats: { stamina: 4 }, desc: "Good for long walks." },
+  boots_vik:   { name: "Viking Boots",    icon: "👢", slot: "legs", model: "Barbarian", rarity: "uncommon", lv: 3, price: 70, stats: { stamina: 5, resist: 3 }, desc: "Fur boots for cold days." },
+  boots_wiz:   { name: "Wizard Boots",    icon: "👞", slot: "legs", model: "Mage", rarity: "rare", lv: 5, price: 220, stats: { ears: 2, luck: 3 }, desc: "Quiet boots. You hear better." },
+  boots_kn:    { name: "Knight Boots",    icon: "🦿", slot: "legs", model: "Knight", rarity: "rare", lv: 5, price: 250, stats: { resist: 10 }, desc: "Heavy metal boots." },
+  // 🧢 Mũ
+  straw_hat:   { name: "Straw Hat",       icon: "👒", slot: "hat", model: "Barbarian", part: "Barbarian_Hat", tint: 0xffe8a3, rarity: "common", lv: 1, price: 25, stats: { luck: 2 }, desc: "A sunny summer hat." },
+  viking_hat:  { name: "Viking Hat",      icon: "🪖", slot: "hat", model: "Barbarian", part: "Barbarian_Hat", rarity: "uncommon", lv: 3, price: 80, stats: { resist: 5 }, desc: "A hat with horns!" },
+  hood:        { name: "Ninja Hood",      icon: "🥷", slot: "hat", model: "Rogue_Hooded", hood: true, rarity: "uncommon", lv: 3, price: 70, stats: { luck: 5 }, desc: "Quiet like a ninja." },
+  wizard_hat:  { name: "Wizard Hat",      icon: "🎩", slot: "hat", model: "Mage", part: "Mage_Hat", rarity: "rare", lv: 5, price: 260, stats: { voice: 5, ears: 2 }, desc: "A tall, magic hat." },
+  helmet:      { name: "Knight Helmet",   icon: "⛑️", slot: "hat", model: "Knight", part: "Knight_Helmet", rarity: "rare", lv: 5, price: 300, stats: { resist: 15 }, desc: "Protects your head." },
+  crown:       { name: "Crown of Voices", icon: "🏆", slot: "hat", model: "Knight", part: "Knight_Helmet", tint: 0xffd43b, rarity: "legendary", lv: 15, stats: { voice: 20, resist: 20, luck: 10 }, desc: "Only for true speakers. Not for sale!" },
+  // 🎒 Phụ kiện (áo choàng)
+  cape_exp:    { name: "Explorer Cape",   icon: "🧣", slot: "cape", model: "Rogue", rarity: "uncommon", lv: 3, price: 70, stats: { luck: 5 }, desc: "A short travel cape." },
+  cape_vik:    { name: "Viking Cape",     icon: "🧣", slot: "cape", model: "Barbarian", rarity: "uncommon", lv: 3, price: 80, stats: { stamina: 5 }, desc: "A warm fur cape." },
+  cape_wiz:    { name: "Wizard Cape",     icon: "🧣", slot: "cape", model: "Mage", rarity: "rare", lv: 5, price: 240, stats: { voice: 8 }, desc: "A long magic cape." },
+  cape_kn:     { name: "Knight Cape",     icon: "🧣", slot: "cape", model: "Knight", rarity: "rare", lv: 5, price: 260, stats: { resist: 8 }, desc: "A red cape for brave knights." },
+  cape_star:   { name: "Star Cape",       icon: "🌟", slot: "cape", model: "Mage", tint: 0xffe066, rarity: "epic", lv: 10, price: 850, stats: { voice: 12, luck: 12 }, desc: "It shines like the stars." }
+});
+
+/* ĐỒ HUYỀN THOẠI: chỉ nhận bằng thành tích tiếng Anh (không mua được)
+   spirits = số Word Spirit đã giải thoát;  spoken = số câu TỰ NÓI qua micro được máy chấm đúng */
+const LEGENDS = [
+  { item: "crown", need: { spirits: 30, spoken: 300 }, title: "Voice of the City", desc: "Free 30 Word Spirits and speak 300 sentences by yourself." }
+];
+
+/* Quà cho người chơi mới: chỉ có áo thun trắng + quần xám. Muốn đẹp hơn thì đi mua! */
+const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", legs: "pants_plain", hat: null, cape: null } };
 
 /* ĐỊA ĐIỂM TRONG THÀNH PHỐ (nhà có mái, đi vào được)
    x, z   = vị trí giữa tòa nhà trên bản đồ;  w, d = rộng, sâu (mét)
@@ -37,8 +112,8 @@ const CITY = [
     sells: ["syrup", "vaccine"] },
   { id: "clothes", name: "Style Box", type: "clothes", x: -42, z: 4, w: 10, d: 10, door: "south", model: "building_G",
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
-    keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! New clothes are arriving soon. Come back later!", hint: "Can I try this on?" },
-    sells: [] },
+    keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to Style Box. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
+    sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
   { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -26, w: 14, d: 14, door: "south", model: "building_H", scale: 7,
     color: 0xf1f3f5, roof: 0x495057, awning: 0x1c7ed6, floor: 0xc9a27e, wall: 0xf8f0e3,
     keeper: { name: "Mr. Lee – Mayor", color: 0x343a40, greet: "Welcome to Town Hall! The quest board will open soon.", hint: "I'd like to take a quest." },
@@ -50,5 +125,62 @@ const CITY = [
   { id: "cafe", name: "Sunny Café", type: "cafe", x: 0, z: 1, w: 12, d: 12, door: "south", model: "building_E", scale: 6,
     color: 0xfff1e0, roof: 0xd62828, awning: 0xe8590c, floor: 0xe9d8b4, wall: 0xfff4e6,
     keeper: null,   // không có người bán: Mia (trong lessons.js) đứng sau quầy và nói chuyện với khách
-    sells: [] }
+    sells: [] },
+  /* --- Các địa điểm mới (ngoại thất tạm dùng mô hình nhà phố, sẽ thay sau) ---
+     layout = kiểu bày nội thất: shop | tables | shelves | desks | museum | cinema | salon | lab | home
+     goods  = đồ trưng bày (emoji). NPC hội thoại của từng nơi nằm trong lessons.js (place: "id"). */
+  // Hàng phía bắc (cửa nhìn ra North Avenue)
+  { id: "school", name: "Verse School", type: "school", x: -86, z: -26, w: 14, d: 14, door: "south", model: "building_D", scale: 7, layout: "desks",
+    color: 0xfff3bf, roof: 0x1971c2, awning: 0xfab005, floor: 0xd9b38c, wall: 0xfff9db, goods: ["📚", "✏️", "📐", "🌍", "🎒", "🧮"], keeper: null, sells: [] },
+  { id: "museum", name: "City Museum", type: "museum", x: -48, z: -24, w: 12, d: 12, door: "south", model: "building_C", scale: 6, layout: "museum",
+    color: 0xf1f3f5, roof: 0x5c5f66, awning: 0x868e96, floor: 0xe9ecef, wall: 0xf8f9fa, goods: ["🦖", "🏺", "🗿", "⚱️", "🦴", "👑"], keeper: null, sells: [] },
+  { id: "library", name: "Library", type: "library", x: -30, z: -24, w: 10, d: 10, door: "south", model: "building_B", layout: "shelves",
+    color: 0xe7f5ff, roof: 0x364fc7, awning: 0x4c6ef5, floor: 0xc9a27e, wall: 0xf3f0ff, goods: ["📕", "📗", "📘", "📙", "📖", "📚"], keeper: null, sells: [] },
+  { id: "bank", name: "Verse Bank", type: "bank", x: 30, z: -24, w: 10, d: 10, door: "south", model: "building_E", layout: "desks",
+    color: 0xf8f9fa, roof: 0x2b8a3e, awning: 0x2f9e44, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["💰", "💳", "🪙", "💵", "🏦", "📈"], keeper: null, sells: [] },
+  { id: "post", name: "Post Office", type: "post office", x: 46, z: -24, w: 10, d: 10, door: "south", model: "building_C", layout: "shop",
+    color: 0xfff4e6, roof: 0xe8590c, awning: 0xfd7e14, floor: 0xe9d8b4, wall: 0xfff4e6, goods: ["📮", "✉️", "📦", "📬", "🏷️", "📫"], keeper: null, sells: [] },
+  { id: "lab", name: "Science Lab", type: "science lab", x: 84, z: -24, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
+    color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
+  // Hàng giữa (cửa nhìn ra Market Street)
+  { id: "furniture", name: "Home & Co", type: "furniture store", x: -90, z: 4, w: 10, d: 10, door: "south", model: "building_A", layout: "showroom",
+    color: 0xf8f0e3, roof: 0x8d5a2b, awning: 0xa0522d, floor: 0xd9b38c, wall: 0xfff8f0, goods: [],
+    keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Do you need furniture for your home?", hint: "I’d like the sofa, please." },
+    sells: ["d_couch", "d_chair", "d_lamp", "d_cactus", "d_shelf", "d_table", "d_cabinet", "d_rug"] },
+  { id: "restaurant", name: "Pho Corner", type: "restaurant", x: -78, z: 4, w: 10, d: 10, door: "south", model: "building_E", layout: "tables",
+    color: 0xfff5f5, roof: 0xc92a2a, awning: 0xf03e3e, floor: 0xe9c99a, wall: 0xfff4e6, goods: ["🍜", "🌯", "🍹", "🥢", "🍚", "🌶️"],
+    keeper: { name: "Chef Bao – Cook", color: 0xf8f9fa, greet: "Welcome to Pho Corner! Are you hungry?", hint: "Can I have a bowl of pho, please?" },
+    sells: ["pho", "springroll", "lemontea"] },
+  { id: "salon", name: "Happy Hair", type: "hair salon", x: -56, z: 4, w: 10, d: 10, door: "south", model: "building_G", layout: "salon",
+    color: 0xf3f0ff, roof: 0x7048e8, awning: 0x9775fa, floor: 0xf1f3f5, wall: 0xf8f0fc, goods: ["✂️", "💈", "🪮", "🧴", "💇", "🪞"],
+    keeper: { name: "Lily – Hairdresser", color: 0x9775fa, greet: "Hi! What hairstyle would you like today?", hint: "I’d like short hair, please." },
+    sells: ["hair_Rogue", "hair_Knight", "hair_Mage", "hair_Barbarian"] },
+  { id: "supermarket", name: "Fresh Mart", type: "supermarket", x: 44, z: 4, w: 12, d: 12, door: "south", model: "building_A", scale: 6, layout: "shelves",
+    color: 0xebfbee, roof: 0x2f9e44, awning: 0x40c057, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🍎", "🍌", "🥛", "🍙", "💧", "🥕"],
+    keeper: { name: "Nam – Cashier", color: 0x40c057, greet: "Hello! Can I help you find something?", hint: "Can I have an apple and some water, please?" },
+    sells: ["apple", "banana", "water", "riceball", "milk"] },
+  { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 56, z: 4, w: 10, d: 10, door: "south", model: "building_B", layout: "lab",
+    color: 0xf1f3f5, roof: 0x495057, awning: 0xfab005, floor: 0xadb5bd, wall: 0xe9ecef, goods: ["🔧", "🔨", "🪛", "🚲", "⚙️", "🪚"], keeper: null, sells: [] },
+  { id: "police", name: "Police Station", type: "police station", x: 76, z: 4, w: 10, d: 10, door: "south", model: "building_F", layout: "desks",
+    color: 0xe7f5ff, roof: 0x1864ab, awning: 0x1c7ed6, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["🚓", "🔦", "📋", "🗺️", "🔑", "🚨"], keeper: null, sells: [] },
+  { id: "fire", name: "Fire Station", type: "fire station", x: 90, z: 4, w: 10, d: 10, door: "south", model: "building_G", layout: "lab",
+    color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
+  // Hàng phía nam (cửa nhìn lên Market Street)
+  { id: "home", name: "My Home", type: "home", x: -42, z: 22, w: 10, d: 10, door: "north", model: "building_C", layout: "home",
+    color: 0xfff4e6, roof: 0xd9480f, awning: 0xfd7e14, floor: 0xd9b38c, wall: 0xfff8f0, keeper: null, sells: [] },
+  { id: "cinema", name: "Star Cinema", type: "cinema", x: 78, z: 22, w: 12, d: 12, door: "north", model: "building_H", scale: 6, layout: "cinema",
+    color: 0x343a40, roof: 0x212529, awning: 0xfab005, floor: 0x5c1a1a, wall: 0x3b2f2a, goods: ["🎬", "🍿", "🎟️", "🥤", "🎥", "⭐"],
+    keeper: { name: "Jack – Ticket Seller", color: 0xfab005, greet: "Hi! The movie starts at seven. Would you like some popcorn?", hint: "Can I have some popcorn, please?" },
+    sells: ["popcorn", "water"] }
+];
+
+/* ĐỊA ĐIỂM NGOÀI TRỜI (không có nhà, đi thẳng vào): x, z = tâm khu; keys = từ khóa khi hỏi "Where is …?" */
+const SPOTS = [
+  { id: "busstop",  name: "Bus Stop",    type: "busstop",  x: -94, z: 17.5, keys: ["bus"] },
+  { id: "market",   name: "Wet Market",  type: "market",   x: -74, z: 32,   keys: ["market", "fruit"] },
+  { id: "zoo",      name: "City Zoo",    type: "zoo",      x: 70,  z: 74,   keys: ["zoo", "animal"] },
+  { id: "farm",     name: "Green Farm",  type: "farm",     x: -72, z: 74,   keys: ["farm", "vegetable"] },
+  { id: "stadium",  name: "Stadium",     type: "stadium",  x: 0,   z: -66,  keys: ["stadium", "sport", "football"] },
+  { id: "power",    name: "Power Plant", type: "power",    x: -72, z: -66,  keys: ["power", "electric"] },
+  { id: "airfield", name: "Airfield",    type: "airfield", x: 72,  z: -68,  keys: ["airfield", "airport", "plane"] }
 ];

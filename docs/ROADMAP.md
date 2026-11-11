@@ -81,7 +81,7 @@ Lời mở đầu (dự kiến):
 | 🧠 Mind | Nhiệm vụ danh nhân, thẻ | Từ vựng, kiến thức |
 | 💛 Heart | Giúp người khác, làm guide | Giao tiếp xã hội |
 
-### Trang phục (VIỆC TIẾP THEO)
+### Trang phục (ĐÃ LÀM – PR #21)
 - **Ô trang bị:** 🧢 Mũ · 👕 Áo/áo choàng · 👟 Giày · 🎒 Phụ kiện (sau này thêm ô nhạc cụ).
 - **Chỉ số trang bị:** Voice (sát thương), Ears (thêm thời gian trả lời), Stamina (năng lượng tối đa, hồi nhanh), Resist (giảm trúng độc), Luck (thêm xu, tinh linh hiếm).
 - **Độ hiếm:**
@@ -94,8 +94,12 @@ Lời mở đầu (dự kiến):
 | Epic | Tím | Lv.10 | 800+ 🪙 | Mua hoặc rơi từ trùm |
 | **Legendary** | **Vàng** | Lv.15 | **Không bán** | **Chỉ bằng thành tích tiếng Anh** (vd: Best Speaker 10 lần, tự nói 1000 câu) |
 
-- Nhân vật KayKit ghép từ nhiều bộ phận (mũ, áo choàng, đầu, thân, tay, chân), dùng chung khung xương nên **có thể phối bộ phận giữa các nhân vật**.
-- Cần thêm **chỗ đổi nhân vật** cho người chơi cũ (hiện chỉ chọn ở màn hình đầu).
+- Nhân vật KayKit ghép từ nhiều bộ phận (mũ, áo choàng, đầu, thân, tay, chân), dùng chung khung xương nên **có thể phối bộ phận giữa các nhân vật**. Code: `buildComposite()` lấy xương của Rogue rồi gắn từng bộ phận theo tên xương.
+- **Tạo nhân vật chỉ chọn khuôn mặt + kiểu tóc** (4 đầu: Alex, Sam, Robin, Max). Ai cũng bắt đầu bằng áo thun trắng + quần xám, nên mua đồ mới mới thấy khác biệt.
+- Áo trơn (T-shirt, jeans) = vải của Rogue chuyển đen trắng rồi **nhuộm màu** (`plain` + `tint` trong `places.js`), nên thêm màu mới chỉ cần thêm 1 dòng dữ liệu.
+- Đổi kiểu tóc: **Happy Hair** (12 🪙). Thay đồ: 🎒 túi, **gương ở nhà**, gương thử đồ ở Style Box.
+- Chỉ số đã có tác dụng: Voice (+% sát thương), Ears (+giây), Stamina (tốn ít năng lượng, hồi nhanh), Resist (giảm % trúng độc), Luck (+% xu).
+- Legendary đầu tiên: **Crown of Voices** – giải thoát 30 tinh linh + tự nói đúng 300 câu (`LEGENDS` trong `places.js`; đếm bằng `save.spoken`).
 
 ### Kinh tế
 - 🪙 Xu: từ NPC, hạ quái, mê cung, (sau này) bán đồ tự làm.
@@ -118,8 +122,10 @@ Lời mở đầu (dự kiến):
 *Nội dung danh nhân phải chính xác lịch sử, không bịa trích dẫn, có người duyệt; tránh nhân vật chính trị nhạy cảm và người còn sống.*
 
 ### Thành phố – các địa điểm
-- **Đã có:** Sunny Café, Golden Bakery, Green Cross Pharmacy, Style Box, Town Hall, City Hospital (đều vào được), Train Station, Plaza (đài phun nước), Misty Park (quái), cổng mê cung, 6 nhà phố nền.
-- **Dự kiến:** Bank, Post Office, Library, Museum, Supermarket, Wet Market (chợ người chơi), Restaurant, Hair Salon, Furniture Store, School (phòng thi CEFR), Science Lab, Power Plant, Bus Stop, Airfield, Stadium (đấu trường), Cinema, Zoo, nhà riêng người chơi, Farm, Workshop; vùng ngoại ô sương mù (rừng, hang, phế tích) có quái mạnh dần.
+- **Đã có (vào được):** Sunny Café, Golden Bakery, Green Cross Pharmacy, Style Box, Town Hall, City Hospital, Verse School, City Museum, Library, Verse Bank, Post Office, Science Lab, Home & Co (nội thất), Pho Corner (nhà hàng), Happy Hair (cắt tóc), Fresh Mart (siêu thị), Fix-It Workshop, Police Station, Fire Station, Star Cinema, **My Home** (nhà riêng).
+- **Đã có (ngoài trời, `SPOTS` trong places.js):** Bus Stop, Wet Market, City Zoo, Green Farm, Stadium, Power Plant, Airfield; Train Station, Plaza, Misty Park (quái), cổng mê cung.
+- Ngoại thất các nơi mới đang **dùng tạm mô hình nhà phố KayKit** / khối đơn giản. Người dùng sẽ gửi hình để làm lại ngoại thất.
+- **Dự kiến:** vùng ngoại ô sương mù (rừng, hang, phế tích) có quái mạnh dần; School thành phòng thi CEFR; Wet Market thành chợ người chơi; Stadium thành đấu trường.
 - Mỗi địa điểm cần: **nhu cầu trong game + từ vựng/mẫu câu riêng + thứ để sưu tầm/khám phá**.
 
 ### Xã hội & an toàn
@@ -143,22 +149,23 @@ Lời mở đầu (dự kiến):
 | `CLAUDE.md` | Quy tắc làm việc |
 
 ### Bản đồ code trong `index.html` (theo các tiêu đề `/* ===== ... */`)
-`2` dựng cảnh, ánh sáng, bóng đổ, nhân vật 3D (`makeChar`, `setAvatar`, `charAct`) · `2b` thị trấn: đường, cây, quảng trường, đài phun nước, nhà ga · `3` điều khiển, camera · `4` hội thoại NPC · `4b` nhận dạng giọng nói, hàm dùng chung `holdMic` · `4d` thẻ từ vựng · `4e` online (Supabase) · `6a` phòng chờ mê cung · `6b` màn chơi mê cung · `6c` giữ để nói trong mê cung · `4f` câu nhanh · `4g` kinh tế (xu, năng lượng, độc, túi đồ) · `4c` hỏi đường · `7` đánh quái Echo Ghost · `8` thành phố: nhà, nội thất, cửa hàng, đồ trang trí phố · `5` vòng lặp game, camera chống xuyên tường.
+`2` dựng cảnh, ánh sáng, bóng đổ, nhân vật 3D (`makeChar`, `setAvatar`, `buildComposite`, `charAct`), nạp `save` · `2b` thị trấn: đường (`road()` → `ROADS`), cây, quảng trường, đài phun nước, nhà ga · `3` điều khiển, camera · `4` hội thoại NPC · `4b` nhận dạng giọng nói, hàm dùng chung `holdMic` · `4d` thẻ từ vựng · `4e` online (Supabase) · `6a` phòng chờ mê cung · `6b` màn chơi mê cung · `6c` giữ để nói trong mê cung · `4f` câu nhanh · `4g` kinh tế (xu, năng lượng, độc), túi đồ dạng ô, trang phục (`wear`, `gear`), rương, thành tích Legendary · `4c` hỏi đường · `7` đánh quái Echo Ghost · `8` thành phố: nhà, nội thất theo `layout`, nhà riêng (`furnishHome`, `homeRefresh`, `openGallery`), đồ trang trí phố, địa điểm ngoài trời (`SPOT_BUILD`), cửa hàng · `8b` bản đồ nhỏ + bản đồ lớn · `5` vòng lặp game, camera chống xuyên tường.
 
 ### Công nghệ
-- **Three.js r128** (CDN cdnjs) + GLTFLoader, SkeletonUtils (CDN jsdelivr `three@0.128.0`).
+- **Three.js r128** + GLTFLoader, SkeletonUtils, supabase-js 2.89.0: **để sẵn trong thư mục `lib/`** (không tải từ CDN nữa). Lý do: trình duyệt có chặn theo dõi (Safari, Edge, Brave…) hiện cảnh báo "This page is not displaying as expected… reduce protections" khi trang tải script từ tên miền khác.
 - **Supabase Realtime** (khóa publishable trong code là khóa công khai, được phép):
   - kênh `town`: vị trí, tên, màu, nhân vật, chat của mọi người chơi
   - kênh `maze-duo` / `maze-team`: phòng chờ (Presence); người vào sớm nhất làm chủ phòng, chia đội
   - kênh `match-<id>`: báo đội thắng
-- **Lưu trên máy (localStorage):** `ev_name`, `ev_avatar`, `ev_cards`, `ev_save` (⭐, xu, năng lượng, đồ, độc), `ev_spirits`. **Chưa có tài khoản, server chưa lưu gì.**
-- **Web Speech API** (miễn phí, trong trình duyệt) cho nhận dạng giọng nói và đọc to.
+- **Lưu trên máy (localStorage):** `ev_name`, `ev_cards`, `ev_save` (⭐, xu, năng lượng, độc, `items` = túi 20 ô, `chest` = rương 60 ô, `equip` = đồ đang mặc, `head` = khuôn mặt, `decor` = nội thất nhà, `spoken` = số câu tự nói đúng, `legends`), `ev_spirits`. (`ev_avatar` cũ chỉ còn dùng để chuyển đổi.) **Chưa có tài khoản, server chưa lưu gì.**
+- **Web Speech API** (miễn phí, trong trình duyệt) cho nhận dạng giọng nói và đọc to. Giọng đọc: `pickVoice()` tự chọn giọng tự nhiên nhất máy có (Natural/Neural của Edge, Google của Chrome, Enhanced/Premium của iPhone). Muốn giọng hay hơn nữa phải dùng dịch vụ trả phí (Azure, ElevenLabs…).
 - **GitHub Pages:** mỗi lần merge vào `main` tự đăng bản mới tại `https://locaenglishvn.github.io/englishverse/`.
 - **Môi trường Claude Code "englishverse":** đã mở mạng tới Supabase của dự án để chạy thử nhiều người chơi.
 
 ### Cách kiểm thử (để phiên sau làm lại)
 - Chạy `python3 -m http.server` trong repo, dùng Playwright (Chromium có sẵn) mở trang.
-- Máy test không ra được CDN nên **chặn và trả file local**: `three.min.js`, `GLTFLoader.js`, `SkeletonUtils.js` (từ `npm pack three@0.128.0`), `supabase.js` (từ `npm pack @supabase/supabase-js@2.89.0`).
+- Thư viện đã nằm trong `lib/` nên không cần chặn CDN nữa.
+- Trong `page.evaluate` gọi thẳng biến của game: `player`, `save`, `enterRoom(CITY.find(...))`, `buy(id)`, `wear(id)`, `openGallery()`…
 - **Micro giả lập:** thay `window.SpeechRecognition` **và** `window.webkitSpeechRecognition` bằng một class giả, khi `stop()` thì gọi `onresult` với câu định sẵn rồi `onend`.
 - Nhiều người chơi: mở nhiều `browser.newContext()` cùng lúc.
 - Lưu ý: quái đi lang thang ngẫu nhiên. Khi test, dời các con khác ra xa để chỉ còn một con ở gần.
@@ -170,7 +177,7 @@ Lời mở đầu (dự kiến):
 
 ---
 
-## 5. Đã làm (PR #1–#19)
+## 5. Đã làm (PR #1–#21)
 1. `CLAUDE.md`, tầm nhìn metaverse
 2. Thị trấn ban đầu; hỏi đường "Where is …?" có mũi tên dẫn đường
 3. Thẻ từ vựng và sổ sưu tập
@@ -181,17 +188,22 @@ Lời mở đầu (dự kiến):
 8. Thành phố mở rộng: 6 tòa nhà đi vào được, mua hàng bằng giọng nói (giảm 10%)
 9. Đồ họa KayKit: nhân vật 3D có hoạt ảnh (5 loại), nhà phố, đồ trang trí phố, nội thất
 10. Camera không xuyên tường, camera nhảy ngay khi vào/ra nhà; giữ để nói ở mọi nút micro
+11. **Trang phục** (4 ô, 5 độ hiếm, chỉ số có tác dụng), tạo nhân vật chỉ chọn mặt + tóc, Style Box bán 23 món, Legendary bằng thành tích
+12. **Túi đồ dạng ô** (20 ô), **nhà riêng** My Home: rương 60 ô, gương thay đồ, phòng trưng bày (thẻ, tinh linh, trang phục, cúp), nội thất mua ở Home & Co
+13. **Bản đồ mở rộng** (≈ 210 × 175 m): 15 địa điểm mới vào được + 7 khu ngoài trời; 16 NPC mới có hội thoại theo nghề; tên + nghề trên đầu NPC
+14. **Bản đồ nhỏ** xoay theo hướng nhìn; chạm để mở bản đồ lớn, chạm địa điểm để được chỉ đường
+15. Giọng đọc tự nhiên hơn; tinh linh không bay quanh người nữa (trưng ở nhà); thư viện để trong `lib/`
 
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
-1. **Hệ thống trang phục** (mục 3) + Style Box bán đồ + chỗ đổi nhân vật.
+1. **Ngoại thất thật** cho các địa điểm mới (người dùng gửi hình); nội thất riêng cho từng nơi.
 2. **Đồng bộ quái cho cả cộng đồng:** một con quái, nhiều người cùng thấy và cùng đánh, máu chung; mỗi người vẫn nhận đề riêng.
 3. **Bảng nhiệm vụ ở Town Hall** (nhiệm vụ hằng ngày).
 4. **Chuỗi nhiệm vụ Pasteur** ở bệnh viện → kỹ năng pha thuốc.
 5. **Tài khoản (Supabase Auth) + lưu tiến độ lên server** (bảng dữ liệu); cấp độ theo năng lực thật.
 6. Thêm quái (Riddle Bug, Scramble Worm) và vũ khí nhạc cụ (Kèn, Đàn, Trống).
-7. Nhà riêng, chợ trao đổi, sổ khách.
+7. Mời bạn vào nhà riêng, sổ khách, chợ trao đổi (Wet Market); tự sắp đặt nội thất.
 8. Báo cáo năng lực CEFR cho phụ huynh và nhà trường.
 9. An toàn trẻ em: báo cáo, kiểm duyệt, tách theo độ tuổi.
 
@@ -202,3 +214,5 @@ Lời mở đầu (dự kiến):
 - Nhận dạng giọng nói trình duyệt kém ổn định với giọng trẻ em và trên iPhone. Có thể cần dịch vụ trả phí (Azure, Whisper).
 - Town Hall, bệnh viện đang dùng mô hình nhà phố chung cư, chưa ra dáng công trình công cộng.
 - Nhân vật phong cách phiêu lưu giả tưởng; NPC đời thường có thể cần bộ nhân vật hiện đại.
+- Các địa điểm mới dùng chung vài mẫu nhà phố, NPC dùng lại 5 bộ nhân vật KayKit.
+- Đồ trưng bày (thú ở sở thú, rau ở nông trại…) đang là emoji; điện thoại cũ có thể hiện khác nhau.
