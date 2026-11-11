@@ -38,6 +38,11 @@ button{font:inherit;cursor:pointer}
 .card.no{opacity:.55}.card.no .pic{filter:grayscale(1)}
 #toast{position:fixed;z-index:11;left:50%;top:30%;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;background:var(--panel);color:var(--ink);border:3px solid #fab005;border-radius:20px;padding:16px 24px;text-align:center;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.35)}
 #toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#online{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
+#namep{position:fixed;inset:0;z-index:12;display:none;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:16px}
+#namep .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:20px;width:100%;max-width:360px;text-align:center}
+#nameIn{width:100%;box-sizing:border-box;font:inherit;font-size:20px;padding:12px;border-radius:12px;border:2px solid rgba(128,128,128,.4);margin-top:12px;text-align:center;background:transparent;color:var(--ink);user-select:text;-webkit-user-select:text}
+#nameGo{margin-top:12px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 24px;font-weight:700;font-size:17px}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
 </style>
 </head>
@@ -50,6 +55,14 @@ button{font:inherit;cursor:pointer}
   <div id="cards"></div>
 </div></div>
 <div id="toast"></div>
+<div id="online">⚪ connecting…</div>
+<div id="namep"><div class="box">
+  <div style="font-size:22px;font-weight:700">Welcome to EnglishVerse! 👋</div>
+  <div style="margin-top:8px">What’s your name?</div>
+  <input id="nameIn" maxlength="12" placeholder="e.g. Lily" autocomplete="off">
+  <div id="nameErr" style="font-size:14px;margin-top:8px;color:var(--bad)"></div>
+  <button id="nameGo">Let’s go! ▶</button>
+</div></div>
 <div id="stick"><div id="knob"></div></div>
 <button id="talk">💬 Talk</button>
 <button id="askBtn">🧭 Ask</button>
@@ -66,6 +79,7 @@ button{font:inherit;cursor:pointer}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/dist/umd/supabase.js"></script>
 <script src="lessons.js"></script>
 <script>
 /* ===== 2. DỰNG CẢNH 3D ===== */
@@ -205,7 +219,7 @@ LESSONS.forEach(L => {
 /* ===== 3. ĐIỀU KHIỂN (joystick cảm ứng + bàn phím) ===== */
 const input = { x: 0, z: 0 };
 const keys = {};
-addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+addEventListener("keydown", e => { if (e.target.tagName !== "INPUT") keys[e.key.toLowerCase()] = true; });
 addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 const stick = document.getElementById("stick"), knob = document.getElementById("knob");
 let dragging = false;
@@ -363,6 +377,79 @@ $("albumBtn").onclick = () => {
 $("albumClose").onclick = () => $("album").style.display = "none";
 updateCardCount();
 
+/* ===== 4e. ONLINE: thấy người chơi khác (Supabase Realtime) =====
+   Mỗi máy gửi vị trí nhân vật lên kênh "town"; mọi máy khác nhận và vẽ nhân vật đó. */
+const SUPABASE_URL = "https://jwwpemeeittjyvnalvbd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_iW3VXS-TVb9rBiZqr5_qvw_6Bw7OHJK";   // khóa CÔNG KHAI, được phép nằm trong code
+const myId = Math.random().toString(36).slice(2, 10);
+const COLORS = [0x3b82f6, 0xf59f00, 0xae3ec9, 0x0ca678, 0xe8590c, 0x1098ad];
+const myColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+player.children[0].material.color.setHex(myColor);
+let myName = "";
+try { myName = localStorage.getItem("ev_name") || ""; } catch (e) {}
+const others = {};   // người chơi khác: id → { g, tx, tz, ry, last }
+let chan = null, online = false, sendT = 0, beatT = 0, lastSent = "";
+function nameTag(text) {   // bảng tên nổi trên đầu nhân vật
+  const c = document.createElement("canvas"); c.width = 256; c.height = 64;
+  const g = c.getContext("2d");
+  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0, 8, 256, 48);
+  g.fillStyle = "#fff"; g.font = "bold 34px system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
+  g.fillText(text, 128, 33);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+  s.scale.set(1.8, 0.45, 1); s.position.y = 2.1;
+  return s;
+}
+function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
+function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
+function goOnline() {
+  if (!window.supabase) { countOnline(); return; }
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  chan = sb.channel("town", { config: { broadcast: { self: false } } });
+  chan.on("broadcast", { event: "pos" }, ({ payload: m }) => {
+    let o = others[m.id];
+    if (!o) {
+      o = others[m.id] = { g: makeChar(m.c) };
+      o.g.add(nameTag(String(m.n).slice(0, 12)));
+      o.g.position.set(m.x, 0, m.z);
+      countOnline();
+    }
+    o.tx = m.x; o.tz = m.z; o.ry = m.r; o.last = performance.now();
+  });
+  chan.on("broadcast", { event: "bye" }, ({ payload: m }) => removeOther(m.id));
+  chan.subscribe(st => { online = st === "SUBSCRIBED"; if (online) lastSent = ""; countOnline(); });
+}
+function updateOnline(dt) {
+  const now = performance.now();
+  for (const id in others) {   // di chuyển mượt tới vị trí mới; ai im lặng 8 giây thì coi như đã rời đi
+    const o = others[id];
+    o.g.position.x += (o.tx - o.g.position.x) * 0.2;
+    o.g.position.z += (o.tz - o.g.position.z) * 0.2;
+    o.g.rotation.y = o.ry;
+    if (now - o.last > 8000) removeOther(id);
+  }
+  if (!online) return;
+  sendT += dt; beatT += dt;
+  const p = player.position, key = p.x.toFixed(1) + "," + p.z.toFixed(1);
+  if (sendT > 0.2 && (key !== lastSent || beatT > 3)) {   // tối đa 5 lần/giây, chỉ gửi khi di chuyển (hoặc 3 giây/lần để báo "vẫn ở đây")
+    chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, c: myColor, x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
+    sendT = 0; beatT = 0; lastSent = key;
+  }
+}
+addEventListener("pagehide", () => { if (online) chan.send({ type: "broadcast", event: "bye", payload: { id: myId } }); });
+function startWithName() {
+  player.add(nameTag(myName));
+  $("namep").style.display = "none";
+  goOnline();
+}
+$("nameGo").onclick = () => {
+  const n = $("nameIn").value.trim();
+  if (!/^[A-Za-z][A-Za-z ]{1,11}$/.test(n)) { $("nameErr").textContent = "Use English letters only, 2–12 letters. (Chỉ dùng chữ cái tiếng Anh, không dấu.)"; return; }
+  myName = n;
+  try { localStorage.setItem("ev_name", n); } catch (e) {}
+  startWithName();
+};
+if (myName) startWithName(); else $("namep").style.display = "flex";
+
 /* ===== 4c. HỎI ĐƯỜNG: "Where is …?" – AI hướng dẫn chỉ đường bằng tiếng Anh ===== */
 const PLACES = [   // các địa điểm trong thị trấn (NPC lấy tự động từ LESSONS)
   { name: "Sunny Café", say: "the café", keys: ["cafe", "café", "coffee", "sunny"], x: 0, z: 2 },
@@ -482,6 +569,7 @@ function loop() {
   }
   LESSONS.forEach(L => L.mark.position.set(L.x, 2.2 + Math.sin(t * 3) * 0.12, L.z));
   updateGuide(dt, t);
+  updateOnline(dt);
   if (!talking) {
     near = null;
     let best = 3.3;
