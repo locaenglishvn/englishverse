@@ -100,7 +100,8 @@ const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", le
    color/roof/awning = màu tường / mái / mái hiên
    keeper = người bán: tên, màu áo, câu chào, câu gợi ý cho người chơi nói (null = không có người bán)
    sells  = các món bán (id trong ITEMS ở trên). Để trống [] nếu chưa bán gì
-   model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5) */
+   model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5)
+   exterior = ngoại thất vẽ riêng (townhall, hospital, school, cafe, home – xem mục 8c trong index.html); khi có thì bỏ qua model */
 const CITY = [
   { id: "bakery", name: "Golden Bakery", type: "bakery", x: -26, z: 4, w: 10, d: 10, door: "south", model: "building_A",
     color: 0xffe8cc, roof: 0xc0392b, awning: 0xe67e22, floor: 0xe9c99a, wall: 0xfff4e0,
@@ -114,15 +115,15 @@ const CITY = [
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
     keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to Style Box. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
     sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
-  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -26, w: 14, d: 14, door: "south", model: "building_H", scale: 7,
+  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -27, w: 32, d: 13, door: "south", exterior: "townhall",
     color: 0xf1f3f5, roof: 0x495057, awning: 0x1c7ed6, floor: 0xc9a27e, wall: 0xf8f0e3,
     keeper: { name: "Mr. Lee – Mayor", color: 0x343a40, greet: "Welcome to Town Hall! The quest board will open soon.", hint: "I'd like to take a quest." },
     sells: [] },
-  { id: "hospital", name: "City Hospital", type: "hospital", x: 44, z: 36, w: 12, d: 12, door: "north", model: "building_D", scale: 6,
+  { id: "hospital", name: "City Hospital", type: "hospital", x: 44, z: 42, w: 20, d: 11, door: "north", exterior: "hospital",
     color: 0xffffff, roof: 0xc92a2a, awning: 0xfa5252, floor: 0xe7f5ff, wall: 0xffffff,
     keeper: { name: "Nurse Mai", color: 0x74c0fc, greet: "Hello! Doctor Pasteur is working in his lab. He will need your help soon.", hint: "I feel sick." },
     sells: [] },
-  { id: "cafe", name: "Sunny Café", type: "cafe", x: 0, z: 1, w: 12, d: 12, door: "south", model: "building_E", scale: 6,
+  { id: "cafe", name: "Cafe Sua Da", type: "cafe", x: 0, z: 1, w: 19, d: 10, door: "south", exterior: "cafe",
     color: 0xfff1e0, roof: 0xd62828, awning: 0xe8590c, floor: 0xe9d8b4, wall: 0xfff4e6,
     keeper: null,   // không có người bán: Mia (trong lessons.js) đứng sau quầy và nói chuyện với khách
     sells: [] },
@@ -130,7 +131,7 @@ const CITY = [
      layout = kiểu bày nội thất: shop | tables | shelves | desks | museum | cinema | salon | lab | home
      goods  = đồ trưng bày (emoji). NPC hội thoại của từng nơi nằm trong lessons.js (place: "id"). */
   // Hàng phía bắc (cửa nhìn ra North Avenue)
-  { id: "school", name: "Verse School", type: "school", x: -86, z: -26, w: 14, d: 14, door: "south", model: "building_D", scale: 7, layout: "desks",
+  { id: "school", name: "Verse School", type: "school", x: -86, z: -27, w: 24, d: 18, door: "south", exterior: "school", layout: "desks",
     color: 0xfff3bf, roof: 0x1971c2, awning: 0xfab005, floor: 0xd9b38c, wall: 0xfff9db, goods: ["📚", "✏️", "📐", "🌍", "🎒", "🧮"], keeper: null, sells: [] },
   { id: "museum", name: "City Museum", type: "museum", x: -48, z: -24, w: 12, d: 12, door: "south", model: "building_C", scale: 6, layout: "museum",
     color: 0xf1f3f5, roof: 0x5c5f66, awning: 0x868e96, floor: 0xe9ecef, wall: 0xf8f9fa, goods: ["🦖", "🏺", "🗿", "⚱️", "🦴", "👑"], keeper: null, sells: [] },
@@ -166,7 +167,7 @@ const CITY = [
   { id: "fire", name: "Fire Station", type: "fire station", x: 90, z: 4, w: 10, d: 10, door: "south", model: "building_G", layout: "lab",
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
   // Hàng phía nam (cửa nhìn lên Market Street)
-  { id: "home", name: "My Home", type: "home", x: -42, z: 22, w: 10, d: 10, door: "north", model: "building_C", layout: "home",
+  { id: "home", name: "My Home", type: "home", x: -42, z: 22, w: 12, d: 11, door: "north", exterior: "home", layout: "home",
     color: 0xfff4e6, roof: 0xd9480f, awning: 0xfd7e14, floor: 0xd9b38c, wall: 0xfff8f0, keeper: null, sells: [] },
   { id: "cinema", name: "Star Cinema", type: "cinema", x: 78, z: 22, w: 12, d: 12, door: "north", model: "building_H", scale: 6, layout: "cinema",
     color: 0x343a40, roof: 0x212529, awning: 0xfab005, floor: 0x5c1a1a, wall: 0x3b2f2a, goods: ["🎬", "🍿", "🎟️", "🥤", "🎥", "⭐"],

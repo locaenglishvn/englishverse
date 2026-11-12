@@ -122,9 +122,11 @@ Lời mở đầu (dự kiến):
 *Nội dung danh nhân phải chính xác lịch sử, không bịa trích dẫn, có người duyệt; tránh nhân vật chính trị nhạy cảm và người còn sống.*
 
 ### Thành phố – các địa điểm
-- **Đã có (vào được):** Sunny Café, Golden Bakery, Green Cross Pharmacy, Style Box, Town Hall, City Hospital, Verse School, City Museum, Library, Verse Bank, Post Office, Science Lab, Home & Co (nội thất), Pho Corner (nhà hàng), Happy Hair (cắt tóc), Fresh Mart (siêu thị), Fix-It Workshop, Police Station, Fire Station, Star Cinema, **My Home** (nhà riêng).
+- **Đã có (vào được):** Cafe Sua Da (đổi tên từ Sunny Café), Golden Bakery, Green Cross Pharmacy, Style Box, Town Hall, City Hospital, Verse School, City Museum, Library, Verse Bank, Post Office, Science Lab, Home & Co (nội thất), Pho Corner (nhà hàng), Happy Hair (cắt tóc), Fresh Mart (siêu thị), Fix-It Workshop, Police Station, Fire Station, Star Cinema, **My Home** (nhà riêng).
 - **Đã có (ngoài trời, `SPOTS` trong places.js):** Bus Stop, Wet Market, City Zoo, Green Farm, Stadium, Power Plant, Airfield; Train Station, Plaza, Misty Park (quái), cổng mê cung.
-- Ngoại thất các nơi mới đang **dùng tạm mô hình nhà phố KayKit** / khối đơn giản. Người dùng sẽ gửi hình để làm lại ngoại thất.
+- **Ngoại thất vẽ riêng theo ảnh thật** (mục `8c` trong index.html, `exterior:` trong places.js): Town Hall (theo UBND TP.HCM), City Hospital (theo BV Chợ Rẫy), Verse School (theo trường Lê Quý Đôn, hình chữ U có sân), Cafe Sua Da (nhà ống Việt Nam, ghế nhựa vỉa hè, 2 nhà hàng xóm), My Home (nhà nhỏ có sân, bản cơ bản).
+- Các nơi còn lại vẫn **dùng tạm mô hình nhà phố KayKit** / khối đơn giản; người dùng gửi hình theo từng đợt (danh sách ưu tiên trong lịch sử trao đổi: bakery, pharmacy, supermarket, nhà hàng, tiệm tóc…).
+- **My Home sẽ nâng cấp được** (ý tưởng của người dùng): bỏ xu (+ điều kiện thành tích) để xây to hơn, nhiều lựa chọn kiểu nhà, giá khác nhau; tùy chỉnh về sau.
 - **Dự kiến:** vùng ngoại ô sương mù (rừng, hang, phế tích) có quái mạnh dần; School thành phòng thi CEFR; Wet Market thành chợ người chơi; Stadium thành đấu trường.
 - Mỗi địa điểm cần: **nhu cầu trong game + từ vựng/mẫu câu riêng + thứ để sưu tầm/khám phá**.
 
@@ -177,7 +179,7 @@ Lời mở đầu (dự kiến):
 
 ---
 
-## 5. Đã làm (PR #1–#21)
+## 5. Đã làm (PR #1–#22)
 1. `CLAUDE.md`, tầm nhìn metaverse
 2. Thị trấn ban đầu; hỏi đường "Where is …?" có mũi tên dẫn đường
 3. Thẻ từ vựng và sổ sưu tập
@@ -193,11 +195,12 @@ Lời mở đầu (dự kiến):
 13. **Bản đồ mở rộng** (≈ 210 × 175 m): 15 địa điểm mới vào được + 7 khu ngoài trời; 16 NPC mới có hội thoại theo nghề; tên + nghề trên đầu NPC
 14. **Bản đồ nhỏ** xoay theo hướng nhìn; chạm để mở bản đồ lớn, chạm địa điểm để được chỉ đường
 15. Giọng đọc tự nhiên hơn; tinh linh không bay quanh người nữa (trưng ở nhà); thư viện để trong `lib/`
+16. Ngoại thất riêng đợt 1: Town Hall, City Hospital, Verse School, Cafe Sua Da, My Home (cờ bay, bản đồ nhỏ vẽ đúng hình khối)
 
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
-1. **Ngoại thất thật** cho các địa điểm mới (người dùng gửi hình); nội thất riêng cho từng nơi.
+1. **Ngoại thất thật** cho các địa điểm còn lại (người dùng gửi hình theo đợt); nội thất riêng cho từng nơi; nâng cấp nhà riêng.
 2. **Đồng bộ quái cho cả cộng đồng:** một con quái, nhiều người cùng thấy và cùng đánh, máu chung; mỗi người vẫn nhận đề riêng.
 3. **Bảng nhiệm vụ ở Town Hall** (nhiệm vụ hằng ngày).
 4. **Chuỗi nhiệm vụ Pasteur** ở bệnh viện → kỹ năng pha thuốc.

@@ -7,7 +7,7 @@ const LESSONS = [
 {
   name: "Mia – Barista", color: 0xe03131, place: "cafe", x: 0, z: -3.6,
   steps: [
-    { say: "Hi! Welcome to Sunny Café. What would you like to drink?",
+    { say: "Hi! Welcome to Cafe Sua Da. What would you like to drink?",
       card: { w: "I’d like…", pic: "☕", ex: "I’d like a coffee, please." },
       choices: [
         { t: "I’d like a coffee, please.", ok: true,  fb: "Great! Polite and natural. +10" },
