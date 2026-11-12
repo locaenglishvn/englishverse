@@ -78,7 +78,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Leo – Museum Guide", color: 0x5c5f66, place: "museum", x: 0, z: -2,
+  name: "Leo – Museum Guide", color: 0x5c5f66, place: "museum", x: -3.8, z: 18,
   steps: [
     { say: "Welcome to the City Museum! This dinosaur is sixty-six million years old.",
       card: { w: "dinosaur", pic: "🦖", ex: "This dinosaur is very old." },
@@ -842,6 +842,408 @@ const LESSONS = [
         { t: "I’ll start saving this week.", ok: true,  fb: "Great goal! +10" },
         { t: "Difference big make.",         ok: false, fb: "Say “I’ll start saving.”" },
         { t: "Week is save.",                ok: false, fb: "Try “I’ll start saving this week.”" } ] }
+  ]
+}
+/* ===== CITY MUSEUM (60 × 72 m: sảnh chính + 4 khu – khủng long, điêu khắc & cổ vật, tranh nổi tiếng, khoa học & vũ trụ) ===== */
+,{
+  name: "Dr. Rex – Paleontologist", color: 0x8d5a2b, place: "museum", x: -11.5, z: 13,
+  steps: [
+    { say: "Hello, explorer! I study dinosaur fossils. Do you know what a fossil is?",
+      q: { w: "Do you know what…is?", pic: "❓", ex: "Do you know what a fossil is?" },
+      card: { w: "fossil", pic: "🪨", ex: "A fossil is a very old bone in a rock." },
+      choices: [
+        { t: "Is it a very old bone in a rock?", ok: true, fb: "Great guess! +10" },
+        { t: "Fossil is eat.", ok: false, fb: "Not food :) Ask “Is it an old bone?”" },
+        { t: "I don’t know fossil.", ok: false, fb: "Try a guess: “Is it a very old bone?”" } ] },
+    { say: "Exactly! This T. rex lived about sixty-six million years ago.",
+      card: { w: "million years ago", pic: "⏳", ex: "Dinosaurs lived millions of years ago." },
+      choices: [
+        { t: "Wow, sixty-six million years ago!", ok: true, fb: "You listened well! +10" },
+        { t: "It is sixty years.", ok: false, fb: "Listen again: sixty-six MILLION." },
+        { t: "It lived yesterday.", ok: false, fb: "Haha, no :)" } ] },
+    { say: "We dig very slowly with small brushes. Why do you think we are so careful?",
+      q: { w: "Why do you think…?", pic: "🤔", ex: "Why do you think we are careful?" },
+      card: { w: "so we don’t break…", pic: "🦴", ex: "We are careful so we don’t break the bones." },
+      choices: [
+        { t: "So you don’t break the bones.", ok: true, fb: "Smart answer! +10" },
+        { t: "Because brush.", ok: false, fb: "Say “So we don’t break the bones.”" },
+        { t: "Dig fast is good.", ok: false, fb: "Fossils break easily :)" } ] }
+  ]
+},
+{
+  name: "Ben – Kid Explorer", color: 0x1c7ed6, place: "museum", x: -24, z: 19,
+  steps: [
+    { say: "Look at that long neck! How tall do you think it is?",
+      q: { w: "How tall…?", pic: "📏", ex: "How tall is it?" },
+      card: { w: "It’s about … metres tall.", pic: "📏", ex: "It’s about twelve metres tall." },
+      choices: [
+        { t: "I think it’s about twelve metres tall.", ok: true, fb: "Good guess! +10" },
+        { t: "Tall is it.", ok: false, fb: "Say “It’s about … metres tall.”" },
+        { t: "It is a neck.", ok: false, fb: "He asked HOW TALL." } ] },
+    { say: "Twelve metres! Taller than my house! What did it eat?",
+      card: { w: "leaves", pic: "🌿", ex: "It ate leaves from tall trees." },
+      choices: [
+        { t: "It ate leaves from tall trees.", ok: true, fb: "Correct! +10" },
+        { t: "It eat people.", ok: false, fb: "Long-necked dinosaurs ate plants :)" },
+        { t: "Eat leaf it.", ok: false, fb: "Say “It ate leaves.”" } ] },
+    { say: "Cool! Which dinosaur is your favourite?",
+      q: { w: "Which…is your favourite?", pic: "⭐", ex: "Which dinosaur is your favourite?" },
+      card: { w: "My favourite is…", pic: "🦖", ex: "My favourite is the T. rex." },
+      choices: [
+        { t: "My favourite is the T. rex.", ok: true, fb: "Roar! +10" },
+        { t: "Favourite is me.", ok: false, fb: "Say “My favourite is…”" },
+        { t: "Yes, dinosaur.", ok: false, fb: "He asked WHICH one." } ] }
+  ]
+},
+{
+  name: "Ms. Ivy – Museum Guide", color: 0x2b8a3e, place: "museum", x: -8.5, z: 22.5,
+  steps: [
+    { say: "Welcome to the Dinosaur Hall! Is this your first visit?",
+      q: { w: "Is this your first…?", pic: "1️⃣", ex: "Is this your first visit?" },
+      card: { w: "first visit", pic: "🎉", ex: "This is my first visit." },
+      choices: [
+        { t: "Yes, it’s my first visit.", ok: true, fb: "Welcome! +10" },
+        { t: "First me.", ok: false, fb: "Say “It’s my first visit.”" },
+        { t: "Visit is first.", ok: false, fb: "Try “Yes, it’s my first visit.”" } ] },
+    { say: "Lovely! You can take photos, but please don’t climb on the stairs.",
+      card: { w: "climb", pic: "🧗", ex: "Please don’t climb on the stairs." },
+      choices: [
+        { t: "OK, I won’t climb on the stairs.", ok: true, fb: "Thank you! +10" },
+        { t: "I climb now!", ok: false, fb: "Please follow the rules :)" },
+        { t: "Stairs climb no.", ok: false, fb: "Say “I won’t climb.”" } ] },
+    { say: "The flying reptile above you is a pterosaur. It is not a dinosaur!",
+      card: { w: "above you", pic: "⬆️", ex: "Look! There is a pterosaur above you." },
+      choices: [
+        { t: "Really? I thought it was a dinosaur!", ok: true, fb: "Great reaction! +10" },
+        { t: "Above is you.", ok: false, fb: "Say “Really? I thought…”" },
+        { t: "It is a bird.", ok: false, fb: "Not a bird either :)" } ] }
+  ]
+},
+{
+  name: "Dr. Kim – Fossil Scientist", color: 0x5f3dc4, place: "museum", x: -26.5, z: 15.5, minLv: 5,
+  steps: [
+    { say: "Do you know why the dinosaurs disappeared?",
+      q: { w: "Do you know why…?", pic: "❓", ex: "Do you know why the dinosaurs disappeared?" },
+      card: { w: "disappear", pic: "💨", ex: "The dinosaurs disappeared long ago." },
+      choices: [
+        { t: "Was it a big rock from space?", ok: true, fb: "Good thinking! +10" },
+        { t: "Dinosaurs go home.", ok: false, fb: "Hmm. Think about space :)" },
+        { t: "Why is disappear.", ok: false, fb: "Try “Was it a rock from space?”" } ] },
+    { say: "Many scientists think a huge meteorite hit the Earth. The sky became dark and cold.",
+      card: { w: "hit the Earth", pic: "☄️", ex: "A huge meteorite hit the Earth." },
+      choices: [
+        { t: "So the plants died, and then the dinosaurs died?", ok: true, fb: "Excellent thinking! +10" },
+        { t: "Earth hit me.", ok: false, fb: "Say “A meteorite hit the Earth.”" },
+        { t: "The sky was hot.", ok: false, fb: "She said dark and COLD." } ] },
+    { say: "Yes! But some dinosaurs became birds. Do you believe that?",
+      q: { w: "Do you believe…?", pic: "🐦", ex: "Do you believe that birds are dinosaurs?" },
+      card: { w: "I can’t believe it!", pic: "😲", ex: "Birds are dinosaurs? I can’t believe it!" },
+      choices: [
+        { t: "Wow, I can’t believe it! Birds are dinosaurs!", ok: true, fb: "Amazing fact! +10" },
+        { t: "Believe is bird.", ok: false, fb: "Say “I can’t believe it!”" },
+        { t: "No birds.", ok: false, fb: "Birds really are dinosaurs :)" } ] }
+  ]
+},
+{
+  name: "Marco – Sculptor", color: 0xadb5bd, place: "museum", x: -19, z: -26.5,
+  steps: [
+    { say: "Ciao! I make statues. What do you think this horse statue is made of?",
+      q: { w: "What is it made of?", pic: "🪨", ex: "What is it made of?" },
+      card: { w: "It’s made of…", pic: "🤍", ex: "It’s made of marble." },
+      choices: [
+        { t: "I think it’s made of marble.", ok: true, fb: "Correct! +10" },
+        { t: "Made horse marble.", ok: false, fb: "Say “It’s made of marble.”" },
+        { t: "It is a real horse.", ok: false, fb: "Haha, it’s stone :)" } ] },
+    { say: "Right! Marble is hard. It takes me one year to make one statue.",
+      card: { w: "It takes…", pic: "📅", ex: "It takes one year to make a statue." },
+      choices: [
+        { t: "One year? That’s a long time!", ok: true, fb: "Nice reaction! +10" },
+        { t: "Year one take.", ok: false, fb: "Say “That’s a long time!”" },
+        { t: "It takes one day.", ok: false, fb: "He said one YEAR." } ] },
+    { say: "Would you like to try making a small statue from clay?",
+      q: { w: "Would you like to try…?", pic: "🙋", ex: "Would you like to try?" },
+      card: { w: "I’d love to!", pic: "😍", ex: "I’d love to try!" },
+      choices: [
+        { t: "Yes, I’d love to!", ok: true, fb: "Great! +10" },
+        { t: "Try clay me.", ok: false, fb: "Say “I’d love to!”" },
+        { t: "Clay is dirty, no.", ok: false, fb: "Be brave and try :)" } ] }
+  ]
+},
+{
+  name: "Anna – Art Student", color: 0xe64980, place: "museum", x: -16, z: -15,
+  steps: [
+    { say: "Hi! I’m drawing the statues for my art class.",
+      q: { w: "What are you drawing?", pic: "✏️", ex: "What are you drawing?" },
+      card: { w: "What are you drawing?", pic: "✏️", ex: "What are you drawing?" },
+      choices: [
+        { t: "Cool! What are you drawing now?", ok: true, fb: "Good question! +10" },
+        { t: "Draw you what?", ok: false, fb: "Say “What are you drawing?”" },
+        { t: "I don’t like art.", ok: false, fb: "Be kind :)" } ] },
+    { say: "The man with his arm up. It’s difficult to draw hands!",
+      card: { w: "difficult", pic: "😓", ex: "Drawing hands is difficult." },
+      choices: [
+        { t: "Yes, hands are difficult. Your drawing looks great!", ok: true, fb: "So kind! +10" },
+        { t: "Hands easy.", ok: false, fb: "She thinks it’s difficult :)" },
+        { t: "Difficult is hand.", ok: false, fb: "Say “Hands are difficult.”" } ] },
+    { say: "Thanks! Do you like drawing too?",
+      q: { w: "Do you like…?", pic: "❤️", ex: "Do you like drawing?" },
+      card: { w: "I’m not very good at…", pic: "🙈", ex: "I’m not very good at drawing." },
+      choices: [
+        { t: "I like it, but I’m not very good at it.", ok: true, fb: "Honest answer! +10" },
+        { t: "Good at drawing not.", ok: false, fb: "Say “I’m not very good at it.”" },
+        { t: "Drawing is you.", ok: false, fb: "Answer about YOU :)" } ] }
+  ]
+},
+{
+  name: "Uncle Tuan – Security Guard", color: 0x343a40, place: "museum", x: -8.5, z: -14,
+  steps: [
+    { say: "Hello! Please don’t touch the statues. They are very old.",
+      card: { w: "Don’t touch.", pic: "🚫", ex: "Please don’t touch the statues." },
+      choices: [
+        { t: "Sorry! I won’t touch them.", ok: true, fb: "Polite! +10" },
+        { t: "I touch a little.", ok: false, fb: "No touching, please :)" },
+        { t: "Touch is no.", ok: false, fb: "Say “I won’t touch them.”" } ] },
+    { say: "Thank you. Can I help you find something?",
+      q: { w: "Can I help you find…?", pic: "🔎", ex: "Can I help you find something?" },
+      card: { w: "Where is…?", pic: "📍", ex: "Where is the bronze drum?" },
+      choices: [
+        { t: "Yes. Where is the bronze drum?", ok: true, fb: "Clear question! +10" },
+        { t: "Drum where?", ok: false, fb: "Say “Where is the bronze drum?”" },
+        { t: "I find me.", ok: false, fb: "Ask “Where is…?”" } ] },
+    { say: "It’s at the end of the room, near the door to the Dinosaur Hall.",
+      card: { w: "at the end of", pic: "➡️", ex: "It’s at the end of the room." },
+      choices: [
+        { t: "At the end of the room. Thank you!", ok: true, fb: "You listened well! +10" },
+        { t: "End is room.", ok: false, fb: "Say “At the end of the room.”" },
+        { t: "In the dinosaur?", ok: false, fb: "Near the door, not in it :)" } ] }
+  ]
+},
+{
+  name: "Dr. Phuong – Archaeologist", color: 0x8c6a3a, place: "museum", x: -14.5, z: -4, minLv: 5,
+  steps: [
+    { say: "This is a Dong Son bronze drum from Vietnam. Do you know how old it is?",
+      q: { w: "How old is it?", pic: "⏳", ex: "How old is this drum?" },
+      card: { w: "more than 2,000 years old", pic: "🥁", ex: "It’s more than two thousand years old." },
+      choices: [
+        { t: "Is it more than two thousand years old?", ok: true, fb: "Correct! +10" },
+        { t: "Old is drum.", ok: false, fb: "Ask “How old is it?”" },
+        { t: "It is new.", ok: false, fb: "It’s very old :)" } ] },
+    { say: "Yes! Look at the top. There is a star in the middle and birds around it.",
+      card: { w: "in the middle", pic: "🎯", ex: "There is a star in the middle." },
+      choices: [
+        { t: "I can see the star in the middle and the birds!", ok: true, fb: "Great eyes! +10" },
+        { t: "Middle is star bird.", ok: false, fb: "Say “There is a star in the middle.”" },
+        { t: "I see a car.", ok: false, fb: "Look again :)" } ] },
+    { say: "People played these drums at festivals. Why do you think they are important?",
+      q: { w: "Why are they important?", pic: "❓", ex: "Why are bronze drums important?" },
+      card: { w: "They show our history.", pic: "📜", ex: "Bronze drums show our history." },
+      choices: [
+        { t: "Because they show our history and culture.", ok: true, fb: "Wonderful! +10" },
+        { t: "Important is drum.", ok: false, fb: "Say “They show our history.”" },
+        { t: "Because they are loud.", ok: false, fb: "True :) But think about history." } ] }
+  ]
+},
+{
+  name: "Mrs. Rose – Art Guide", color: 0xc2255c, place: "museum", x: 21.5, z: -30,
+  steps: [
+    { say: "This is the Mona Lisa. Do you know who painted it?",
+      q: { w: "Who painted it?", pic: "🎨", ex: "Who painted the Mona Lisa?" },
+      card: { w: "painted by…", pic: "🖌️", ex: "It was painted by Leonardo da Vinci." },
+      choices: [
+        { t: "Leonardo da Vinci painted it.", ok: true, fb: "Correct! +10" },
+        { t: "Mona Lisa painted me.", ok: false, fb: "Haha! It was Leonardo da Vinci." },
+        { t: "Who is painted?", ok: false, fb: "Say “Leonardo da Vinci painted it.”" } ] },
+    { say: "Well done! Many people say her smile is a mystery. What do you think?",
+      q: { w: "What do you think?", pic: "💭", ex: "What do you think about her smile?" },
+      card: { w: "I think she looks…", pic: "🙂", ex: "I think she looks happy." },
+      choices: [
+        { t: "I think she looks happy, but a little sad too.", ok: true, fb: "Great opinion! +10" },
+        { t: "Smile is think.", ok: false, fb: "Say “I think she looks…”" },
+        { t: "No smile.", ok: false, fb: "Look again – she is smiling :)" } ] },
+    { say: "Interesting! Please stay behind the rope, and no flash photos.",
+      card: { w: "behind the rope", pic: "🟥", ex: "Please stay behind the rope." },
+      choices: [
+        { t: "OK, I’ll stay behind the rope.", ok: true, fb: "Thank you! +10" },
+        { t: "I go over rope.", ok: false, fb: "Please stay behind it :)" },
+        { t: "Rope behind no flash yes.", ok: false, fb: "Say “I’ll stay behind the rope.”" } ] }
+  ]
+},
+{
+  name: "Nam – Young Painter", color: 0xf08c00, place: "museum", x: 13, z: -7.5,
+  steps: [
+    { say: "Hi! I’m copying a painting to practise. Can you guess which one?",
+      q: { w: "Can you guess…?", pic: "🤔", ex: "Can you guess which one?" },
+      card: { w: "Is it…?", pic: "❓", ex: "Is it the rice field painting?" },
+      choices: [
+        { t: "Is it the rice field painting?", ok: true, fb: "Yes! +10" },
+        { t: "Guess painting it.", ok: false, fb: "Ask “Is it the…?”" },
+        { t: "I can’t see.", ok: false, fb: "Have a guess :)" } ] },
+    { say: "Yes! I need more green. Which two colours make green?",
+      q: { w: "Which colours make…?", pic: "🎨", ex: "Which colours make green?" },
+      card: { w: "Blue and yellow make green.", pic: "💙💛", ex: "Blue and yellow make green." },
+      choices: [
+        { t: "Blue and yellow make green.", ok: true, fb: "Correct! +10" },
+        { t: "Red and white.", ok: false, fb: "That makes pink :)" },
+        { t: "Green is colour.", ok: false, fb: "Say “Blue and yellow make green.”" } ] },
+    { say: "Thanks! One day I want to have my painting in this museum.",
+      card: { w: "One day…", pic: "🌟", ex: "One day I want to be a painter." },
+      choices: [
+        { t: "I’m sure you will. Keep practising!", ok: true, fb: "Encouraging! +10" },
+        { t: "One day museum.", ok: false, fb: "Say “Keep practising!”" },
+        { t: "Your painting is bad.", ok: false, fb: "Be kind :)" } ] }
+  ]
+},
+{
+  name: "Sophie – Tourist", color: 0x15aabf, place: "museum", x: 24, z: -15,
+  steps: [
+    { say: "Bonjour! I’m from France. Excuse me, can you take a photo of me?",
+      q: { w: "Can you take a photo…?", pic: "📷", ex: "Can you take a photo of me?" },
+      card: { w: "Sure. Say cheese!", pic: "📸", ex: "Sure. Say cheese!" },
+      choices: [
+        { t: "Sure. Say cheese!", ok: true, fb: "Fun! +10" },
+        { t: "Photo take you.", ok: false, fb: "Say “Sure. Say cheese!”" },
+        { t: "No photo.", ok: false, fb: "Be helpful :)" } ] },
+    { say: "Merci! Where are you from?",
+      q: { w: "Where are you from?", pic: "🌏", ex: "Where are you from?" },
+      card: { w: "I’m from Vietnam.", pic: "🇻🇳", ex: "I’m from Vietnam." },
+      choices: [
+        { t: "I’m from Vietnam.", ok: true, fb: "+10" },
+        { t: "From I Vietnam.", ok: false, fb: "Say “I’m from Vietnam.”" },
+        { t: "I’m from France too.", ok: false, fb: "Tell her where YOU are from." } ] },
+    { say: "Vietnam! I want to visit Ha Long Bay. Is it beautiful?",
+      q: { w: "Is it beautiful?", pic: "🏞️", ex: "Is Ha Long Bay beautiful?" },
+      card: { w: "You should visit…", pic: "✈️", ex: "You should visit Ha Long Bay." },
+      choices: [
+        { t: "Yes, it’s beautiful. You should visit it!", ok: true, fb: "Great advice! +10" },
+        { t: "Beautiful is bay.", ok: false, fb: "Say “You should visit it!”" },
+        { t: "No, don’t go.", ok: false, fb: "It IS beautiful :)" } ] }
+  ]
+},
+{
+  name: "Mr. Henry – Art Critic", color: 0x495057, place: "museum", x: 25.5, z: -27.5, minLv: 5,
+  steps: [
+    { say: "Ah, The Starry Night. Some people love it, some don’t. What’s your opinion?",
+      q: { w: "What’s your opinion?", pic: "💬", ex: "What’s your opinion?" },
+      card: { w: "In my opinion…", pic: "💬", ex: "In my opinion, it’s beautiful." },
+      choices: [
+        { t: "In my opinion, it’s beautiful and full of energy.", ok: true, fb: "A real critic! +10" },
+        { t: "Opinion is starry.", ok: false, fb: "Say “In my opinion…”" },
+        { t: "I don’t know.", ok: false, fb: "Try: “In my opinion, it’s…”" } ] },
+    { say: "Interesting. Van Gogh sold only one or two paintings in his life. Is that surprising?",
+      q: { w: "Is that surprising?", pic: "😲", ex: "Is that surprising?" },
+      card: { w: "surprising", pic: "😲", ex: "That’s really surprising!" },
+      choices: [
+        { t: "Yes! That’s really surprising, because now he is famous.", ok: true, fb: "Excellent reason! +10" },
+        { t: "Surprise me Van Gogh.", ok: false, fb: "Say “That’s really surprising!”" },
+        { t: "He sold a million.", ok: false, fb: "Listen again: only one or two." } ] },
+    { say: "Indeed. Which painting in this room would you put in your bedroom?",
+      q: { w: "Which…would you…?", pic: "🛏️", ex: "Which painting would you put in your bedroom?" },
+      card: { w: "I’d choose…because…", pic: "👉", ex: "I’d choose The Great Wave because I love the sea." },
+      choices: [
+        { t: "I’d choose The Great Wave because I love the sea.", ok: true, fb: "Wonderful choice! +10" },
+        { t: "Bedroom wave.", ok: false, fb: "Say “I’d choose… because…”" },
+        { t: "I sleep.", ok: false, fb: "Choose a painting :)" } ] }
+  ]
+},
+{
+  name: "Captain Sky – Astronaut", color: 0xf1f3f5, place: "museum", x: 14.5, z: 11,
+  steps: [
+    { say: "Hello, future astronaut! Which planet is the biggest?",
+      q: { w: "Which…is the biggest?", pic: "🪐", ex: "Which planet is the biggest?" },
+      card: { w: "the biggest", pic: "🪐", ex: "Jupiter is the biggest planet." },
+      choices: [
+        { t: "Jupiter is the biggest.", ok: true, fb: "Correct! +10" },
+        { t: "Biggest is me.", ok: false, fb: "Haha! Say “Jupiter is the biggest.”" },
+        { t: "The Moon.", ok: false, fb: "The Moon is not a planet :)" } ] },
+    { say: "Right! In space there is no gravity, so we float. What do you think we eat?",
+      card: { w: "float", pic: "🎈", ex: "In space, astronauts float." },
+      choices: [
+        { t: "Do you eat special food in bags?", ok: true, fb: "Great question! +10" },
+        { t: "Float eat.", ok: false, fb: "Ask “Do you eat special food?”" },
+        { t: "Pizza from the shop.", ok: false, fb: "No shops in space :)" } ] },
+    { say: "Yes, food in bags! Would you like to be an astronaut one day?",
+      q: { w: "Would you like to be…?", pic: "👨‍🚀", ex: "Would you like to be an astronaut?" },
+      card: { w: "I’d like to be…", pic: "👩‍🚀", ex: "I’d like to be an astronaut." },
+      choices: [
+        { t: "Yes! I’d like to be an astronaut.", ok: true, fb: "Ready for launch! +10" },
+        { t: "Astronaut me be.", ok: false, fb: "Say “I’d like to be an astronaut.”" },
+        { t: "No, space is food.", ok: false, fb: "Hmm, try again :)" } ] }
+  ]
+},
+{
+  name: "Ms. Nova – Science Teacher", color: 0x7048e8, place: "museum", x: 25.5, z: 25.5,
+  steps: [
+    { say: "Welcome to the lab corner! What happens if you put a magnet near a nail?",
+      q: { w: "What happens if…?", pic: "❓", ex: "What happens if you heat ice?" },
+      card: { w: "It sticks.", pic: "🧲", ex: "The nail sticks to the magnet." },
+      choices: [
+        { t: "The nail sticks to the magnet.", ok: true, fb: "Correct! +10" },
+        { t: "Magnet nail is.", ok: false, fb: "Say “The nail sticks to the magnet.”" },
+        { t: "The nail flies away.", ok: false, fb: "Look again :)" } ] },
+    { say: "Good! Now, look in the microscope. What can you see?",
+      q: { w: "What can you see?", pic: "👀", ex: "What can you see?" },
+      card: { w: "I can see…", pic: "🔬", ex: "I can see tiny cells." },
+      choices: [
+        { t: "I can see tiny cells.", ok: true, fb: "Sharp eyes! +10" },
+        { t: "See I cell.", ok: false, fb: "Say “I can see tiny cells.”" },
+        { t: "I see nothing.", ok: false, fb: "Try again :)" } ] },
+    { say: "Science is about asking questions. Do you have a question for me?",
+      card: { w: "I wonder why…", pic: "💭", ex: "I wonder why the sky is blue." },
+      choices: [
+        { t: "Yes! I wonder why the sky is blue.", ok: true, fb: "Great question! +10" },
+        { t: "Question no.", ok: false, fb: "Try “I wonder why…”" },
+        { t: "Sky is blue why.", ok: false, fb: "Say “I wonder why the sky is blue.”" } ] }
+  ]
+},
+{
+  name: "Robo-7 – Museum Robot", color: 0x868e96, place: "museum", x: 13.5, z: 22.5,
+  steps: [
+    { say: "BEEP! Hello, human. I am Robo-7. What is your name?",
+      q: { w: "What is your name?", pic: "🤖", ex: "What is your name?" },
+      card: { w: "My name is…", pic: "📛", ex: "My name is Lan." },
+      choices: [
+        { t: "Hello, Robo-7! My name is …", ok: true, fb: "Nice to meet you! +10" },
+        { t: "Name me.", ok: false, fb: "Say “My name is…”" },
+        { t: "I am a robot.", ok: false, fb: "You are a human :)" } ] },
+    { say: "BEEP BOOP. I can help with directions. Where do you want to go?",
+      q: { w: "Where do you want to go?", pic: "🧭", ex: "Where do you want to go?" },
+      card: { w: "I want to go to…", pic: "🏛️", ex: "I want to go to the Dinosaur Hall." },
+      choices: [
+        { t: "I want to go to the Dinosaur Hall.", ok: true, fb: "Clear! +10" },
+        { t: "Go dinosaur.", ok: false, fb: "Say “I want to go to…”" },
+        { t: "I want a robot.", ok: false, fb: "Choose a place :)" } ] },
+    { say: "Go out to the lobby and go straight across. The Dinosaur Hall is in front of you. BEEP!",
+      card: { w: "go straight across", pic: "⬆️", ex: "Go straight across the lobby." },
+      choices: [
+        { t: "Go straight across the lobby. Thank you, Robo-7!", ok: true, fb: "Perfect listening! +10" },
+        { t: "Turn left and go up.", ok: false, fb: "Listen again: go STRAIGHT across." },
+        { t: "Robot is lobby.", ok: false, fb: "Say “Go straight across. Thank you!”" } ] }
+  ]
+},
+{
+  name: "Dr. Minh – Physicist", color: 0x0b7285, place: "museum", x: 21, z: 7, minLv: 5,
+  steps: [
+    { say: "Why don’t we fly off the Earth? Have you heard of gravity?",
+      q: { w: "Have you heard of…?", pic: "👂", ex: "Have you heard of gravity?" },
+      card: { w: "gravity", pic: "🍎", ex: "Gravity pulls things down." },
+      choices: [
+        { t: "Yes. Gravity pulls things down.", ok: true, fb: "Correct! +10" },
+        { t: "Gravity is fly.", ok: false, fb: "Gravity pulls DOWN :)" },
+        { t: "Heard no of.", ok: false, fb: "Say “Yes, I’ve heard of it.”" } ] },
+    { say: "Good! If you drop a ball and a feather on the Moon, which one lands first?",
+      q: { w: "Which one…first?", pic: "🥇", ex: "Which one lands first?" },
+      card: { w: "at the same time", pic: "⏱️", ex: "They land at the same time." },
+      choices: [
+        { t: "They land at the same time, because there is no air.", ok: true, fb: "Brilliant! +10" },
+        { t: "The ball, it’s heavy.", ok: false, fb: "On the Moon there is no air!" },
+        { t: "Feather first fly.", ok: false, fb: "Think about no air :)" } ] },
+    { say: "Excellent! Real scientists test their ideas. How can you test an idea?",
+      q: { w: "How can you…?", pic: "🧪", ex: "How can you test an idea?" },
+      card: { w: "do an experiment", pic: "🧪", ex: "We can do an experiment." },
+      choices: [
+        { t: "We can do an experiment.", ok: true, fb: "Spoken like a scientist! +10" },
+        { t: "Idea test how.", ok: false, fb: "Say “We can do an experiment.”" },
+        { t: "Ask my mom.", ok: false, fb: "Try “do an experiment” :)" } ] }
   ]
 }
 ];
