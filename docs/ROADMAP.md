@@ -199,6 +199,13 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 - `8c` / `8e` / `8f` ngoại thất vẽ riêng (`EXTERIOR.<tên>` + `buildCustom`), ô đất chờ xây (`lot`), metro, nhà ga
 - `8b` bản đồ nhỏ + bản đồ lớn · `8d` metro, camera 2 chế độ (`setWide`), bảng tên khu · `5` vòng lặp game, camera (trong nhà / ngoài trời)
 
+### Hiệu năng (đo bằng `renderer.info`, mục `9` trong index.html)
+- **Gộp khối tĩnh** (`bakeWorld` → `bakeStatic`): chạy 1 lần lúc tải (~0,1 giây), gộp các khối đứng yên cùng chất liệu thành 1 mảng. Ngoài trời chia ô 40 m. Không gộp: nhân vật, cờ, quạt, cần cẩu, mây, đồ từ vựng (`P.vgroup`), đồ nhà riêng (`P.dyn`), mô hình .gltf tải sau. **Vật cần chuyển động / đổi hiện–ẩn sau này phải cho vào danh sách bỏ qua** (`dyn` trong `bakeWorld`), nếu không sẽ bị gộp cứng.
+- **Bóng đổ thông minh** (`castsShadow`): khối nhỏ (< 0,4 m), tấm phẳng mỏng, biển chữ không đổ bóng; NPC dùng bóng tròn dưới chân, chỉ nhân vật người chơi đổ bóng thật; bản đồ bóng 1024.
+- NPC trong phòng khác không vẽ; nhân vật ở xa ẩn theo cùng tầm nhìn với nhà (95 m / 150 m góc rộng). Đồ từ vựng: hình + dấu ❓/✅ chung 1 ảnh.
+- Kết quả: lần vẽ mỗi khung 1.267 → ~210 (quảng trường), bảo tàng 1.673 → ~250; tam giác 563k → ~76k.
+- iPhone bật **Chế độ nguồn điện thấp** sẽ khóa web ở 30 fps; mở trong Zalo chậm hơn Safari.
+
 ### Cách thêm một nơi mới (công thức đã dùng)
 1. **Ngoại thất:** viết `EXTERIOR.<tên>(g, P)` trong index.html, vẽ trong hệ tọa độ riêng (mặt tiền quay +z). Trả về `{ solids, door, map }`. Ghi `exterior: "<tên>"` vào mục đó trong `CITY`. Mặt tường dùng ảnh vẽ bằng canvas (`skin` + `face`) cho nhẹ máy.
 2. **Nội thất:** thêm `size: { w, d, h }` và `layout: "<tên>"` trong `CITY`; viết `furnish<Tên>(P, g, cx, cz, W, D, fur)`. Phải đặt `P.anchors = { khu: [[x, y, z, chỗ đứng x, z], …] }` và `P.vgroup`.
@@ -259,6 +266,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 24. **Ngoại thất Post Office** làm lại theo Bưu điện Trung tâm Sài Gòn; **nội thất Verse Library** (phòng đọc bầu dục, mái vòm)
 25. Library đủ 5 NPC + 32 từ vựng; **đổi chỗ Verse Plaza ↔ Star Cinema** (Verse Plaza ở x 64,5 z 16, quay mặt về quảng trường); **nội thất Verse Bank** (5 NPC, 34 từ vựng)
 26. **Nội thất City Museum** 4 khu (khủng long, điêu khắc & cổ vật, tranh nổi tiếng, khoa học & vũ trụ), 17 NPC, 68 từ vựng
+27. **Tối ưu hiệu năng**: gộp khối tĩnh, bóng đổ thông minh, ẩn NPC phòng khác → lần vẽ mỗi khung giảm từ ~1.270 xuống ~210
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |
