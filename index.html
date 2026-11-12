@@ -184,7 +184,7 @@ button{font:inherit;cursor:pointer}
 </div>
 <div id="namep"><div class="box">
   <div style="font-size:20px;font-weight:700">Welcome to EnglishVerse! 👋</div>
-  <div style="font-size:13px;opacity:.8;margin-top:2px">Trang phục đẹp hơn: mua ở Style Box hoặc giành bằng thành tích tiếng Anh!</div>
+  <div style="font-size:13px;opacity:.8;margin-top:2px">Trang phục đẹp hơn: mua ở Clothes Shop hoặc giành bằng thành tích tiếng Anh!</div>
   <div style="margin-top:6px">Choose your face &amp; hair:</div>
   <div id="avPick" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px"></div>
   <div style="margin-top:10px">What’s your name?</div>
@@ -1126,7 +1126,7 @@ function startWithName() {
   goOnline();
 }
 /* Tạo nhân vật: chỉ chọn KHUÔN MẶT + KIỂU TÓC. Ai cũng bắt đầu với áo thun trắng, quần xám;
-   trang phục đẹp phải mua ở Style Box hoặc giành bằng thành tích → mặc đồ mới mới có ý nghĩa. */
+   trang phục đẹp phải mua ở Clothes Shop hoặc giành bằng thành tích → mặc đồ mới mới có ý nghĩa. */
 let creating = false;
 Object.keys(FACES).forEach(k => {   // nút chọn khuôn mặt
   const b = document.createElement("button"); b.textContent = FACES[k]; b.dataset.k = k;
@@ -1815,29 +1815,6 @@ const EXTERIOR = {
 };
 const cranes = [];   // cần cẩu ở ô đất lớn (xoay chậm)
 Object.assign(EXTERIOR, {
-  /* NHÀ GA: cửa nhìn về quảng trường (hướng bắc); sân ga + đường ray phía sau. Sau này dùng để đi sang thành phố khác. */
-  station(g) {
-    const brick = skin(12, 6, 40, (x, W, H) => { x.fillStyle = "#c8553d"; x.fillRect(0, 0, W, H); x.fillStyle = "#b8452f"; for (let j = 0; j < H; j += 0.3) for (let i = (j / 0.3) % 2 * 0.3; i < W; i += 0.6) x.fillRect(i, j, 0.55, 0.25);
-      x.fillStyle = "#f3e9d2"; x.fillRect(0, H - 0.4, W, 0.4); x.fillRect(0, 0, W, 0.4); x.fillRect(0, 1.1, W, 0.5);
-      x.fillStyle = "#f3e9d2"; archPath(x, 4.3, 2.1, 3.4, 3.5); x.fill(); x.fillStyle = "#3b2a1a"; archPath(x, 4.6, 2.4, 2.8, 3.2); x.fill();
-      [1, 9.4].forEach(X => { archWin(x, X + 0.2, 2.4, 1.4, 2.4, "#4f6d7a", "#f3e9d2"); }); });
-    lb(g, 12, 6, 7, 0xc8553d, 0, 3, 0); face(g, brick, 12, 6, 0, 3, 3.52);
-    hipRoof(g, 12.8, 7.8, 2.4, 0x3d5a80, 0, 6, 0);
-    [-1, 1].forEach(s => { lb(g, 4, 4.5, 5.5, 0xd96a4f, s * 8, 2.25, -0.5); hipRoof(g, 4.6, 6, 1.6, 0x3d5a80, s * 8, 4.5, -0.5);
-      const w = skin(4, 4.5, 40, (x, W, H) => { x.fillStyle = "#d96a4f"; x.fillRect(0, 0, W, H); x.fillStyle = "#f3e9d2"; x.fillRect(0, H - 0.4, W, 0.4); x.fillRect(0, 0, W, 0.35); archWin(x, 1.2, 1, 1.6, 2.4, "#4f6d7a", "#f3e9d2"); });
-      face(g, w, 4, 4.5, s * 8, 2.25, 2.27); });
-    lb(g, 3, 2.6, 0.5, 0xf3e9d2, 0, 7.2, 3.3); const clk = skin(1.6, 1.6, 80, (x) => { x.fillStyle = "#fff"; x.beginPath(); x.arc(0.8, 0.8, 0.75, 0, 7); x.fill(); x.strokeStyle = "#343a40"; x.lineWidth = 0.07; x.stroke(); x.beginPath(); x.moveTo(0.8, 0.8); x.lineTo(0.8, 0.28); x.moveTo(0.8, 0.8); x.lineTo(1.2, 0.95); x.stroke(); });
-    face(g, clk, 1.6, 1.6, 0, 7.3, 3.57);
-    const pl = textPlate("TRAIN STATION", 5, 0.7, "#3d5a80", "#ffffff"); pl.position.set(0, 5.6, 3.56); g.add(pl);
-    lb(g, 5, 0.3, 2, 0xd8cfb8, 0, 0.15, 4.4);
-    // sân ga + mái che + tàu (phía sau)
-    lb(g, 30, 0.35, 3.4, 0xc9c9c9, 0, 0.17, -9); [-13, -6, 6, 13].forEach(x => lb(g, 0.18, 3.2, 0.18, 0x495057, x, 1.6, -8)); lb(g, 28, 0.15, 3, 0x3d5a80, 0, 3.25, -9);
-    const loco = [[5, 2.4, 2.3, 0xc92a2a, -9, 1.5], [2, 1.2, 2.3, 0x9b1c1c, -10.5, 3.3], [6, 2.2, 2.2, 0x2b8a3e, -2.4, 1.4], [6, 2.2, 2.2, 0x1c7ed6, 4, 1.4], [6, 2.2, 2.2, 0xfab005, 10.4, 1.4]];
-    loco.forEach(([w, h, d, c, x, y]) => lb(g, w, h, d, c, x, y, -14));
-    lc(g, 0.32, 0.36, 1.1, 0x343a40, -10.6, 3.2, -14, 12);
-    [-2.4, 4, 10.4].forEach(x => [-1.8, 0, 1.8].forEach(dx => [-1, 1].forEach(sz => lb(g, 1.1, 0.75, 0.06, 0xd0ebff, x + dx, 1.8, -14 + sz * 1.12))));
-    return { solids: [[0, 0, 6, 3.5], [-8, -0.5, 2, 2.75], [8, -0.5, 2, 2.75], [0, -9, 15, 0.3], [0, -14, 14, 1.2]], door: [0, 5.4], map: [[0, 0, 20, 7], [0, -9, 30, 3.4]] };
-  },
   /* Ô ĐẤT CHỜ XÂY: nền đất, rào chắn cam trắng, bảng "Coming soon"; ô lớn có cần cẩu */
   lot(g, P) {
     const w = P.w, d = P.d;
@@ -1870,6 +1847,175 @@ Object.assign(EXTERIOR, {
     const m = skin(1, 1, 100, (x) => { x.fillStyle = "#1c7ed6"; x.beginPath(); x.arc(0.5, 0.5, 0.48, 0, 7); x.fill(); x.fillStyle = "#fff"; x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 0.62px system-ui, sans-serif"; x.fillText("M", 0.5, 0.54); });
     const sp = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), new THREE.MeshBasicMaterial({ map: m, transparent: true, side: THREE.DoubleSide })); sp.position.set(2.1, 3.8, 1.6); g.add(sp);
     return { solids: [[-1.45, 0, 0.1, 2], [1.45, 0, 0.1, 2], [0, -2, 1.5, 0.1], [0, -0.6, 1.3, 1.3], [2.1, 1.6, 0.1, 0.1]], door: [0, 3], map: [[0, 0, 3, 4.2]] };
+  }
+});
+/* ===== 8e. NGOẠI THẤT ĐỢT 2: các cửa hàng Market Street + nhà ga kiểu Đà Lạt =====
+   Cửa hàng rộng 10 m, sâu 10 m; mặt tiền quay về +z. Biển hiệu tự thiết kế (không dùng logo thương hiệu thật). */
+const ySpin = [];   // vật xoay quanh trục đứng (cột đèn tiệm cắt tóc)
+function shopBox(g, w, d, h, c) { lb(g, w, h, d, c, 0, h / 2, 0); return { solids: [[0, 0, w / 2, d / 2]], door: [0, d / 2 + 1.6], map: [[0, 0, w, d]] }; }
+function signText(x, t, cx, cy, maxW, size, color, font) { x.fillStyle = color; x.textAlign = "center"; x.textBaseline = "middle"; let f = size; do { x.font = (font || "bold ") + f + "px system-ui, sans-serif"; f -= 0.02; } while (x.measureText(t).width > maxW && f > 0.1); x.fillText(t, cx, cy); }
+function glassFront(x, X, Y, W, H, frame, inside) {   // tủ kính cửa hàng: khung + kính + đèn bên trong
+  x.fillStyle = frame; x.fillRect(X, Y, W, H); x.fillStyle = inside || "#f4e3c1"; x.fillRect(X + 0.12, Y + 0.12, W - 0.24, H - 0.24);
+  x.fillStyle = "rgba(255,255,255,.35)"; x.beginPath(); x.moveTo(X + 0.3, Y + 0.12); x.lineTo(X + 0.9, Y + 0.12); x.lineTo(X + 0.3, Y + H * 0.6); x.fill();
+  x.fillStyle = frame; for (let i = X + 1.6; i < X + W - 0.5; i += 1.6) x.fillRect(i, Y, 0.08, H);
+}
+Object.assign(EXTERIOR, {
+  /* NHÀ GA – theo ga Đà Lạt: 3 đầu hồi nhọn màu vàng viền đỏ, mái ngói dốc, cửa kính ô màu, 2 mái sảnh cong cột đỏ, tàu xanh lá viền vàng */
+  station(g) {
+    const Y = 0xf2c53d, RED = 0xa61e2e, ROOF = 0x9c4a2f;
+    lb(g, 15, 5, 8, Y, 0, 2.5, 0); hipRoof(g, 15.6, 8.8, 5.5, ROOF, 0, 5, -0.4);
+    const gwin = skin(3, 6, 50, (x, W, H) => { x.fillStyle = "#ffffff"; x.fillRect(0, 0, W, H);   // cửa sổ cao, ô kính màu
+      const cols = ["#9cc9e8", "#e03131", "#ffd43b", "#1c7ed6", "#9cc9e8", "#9cc9e8"];
+      for (let r = 0; r < 10; r++) for (let c = 0; c < 4; c++) { x.fillStyle = r > 6 && (c === 1 || c === 2) ? cols[(r + c) % 4 + 1] : "#b9d8ee"; x.fillRect(0.12 + c * 0.7, 0.12 + r * 0.58, 0.6, 0.48); } });
+    [-4.9, 0, 4.9].forEach((gx, i) => {   // 3 đầu hồi
+      const tri = (w, h, c, z, y0) => { const s = new THREE.Shape(); s.moveTo(-w / 2, 0); s.lineTo(w / 2, 0); s.lineTo(0, h); s.lineTo(-w / 2, 0); const geo = new THREE.ExtrudeGeometry(s, { depth: 1.2, bevelEnabled: false }); const m = new THREE.Mesh(geo, mat(c)); m.position.set(gx, y0, z); g.add(m); };
+      tri(5, 6.6, RED, 3.1, 4.9); tri(4.4, 6, Y, 3.25, 5);
+      lb(g, 4.6, 5, 0.6, Y, gx, 2.5, 4.1);   // mặt nhô ra của đầu hồi
+      face(g, gwin, 2.6, 5.4, gx, 4.6, 4.46);
+      if (i === 1) { const clk = skin(1.2, 1.2, 80, (x) => { x.fillStyle = "#fff"; x.beginPath(); x.arc(0.6, 0.6, 0.56, 0, 7); x.fill(); x.strokeStyle = "#a61e2e"; x.lineWidth = 0.06; x.stroke(); x.strokeStyle = "#343a40"; x.beginPath(); x.moveTo(0.6, 0.6); x.lineTo(0.6, 0.22); x.moveTo(0.6, 0.6); x.lineTo(0.9, 0.7); x.stroke(); });
+        face(g, clk, 1.2, 1.2, gx, 8.6, 4.47); const pl = textPlate("VERSE CITY", 2, 0.45, "#ffd43b", "#a61e2e"); pl.position.set(gx, 7.6, 4.47); g.add(pl); }
+      else { const n = g.children.length; flagPole(g, gx, 3.7, 2.6); g.children.slice(n).forEach(m => m.position.y += 11.3); }   // cờ trên đỉnh 2 đầu hồi bên
+    });
+    lb(g, 15.2, 0.35, 8.2, 0xffffff, 0, 5, 0);   // gờ trắng
+    [-1, 1].forEach(s => {   // 2 cánh thấp: chân tường đỏ đậm, dải trắng, tường vàng, mái ngói
+      lb(g, 10, 4, 7, Y, s * 12.5, 2, -0.5);
+      const wt = skin(10, 4, 40, (x, W, H) => { x.fillStyle = "#f2c53d"; x.fillRect(0, 0, W, H); x.fillStyle = "#a61e2e"; x.fillRect(0, H - 1.5, W, 1.5); x.fillStyle = "#ffffff"; x.fillRect(0, H - 1.65, W, 0.15); x.fillRect(0, 0.9, W, 0.12);
+        for (let i = 0; i < 8; i++) { x.fillStyle = "#ffffff"; x.fillRect(0.4 + i * 1.2, 1.15, 0.95, 1); x.fillStyle = "#9cc9e8"; x.fillRect(0.5 + i * 1.2, 1.25, 0.75, 0.8); } });
+      face(g, wt, 10, 4, s * 12.5, 2, 3.02); face(g, wt, 7, 4, s * 17.52, 2, -0.5, s * Math.PI / 2);
+      hipRoof(g, 10.8, 7.8, 2.8, ROOF, s * 12.5, 4, -0.5); lb(g, 10.8, 0.25, 7.8, 0xffffff, s * 12.5, 4, -0.5);
+    });
+    [-3.6, 3.6].forEach(cx => {   // 2 mái sảnh cong, cột đỏ, bồn cây
+      const can = new THREE.Mesh(new THREE.CylinderGeometry(2.8, 2.8, 0.5, 24, 1, false, -Math.PI / 2, Math.PI), mat(0xffffff)); can.position.set(cx, 3.3, 4.6); g.add(can);
+      const rim = new THREE.Mesh(new THREE.CylinderGeometry(2.85, 2.85, 0.18, 24, 1, false, -Math.PI / 2, Math.PI), mat(0xc0392b)); rim.position.set(cx, 3.1, 4.6); g.add(rim);
+      const top = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.8, 0.25, 24, 1, false, -Math.PI / 2, Math.PI), mat(0x9c4a2f)); top.position.set(cx, 3.65, 4.6); g.add(top);
+      [-1.6, 1.6].forEach(dx => { lb(g, 0.35, 3.1, 0.35, 0xc0392b, cx + dx, 1.55, 6.6); lb(g, 0.9, 0.35, 0.9, 0xdee2e6, cx + dx, 0.17, 6.6); });
+    });
+    pot(g, -8, 6.5, 1.1); pot(g, 8, 6.5, 1.1);
+    const lawn = (x, z, c) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(5, 3), mat(c)); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.03, z); m.userData.flat = true; g.add(m); };
+    lawn(-13, 7.5, 0xffd43b); lawn(13, 7.5, 0xffa94d);   // thảm hoa trước ga
+    // sân ga + tàu (phía sau)
+    lb(g, 30, 0.35, 3.4, 0xc9c9c9, 0, 0.17, -9); [-13, -6, 6, 13].forEach(x => lb(g, 0.3, 3.2, 0.3, 0xc0392b, x, 1.6, -8)); lb(g, 28, 0.2, 3.4, 0xf1f3f5, 0, 3.3, -9);
+    lb(g, 6, 2.6, 2.3, 0x2b8a3e, -9.5, 1.6, -14); lb(g, 6.05, 0.4, 2.35, 0xfab005, -9.5, 0.75, -14); lb(g, 2.2, 1.1, 2.3, 0x2b8a3e, -11.4, 3.4, -14);   // đầu máy xanh lá viền vàng
+    const grill = skin(1.8, 1.4, 40, (x) => { x.fillStyle = "#1e5e2a"; x.fillRect(0, 0, 1.8, 1.4); x.fillStyle = "#0e3a18"; for (let i = 0; i < 9; i++) x.fillRect(0.1 + i * 0.19, 0.1, 0.1, 1.2); });
+    face(g, grill, 1.8, 1.4, -12.52, 1.8, -14, -Math.PI / 2);
+    [-2.4, 4, 10.4].forEach(x => { lb(g, 6, 2.4, 2.2, 0xadb5bd, x, 1.5, -14); lb(g, 6.05, 0.3, 2.25, 0x2b8a3e, x, 0.75, -14); [-1.8, 0, 1.8].forEach(dx => [-1, 1].forEach(sz => lb(g, 1.1, 0.75, 0.06, 0xd0ebff, x + dx, 1.9, -14 + sz * 1.12))); });
+    return { solids: [[0, 0, 7.5, 4.6], [-12.5, -0.5, 5, 3.5], [12.5, -0.5, 5, 3.5], [-5.2, 6.6, 0.25, 0.25], [-2, 6.6, 0.25, 0.25], [2, 6.6, 0.25, 0.25], [5.2, 6.6, 0.25, 0.25], [0, -9, 15, 0.3], [0, -14, 14, 1.2], [-8, 6.5, 0.4, 0.4], [8, 6.5, 0.4, 0.4]],
+      door: [0, 7.6], map: [[0, 0, 35, 8], [0, -9, 30, 3.4]] };
+  },
+  /* BANH MI BAKERY – tiệm bánh mì Việt: tường vàng, bảng đỏ, ổ bánh mì khổng lồ trước bảng hiệu, xe bánh mì kính */
+  banhmi(g) {
+    const R = shopBox(g, 10, 10, 6.5, 0xffe08a);
+    const f = skin(10, 6.5, 40, (x, W, H) => { x.fillStyle = "#ffe08a"; x.fillRect(0, 0, W, H);
+      [1.2, 4.2, 7.2].forEach(X => { rectWin(x, X, 0.6, 1.6, 1.4, "#5c4a3a", "#ffffff"); x.fillStyle = "#c92a2a"; x.fillRect(X - 0.15, 0.45, 1.9, 0.18); });
+      x.fillStyle = "#c92a2a"; x.fillRect(0, 2.6, W, 1.3);   // bảng hiệu
+      signText(x, "BÁNH MÌ BAKERY", 5, 3.25, 9.2, 0.75, "#ffe066");
+      glassFront(x, 0.6, 4.2, 8.8, 2.3, "#8d5a2b", "#ffe8b0");
+      x.fillStyle = "#c98a3d"; for (let i = 0; i < 6; i++) { x.beginPath(); x.ellipse(1.6 + i * 1.3, 5.6, 0.5, 0.16, -0.2, 0, 7); x.fill(); } });   // bánh trong tủ
+    face(g, f, 10, 6.5, 0, 3.25, 5.02);
+    const aw = lb(g, 10, 0.12, 1.4, 0xc92a2a, 0, 2.55, 5.6); aw.rotation.x = 0.25;
+    // ổ bánh mì khổng lồ trước bảng hiệu
+    const bread = new THREE.Group(); bread.position.set(0, 4.55, 5.5); bread.rotation.z = 0.06; g.add(bread);
+    const body = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 14), mat(0xd9913b)); body.scale.set(3.6, 0.85, 0.9); bread.add(body);
+    for (let i = -2; i <= 2; i++) { const cut = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.08, 0.9), mat(0xf6d38a)); cut.position.set(i * 1.1, 0.78, 0); cut.rotation.y = 0.6; bread.add(cut); }
+    const top = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat(0xb87333)); top.scale.set(3.3, 0.55, 0.75); top.position.y = 0.2; bread.add(top);
+    lb(g, 0.15, 1.6, 0.15, 0x6c4a2f, -2.6, 3.7, 5.3); lb(g, 0.15, 1.6, 0.15, 0x6c4a2f, 2.6, 3.7, 5.3);
+    // xe bánh mì kính (bên phải cửa)
+    lb(g, 1.8, 0.9, 1, 0x2b8a3e, 3.4, 0.75, 6.6); lb(g, 1.7, 0.7, 0.9, 0xd0ebff, 3.4, 1.55, 6.6); lb(g, 1.9, 0.08, 1.1, 0xc92a2a, 3.4, 1.95, 6.6);
+    [2.6, 4.2].forEach(x => { const w = lc(g, 0.25, 0.25, 0.12, 0x212529, x, 0.25, 7.15); w.rotation.x = Math.PI / 2; });
+    const mini = emojiSprite("🥖", 0.5); mini.position.set(3.4, 1.55, 7.1); g.add(mini);
+    R.solids.push([3.4, 6.6, 1, 0.6]); return R;
+  },
+  /* GREEN CROSS PHARMACY – nhà thuốc trong nhà 2 tầng mái dốc: bảng hiệu xanh dương viền xanh lá, mái hiên xanh có chữ, mặt kính */
+  pharmacy(g) {
+    lb(g, 10, 7, 10, 0xf8f9fa, 0, 3.5, 0); gableRoof(g, 10.8, 10.6, 3, 0x6b3a2a, 0, 7, 0);
+    const f = skin(10, 7, 40, (x, W, H) => { x.fillStyle = "#f8f9fa"; x.fillRect(0, 0, W, H);
+      [2, 6].forEach(X => { rectWin(x, X, 0.9, 2, 1.6, "#2b6b4f", "#ffffff"); x.strokeStyle = "#fff"; x.lineWidth = 0.08; x.strokeRect(X + 0.1, 1, 0.9, 1.4); x.strokeRect(X + 1, 1, 0.9, 1.4); });
+      x.fillStyle = "#1c3fa8"; x.fillRect(0, 3.0, W, 1.7); x.fillStyle = "#2f9e44"; x.fillRect(0, 4.55, W, 0.2);   // bảng hiệu
+      x.fillStyle = "#ffffff"; x.beginPath(); x.arc(1.1, 3.75, 0.5, 0, 7); x.fill(); x.fillStyle = "#2f9e44"; x.fillRect(0.95, 3.4, 0.3, 0.7); x.fillRect(0.75, 3.6, 0.7, 0.3);
+      signText(x, "Green Cross Pharmacy", 5.6, 3.6, 7.6, 0.62, "#ffffff"); signText(x, "Nhà thuốc · Medicine for everyone", 5.6, 4.2, 7.6, 0.34, "#c3fae8", "");
+      glassFront(x, 0.5, 5, 9, 2, "#1c3fa8", "#e7f5ff");
+      x.fillStyle = "#2f9e44"; x.fillRect(2.4, 5.6, 1.2, 0.7); x.fillRect(6.2, 5.3, 1.6, 1); x.fillStyle = "#fa5252"; x.fillRect(4, 5.8, 0.8, 0.5); });
+    face(g, f, 10, 7, 0, 3.5, 5.02);
+    const tri = skin(10.8, 3, 40, (x, W, H) => { x.fillStyle = "#ffffff"; x.beginPath(); x.moveTo(0.4, H); x.lineTo(W / 2, 0.15); x.lineTo(W - 0.4, H); x.fill(); x.strokeStyle = "#dee2e6"; x.lineWidth = 0.1; for (let i = 1; i < 6; i++) { x.beginPath(); x.moveTo(W / 2 - i * 0.7, H); x.lineTo(W / 2 - i * 0.7, H - (6 - i) * 0.45); x.stroke(); x.beginPath(); x.moveTo(W / 2 + i * 0.7, H); x.lineTo(W / 2 + i * 0.7, H - (6 - i) * 0.45); x.stroke(); } });
+    face(g, tri, 10.8, 3, 0, 8.5, 5.04);
+    const aw = lb(g, 10, 0.12, 1.5, 0x1c3fa8, 0, 1.95, 5.7); aw.rotation.x = 0.28;   // mái hiên xanh
+    const awT = skin(10, 0.5, 60, (x, W, H) => { x.fillStyle = "#1c3fa8"; x.fillRect(0, 0, W, H); signText(x, "GOOD MEDICINE · FRIENDLY PHARMACISTS", W / 2, H / 2, W - 0.4, 0.3, "#ffffff"); });
+    face(g, awT, 10, 0.5, 0, 1.68, 6.45);
+    const blade = textPlate("PHARMACY ✚", 0.8, 2.6, "#1c3fa8", "#ffffff"); blade.position.set(-5.3, 5.6, 4.6); blade.rotation.y = Math.PI / 2; g.add(blade);
+    lb(g, 0.6, 1.3, 0.1, 0x1c7ed6, 3.8, 0.9, 6.2);   // biển quảng cáo đứng
+    return { solids: [[0, 0, 5, 5], [3.8, 6.2, 0.35, 0.1]], door: [0, 6.6], map: [[0, 0, 10, 10]] };
+  },
+  /* CLOTHES SHOP – cửa hàng thời trang: mặt trắng hồng, tủ kính có ma-nơ-canh, biển áo thun lớn trên nóc */
+  clothes(g) {
+    const R = shopBox(g, 10, 10, 7, 0xfff0f6);
+    const f = skin(10, 7, 40, (x, W, H) => { x.fillStyle = "#fff0f6"; x.fillRect(0, 0, W, H); x.fillStyle = "#f783ac"; x.fillRect(0, 0, W, 0.3);
+      [1, 4.3, 7.6].forEach(X => { archWin(x, X, 0.7, 1.4, 1.9, "#4a3b47", "#ffffff"); });
+      x.fillStyle = "#212529"; x.fillRect(0.4, 3.1, W - 0.8, 1.2); signText(x, "CLOTHES SHOP", 5, 3.72, 8.4, 0.75, "#ff8fab");
+      glassFront(x, 0.5, 4.6, 9, 2.4, "#212529", "#ffe3ec"); });
+    face(g, f, 10, 7, 0, 3.5, 5.02);
+    const aw = skin(10, 1.4, 30, (x, W, H) => { for (let i = 0; i < 10; i++) { x.fillStyle = i % 2 ? "#ffffff" : "#f06595"; x.fillRect(i, 0, 1, H); } });
+    const awm = new THREE.Mesh(new THREE.PlaneGeometry(10, 1.4), new THREE.MeshLambertMaterial({ map: aw, side: THREE.DoubleSide })); awm.rotation.x = -Math.PI / 2 + 0.35; awm.position.set(0, 2.55, 5.65); g.add(awm);
+    [[-3.2, 0xf06595], [-1.6, 0x4dabf7], [2, 0xfab005], [3.6, 0x51cf66]].forEach(([mx, c]) => {   // ma-nơ-canh trong tủ kính
+      lc(g, 0.04, 0.04, 0.5, 0x868e96, mx, 0.25, 4.7, 6); const b = lc(g, 0.18, 0.32, 0.9, c, mx, 0.95, 4.7, 10); const h = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), mat(0xf1f3f5)); h.position.set(mx, 1.55, 4.7); g.add(h); });
+    const tee = skin(3, 2.6, 60, (x) => { x.fillStyle = "#f06595"; x.beginPath(); [[0.9, 0.2], [1.25, 0.4], [1.75, 0.4], [2.1, 0.2], [2.9, 0.7], [2.5, 1.2], [2.2, 1], [2.2, 2.5], [0.8, 2.5], [0.8, 1], [0.5, 1.2], [0.1, 0.7]].forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); x.closePath(); x.fill();
+      x.lineWidth = 0.08; x.strokeStyle = "#fff"; x.stroke(); signText(x, "NEW", 1.5, 1.6, 1.2, 0.5, "#ffffff"); });
+    const tm = new THREE.Mesh(new THREE.PlaneGeometry(3, 2.6), new THREE.MeshLambertMaterial({ map: tee, transparent: true, side: THREE.DoubleSide })); tm.position.set(0, 8.4, 4); g.add(tm);
+    lb(g, 0.12, 1.4, 0.12, 0x495057, -1, 7.5, 4); lb(g, 0.12, 1.4, 0.12, 0x495057, 1, 7.5, 4);
+    pot(g, -4.3, 6, 0.9); pot(g, 4.3, 6, 0.9); R.solids.push([-4.3, 6, 0.35, 0.35], [4.3, 6, 0.35, 0.35]);
+    return R;
+  },
+  /* SAIGON BARBER – tiệm cắt tóc kiểu xưa: mặt tiền xanh rêu đậm, chữ vàng, cột đèn sọc đỏ trắng xanh xoay, mái hiên sọc đen trắng */
+  barber(g) {
+    const R = shopBox(g, 10, 10, 6.5, 0x1f3b2d);
+    const f = skin(10, 6.5, 40, (x, W, H) => { x.fillStyle = "#1f3b2d"; x.fillRect(0, 0, W, H); x.fillStyle = "#c9a227"; x.fillRect(0, 0.25, W, 0.08); x.fillRect(0, 2.55, W, 0.08);
+      [1.3, 6.1].forEach(X => { rectWin(x, X, 0.7, 2.6, 1.5, "#3b2f2a", "#c9a227"); });
+      x.fillStyle = "#14261d"; x.fillRect(0.5, 2.9, W - 1, 1.3); x.strokeStyle = "#c9a227"; x.lineWidth = 0.06; x.strokeRect(0.6, 3, W - 1.2, 1.1);
+      signText(x, "SAIGON BARBER", 5, 3.42, 8.2, 0.68, "#e8c547", "bold italic "); signText(x, "since 1975 · cắt tóc nam", 5, 3.92, 6, 0.28, "#e8c547", "");
+      glassFront(x, 0.7, 4.5, 8.6, 2, "#c9a227", "#5a3a22");
+      x.fillStyle = "#8b0000"; [2.2, 5, 7.8].forEach(X => x.fillRect(X, 5.6, 0.8, 0.7)); x.fillStyle = "#ffe8a3"; [2.6, 5.4, 8.2].forEach(X => { x.beginPath(); x.arc(X, 4.8, 0.12, 0, 7); x.fill(); }); });
+    face(g, f, 10, 6.5, 0, 3.25, 5.02);
+    const aw = skin(10, 1.4, 30, (x, W, H) => { for (let i = 0; i < 20; i++) { x.fillStyle = i % 2 ? "#f8f9fa" : "#212529"; x.fillRect(i * 0.5, 0, 0.5, H); } });
+    const awm = new THREE.Mesh(new THREE.PlaneGeometry(10, 1.4), new THREE.MeshLambertMaterial({ map: aw, side: THREE.DoubleSide })); awm.rotation.x = -Math.PI / 2 + 0.35; awm.position.set(0, 2.5, 5.65); g.add(awm);
+    const pole = skin(1, 2, 64, (x) => { x.fillStyle = "#fff"; x.fillRect(0, 0, 1, 2); [["#e03131", 0], ["#1c7ed6", 0.5]].forEach(([c, o]) => { x.fillStyle = c; for (let k = -2; k < 4; k++) { x.beginPath(); x.moveTo(0, k + o); x.lineTo(1, k + o - 0.5); x.lineTo(1, k + o - 0.25); x.lineTo(0, k + o + 0.25); x.fill(); } }); });
+    pole.wrapT = THREE.RepeatWrapping;
+    const pm = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 1.6, 20, 1, true), new THREE.MeshBasicMaterial({ map: pole })); pm.position.set(-4.4, 2.2, 5.4); g.add(pm); ySpin.push(pm);   // cột đèn xoay
+    [1.35, 3.05].forEach(y => { const c = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 8), mat(0xc9a227)); c.position.set(-4.4, y, 5.4); g.add(c); });
+    lb(g, 0.1, 1.4, 0.1, 0x495057, -4.4, 0.7, 5.4);
+    lb(g, 1.4, 0.7, 0.5, 0x8b0000, 3.6, 0.35, 6.3); R.solids.push([-4.4, 5.4, 0.3, 0.3], [3.6, 6.3, 0.7, 0.3]);   // ghế chờ ngoài cửa
+    return R;
+  },
+  /* SHOP 24H – cửa hàng tiện lợi: dải bảng đỏ, chữ trắng, logo tròn "24h", mặt kính sáng thấy kệ hàng */
+  shop24(g) {
+    const R = shopBox(g, 12, 12, 7, 0x5a3e36);
+    const f = skin(12, 7, 40, (x, W, H) => { x.fillStyle = "#5a3e36"; x.fillRect(0, 0, W, H);
+      [1, 4.2, 7.4, 10.2].forEach(X => rectWin(x, X, 0.7, 0.9, 1.4, "#2b2523", "#e9dcd0"));
+      x.fillStyle = "#e03131"; x.fillRect(0, 2.7, W, 1.3); x.fillStyle = "#ffd43b"; x.fillRect(0, 3.95, W, 0.12);
+      signText(x, "SHOP 24h", 5.2, 3.38, 7, 0.85, "#ffffff");
+      x.fillStyle = "#ffffff"; x.beginPath(); x.arc(9.6, 3.35, 0.58, 0, 7); x.fill(); signText(x, "24h", 9.6, 3.38, 0.9, 0.5, "#e03131");
+      glassFront(x, 0.4, 4.2, 11.2, 2.8, "#212529", "#fff8e1");
+      for (let r = 0; r < 3; r++) { x.fillStyle = "#adb5bd"; x.fillRect(1, 5 + r * 0.6, 4.5, 0.06); for (let i = 0; i < 9; i++) { x.fillStyle = ["#e03131", "#1c7ed6", "#fab005", "#2f9e44"][(i + r) % 4]; x.fillRect(1.1 + i * 0.48, 4.7 + r * 0.6, 0.35, 0.3); } }
+      x.fillStyle = "#ffe066"; [7, 8.5, 10].forEach(X => x.fillRect(X, 4.4, 1, 0.1)); x.fillStyle = "#212529"; x.fillRect(5.8, 4.4, 1.2, 2.6); x.fillStyle = "#c5e3f6"; x.fillRect(5.9, 4.5, 1, 2.4); });
+    face(g, f, 12, 7, 0, 3.5, 6.02);
+    lb(g, 12, 0.12, 1.1, 0x212529, 0, 2.85, 6.55);
+    lc(g, 0.3, 0.26, 0.9, 0x495057, 5.2, 0.45, 6.8, 12); R.solids.push([5.2, 6.8, 0.35, 0.35]);   // thùng rác
+    const op = textPlate("OPEN 24/7", 1.4, 0.4, "#2f9e44", "#ffffff"); op.position.set(-4.2, 1.6, 6.05); g.add(op);
+    R.door = [0, 7.6]; return R;
+  },
+  /* HOME & COZY – cửa hàng nội thất: mặt gỗ ấm, biển tên + chiếc sofa 3D trên nóc, tủ kính bày sofa, đèn */
+  furniture(g) {
+    const R = shopBox(g, 10, 10, 6.5, 0xe9d8c4);
+    const f = skin(10, 6.5, 40, (x, W, H) => { x.fillStyle = "#e9d8c4"; x.fillRect(0, 0, W, H); x.fillStyle = "#8d5a2b"; for (let i = 0; i < W; i += 0.5) x.fillRect(i, 0, 0.04, 2.5);
+      x.fillStyle = "#6f4e37"; x.fillRect(0.5, 2.7, W - 1, 1.3); signText(x, "Home & Cozy", 5, 3.25, 8, 0.8, "#fff4e6", "bold italic "); signText(x, "FURNITURE · DECOR", 5, 3.8, 6, 0.26, "#ffd8a8");
+      [1.4, 6.6].forEach(X => rectWin(x, X, 0.6, 2, 1.5, "#4a3b30", "#fff4e6"));
+      glassFront(x, 0.5, 4.3, 9, 2.2, "#6f4e37", "#fff1d6"); });
+    face(g, f, 10, 6.5, 0, 3.25, 5.02);
+    const sofa = new THREE.Group(); sofa.position.set(0, 6.6, 3.8); g.add(sofa);   // sofa 3D trên nóc (biểu tượng cửa hàng)
+    lb(sofa, 4, 0.7, 1.4, 0xe8590c, 0, 0.55, 0); lb(sofa, 4, 1.1, 0.4, 0xd9480f, 0, 1.1, -0.55); [-1, 1].forEach(s => lb(sofa, 0.45, 1, 1.4, 0xd9480f, s * 2.1, 0.8, 0));
+    [-0.95, 0.95].forEach(x => lb(sofa, 1.8, 0.25, 1.1, 0xff8a3d, x, 1, 0.1)); [-1.7, 1.7].forEach(x => lb(sofa, 0.15, 0.25, 0.15, 0x6f4e37, x, 0.1, 0.5));
+    gltfModel("furniture", "couch_pillows", m => { m.position.set(-2.4, 0, 5.6); g.add(m); shade(m); });   // bày ngoài hiên
+    gltfModel("furniture", "lamp_standing", m => { m.position.set(3.8, 0, 5.8); g.add(m); shade(m); });
+    const aw = lb(g, 10, 0.12, 1.3, 0x6f4e37, 0, 2.55, 5.6); aw.rotation.x = 0.25;
+    R.solids.push([-2.4, 5.6, 1.4, 0.6], [3.8, 5.8, 0.3, 0.3]); return R;
   }
 });
 function buildCustom(P) {   // dựng ngoại thất riêng rồi xoay theo hướng cửa
@@ -2036,7 +2182,7 @@ function homeRefresh(P) {   // vẽ lại phần thay đổi: thẻ trên tườ
     const gl = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: 0.35 })); sp.add(gl);
   }
   if (spiritCount > 8) { const t = textPlate("✨ × " + spiritCount, 1.2, 0.4, "#fff8e7", "#e67700"); t.position.set(R.cx + R.w / 2 - 0.04, 2.2, R.cz + 0.4); t.rotation.y = -Math.PI / 2; dyn.add(t); }
-  save.decor.forEach((id, i) => {   // đồ nội thất đã mua ở Home & Co
+  save.decor.forEach((id, i) => {   // đồ nội thất đã mua ở Home & Cozy
     const it = ITEMS[id], S = DECOR_SPOTS[i]; if (!it || !S) return;
     gltfModel("furniture", it.decor, m => { m.position.set(R.cx + S[0], 0, R.cz + S[1]); m.rotation.y = S[2]; dyn.add(m); shade(m); });
     R.solids.push({ x: R.cx + S[0], z: R.cz + S[1], hw: 0.6, hd: 0.6, decor: true });
@@ -2478,6 +2624,7 @@ function loop() {
   spinners.forEach(h => h.rotation.z += dt * 1.2);
   flags.forEach((f, i) => f.rotation.y = Math.sin(t * 2 + i) * 0.25);   // cờ bay
   cranes.forEach((c, i) => c.rotation.y = Math.sin(t * 0.15 + i) * 1.2);   // cần cẩu xoay chậm
+  ySpin.forEach(m => m.material.map.offset.y -= dt * 0.4);   // cột đèn tiệm cắt tóc (sọc chạy lên)
   if (fountainSpray) { fountainSpray.scale.set(1 + Math.sin(t * 5) * 0.06, 1 + Math.sin(t * 7) * 0.12, 1 + Math.sin(t * 5) * 0.06); fountainSpray.rotation.y += dt; }
   clouds.forEach(c => { c.userData.a += dt * 0.004; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = 20 + Math.sin(c.userData.a) * c.userData.r; });
   if (!talking) {

@@ -127,13 +127,13 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 | | Tây (x −150…−50) | Giữa (x −44…44) | Đông (x 50…150) |
 |---|---|---|---|
 | **Bắc** (z −150…−66) | Tech Valley – công nghệ cao: Science Lab, 🚧 Tech Park, Robotics Lab, Space Center | Sports District – thể thao: Stadium, cổng Maze, 🚧 Sports Center, Swimming Pool | Industrial Park – công nghiệp: Power Plant, Fix-It Workshop, Airfield, 🚧 Factory |
-| **Giữa** (z −60…60) | Maple Town – dân cư & công cộng: My Home, School, Hospital, Police, Fire, 🚧 nhà ở, Clinic | **Civic Center – hành chính**: Town Hall + quảng trường đi bộ dài (kiểu Nguyễn Huệ: bồn hoa, hàng cây, đài phun nước, tượng đài quả cầu EnglishVerse), Post Office, Bank, Cafe Sua Da, Museum, Library, 🚧 Verse Hotel | Market District – thương mại, dịch vụ: Market Street (bakery, pharmacy, Style Box, salon, Pho Corner, Home & Co, Fresh Mart), Star Cinema, Wet Market, 🚧 Shopping Mall, Bookshop, Toy Store |
+| **Giữa** (z −60…60) | Maple Town – dân cư & công cộng: My Home, School, Hospital, Police, Fire, 🚧 nhà ở, Clinic | **Civic Center – hành chính**: Town Hall + quảng trường đi bộ dài (kiểu Nguyễn Huệ: bồn hoa, hàng cây, đài phun nước, tượng đài quả cầu EnglishVerse), Post Office, Bank, Cafe Sua Da, Museum, Library, 🚧 Verse Hotel | Market District – thương mại, dịch vụ: Market Street (Banh Mi Bakery, Green Cross Pharmacy, Clothes Shop, Saigon Barber, Pho Corner, Home & Cozy, Shop 24h), Star Cinema, Wet Market, 🚧 Shopping Mall, Bookshop, Toy Store |
 | **Nam** (z 66…150) | Green Fields – nông nghiệp: Green Farm, 🚧 Orchard, Fish Pond, Rice Field | Station Square: Train Station (nhìn thẳng về Town Hall), Bus Stop, Verse Lake, 🚧 Bus Terminal | Wild Woods – thiên nhiên: City Zoo, Misty Park (quái), 🚧 Botanical Garden |
 
 - Đường vành đai x = ±47, z = ±63; mỗi khu có trục đường riêng. Nhà quay mặt ra đường gần nhất (đủ 4 hướng).
 - **Metro**: mỗi khu 1 trạm (chữ M xanh), đứng gần bấm 🚇 Metro để đi nhanh. **Bus Stop** chỉ để trang trí / nhiệm vụ. **Train Station** sau này dùng để đi sang thành phố khác.
 - **🚧 Ô đất chờ xây** (`LOTS`): hàng rào cam trắng + bảng "Coming soon"; ô lớn (`big: true`) có cần cẩu. Khi xây thật: chuyển ô đó thành một mục trong `CITY` cùng tọa độ.
-- Ngoại thất vẽ riêng theo ảnh thật (mục `8c` trong index.html, `exterior:` trong places.js): Town Hall (UBND TP.HCM), City Hospital (BV Chợ Rẫy), Verse School (trường Lê Quý Đôn), Cafe Sua Da (nhà ống Việt Nam), My Home, Train Station. Các nơi khác vẫn dùng tạm mô hình nhà phố KayKit; người dùng gửi hình theo đợt.
+- Ngoại thất vẽ riêng theo ảnh thật (mục `8c`, `8e` trong index.html, `exterior:` trong places.js): Town Hall (UBND TP.HCM), City Hospital (BV Chợ Rẫy), Verse School (trường Lê Quý Đôn), Cafe Sua Da (nhà ống Việt Nam), My Home, Train Station (ga Đà Lạt: 3 đầu hồi vàng viền đỏ, tàu xanh lá), Banh Mi Bakery (ổ bánh mì khổng lồ), Green Cross Pharmacy, Clothes Shop, Saigon Barber (cột đèn sọc xoay), Shop 24h (cửa hàng tiện lợi), Home & Cozy (sofa trên nóc). Biển hiệu tự thiết kế, **không dùng logo thương hiệu thật**. Các nơi khác vẫn dùng tạm mô hình nhà phố KayKit; người dùng gửi hình theo đợt.
 - **My Home sẽ nâng cấp được** (ý tưởng của người dùng): bỏ xu (+ điều kiện thành tích) để xây to hơn, nhiều kiểu nhà, giá khác nhau.
 - Camera 2 chế độ: 🔍 gần (giao tiếp, thao tác) / 🔭 rộng (nhìn tổng thể; tự về gần khi đang nói chuyện). Tốc độ đi 6 m/giây.
 - Mỗi địa điểm cần: **nhu cầu trong game + từ vựng/mẫu câu riêng + thứ để sưu tầm/khám phá**.
@@ -187,7 +187,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 ---
 
-## 5. Đã làm (PR #1–#22)
+## 5. Đã làm (PR #1–#23)
 1. `CLAUDE.md`, tầm nhìn metaverse
 2. Thị trấn ban đầu; hỏi đường "Where is …?" có mũi tên dẫn đường
 3. Thẻ từ vựng và sổ sưu tập
@@ -204,6 +204,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 14. **Bản đồ nhỏ** xoay theo hướng nhìn; chạm để mở bản đồ lớn, chạm địa điểm để được chỉ đường
 15. Giọng đọc tự nhiên hơn; tinh linh không bay quanh người nữa (trưng ở nhà); thư viện để trong `lib/`
 16. Ngoại thất riêng đợt 1: Town Hall, City Hospital, Verse School, Cafe Sua Da, My Home (cờ bay, bản đồ nhỏ vẽ đúng hình khối)
+18. Ngoại thất đợt 2: nhà ga kiểu Đà Lạt + 6 cửa hàng Market Street (đổi tên: Banh Mi Bakery, Clothes Shop, Saigon Barber, Shop 24h, Home & Cozy)
 17. **Quy hoạch lại thành phố** 9 khu, quảng trường đi bộ trước Town Hall, metro mỗi khu, 20 ô đất chờ xây, nhà ga mới + đường ray, hồ, camera gần/rộng, đi nhanh hơn 50%, bảng tên khu khi đi vào
 
 ---
