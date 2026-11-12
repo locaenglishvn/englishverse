@@ -5,16 +5,18 @@
    w = từ/cụm từ, pic = hình (emoji), ex = câu ví dụ. */
 const LESSONS = [
 {
-  name: "Mia – Barista", color: 0xe03131, place: "cafe", x: 0, z: -3.6,
+  name: "Mia – Barista", color: 0xe03131, place: "cafe", x: 0, z: -16.7,
   steps: [
     { say: "Hi! Welcome to Cafe Sua Da. What would you like to drink?",
       card: { w: "I’d like…", pic: "☕", ex: "I’d like a coffee, please." },
+      q: { w: "What would you like…?", pic: "🙋", ex: "What would you like to drink?" },
       choices: [
         { t: "I’d like a coffee, please.", ok: true,  fb: "Great! Polite and natural. +10" },
         { t: "Give me coffee.",            ok: false, fb: "Understandable, but a bit rude. Try “I’d like…”" },
         { t: "Coffee is I want.",          ok: false, fb: "Word order: say “I want coffee.”" } ] },
     { say: "Sure! Would you like it hot or iced?",
       card: { w: "iced", pic: "🧊", ex: "Iced coffee, please." },
+      q: { w: "Hot or iced?", pic: "🌡️", ex: "Would you like it hot or iced?" },
       choices: [
         { t: "Iced, please.",      ok: true,  fb: "Perfect! Short and polite. +10" },
         { t: "I am cold coffee.",  ok: false, fb: "That means YOU are cold! Say “iced coffee.”" },
@@ -418,6 +420,130 @@ const LESSONS = [
         { t: "Done! Let’s fly!",       ok: true,  fb: "+10" },
         { t: "Belt is fast.",          ok: false, fb: "Fasten = thắt. Say “Done!”" },
         { t: "No belt for me.",        ok: false, fb: "Safety first! Fasten it :)" } ] }
+  ]
+}
+/* ===== CAFE SUA DA: thêm nhân viên và khách trong quán (quán rộng 20 × 48 m, z âm = quầy pha chế phía sau)
+   minLv = cấp tối thiểu để NPC này chịu nói chuyện (nội dung khó hơn) ===== */
+,{
+  name: "Bao – Waiter", color: 0x2b8a3e, place: "cafe", x: 0, z: 1,
+  steps: [
+    { say: "Good afternoon! Table for how many?",
+      q: { w: "Table for how many?", pic: "🍽️", ex: "Good afternoon! Table for how many?" },
+      card: { w: "A table for two, please.", pic: "👫", ex: "A table for two, please." },
+      choices: [
+        { t: "A table for two, please.", ok: true,  fb: "Perfect! +10" },
+        { t: "Two table.",               ok: false, fb: "Say “A table for two, please.”" },
+        { t: "I am two.",                ok: false, fb: "Haha, you are one person :)" } ] },
+    { say: "Would you like to sit inside or by the window?",
+      card: { w: "by the window", pic: "🪟", ex: "I’d like to sit by the window." },
+      choices: [
+        { t: "By the window, please.", ok: true,  fb: "Nice view! +10" },
+        { t: "Window is sit.",         ok: false, fb: "Say “By the window, please.”" },
+        { t: "Yes.",                   ok: false, fb: "He asked which one: inside or by the window?" } ] },
+    { say: "Here is the menu. Take your time!",
+      card: { w: "Take your time.", pic: "⏳", ex: "Take your time, there’s no hurry." },
+      choices: [
+        { t: "Thank you. I’ll call you when I’m ready.", ok: true,  fb: "Very natural! +10" },
+        { t: "Time is take.",                            ok: false, fb: "Try “Thank you!”" },
+        { t: "Give food fast.",                          ok: false, fb: "Be polite :)" } ] }
+  ]
+},
+{
+  name: "Vy – Cashier", color: 0xe64980, place: "cafe", x: 5, z: -16.7,
+  steps: [
+    { say: "That’s 45,000 dong. Cash or card?",
+      q: { w: "Cash or card?", pic: "💵", ex: "Would you like to pay by cash or card?" },
+      card: { w: "pay by card", pic: "💳", ex: "Can I pay by card, please?" },
+      choices: [
+        { t: "Can I pay by card, please?", ok: true,  fb: "Polite! +10" },
+        { t: "Card I pay.",                ok: false, fb: "Word order: “Can I pay by card?”" },
+        { t: "No money.",                  ok: false, fb: "Hmm. Try “Can I pay by card?”" } ] },
+    { say: "Of course. Would you like a receipt?",
+      q: { w: "Would you like…?", pic: "🎁", ex: "Would you like a receipt?" },
+      card: { w: "Yes, please.", pic: "👍", ex: "Yes, please. Thank you." },
+      choices: [
+        { t: "Yes, please.",          ok: true,  fb: "Short and polite! +10" },
+        { t: "Yes, I like receipt.",  ok: false, fb: "Just say “Yes, please.”" },
+        { t: "Receipt is me.",        ok: false, fb: "Try “Yes, please.”" } ] },
+    { say: "Here you are. Have a nice day!",
+      card: { w: "You too!", pic: "😊", ex: "Have a nice day! – Thanks, you too!" },
+      choices: [
+        { t: "Thanks! You too!", ok: true,  fb: "Lovely! +10" },
+        { t: "Me too!",          ok: false, fb: "Say “You too!”" },
+        { t: "Day is nice.",     ok: false, fb: "Try “Thanks! You too!”" } ] }
+  ]
+},
+{
+  name: "Grace – Customer", color: 0xfab005, place: "cafe", x: -7, z: 3.4,
+  steps: [
+    { say: "Excuse me, is this seat taken?",
+      q: { w: "Is this seat taken?", pic: "💺", ex: "Excuse me, is this seat taken?" },
+      card: { w: "Go ahead.", pic: "👉", ex: "No, it’s free. Go ahead!" },
+      choices: [
+        { t: "No, it’s free. Go ahead!", ok: true,  fb: "Friendly! +10" },
+        { t: "Yes, I take seat.",        ok: false, fb: "If it’s free, say “No, it’s free. Go ahead!”" },
+        { t: "Seat is no.",              ok: false, fb: "Try “No, it’s free.”" } ] },
+    { say: "Thanks! What do you recommend here?",
+      q: { w: "What do you recommend?", pic: "🤔", ex: "What do you recommend here?" },
+      card: { w: "I recommend…", pic: "⭐", ex: "I recommend the iced milk coffee." },
+      choices: [
+        { t: "I recommend the iced milk coffee.", ok: true,  fb: "Great tip! +10" },
+        { t: "Recommend coffee me.",              ok: false, fb: "Say “I recommend the…”" },
+        { t: "I don’t know you.",                 ok: false, fb: "Be friendly :)" } ] },
+    { say: "Great! By the way, I’m Grace. I’m from Canada.",
+      card: { w: "I’m from Vietnam.", pic: "🇻🇳", ex: "Nice to meet you. I’m from Vietnam." },
+      choices: [
+        { t: "Nice to meet you, Grace. I’m from Vietnam.", ok: true,  fb: "Perfect introduction! +10" },
+        { t: "I from Vietnam.",                            ok: false, fb: "Don’t forget “am”: I’m from Vietnam." },
+        { t: "Canada is cold.",                            ok: false, fb: "Introduce yourself first :)" } ] }
+  ]
+},
+{
+  name: "Mr. Kha – Plant Seller", color: 0x5c940d, place: "cafe", x: 7.2, z: 13,
+  steps: [
+    { say: "Hello! Do you like plants? These are succulents.",
+      card: { w: "They look…", pic: "🌵", ex: "They look so cute!" },
+      choices: [
+        { t: "Yes! They look so cute!", ok: true,  fb: "+10" },
+        { t: "They looks cute.",        ok: false, fb: "“They look” – no s." },
+        { t: "I eat plants.",           ok: false, fb: "Haha, please don’t!" } ] },
+    { say: "How often do you water your plants?",
+      q: { w: "How often…?", pic: "🔁", ex: "How often do you water your plants?" },
+      card: { w: "once a week", pic: "📅", ex: "I water my plants once a week." },
+      choices: [
+        { t: "About once a week.", ok: true,  fb: "Good answer! +10" },
+        { t: "Water is often.",    ok: false, fb: "Try “Once a week.”" },
+        { t: "Yesterday.",         ok: false, fb: "He asked HOW OFTEN, not when." } ] },
+    { say: "Good! This one is easy to care for. Only 30,000 dong.",
+      card: { w: "I’ll take it.", pic: "🛍️", ex: "It’s lovely. I’ll take it!" },
+      choices: [
+        { t: "It’s lovely. I’ll take it!", ok: true,  fb: "Sold! +10" },
+        { t: "I take it yesterday.",       ok: false, fb: "Say “I’ll take it.”" },
+        { t: "Too lovely no.",             ok: false, fb: "Try “I’ll take it!”" } ] }
+  ]
+},
+{
+  name: "Uncle Tu – Cafe Owner", color: 0x6c4a2f, place: "cafe", x: 6.5, z: -8, minLv: 5,
+  steps: [
+    { say: "Welcome back, my friend! How long have you been learning English?",
+      q: { w: "How long have you been…?", pic: "⏱️", ex: "How long have you been learning English?" },
+      card: { w: "for six months", pic: "📆", ex: "I’ve been learning English for six months." },
+      choices: [
+        { t: "I’ve been learning it for six months.", ok: true,  fb: "Excellent grammar! +10" },
+        { t: "I learning six months.",                ok: false, fb: "Say “I’ve been learning…”" },
+        { t: "Since English.",                        ok: false, fb: "Try “For six months.”" } ] },
+    { say: "Wonderful! Do you know why our coffee is so special?",
+      card: { w: "I have no idea.", pic: "🤷", ex: "I have no idea. Can you tell me?" },
+      choices: [
+        { t: "I have no idea. Can you tell me?", ok: true,  fb: "Curious and polite! +10" },
+        { t: "No idea have I.",                  ok: false, fb: "Say “I have no idea.”" },
+        { t: "Coffee is coffee.",                ok: false, fb: "Be curious :)" } ] },
+    { say: "We use a phin filter. The coffee drips slowly, drop by drop.",
+      card: { w: "drop by drop", pic: "💧", ex: "The coffee drips slowly, drop by drop." },
+      choices: [
+        { t: "Wow, that’s why it tastes so rich!", ok: true,  fb: "Great reaction! +10" },
+        { t: "Drop is slow me.",                   ok: false, fb: "Try “That’s why it tastes so rich!”" },
+        { t: "I like tea.",                        ok: false, fb: "Stay on topic :)" } ] }
   ]
 }
 ];

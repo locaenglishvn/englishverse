@@ -123,7 +123,7 @@ const CITY = [
     color: 0xffffff, roof: 0xc92a2a, awning: 0xfa5252, floor: 0xe7f5ff, wall: 0xffffff,
     keeper: { name: "Nurse Mai", color: 0x74c0fc, greet: "Hello! Doctor Pasteur is working in his lab. He will need your help soon.", hint: "I feel sick." },
     sells: [] },
-  { id: "cafe", name: "Cafe Sua Da", type: "cafe", x: -32, z: 0, w: 19, d: 10, door: "east", exterior: "cafe",
+  { id: "cafe", name: "Cafe Sua Da", type: "cafe", x: -32, z: 0, w: 19, d: 10, door: "east", exterior: "cafe", layout: "greenhouse", size: { w: 20, d: 48, h: 5.5 },
     color: 0xfff1e0, roof: 0xd62828, awning: 0xe8590c, floor: 0xe9d8b4, wall: 0xfff4e6,
     keeper: null,   // không có người bán: Mia (trong lessons.js) đứng sau quầy và nói chuyện với khách
     sells: [] },
@@ -261,3 +261,34 @@ const AMBIENT = [
   { name: "Guard Thu – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, 10.5]],            say: "Find a team and play together!" }
 ];
 
+/* THẺ TỪ VỰNG 📦: đồ trưng bày trong từng nơi (theo id trong CITY). Chạm vào đồ → hỏi "What is this?" → nhận thẻ.
+   w = từ, pic = hình, pos = loại từ, say = câu NPC trả lời, ex = câu ví dụ (ưu tiên có tính từ / trạng từ đi kèm).
+   Đồ trưng bày tự đổi theo người chơi: món CHƯA học được bày ra trước; học hết thì món mới được bày tiếp. */
+const VOCAB = {
+  cafe: [
+    { w: "cup",            pic: "☕", pos: "noun", say: "It's a cup.",              ex: "A small white cup of hot coffee." },
+    { w: "coffee beans",   pic: "🫘", pos: "noun", say: "They're coffee beans.",    ex: "These dark coffee beans smell wonderful." },
+    { w: "phin filter",    pic: "⏳", pos: "noun", say: "It's a phin filter.",      ex: "A phin filter drips coffee slowly." },
+    { w: "condensed milk", pic: "🥫", pos: "noun", say: "It's condensed milk.",     ex: "Vietnamese iced coffee uses sweet condensed milk." },
+    { w: "ice cubes",      pic: "🧊", pos: "noun", say: "They're ice cubes.",       ex: "Put two ice cubes in my glass, please." },
+    { w: "teapot",         pic: "🫖", pos: "noun", say: "It's a teapot.",           ex: "The teapot is very hot. Pour slowly!" },
+    { w: "milk tea",       pic: "🧋", pos: "noun", say: "It's milk tea.",           ex: "Iced milk tea is really popular in Vietnam." },
+    { w: "green tea",      pic: "🍵", pos: "noun", say: "It's green tea.",          ex: "Hot green tea tastes slightly bitter." },
+    { w: "croissant",      pic: "🥐", pos: "noun", say: "It's a croissant.",        ex: "I'd like a warm, crispy croissant." },
+    { w: "cake",           pic: "🍰", pos: "noun", say: "It's a piece of cake.",    ex: "This chocolate cake is really soft." },
+    { w: "cookie",         pic: "🍪", pos: "noun", say: "It's a cookie.",           ex: "These cookies are freshly baked." },
+    { w: "spoon",          pic: "🥄", pos: "noun", say: "It's a spoon.",            ex: "Stir your coffee gently with a spoon." },
+    { w: "honey",          pic: "🍯", pos: "noun", say: "It's honey.",              ex: "Add a little honey to your tea." },
+    { w: "straw",          pic: "🥤", pos: "noun", say: "It's a straw.",            ex: "Can I have a paper straw, please?" },
+    { w: "menu",           pic: "📋", pos: "noun", say: "It's the menu.",           ex: "Read the menu carefully before you order." },
+    { w: "receipt",        pic: "🧾", pos: "noun", say: "It's a receipt.",          ex: "Here is your receipt. Keep it safely." },
+    { w: "light bulb",     pic: "💡", pos: "noun", say: "It's a light bulb.",       ex: "The light bulbs hang beautifully from the ceiling." },
+    { w: "potted plant",   pic: "🪴", pos: "noun", say: "It's a potted plant.",     ex: "Water the potted plant once a week." },
+    { w: "succulent",      pic: "🌵", pos: "noun", say: "It's a succulent.",        ex: "Succulents grow slowly and need very little water." },
+    { w: "fern",           pic: "🌿", pos: "noun", say: "It's a fern.",             ex: "A long green fern hangs from the glass roof." },
+    { w: "jar",            pic: "🫙", pos: "noun", say: "It's a glass jar.",        ex: "A tiny garden grows quietly inside the glass jar." },
+    { w: "stool",          pic: "🪑", pos: "noun", say: "It's a stool.",            ex: "Sit on the tall wooden stool by the window." },
+    { w: "sofa",           pic: "🛋️", pos: "noun", say: "It's a sofa.",             ex: "This soft sofa is perfect for reading." },
+    { w: "wifi password",  pic: "📶", pos: "noun", say: "It's the wifi password.",  ex: "Excuse me, what's the wifi password?" }
+  ]
+};
