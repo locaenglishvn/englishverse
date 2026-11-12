@@ -28,7 +28,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tom – Tourist", color: 0x2b8a3e, x: -4, z: 20,
+  name: "Tom – Tourist", color: 0x2b8a3e, x: -4, z: 30,
   steps: [
     { say: "Excuse me! Is there a train station near here?",
       card: { w: "train station", pic: "🚉", ex: "The train station is near here." },
@@ -260,7 +260,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Tan – Bus Driver", color: 0xf59f00, x: -90, z: 19.5,
+  name: "Mr. Tan – Bus Driver", color: 0xf59f00, x: 26, z: 74.5,
   steps: [
     { say: "Hello! Where are you going?",
       card: { w: "bus", pic: "🚌", ex: "Does this bus go to the zoo?" },
@@ -283,7 +283,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Aunt Lan – Fruit Seller", color: 0xd9480f, x: -74, z: 29,
+  name: "Aunt Lan – Fruit Seller", color: 0xd9480f, x: 120, z: 4.5,
   steps: [
     { say: "Fresh mangoes! Very sweet! Do you want some?",
       card: { w: "mango", pic: "🥭", ex: "These mangoes are very sweet." },
@@ -306,7 +306,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Zoe – Zookeeper", color: 0x5c940d, x: 70, z: 61,
+  name: "Zoe – Zookeeper", color: 0x5c940d, x: 80, z: 68,
   steps: [
     { say: "Welcome to the zoo! Which animal do you want to see?",
       card: { w: "elephant", pic: "🐘", ex: "I want to see the elephants." },
@@ -329,7 +329,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Farmer Joe – Farmer", color: 0x8d5a2b, x: -72, z: 61,
+  name: "Farmer Joe – Farmer", color: 0x8d5a2b, x: -80, z: 68,
   steps: [
     { say: "Good morning! Can you help me water the vegetables?",
       card: { w: "water the plants", pic: "🪴", ex: "I water the plants every morning." },
@@ -352,7 +352,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Coach Kai – Coach", color: 0xe03131, x: 0, z: -50.5,
+  name: "Coach Kai – Coach", color: 0xe03131, x: 0, z: -94,
   steps: [
     { say: "Hey! Before we play, we need to warm up. Are you ready?",
       card: { w: "warm up", pic: "🤸", ex: "Let’s warm up before we play." },
@@ -375,7 +375,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Eli – Engineer", color: 0xfab005, x: -72, z: -52.5,
+  name: "Eli – Engineer", color: 0xfab005, x: 75, z: -105,
   steps: [
     { say: "Hi! This power plant makes electricity for the whole city.",
       card: { w: "electricity", pic: "⚡", ex: "The power plant makes electricity." },
@@ -398,7 +398,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Captain Sky – Pilot", color: 0x1c7ed6, x: 72, z: -54.5,
+  name: "Captain Sky – Pilot", color: 0x1c7ed6, x: 125, z: -111,
   steps: [
     { say: "Hello! The plane leaves in ten minutes. Do you have your boarding pass?",
       card: { w: "boarding pass", pic: "🎫", ex: "Here is my boarding pass." },

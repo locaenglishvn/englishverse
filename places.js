@@ -103,27 +103,27 @@ const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", le
    model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5)
    exterior = ngoại thất vẽ riêng (townhall, hospital, school, cafe, home – xem mục 8c trong index.html); khi có thì bỏ qua model */
 const CITY = [
-  { id: "bakery", name: "Golden Bakery", type: "bakery", x: -26, z: 4, w: 10, d: 10, door: "south", model: "building_A",
+  { id: "bakery", name: "Golden Bakery", type: "bakery", x: 56, z: -10, w: 10, d: 10, door: "south", model: "building_A",
     color: 0xffe8cc, roof: 0xc0392b, awning: 0xe67e22, floor: 0xe9c99a, wall: 0xfff4e0,
     keeper: { name: "Anna – Baker", color: 0xf08c00, greet: "Good morning! Everything is fresh today. What would you like?", hint: "Can I have a banh mi, please?" },
     sells: ["banhmi", "donut", "milk"] },
-  { id: "pharmacy", name: "Green Cross Pharmacy", type: "pharmacy", x: 26, z: 4, w: 10, d: 10, door: "south", model: "building_F",
+  { id: "pharmacy", name: "Green Cross Pharmacy", type: "pharmacy", x: 68, z: -10, w: 10, d: 10, door: "south", model: "building_F",
     color: 0xe6fcf5, roof: 0x2b8a3e, awning: 0x37b24d, floor: 0xdee2e6, wall: 0xf8f9fa,
     keeper: { name: "Sam – Pharmacist", color: 0x1c7ed6, greet: "Hello! How are you feeling today?", hint: "I have a sore throat. Can I have some throat syrup?" },
     sells: ["syrup", "vaccine"] },
-  { id: "clothes", name: "Style Box", type: "clothes", x: -42, z: 4, w: 10, d: 10, door: "south", model: "building_G",
+  { id: "clothes", name: "Style Box", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", model: "building_G",
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
     keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to Style Box. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
     sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
-  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -27, w: 32, d: 13, door: "south", exterior: "townhall",
+  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -44, w: 32, d: 13, door: "south", exterior: "townhall",
     color: 0xf1f3f5, roof: 0x495057, awning: 0x1c7ed6, floor: 0xc9a27e, wall: 0xf8f0e3,
     keeper: { name: "Mr. Lee – Mayor", color: 0x343a40, greet: "Welcome to Town Hall! The quest board will open soon.", hint: "I'd like to take a quest." },
     sells: [] },
-  { id: "hospital", name: "City Hospital", type: "hospital", x: 44, z: 42, w: 20, d: 11, door: "north", exterior: "hospital",
+  { id: "hospital", name: "City Hospital", type: "hospital", x: -62, z: -40, w: 20, d: 11, door: "east", exterior: "hospital",
     color: 0xffffff, roof: 0xc92a2a, awning: 0xfa5252, floor: 0xe7f5ff, wall: 0xffffff,
     keeper: { name: "Nurse Mai", color: 0x74c0fc, greet: "Hello! Doctor Pasteur is working in his lab. He will need your help soon.", hint: "I feel sick." },
     sells: [] },
-  { id: "cafe", name: "Cafe Sua Da", type: "cafe", x: 0, z: 1, w: 19, d: 10, door: "south", exterior: "cafe",
+  { id: "cafe", name: "Cafe Sua Da", type: "cafe", x: -32, z: 0, w: 19, d: 10, door: "east", exterior: "cafe",
     color: 0xfff1e0, roof: 0xd62828, awning: 0xe8590c, floor: 0xe9d8b4, wall: 0xfff4e6,
     keeper: null,   // không có người bán: Mia (trong lessons.js) đứng sau quầy và nói chuyện với khách
     sells: [] },
@@ -131,45 +131,45 @@ const CITY = [
      layout = kiểu bày nội thất: shop | tables | shelves | desks | museum | cinema | salon | lab | home
      goods  = đồ trưng bày (emoji). NPC hội thoại của từng nơi nằm trong lessons.js (place: "id"). */
   // Hàng phía bắc (cửa nhìn ra North Avenue)
-  { id: "school", name: "Verse School", type: "school", x: -86, z: -27, w: 24, d: 18, door: "south", exterior: "school", layout: "desks",
+  { id: "school", name: "Verse School", type: "school", x: -82, z: -14, w: 24, d: 18, door: "south", exterior: "school", layout: "desks",
     color: 0xfff3bf, roof: 0x1971c2, awning: 0xfab005, floor: 0xd9b38c, wall: 0xfff9db, goods: ["📚", "✏️", "📐", "🌍", "🎒", "🧮"], keeper: null, sells: [] },
-  { id: "museum", name: "City Museum", type: "museum", x: -48, z: -24, w: 12, d: 12, door: "south", model: "building_C", scale: 6, layout: "museum",
+  { id: "museum", name: "City Museum", type: "museum", x: -33, z: 40, w: 12, d: 12, door: "east", model: "building_C", scale: 6, layout: "museum",
     color: 0xf1f3f5, roof: 0x5c5f66, awning: 0x868e96, floor: 0xe9ecef, wall: 0xf8f9fa, goods: ["🦖", "🏺", "🗿", "⚱️", "🦴", "👑"], keeper: null, sells: [] },
-  { id: "library", name: "Library", type: "library", x: -30, z: -24, w: 10, d: 10, door: "south", model: "building_B", layout: "shelves",
+  { id: "library", name: "Library", type: "library", x: 33, z: 40, w: 10, d: 10, door: "west", model: "building_B", layout: "shelves",
     color: 0xe7f5ff, roof: 0x364fc7, awning: 0x4c6ef5, floor: 0xc9a27e, wall: 0xf3f0ff, goods: ["📕", "📗", "📘", "📙", "📖", "📚"], keeper: null, sells: [] },
-  { id: "bank", name: "Verse Bank", type: "bank", x: 30, z: -24, w: 10, d: 10, door: "south", model: "building_E", layout: "desks",
+  { id: "bank", name: "Verse Bank", type: "bank", x: 33, z: -40, w: 10, d: 10, door: "west", model: "building_E", layout: "desks",
     color: 0xf8f9fa, roof: 0x2b8a3e, awning: 0x2f9e44, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["💰", "💳", "🪙", "💵", "🏦", "📈"], keeper: null, sells: [] },
-  { id: "post", name: "Post Office", type: "post office", x: 46, z: -24, w: 10, d: 10, door: "south", model: "building_C", layout: "shop",
+  { id: "post", name: "Post Office", type: "post office", x: -33, z: -40, w: 10, d: 10, door: "east", model: "building_C", layout: "shop",
     color: 0xfff4e6, roof: 0xe8590c, awning: 0xfd7e14, floor: 0xe9d8b4, wall: 0xfff4e6, goods: ["📮", "✉️", "📦", "📬", "🏷️", "📫"], keeper: null, sells: [] },
-  { id: "lab", name: "Science Lab", type: "science lab", x: 84, z: -24, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
+  { id: "lab", name: "Science Lab", type: "science lab", x: -75, z: -112, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
     color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
   // Hàng giữa (cửa nhìn ra Market Street)
-  { id: "furniture", name: "Home & Co", type: "furniture store", x: -90, z: 4, w: 10, d: 10, door: "south", model: "building_A", layout: "showroom",
+  { id: "furniture", name: "Home & Co", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", model: "building_A", layout: "showroom",
     color: 0xf8f0e3, roof: 0x8d5a2b, awning: 0xa0522d, floor: 0xd9b38c, wall: 0xfff8f0, goods: [],
     keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Do you need furniture for your home?", hint: "I’d like the sofa, please." },
     sells: ["d_couch", "d_chair", "d_lamp", "d_cactus", "d_shelf", "d_table", "d_cabinet", "d_rug"] },
-  { id: "restaurant", name: "Pho Corner", type: "restaurant", x: -78, z: 4, w: 10, d: 10, door: "south", model: "building_E", layout: "tables",
+  { id: "restaurant", name: "Pho Corner", type: "restaurant", x: 108, z: -10, w: 10, d: 10, door: "south", model: "building_E", layout: "tables",
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xf03e3e, floor: 0xe9c99a, wall: 0xfff4e6, goods: ["🍜", "🌯", "🍹", "🥢", "🍚", "🌶️"],
     keeper: { name: "Chef Bao – Cook", color: 0xf8f9fa, greet: "Welcome to Pho Corner! Are you hungry?", hint: "Can I have a bowl of pho, please?" },
     sells: ["pho", "springroll", "lemontea"] },
-  { id: "salon", name: "Happy Hair", type: "hair salon", x: -56, z: 4, w: 10, d: 10, door: "south", model: "building_G", layout: "salon",
+  { id: "salon", name: "Happy Hair", type: "hair salon", x: 92, z: -10, w: 10, d: 10, door: "south", model: "building_G", layout: "salon",
     color: 0xf3f0ff, roof: 0x7048e8, awning: 0x9775fa, floor: 0xf1f3f5, wall: 0xf8f0fc, goods: ["✂️", "💈", "🪮", "🧴", "💇", "🪞"],
     keeper: { name: "Lily – Hairdresser", color: 0x9775fa, greet: "Hi! What hairstyle would you like today?", hint: "I’d like short hair, please." },
     sells: ["hair_Rogue", "hair_Knight", "hair_Mage", "hair_Barbarian"] },
-  { id: "supermarket", name: "Fresh Mart", type: "supermarket", x: 44, z: 4, w: 12, d: 12, door: "south", model: "building_A", scale: 6, layout: "shelves",
+  { id: "supermarket", name: "Fresh Mart", type: "supermarket", x: 134, z: -11, w: 12, d: 12, door: "south", model: "building_A", scale: 6, layout: "shelves",
     color: 0xebfbee, roof: 0x2f9e44, awning: 0x40c057, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🍎", "🍌", "🥛", "🍙", "💧", "🥕"],
     keeper: { name: "Nam – Cashier", color: 0x40c057, greet: "Hello! Can I help you find something?", hint: "Can I have an apple and some water, please?" },
     sells: ["apple", "banana", "water", "riceball", "milk"] },
-  { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 56, z: 4, w: 10, d: 10, door: "south", model: "building_B", layout: "lab",
+  { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 75, z: -86, w: 10, d: 10, door: "north", model: "building_B", layout: "lab",
     color: 0xf1f3f5, roof: 0x495057, awning: 0xfab005, floor: 0xadb5bd, wall: 0xe9ecef, goods: ["🔧", "🔨", "🪛", "🚲", "⚙️", "🪚"], keeper: null, sells: [] },
-  { id: "police", name: "Police Station", type: "police station", x: 76, z: 4, w: 10, d: 10, door: "south", model: "building_F", layout: "desks",
+  { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 10, d: 10, door: "north", model: "building_F", layout: "desks",
     color: 0xe7f5ff, roof: 0x1864ab, awning: 0x1c7ed6, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["🚓", "🔦", "📋", "🗺️", "🔑", "🚨"], keeper: null, sells: [] },
-  { id: "fire", name: "Fire Station", type: "fire station", x: 90, z: 4, w: 10, d: 10, door: "south", model: "building_G", layout: "lab",
+  { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", model: "building_G", layout: "lab",
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
   // Hàng phía nam (cửa nhìn lên Market Street)
-  { id: "home", name: "My Home", type: "home", x: -42, z: 22, w: 12, d: 11, door: "north", exterior: "home", layout: "home",
+  { id: "home", name: "My Home", type: "home", x: -125, z: -14, w: 12, d: 11, door: "south", exterior: "home", layout: "home",
     color: 0xfff4e6, roof: 0xd9480f, awning: 0xfd7e14, floor: 0xd9b38c, wall: 0xfff8f0, keeper: null, sells: [] },
-  { id: "cinema", name: "Star Cinema", type: "cinema", x: 78, z: 22, w: 12, d: 12, door: "north", model: "building_H", scale: 6, layout: "cinema",
+  { id: "cinema", name: "Star Cinema", type: "cinema", x: 60, z: 11, w: 12, d: 12, door: "north", model: "building_H", scale: 6, layout: "cinema",
     color: 0x343a40, roof: 0x212529, awning: 0xfab005, floor: 0x5c1a1a, wall: 0x3b2f2a, goods: ["🎬", "🍿", "🎟️", "🥤", "🎥", "⭐"],
     keeper: { name: "Jack – Ticket Seller", color: 0xfab005, greet: "Hi! The movie starts at seven. Would you like some popcorn?", hint: "Can I have some popcorn, please?" },
     sells: ["popcorn", "water"] }
@@ -177,11 +177,66 @@ const CITY = [
 
 /* ĐỊA ĐIỂM NGOÀI TRỜI (không có nhà, đi thẳng vào): x, z = tâm khu; keys = từ khóa khi hỏi "Where is …?" */
 const SPOTS = [
-  { id: "busstop",  name: "Bus Stop",    type: "busstop",  x: -94, z: 17.5, keys: ["bus"] },
-  { id: "market",   name: "Wet Market",  type: "market",   x: -74, z: 32,   keys: ["market", "fruit"] },
-  { id: "zoo",      name: "City Zoo",    type: "zoo",      x: 70,  z: 74,   keys: ["zoo", "animal"] },
-  { id: "farm",     name: "Green Farm",  type: "farm",     x: -72, z: 74,   keys: ["farm", "vegetable"] },
-  { id: "stadium",  name: "Stadium",     type: "stadium",  x: 0,   z: -66,  keys: ["stadium", "sport", "football"] },
-  { id: "power",    name: "Power Plant", type: "power",    x: -72, z: -66,  keys: ["power", "electric"] },
-  { id: "airfield", name: "Airfield",    type: "airfield", x: 72,  z: -68,  keys: ["airfield", "airport", "plane"] }
+  { id: "busstop",  name: "Bus Stop",    type: "busstop",  x: 22, z: 72, keys: ["bus"] },
+  { id: "market",   name: "Wet Market",  type: "market",   x: 120, z: 6,   keys: ["market", "fruit"] },
+  { id: "zoo",      name: "City Zoo",    type: "zoo",      x: 80, z: 80,   keys: ["zoo", "animal"] },
+  { id: "farm",     name: "Green Farm",  type: "farm",     x: -80, z: 80,   keys: ["farm", "vegetable"] },
+  { id: "stadium",  name: "Stadium",     type: "stadium",  x: 0, z: -110,  keys: ["stadium", "sport", "football"] },
+  { id: "power",    name: "Power Plant", type: "power",    x: 75, z: -120,  keys: ["power", "electric"] },
+  { id: "park",     name: "Misty Park",  type: "park",     x: 125, z: 82,   keys: ["park", "ghost", "misty"] },
+  { id: "lake",     name: "Verse Lake",  type: "lake",     x: 0,   z: 128,  keys: ["lake", "water"] },
+  { id: "airfield", name: "Airfield",    type: "airfield", x: 125, z: -125,  keys: ["airfield", "airport", "plane"] }
+];
+
+/* ===== QUY HOẠCH THÀNH PHỐ =====
+   Thành phố chia 9 khu như bàn cờ 3 × 3, khu hành chính ở giữa (Town Hall + quảng trường đi bộ dài).
+   Bắc = phía z âm (trên bản đồ). Đường vành đai: x = ±47, z = ±63.
+   ZONES: x0..x1, z0..z1 = phạm vi khu; color = màu nền trên bản đồ. */
+const ZONES = [
+  { id: "admin",    name: "Civic Center",      vi: "Khu hành chính",        x0: -44, x1: 44,   z0: -60,  z1: 60,   color: "#f1e3c6" },
+  { id: "sports",   name: "Sports District",   vi: "Khu thể thao",          x0: -44, x1: 44,   z0: -150, z1: -66,  color: "#c3e6b4" },
+  { id: "tech",     name: "Tech Valley",       vi: "Khu công nghệ cao",     x0: -150, x1: -50, z0: -150, z1: -66,  color: "#c5dcf0" },
+  { id: "industry", name: "Industrial Park",   vi: "Khu công nghiệp",       x0: 50,  x1: 150,  z0: -150, z1: -66,  color: "#d6d6d6" },
+  { id: "living",   name: "Maple Town",        vi: "Khu dân cư & công cộng", x0: -150, x1: -50, z0: -60,  z1: 60,   color: "#e8dcc8" },
+  { id: "market",   name: "Market District",   vi: "Khu thương mại, dịch vụ", x0: 50, x1: 150,  z0: -60,  z1: 60,   color: "#f5d9c8" },
+  { id: "transit",  name: "Station Square",    vi: "Khu nhà ga, hồ",        x0: -44, x1: 44,   z0: 66,   z1: 150,  color: "#cfe3f1" },
+  { id: "farm",     name: "Green Fields",      vi: "Khu nông nghiệp",       x0: -150, x1: -50, z0: 66,   z1: 150,  color: "#d9ecb0" },
+  { id: "nature",   name: "Wild Woods",        vi: "Khu thiên nhiên",       x0: 50,  x1: 150,  z0: 66,   z1: 150,  color: "#b9e0a5" }
+];
+
+/* METRO: mỗi khu một trạm nhỏ, đứng gần bấm 🚇 để đi nhanh tới khu khác */
+const METRO = [
+  { zone: "admin",    name: "City Hall",       x: -9,   z: 46 },
+  { zone: "sports",   name: "Stadium",         x: 10,   z: -72 },
+  { zone: "tech",     name: "Tech Valley",     x: -94,  z: -74 },
+  { zone: "industry", name: "Industrial Park", x: 94,   z: -74 },
+  { zone: "living",   name: "Maple Town",      x: -94,  z: 8 },
+  { zone: "market",   name: "Market Street",   x: 106,  z: 8 },
+  { zone: "transit",  name: "Central Station", x: -14,  z: 72, door: "north" },
+  { zone: "farm",     name: "Green Fields",    x: -106, z: 70, door: "north" },
+  { zone: "nature",   name: "Wild Woods",      x: 106,  z: 70, door: "north" }
+];
+
+/* Ô ĐẤT CHỜ XÂY: hiện hàng rào + bảng "Coming soon". big = công trình công cộng lớn (có cần cẩu). door = mặt tiền quay hướng nào */
+const LOTS = [
+  { name: "Verse Hotel",      x: 33,   z: 0,    w: 18, d: 16, door: "west",  big: true },
+  { name: "Sports Center",    x: 30,   z: -93,  w: 16, d: 14, door: "west",  big: true },
+  { name: "Swimming Pool",    x: 32,   z: -126, w: 14, d: 12, door: "west",  big: true },
+  { name: "Tech Park",        x: -125, z: -112, w: 20, d: 16, door: "south", big: true },
+  { name: "Robotics Lab",     x: -75,  z: -87,  w: 12, d: 12, door: "north" },
+  { name: "Space Center",     x: -125, z: -87,  w: 16, d: 12, door: "north", big: true },
+  { name: "Factory",          x: 125,  z: -86,  w: 20, d: 16, door: "north", big: true },
+  { name: "House",            x: -140, z: -14,  w: 10, d: 10, door: "south" },
+  { name: "House",            x: -110, z: -14,  w: 10, d: 10, door: "south" },
+  { name: "House",            x: -140, z: 14,   w: 10, d: 10, door: "north" },
+  { name: "House",            x: -125, z: 14,   w: 10, d: 10, door: "north" },
+  { name: "Clinic",           x: -110, z: 14,   w: 10, d: 10, door: "north" },
+  { name: "Shopping Mall",    x: 84,   z: 15,   w: 20, d: 18, door: "north", big: true },
+  { name: "Bookshop",         x: 145,  z: -10,  w: 9,  d: 10, door: "south" },
+  { name: "Toy Store",        x: 145,  z: 11,   w: 9,  d: 10, door: "north" },
+  { name: "Orchard",          x: -125, z: 80,   w: 20, d: 18, door: "north", big: true },
+  { name: "Fish Pond",        x: -80,  z: 125,  w: 18, d: 16, door: "north" },
+  { name: "Rice Field",       x: -125, z: 125,  w: 20, d: 18, door: "north" },
+  { name: "Botanical Garden", x: 80,   z: 125,  w: 20, d: 18, door: "north", big: true },
+  { name: "Bus Terminal",     x: 34,   z: 84,   w: 14, d: 10, door: "north" }
 ];
