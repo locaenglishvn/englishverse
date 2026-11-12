@@ -166,6 +166,8 @@ const CITY = [
     color: 0xe7f5ff, roof: 0x1864ab, awning: 0x1c7ed6, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["🚓", "🔦", "📋", "🗺️", "🔑", "🚨"], keeper: null, sells: [] },
   { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", exterior: "fire", layout: "lab",
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
+  { id: "mall", name: "Verse Plaza", type: "shopping mall", x: 85, z: 18, w: 24, d: 20, door: "north", exterior: "mall", layout: "shop",
+    color: 0xf1f3f5, roof: 0x748ffc, awning: 0x4c6ef5, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🛍️", "👟", "🎮", "📱", "🧸", "⌚"], keeper: null, sells: [] },
   // Hàng phía nam (cửa nhìn lên Market Street)
   { id: "home", name: "My Home", type: "home", x: -125, z: -14, w: 12, d: 11, door: "south", exterior: "home", layout: "home",
     color: 0xfff4e6, roof: 0xd9480f, awning: 0xfd7e14, floor: 0xd9b38c, wall: 0xfff8f0, keeper: null, sells: [] },
@@ -233,7 +235,6 @@ const LOTS = [
   { name: "House",            x: -140, z: 14,   w: 10, d: 10, door: "north" },
   { name: "House",            x: -125, z: 14,   w: 10, d: 10, door: "north" },
   { name: "Clinic",           x: -110, z: 14,   w: 10, d: 10, door: "north" },
-  { name: "Shopping Mall",    x: 84,   z: 15,   w: 20, d: 18, door: "north", big: true },
   { name: "Bookshop",         x: 145,  z: -10,  w: 9,  d: 10, door: "south" },
   { name: "Toy Store",        x: 145,  z: 11,   w: 9,  d: 10, door: "north" },
   { name: "Orchard",          x: -125, z: 80,   w: 20, d: 18, door: "north", big: true },
@@ -247,3 +248,16 @@ const LOTS = [
   { name: "Team Battle",      x: -290, z: 55,  w: 18, d: 14, door: "north", big: true },
   { name: "Bus Terminal",     x: 34,   z: 84,   w: 14, d: 10, door: "north" }
 ];
+
+/* NPC ĐI TUẦN / TRỰC GÁC (không nói chuyện được, chỉ chào khi mình đi ngang)
+   path = các điểm đi qua lại (1 điểm = đứng gác tại chỗ); look = bộ nhân vật; say = câu chào */
+const AMBIENT = [
+  { name: "Officer Duc – Police Officer",  color: 0x1864ab, look: "Knight",    path: [[-70, 1.6], [-54, 1.6]],  say: "Hello! Stay safe!" },
+  { name: "Officer Vy – Police Officer",   color: 0x1864ab, look: "Rogue",     path: [[-66.4, 3.2]],            say: "Good morning! Can I help you?" },
+  { name: "Officer Long – Police Officer", color: 0x1864ab, look: "Barbarian", path: [[-57.6, 3.2]],            say: "Please walk on the sidewalk." },
+  { name: "Tuan – Firefighter",            color: 0xc92a2a, look: "Knight",    path: [[-84, 4.4], [-79.5, 4.4]], say: "Fire safety first!" },
+  { name: "Mai – Firefighter",             color: 0xc92a2a, look: "Mage",      path: [[-72.6, 2.5], [-72.6, 8]], say: "Our fire truck is ready!" },
+  { name: "Guard Nam – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, -10.5]],           say: "Welcome to Verse Arena!" },
+  { name: "Guard Thu – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, 10.5]],            say: "Find a team and play together!" }
+];
+
