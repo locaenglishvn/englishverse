@@ -162,10 +162,12 @@ const CITY = [
     sells: ["apple", "banana", "water", "riceball", "milk"] },
   { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 75, z: -86, w: 10, d: 10, door: "north", model: "building_B", layout: "lab",
     color: 0xf1f3f5, roof: 0x495057, awning: 0xfab005, floor: 0xadb5bd, wall: 0xe9ecef, goods: ["🔧", "🔨", "🪛", "🚲", "⚙️", "🪚"], keeper: null, sells: [] },
-  { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 10, d: 10, door: "north", model: "building_F", layout: "desks",
+  { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 16, d: 12, door: "north", exterior: "police", layout: "desks",
     color: 0xe7f5ff, roof: 0x1864ab, awning: 0x1c7ed6, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["🚓", "🔦", "📋", "🗺️", "🔑", "🚨"], keeper: null, sells: [] },
-  { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", model: "building_G", layout: "lab",
+  { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", exterior: "fire", layout: "lab",
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
+  { id: "mall", name: "Verse Plaza", type: "shopping mall", x: 85, z: 18, w: 24, d: 20, door: "north", exterior: "mall", layout: "shop",
+    color: 0xf1f3f5, roof: 0x748ffc, awning: 0x4c6ef5, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🛍️", "👟", "🎮", "📱", "🧸", "⌚"], keeper: null, sells: [] },
   // Hàng phía nam (cửa nhìn lên Market Street)
   { id: "home", name: "My Home", type: "home", x: -125, z: -14, w: 12, d: 11, door: "south", exterior: "home", layout: "home",
     color: 0xfff4e6, roof: 0xd9480f, awning: 0xfd7e14, floor: 0xd9b38c, wall: 0xfff8f0, keeper: null, sells: [] },
@@ -200,6 +202,7 @@ const ZONES = [
   { id: "living",   name: "Maple Town",        vi: "Khu dân cư & công cộng", x0: -150, x1: -50, z0: -60,  z1: 60,   color: "#e8dcc8" },
   { id: "market",   name: "Market District",   vi: "Khu thương mại, dịch vụ", x0: 50, x1: 150,  z0: -60,  z1: 60,   color: "#f5d9c8" },
   { id: "transit",  name: "Station Square",    vi: "Khu nhà ga, hồ",        x0: -44, x1: 44,   z0: 66,   z1: 150,  color: "#cfe3f1" },
+  { id: "arena",    name: "Verse Arena",       vi: "Đảo đấu trường",        x0: -310, x1: -210, z0: -80, z1: 80,   color: "#e9dcc0" },
   { id: "farm",     name: "Green Fields",      vi: "Khu nông nghiệp",       x0: -150, x1: -50, z0: 66,   z1: 150,  color: "#d9ecb0" },
   { id: "nature",   name: "Wild Woods",        vi: "Khu thiên nhiên",       x0: 50,  x1: 150,  z0: 66,   z1: 150,  color: "#b9e0a5" }
 ];
@@ -213,6 +216,7 @@ const METRO = [
   { zone: "living",   name: "Maple Town",      x: -94,  z: 8 },
   { zone: "market",   name: "Market Street",   x: 106,  z: 8 },
   { zone: "transit",  name: "Central Station", x: -14,  z: 72, door: "north" },
+  { zone: "arena",    name: "Verse Arena",     x: -224, z: 10, door: "east" },
   { zone: "farm",     name: "Green Fields",    x: -106, z: 70, door: "north" },
   { zone: "nature",   name: "Wild Woods",      x: 106,  z: 70, door: "north" }
 ];
@@ -231,12 +235,29 @@ const LOTS = [
   { name: "House",            x: -140, z: 14,   w: 10, d: 10, door: "north" },
   { name: "House",            x: -125, z: 14,   w: 10, d: 10, door: "north" },
   { name: "Clinic",           x: -110, z: 14,   w: 10, d: 10, door: "north" },
-  { name: "Shopping Mall",    x: 84,   z: 15,   w: 20, d: 18, door: "north", big: true },
   { name: "Bookshop",         x: 145,  z: -10,  w: 9,  d: 10, door: "south" },
   { name: "Toy Store",        x: 145,  z: 11,   w: 9,  d: 10, door: "north" },
   { name: "Orchard",          x: -125, z: 80,   w: 20, d: 18, door: "north", big: true },
   { name: "Fish Pond",        x: -80,  z: 125,  w: 18, d: 16, door: "north" },
   { name: "Rice Field",       x: -125, z: 125,  w: 20, d: 18, door: "north" },
   { name: "Botanical Garden", x: 80,   z: 125,  w: 20, d: 18, door: "north", big: true },
+  // Đảo đấu trường: các trạm trò chơi đồng đội sẽ làm (mê cung The Maze đã có)
+  { name: "Quiz Tower",       x: -240, z: -52, w: 16, d: 14, door: "east",  big: true },
+  { name: "Word Race",        x: -240, z: 52,  w: 16, d: 14, door: "east",  big: true },
+  { name: "Treasure Hunt",    x: -290, z: -55, w: 18, d: 14, door: "south", big: true },
+  { name: "Team Battle",      x: -290, z: 55,  w: 18, d: 14, door: "north", big: true },
   { name: "Bus Terminal",     x: 34,   z: 84,   w: 14, d: 10, door: "north" }
 ];
+
+/* NPC ĐI TUẦN / TRỰC GÁC (không nói chuyện được, chỉ chào khi mình đi ngang)
+   path = các điểm đi qua lại (1 điểm = đứng gác tại chỗ); look = bộ nhân vật; say = câu chào */
+const AMBIENT = [
+  { name: "Officer Duc – Police Officer",  color: 0x1864ab, look: "Knight",    path: [[-70, 1.6], [-54, 1.6]],  say: "Hello! Stay safe!" },
+  { name: "Officer Vy – Police Officer",   color: 0x1864ab, look: "Rogue",     path: [[-66.4, 3.2]],            say: "Good morning! Can I help you?" },
+  { name: "Officer Long – Police Officer", color: 0x1864ab, look: "Barbarian", path: [[-57.6, 3.2]],            say: "Please walk on the sidewalk." },
+  { name: "Tuan – Firefighter",            color: 0xc92a2a, look: "Knight",    path: [[-84, 4.4], [-79.5, 4.4]], say: "Fire safety first!" },
+  { name: "Mai – Firefighter",             color: 0xc92a2a, look: "Mage",      path: [[-72.6, 2.5], [-72.6, 8]], say: "Our fire truck is ready!" },
+  { name: "Guard Nam – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, -10.5]],           say: "Welcome to Verse Arena!" },
+  { name: "Guard Thu – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, 10.5]],            say: "Find a team and play together!" }
+];
+
