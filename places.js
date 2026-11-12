@@ -123,7 +123,7 @@ const CITY = [
     color: 0xffffff, roof: 0xc92a2a, awning: 0xfa5252, floor: 0xe7f5ff, wall: 0xffffff,
     keeper: { name: "Nurse Mai", color: 0x74c0fc, greet: "Hello! Doctor Pasteur is working in his lab. He will need your help soon.", hint: "I feel sick." },
     sells: [] },
-  { id: "cafe", name: "Cafe Sua Da", type: "cafe", x: -32, z: 0, w: 19, d: 10, door: "east", exterior: "cafe",
+  { id: "cafe", name: "Cafe Sua Da", type: "cafe", x: -32, z: 0, w: 19, d: 10, door: "east", exterior: "cafe", layout: "greenhouse", size: { w: 20, d: 48, h: 8 },
     color: 0xfff1e0, roof: 0xd62828, awning: 0xe8590c, floor: 0xe9d8b4, wall: 0xfff4e6,
     keeper: null,   // không có người bán: Mia (trong lessons.js) đứng sau quầy và nói chuyện với khách
     sells: [] },
@@ -139,7 +139,7 @@ const CITY = [
     color: 0xe7f5ff, roof: 0x364fc7, awning: 0x4c6ef5, floor: 0xc9a27e, wall: 0xf3f0ff, goods: ["📕", "📗", "📘", "📙", "📖", "📚"], keeper: null, sells: [] },
   { id: "bank", name: "Verse Bank", type: "bank", x: 33, z: -40, w: 20, d: 14, door: "west", exterior: "bank", layout: "desks",
     color: 0xf8f9fa, roof: 0x2b8a3e, awning: 0x2f9e44, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["💰", "💳", "🪙", "💵", "🏦", "📈"], keeper: null, sells: [] },
-  { id: "post", name: "Post Office", type: "post office", x: -33, z: -40, w: 16, d: 12, door: "east", exterior: "post", layout: "shop",
+  { id: "post", name: "Post Office", type: "post office", x: -33, z: -40, w: 16, d: 12, door: "east", exterior: "post", layout: "posthall", size: { w: 24, d: 48, h: 9 },
     color: 0xfff4e6, roof: 0xe8590c, awning: 0xfd7e14, floor: 0xe9d8b4, wall: 0xfff4e6, goods: ["📮", "✉️", "📦", "📬", "🏷️", "📫"], keeper: null, sells: [] },
   { id: "lab", name: "Science Lab", type: "science lab", x: -75, z: -112, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
     color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
@@ -261,3 +261,127 @@ const AMBIENT = [
   { name: "Guard Thu – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, 10.5]],            say: "Find a team and play together!" }
 ];
 
+/* THẺ TỪ VỰNG 📦: đồ trưng bày trong từng nơi (theo id trong CITY). Giữ nút 🎤 và hỏi "What is this?" → nhận thẻ.
+   w = từ, pic = hình, pos = loại từ, say = câu NPC trả lời, ex = câu ví dụ ngắn, tự nhiên (tính từ / trạng từ chỉ thêm khi hợp lý)
+   kind = nhóm đồ: từ Lv.20 người chơi hỏi rõ hơn "What is this drink / food / tool / machine / plant / furniture / thing?"
+   at = đồ bày ở khu nào trong nơi đó (đúng ngữ cảnh) – xem anchors trong index.html */
+const VOCAB = {
+  cafe: [
+    // quầy pha chế
+    { w: "espresso machine", pic: "☕", pos: "noun", kind: "machine", at: "bar", say: "It's an espresso machine.", ex: "The espresso machine makes coffee." },
+    { w: "coffee grinder",   pic: "⚙️", pos: "noun", kind: "machine", at: "bar", say: "It's a coffee grinder.",    ex: "The coffee grinder is noisy." },
+    { w: "phin filter",      pic: "⏳", pos: "noun", kind: "tool",    at: "bar", say: "It's a phin filter.",       ex: "Vietnamese coffee drips slowly from a phin filter." },
+    { w: "coffee beans",     pic: "🫘", pos: "noun", kind: "food",    at: "bar", say: "They're coffee beans.",     ex: "These coffee beans smell good." },
+    { w: "cup",              pic: "🍵", pos: "noun", kind: "thing",   at: "bar", say: "It's a cup.",               ex: "A cup of hot tea, please." },
+    { w: "mug",              pic: "☕", pos: "noun", kind: "thing",   at: "bar", say: "It's a mug.",               ex: "I drink coffee from a big mug." },
+    { w: "milk jug",         pic: "🥛", pos: "noun", kind: "thing",   at: "bar", say: "It's a milk jug.",          ex: "The milk jug is full." },
+    { w: "kettle",           pic: "🫖", pos: "noun", kind: "machine", at: "bar", say: "It's a kettle.",            ex: "The water in the kettle is hot." },
+    { w: "ice cubes",        pic: "🧊", pos: "noun", kind: "thing",   at: "bar", say: "They're ice cubes.",        ex: "Can I have some ice cubes?" },
+    { w: "straw",            pic: "🥤", pos: "noun", kind: "thing",   at: "bar", say: "It's a straw.",             ex: "Can I have a straw, please?" },
+    { w: "spoon",            pic: "🥄", pos: "noun", kind: "tool",    at: "bar", say: "It's a spoon.",             ex: "Stir your coffee with a spoon." },
+    { w: "tray",             pic: "🍽️", pos: "noun", kind: "thing",   at: "bar", say: "It's a tray.",              ex: "The waiter carries a tray." },
+    { w: "napkin",           pic: "🧻", pos: "noun", kind: "thing",   at: "bar", say: "It's a napkin.",            ex: "Here is a napkin for you." },
+    { w: "milk tea",         pic: "🧋", pos: "noun", kind: "drink",   at: "bar", say: "It's milk tea.",            ex: "Milk tea is popular in Vietnam." },
+    // tủ bánh
+    { w: "croissant",        pic: "🥐", pos: "noun", kind: "food",    at: "cake", say: "It's a croissant.",        ex: "I'd like a warm croissant." },
+    { w: "cake",             pic: "🍰", pos: "noun", kind: "food",    at: "cake", say: "It's a piece of cake.",    ex: "This cake is soft and sweet." },
+    { w: "cupcake",          pic: "🧁", pos: "noun", kind: "food",    at: "cake", say: "It's a cupcake.",          ex: "I love pink cupcakes." },
+    { w: "cookie",           pic: "🍪", pos: "noun", kind: "food",    at: "cake", say: "It's a cookie.",           ex: "Can I have a cookie, please?" },
+    { w: "doughnut",         pic: "🍩", pos: "noun", kind: "food",    at: "cake", say: "It's a doughnut.",         ex: "The doughnut has sugar on top." },
+    // quầy tính tiền
+    { w: "cash register",    pic: "🖥️", pos: "noun", kind: "machine", at: "cashier", say: "It's a cash register.", ex: "The money is in the cash register." },
+    { w: "card machine",     pic: "💳", pos: "noun", kind: "machine", at: "cashier", say: "It's a card machine.",  ex: "You can pay with the card machine." },
+    { w: "receipt",          pic: "🧾", pos: "noun", kind: "thing",   at: "cashier", say: "It's a receipt.",       ex: "Here is your receipt." },
+    { w: "tip jar",          pic: "🫙", pos: "noun", kind: "thing",   at: "cashier", say: "It's a tip jar.",       ex: "Put some coins in the tip jar." },
+    { w: "menu",             pic: "📋", pos: "noun", kind: "thing",   at: "cashier", say: "It's the menu.",        ex: "Can I see the menu, please?" },
+    // kệ tường sau
+    { w: "condensed milk",   pic: "🥫", pos: "noun", kind: "food",    at: "shelf", say: "It's condensed milk.",    ex: "Condensed milk is very sweet." },
+    { w: "honey",            pic: "🍯", pos: "noun", kind: "food",    at: "shelf", say: "It's honey.",             ex: "I put honey in my tea." },
+    { w: "sugar",            pic: "🧂", pos: "noun", kind: "food",    at: "shelf", say: "It's sugar.",             ex: "No sugar, please." },
+    { w: "tea leaves",       pic: "🍃", pos: "noun", kind: "food",    at: "shelf", say: "They're tea leaves.",     ex: "We make green tea with tea leaves." },
+    { w: "bottle",           pic: "🍾", pos: "noun", kind: "thing",   at: "shelf", say: "It's a bottle.",          ex: "There is juice in the bottle." },
+    { w: "glass",            pic: "🥛", pos: "noun", kind: "thing",   at: "shelf", say: "It's a glass.",           ex: "Can I have a glass of water?" },
+    { w: "coffee bag",       pic: "🛍️", pos: "noun", kind: "thing",   at: "shelf", say: "It's a bag of coffee.",   ex: "This bag of coffee is heavy." },
+    // quầy gỗ cạnh cửa kính
+    { w: "stool",            pic: "🪑", pos: "noun", kind: "furniture", at: "window", say: "It's a stool.",        ex: "Sit on the stool by the window." },
+    { w: "laptop",           pic: "💻", pos: "noun", kind: "machine", at: "window", say: "It's a laptop.",         ex: "He works on his laptop." },
+    { w: "notebook",         pic: "📓", pos: "noun", kind: "thing",   at: "window", say: "It's a notebook.",       ex: "I write new words in my notebook." },
+    { w: "headphones",       pic: "🎧", pos: "noun", kind: "thing",   at: "window", say: "They're headphones.",    ex: "She listens to music with headphones." },
+    { w: "phone charger",    pic: "🔌", pos: "noun", kind: "thing",   at: "window", say: "It's a phone charger.",  ex: "Can I borrow your phone charger?" },
+    { w: "wifi password",    pic: "📶", pos: "noun", kind: "thing",   at: "window", say: "It's the wifi password.", ex: "What's the wifi password?" },
+    // góc sofa
+    { w: "sofa",             pic: "🛋️", pos: "noun", kind: "furniture", at: "sofa", say: "It's a sofa.",           ex: "This sofa is very comfortable." },
+    { w: "cushion",          pic: "🟧", pos: "noun", kind: "thing",   at: "sofa", say: "It's a cushion.",          ex: "The cushion is soft." },
+    { w: "board game",       pic: "🎲", pos: "noun", kind: "thing",   at: "sofa", say: "It's a board game.",       ex: "Let's play a board game!" },
+    { w: "newspaper",        pic: "📰", pos: "noun", kind: "thing",   at: "sofa", say: "It's a newspaper.",        ex: "My grandpa reads the newspaper." },
+    { w: "book",             pic: "📖", pos: "noun", kind: "thing",   at: "sofa", say: "It's a book.",             ex: "This book is interesting." },
+    { w: "candle",           pic: "🕯️", pos: "noun", kind: "thing",   at: "sofa", say: "It's a candle.",           ex: "There is a candle on the table." },
+    // góc cây
+    { w: "succulent",        pic: "🌵", pos: "noun", kind: "plant",   at: "plants", say: "It's a succulent.",      ex: "A succulent needs very little water." },
+    { w: "terrarium",        pic: "🫙", pos: "noun", kind: "plant",   at: "plants", say: "It's a terrarium.",      ex: "There is a tiny garden in the terrarium." },
+    { w: "potted plant",     pic: "🪴", pos: "noun", kind: "plant",   at: "plants", say: "It's a potted plant.",   ex: "Water the potted plant every week." },
+    { w: "watering can",     pic: "🚿", pos: "noun", kind: "tool",    at: "plants", say: "It's a watering can.",   ex: "Fill the watering can with water." },
+    { w: "seeds",            pic: "🌱", pos: "noun", kind: "plant",   at: "plants", say: "They're seeds.",         ex: "Plant the seeds in the soil." },
+    { w: "flower",           pic: "🌸", pos: "noun", kind: "plant",   at: "plants", say: "It's a flower.",         ex: "What a beautiful flower!" },
+    { w: "price tag",        pic: "🏷️", pos: "noun", kind: "thing",   at: "plants", say: "It's a price tag.",      ex: "Look at the price tag." },
+    // trần
+    { w: "light bulb",       pic: "💡", pos: "noun", kind: "thing",   at: "ceiling", say: "It's a light bulb.",    ex: "The light bulbs are bright." },
+    { w: "hanging plant",    pic: "🌿", pos: "noun", kind: "plant",   at: "ceiling", say: "It's a hanging plant.", ex: "The hanging plants are green." },
+    { w: "glass roof",       pic: "🪟", pos: "noun", kind: "thing",   at: "ceiling", say: "It's a glass roof.",    ex: "I can see the sky through the glass roof." },
+    // lối vào
+    { w: "air conditioner",  pic: "❄️", pos: "noun", kind: "machine", at: "door", say: "It's an air conditioner.", ex: "The air conditioner keeps the room cool." },
+    { w: "umbrella",         pic: "☂️", pos: "noun", kind: "thing",   at: "door", say: "It's an umbrella.",        ex: "Take an umbrella. It's raining." },
+    { w: "doormat",          pic: "🟫", pos: "noun", kind: "thing",   at: "door", say: "It's a doormat.",          ex: "Wipe your shoes on the doormat." },
+    { w: "trash can",        pic: "🗑️", pos: "noun", kind: "thing",   at: "door", say: "It's a trash can.",        ex: "Put your cup in the trash can." },
+    { w: "open sign",        pic: "🪧", pos: "noun", kind: "thing",   at: "door", say: "It's an open sign.",       ex: "The sign says the café is open." }
+  ],
+  post: [
+    // quầy giao dịch (2 bên)
+    { w: "stamp",            pic: "📮", pos: "noun", kind: "thing",   at: "counter", say: "It's a stamp.",         ex: "I need a stamp for this letter." },
+    { w: "envelope",         pic: "✉️", pos: "noun", kind: "thing",   at: "counter", say: "It's an envelope.",     ex: "Put the letter in the envelope." },
+    { w: "letter",           pic: "💌", pos: "noun", kind: "thing",   at: "counter", say: "It's a letter.",        ex: "I'm writing a letter to my grandma." },
+    { w: "parcel",           pic: "📦", pos: "noun", kind: "thing",   at: "counter", say: "It's a parcel.",        ex: "This parcel is heavy." },
+    { w: "scale",            pic: "⚖️", pos: "noun", kind: "machine", at: "counter", say: "It's a scale.",         ex: "Put the parcel on the scale." },
+    { w: "form",             pic: "📝", pos: "noun", kind: "thing",   at: "counter", say: "It's a form.",          ex: "Please fill in this form." },
+    { w: "pen",              pic: "🖊️", pos: "noun", kind: "tool",    at: "counter", say: "It's a pen.",           ex: "Can I borrow a pen?" },
+    { w: "tape",             pic: "🩹", pos: "noun", kind: "tool",    at: "counter", say: "It's tape.",            ex: "Close the box with tape." },
+    { w: "scissors",         pic: "✂️", pos: "noun", kind: "tool",    at: "counter", say: "They're scissors.",     ex: "Cut the paper with scissors." },
+    { w: "rubber stamp",     pic: "🔖", pos: "noun", kind: "tool",    at: "counter", say: "It's a rubber stamp.",  ex: "The clerk uses a rubber stamp." },
+    { w: "glue",             pic: "🧴", pos: "noun", kind: "thing",   at: "counter", say: "It's glue.",            ex: "Use glue to stick the stamp." },
+    { w: "address label",    pic: "🏷️", pos: "noun", kind: "thing",   at: "counter", say: "It's an address label.", ex: "Write the address on the label." },
+    { w: "cardboard box",    pic: "📦", pos: "noun", kind: "thing",   at: "counter", say: "It's a cardboard box.", ex: "I need a big cardboard box." },
+    { w: "queue ticket",     pic: "🎫", pos: "noun", kind: "thing",   at: "counter", say: "It's a queue ticket.",  ex: "Take a queue ticket and wait." },
+    // quầy lưu niệm giữa sảnh
+    { w: "postcard",         pic: "🏞️", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a postcard.",        ex: "I'm sending a postcard to my friend." },
+    { w: "souvenir",         pic: "🎁", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a souvenir.",        ex: "I bought a souvenir for my mom." },
+    { w: "keychain",         pic: "🔑", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a keychain.",        ex: "This keychain is cute." },
+    { w: "fridge magnet",    pic: "🧲", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a fridge magnet.",   ex: "I collect fridge magnets." },
+    { w: "conical hat",      pic: "👒", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a conical hat.",     ex: "A conical hat is called nón lá in Vietnam." },
+    { w: "calendar",         pic: "📅", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a calendar.",        ex: "Look at the calendar. Today is Monday." },
+    // ghế chờ
+    { w: "bench",            pic: "🪑", pos: "noun", kind: "furniture", at: "bench", say: "It's a bench.",         ex: "Let's sit on the bench and wait." },
+    { w: "newspaper",        pic: "📰", pos: "noun", kind: "thing",   at: "bench", say: "It's a newspaper.",       ex: "He reads the newspaper." },
+    { w: "backpack",         pic: "🎒", pos: "noun", kind: "thing",   at: "bench", say: "It's a backpack.",        ex: "My backpack is on the bench." },
+    { w: "potted plant",     pic: "🪴", pos: "noun", kind: "plant",   at: "bench", say: "It's a potted plant.",    ex: "There is a big plant next to the bench." },
+    // tường cuối sảnh
+    { w: "clock",            pic: "🕰️", pos: "noun", kind: "thing",   at: "wall", say: "It's a clock.",            ex: "The clock says ten o'clock." },
+    { w: "map",              pic: "🗺️", pos: "noun", kind: "thing",   at: "wall", say: "It's a map.",              ex: "Look at the old map of the city." },
+    { w: "world map",        pic: "🌏", pos: "noun", kind: "thing",   at: "wall", say: "It's a world map.",        ex: "Find Vietnam on the world map." },
+    // buồng điện thoại
+    { w: "phone booth",      pic: "☎️", pos: "noun", kind: "furniture", at: "booth", say: "It's a phone booth.",   ex: "You can call from the phone booth." },
+    { w: "telephone",        pic: "📞", pos: "noun", kind: "machine", at: "booth", say: "It's a telephone.",       ex: "The old telephone still works." },
+    { w: "phone card",       pic: "💳", pos: "noun", kind: "thing",   at: "booth", say: "It's a phone card.",      ex: "Buy a phone card to make a call." },
+    // bàn viết thư
+    { w: "desk",             pic: "🗄️", pos: "noun", kind: "furniture", at: "desk", say: "It's a desk.",           ex: "The letter writer sits at his desk." },
+    { w: "magnifying glass", pic: "🔍", pos: "noun", kind: "tool",    at: "desk", say: "It's a magnifying glass.", ex: "Use a magnifying glass to read small words." },
+    { w: "ink",              pic: "🖋️", pos: "noun", kind: "thing",   at: "desk", say: "It's ink.",                ex: "He writes with blue ink." },
+    { w: "dictionary",       pic: "📕", pos: "noun", kind: "thing",   at: "desk", say: "It's a dictionary.",       ex: "Look up the word in the dictionary." },
+    { w: "glasses",          pic: "👓", pos: "noun", kind: "thing",   at: "desk", say: "They're glasses.",         ex: "Grandpa wears glasses to read." },
+    // lối vào, trần
+    { w: "mailbox",          pic: "📫", pos: "noun", kind: "thing",   at: "door", say: "It's a mailbox.",          ex: "Put your letter in the mailbox." },
+    { w: "ATM",              pic: "🏧", pos: "noun", kind: "machine", at: "door", say: "It's an ATM.",             ex: "I take money from the ATM." },
+    { w: "fan",              pic: "🪭", pos: "noun", kind: "machine", at: "ceiling", say: "It's a fan.",           ex: "The fan keeps us cool." },
+    { w: "lamp",             pic: "💡", pos: "noun", kind: "thing",   at: "ceiling", say: "It's a lamp.",          ex: "The lamps hang from the ceiling." },
+    { w: "arch",             pic: "🌉", pos: "noun", kind: "thing",   at: "ceiling", say: "It's an arch.",         ex: "The green arches are very old." }
+  ]
+};

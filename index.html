@@ -53,6 +53,7 @@ button{font:inherit;cursor:pointer}
 #albumBtn{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #album{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 #album .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
+.tabs{display:flex;gap:6px;margin-top:8px}.tabs button{flex:1;border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:12px;padding:6px 4px;font-weight:700;font-size:13px}.tabs button.on{border-color:var(--accent);background:rgba(232,89,12,.12)}
 #cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:12px}
 .card{border:2px solid rgba(128,128,128,.35);border-radius:14px;padding:10px;text-align:center;background:transparent;color:var(--ink)}
 .card .pic{font-size:40px;line-height:1.2}.card .w{font-weight:700;margin-top:4px}.card .ex{font-size:13px;opacity:.8;margin-top:4px}
@@ -62,7 +63,9 @@ button{font:inherit;cursor:pointer}
 #zoomBtn{position:fixed;top:calc(210px + env(safe-area-inset-top,0px));right:12px;width:112px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 0;font-weight:700;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #zoneTag{position:fixed;top:calc(140px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:rgba(112,72,232,.92);color:#fff;padding:8px 16px;border-radius:14px;font-weight:700;font-size:15px;text-align:center;pointer-events:none;opacity:0;transition:opacity .4s;white-space:nowrap}
 #zoneTag.show{opacity:1}
-#metrop .big{background:#1c7ed6}#metrop{max-height:72vh;overflow-y:auto}
+#metrop .big{background:#1c7ed6}
+.micBig{background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700;touch-action:none;-webkit-touch-callout:none;user-select:none}.micBig.rec{background:#c92a2a}
+.q2{border:2px solid rgba(128,128,128,.4);background:transparent;color:var(--ink);border-radius:12px;padding:10px 14px;font-weight:700}#metrop{max-height:72vh;overflow-y:auto}
 #mini{position:fixed;top:calc(90px + env(safe-area-inset-top,0px));right:12px;width:112px;height:112px;border-radius:50%;border:3px solid var(--panel);box-shadow:0 2px 8px rgba(0,0,0,.3);background:#8fd17a}
 #online{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));right:12px;background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
 #namep{position:fixed;inset:0;z-index:12;display:none;background:linear-gradient(transparent 45%,rgba(0,0,0,.4));align-items:flex-end;justify-content:center;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
@@ -132,7 +135,8 @@ button{font:inherit;cursor:pointer}
 <button id="albumBtn">🎴 <span id="cardCount">0</span></button>
 <div id="album"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center"><b>🎴 My Cards</b><button class="q" id="albumClose" style="border:0;background:transparent;color:var(--ink);font-size:20px">✕</button></div>
-  <div style="font-size:14px;opacity:.8;margin-top:4px">Chạm vào thẻ để nghe lại. Thẻ còn thiếu: hỏi 🧭 Ask để tìm người tặng thẻ!</div>
+  <div id="albumTabs" class="tabs"></div>
+  <div id="albumInfo" style="font-size:13px;opacity:.85;margin-top:6px"></div>
   <div id="cards"></div>
 </div></div>
 <div id="toast"></div>
@@ -141,6 +145,11 @@ button{font:inherit;cursor:pointer}
 <button id="zoomBtn">🔭 Wide</button>
 <div id="zoneTag"></div>
 <div id="metrop" class="panel"></div>
+<div id="vocabp" class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><b>📦 What's this?</b><button class="x" id="vocabClose">✕</button></div>
+  <div style="text-align:center"><div id="vocabPic" style="font-size:64px;line-height:1.2"></div><div id="vocabWord" style="font-size:20px"></div><div id="vocabEx" style="font-size:15px;opacity:.85;margin-top:4px"></div></div>
+  <div id="vocabHint" style="font-size:14px;margin-top:8px;text-align:center"></div>
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><button id="vocabMic" class="micBig">🎤 Hold &amp; ask</button></div>
+  <div id="vocabFb" style="text-align:center;margin-top:6px;min-height:20px;font-weight:600"></div></div>
 <div id="bigmap" class="over"><div class="box" style="padding:10px"><div style="display:flex;justify-content:space-between;align-items:center"><b>🗺️ Verse City</b><button class="x" id="bigClose">✕</button></div>
   <div style="font-size:12px;opacity:.8">Chạm vào một địa điểm để được chỉ đường. Tap a place to get directions. (N = north ↑)</div>
   <div id="bigWrap" style="overflow:auto;max-height:70vh;margin-top:6px;border-radius:12px;touch-action:pan-x pan-y"><canvas id="bigCv" style="display:block"></canvas></div></div></div>
@@ -530,7 +539,7 @@ player.position.set(0, 0, 34);   // xuất hiện trên quảng trường, nhìn
 LESSONS.forEach(L => {
   L.mesh = makeChar(L.color);
   L.mesh.position.set(L.x, 0, L.z);
-  { const I = npcInfo(L.name); L.mesh.add(nameTag(I.short, I.job)); }   // tên + nghề nghiệp trên đầu
+  { const I = npcInfo(L.name); L.mesh.add(nameTag(I.short, I.job + (L.minLv ? " · Lv." + L.minLv : ""))); }   // tên + nghề nghiệp trên đầu
   L.mark = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
   scene.add(L.mark);
   if (!L.place) solid(L.x, L.z, 0.4, 0.4);   // NPC trong nhà: va chạm đặt sau khi dựng phòng
@@ -569,7 +578,7 @@ const cv = renderer.domElement;
 cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener("pointermove", e => {
   if (look && look.id === e.pointerId) { camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;
-    if (!maze) camPitch = Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera
+    if (!maze) camPitch = room ? Math.min(1.0, Math.max(-0.7, camPitch + (e.clientY - look.y) * 0.006)) : Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera (trong nhà: ngẩng lên được để nhìn trần)
     look.y = e.clientY; }
 });
 const endLook = e => { if (look && look.id === e.pointerId) look = null; };
@@ -617,7 +626,7 @@ function showStep() {
       b.classList.add(c.ok ? "ok" : "bad");
       $("fb").textContent = c.fb;
       $("fb").style.color = c.ok ? "var(--ok)" : "var(--bad)";
-      if (c.ok) { score += 10; gained += 10; $("score").textContent = score; addCoins(2); if (s.card) gainCard(s.card); }
+      if (c.ok) { score += 10; gained += 10; $("score").textContent = score; addCoins(2); if (s.card) gainCard(s.card, "p"); if (s.q) setTimeout(() => gainCard(s.q, "q"), s.card ? 1900 : 0); }
       $("mic").style.display = "none";
       $("next").style.display = "inline-block";
     };
@@ -642,6 +651,12 @@ $("next").onclick = () => {
 };
 $("talk").onclick = () => {
   NPC = near; talking = true; step = 0; gained = 0;
+  if (NPC.minLv && playerLevel() < NPC.minLv) {   // NPC khó hơn: chỉ tiếp người chơi đủ cấp
+    $("who").textContent = NPC.name; $("say").textContent = "Sorry, I'm busy right now. Come back when you're Lv." + NPC.minLv + "!";
+    $("choices").innerHTML = ""; $("fb").textContent = "🔒 Cần Lv." + NPC.minLv + " để nói chuyện với " + npcInfo(NPC.name).short + ". Đánh quái, luyện thẻ để lên cấp nhé!"; $("fb").style.color = "var(--ink)";
+    $("mic").style.display = "none"; $("heard").textContent = ""; $("next").textContent = "Close ✕"; $("next").style.display = "inline-block";
+    $("talk").style.display = "none"; $("dlg").style.display = "block"; speak($("say").textContent); return;
+  }
   if (NPC.mesh) charAct(NPC.mesh, "Interact");
   $("next").textContent = "Next ▶";
   $("talk").style.display = "none";
@@ -697,37 +712,74 @@ holdMic($("mic"), t => $("heard").textContent = "🎙️ " + t, (alts, conf, err
   else $("heard").textContent += " – chưa khớp, thử nói lại nhé!";
 });
 
-/* ===== 4d. THẺ TỪ VỰNG: trả lời đúng thì nhận thẻ, xem lại trong sổ 🎴 =====
-   Tạm lưu trên máy (localStorage). Khi có server sẽ lưu theo tài khoản. */
+/* ===== 4d. SỔ THẺ 🎴: 3 loại thẻ, có hạn mức theo cấp, có sao luyện tập =====
+   💬 phrase (câu nói)  – trả lời đúng NPC (card trong lessons.js)
+   ❓ question (câu hỏi) – NPC hỏi mình, trả lời đúng (q trong lessons.js)
+   📦 vocab (từ vựng)    – chạm đồ trưng bày rồi hỏi "What is this?" (VOCAB trong places.js)
+   Mỗi thẻ có 0–3 ⭐ "độ thuộc": tăng khi nói đúng câu của thẻ lúc đánh quái hoặc gặp lại NPC.
+   Hạn mức theo cấp (CARD_CAP): học tới hạn mức thì phải ra luyện (đánh quái) để lên cấp mới mở thêm. */
+const CARD_TYPES = { p: { icon: "💬", name: "Phrases", vi: "Câu nói" }, q: { icon: "❓", name: "Questions", vi: "Câu hỏi" }, v: { icon: "📦", name: "Vocab", vi: "Từ vựng" } };
+function cardCap(type, lv) {   // cấp 1–5: 6 câu nói, 2 câu hỏi, 10 từ vựng; từ cấp 6 mỗi cấp thêm 3 / 1 / 5
+  const L = Math.max(0, (lv || playerLevel()) - 5);
+  return { p: 6 + 3 * L, q: 2 + L, v: 10 + 5 * L }[type];
+}
 let owned = [];
 try { owned = JSON.parse(localStorage.getItem("ev_cards") || "[]"); } catch (e) {}
-function allCards() {
-  return LESSONS.flatMap(L => L.steps.filter(s => s.card).map(s => Object.assign({ from: npcInfo(L.name).short }, s.card)));
+owned = owned.map(id => /^[pqv]:/.test(id) ? id : "p:" + id);   // dữ liệu cũ: chỉ có câu nói
+save.mastery = save.mastery || {};
+let CARDS = null;
+function allCards() {   // mọi thẻ trong game: { id, type, w, pic, ex, from, place }
+  if (CARDS) return CARDS;
+  CARDS = [];
+  LESSONS.forEach(L => { const from = npcInfo(L.name).short; L.steps.forEach(s => {
+    if (s.card) CARDS.push(Object.assign({ id: "p:" + s.card.w, type: "p", from, place: L.place }, s.card));
+    if (s.q) CARDS.push(Object.assign({ id: "q:" + s.q.w, type: "q", from, place: L.place }, s.q)); }); });
+  Object.keys(typeof VOCAB !== "undefined" ? VOCAB : {}).forEach(pl => VOCAB[pl].forEach(v => CARDS.some(c => c.id === "v:" + v.w) || CARDS.push(Object.assign({ id: "v:" + v.w, type: "v", from: (CITY.find(c => c.id === pl) || {}).name || pl, place: pl }, v))));
+  return CARDS;
 }
-function updateCardCount() { $("cardCount").textContent = owned.length + "/" + allCards().length; }
+const hasCard = id => owned.indexOf(id) >= 0;
+const ownedOf = type => owned.filter(id => id[0] === type).length;
+const stars = id => save.mastery[id] || 0;
+function updateCardCount() { $("cardCount").textContent = owned.length; }
+function saveCards() { try { localStorage.setItem("ev_cards", JSON.stringify(owned)); } catch (e) {} }
 let toastTimer = null;
-function gainCard(card) {
-  if (owned.indexOf(card.w) >= 0) return;
-  owned.push(card.w);
-  try { localStorage.setItem("ev_cards", JSON.stringify(owned)); } catch (e) {}
-  updateCardCount();
-  $("toast").innerHTML = '<div style="font-size:13px;font-weight:700;color:#e67700">NEW CARD!</div><div style="font-size:56px">' + card.pic + '</div><div style="font-size:20px;font-weight:700">' + card.w + "</div>";
+function gainCard(card, type) {   // trả về true nếu nhận được thẻ mới
+  type = type || card.type || "p";
+  const id = type + ":" + card.w;
+  if (hasCard(id)) { practice(id); return false; }   // gặp lại: tính là luyện tập
+  if (ownedOf(type) >= cardCap(type)) {   // đầy hạn mức → phải đi luyện để lên cấp
+    flash("📕 " + CARD_TYPES[type].icon + " " + CARD_TYPES[type].name + " full (" + ownedOf(type) + "/" + cardCap(type) + ")<div style='font-size:13px;font-weight:400'>Practice with Echo Ghosts and level up to collect more! / Đi đánh quái luyện thẻ để lên cấp rồi quay lại nhé.</div>");
+    return false;
+  }
+  owned.push(id); saveCards(); updateCardCount();
+  $("toast").innerHTML = '<div style="font-size:13px;font-weight:700;color:#e67700">NEW ' + CARD_TYPES[type].name.toUpperCase().replace(/S$/, "") + ' CARD! ' + CARD_TYPES[type].icon + '</div><div style="font-size:56px">' + card.pic + '</div><div style="font-size:20px;font-weight:700">' + card.w + "</div>";
   $("toast").classList.add("show");
   clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
+  return true;
 }
-$("albumBtn").onclick = () => {
+function practice(id) {   // nói đúng câu của thẻ → +1 ⭐ (tối đa 3)
+  if (!hasCard(id) || stars(id) >= 3) return;
+  save.mastery[id] = stars(id) + 1; saveNow(); checkLevel();
+}
+function masteryRatio() { return owned.length ? owned.filter(id => stars(id) >= 2).length / owned.length : 1; }
+let albumTab = "p";
+function drawAlbum() {
+  $("albumTabs").innerHTML = Object.keys(CARD_TYPES).map(t => "<button data-t='" + t + "' class='" + (t === albumTab ? "on" : "") + "'>" + CARD_TYPES[t].icon + " " + CARD_TYPES[t].name + "<br><small>" + ownedOf(t) + "/" + cardCap(t) + "</small></button>").join("");
+  $("albumTabs").querySelectorAll("button").forEach(b => b.onclick = () => { albumTab = b.dataset.t; drawAlbum(); });
+  const lv = playerLevel(), ratio = Math.round(masteryRatio() * 100);
+  $("albumInfo").innerHTML = "Lv." + lv + " · ⭐⭐ " + ratio + "% thẻ đã thuộc" + (lv >= 5 ? " (cần 70% để lên cấp)" : "") + "<br>Hạn mức: " + CARD_TYPES[albumTab].vi + " " + ownedOf(albumTab) + "/" + cardCap(albumTab) + ". Đầy rồi thì đi đánh quái luyện thẻ để lên cấp.";
   $("cards").innerHTML = "";
-  allCards().forEach(c => {
-    const has = owned.indexOf(c.w) >= 0, d = document.createElement("button");
+  allCards().filter(c => c.type === albumTab).sort((a, b) => hasCard(b.id) - hasCard(a.id)).forEach(c => {
+    const has = hasCard(c.id), d = document.createElement("button");
     d.className = "card" + (has ? "" : " no");
     d.innerHTML = has
-      ? '<div class="pic">' + c.pic + '</div><div class="w">' + c.w + '</div><div class="ex">' + c.ex + "</div>"
-      : '<div class="pic">❔</div><div class="w">???</div><div class="ex">Talk to ' + c.from + "</div>";
-    d.onclick = () => speak(has ? c.w + ". " + c.ex : "Where is " + c.from + "?");
+      ? '<div class="pic">' + c.pic + '</div><div class="w">' + c.w + (c.pos ? ' <span style="font-size:11px;opacity:.7">(' + c.pos + ")</span>" : "") + '</div><div class="ex">' + c.ex + '</div><div style="color:#f59f00;margin-top:4px">' + "★".repeat(stars(c.id)) + "☆".repeat(3 - stars(c.id)) + "</div>"
+      : '<div class="pic">❔</div><div class="w">???</div><div class="ex">' + (c.type === "v" ? "Find it in " + c.from : "Talk to " + c.from) + "</div>";
+    d.onclick = () => speak(has ? c.w + ". " + c.ex : c.type === "v" ? "Where is " + c.from + "?" : "Where is " + c.from + "?");
     $("cards").appendChild(d);
   });
-  $("album").style.display = "block";
-};
+}
+$("albumBtn").onclick = () => { drawAlbum(); $("album").style.display = "block"; };
 $("albumClose").onclick = () => $("album").style.display = "none";
 updateCardCount();
 
@@ -843,7 +895,7 @@ function joinLobby(mode) {
   lobby.on("broadcast", { event: "start" }, ({ payload: m }) => {
     if (m.players.some(p => p.id === myId)) startMatch(m);
   });
-  lobby.subscribe(st => { if (st === "SUBSCRIBED") lobby.track({ id: myId, n: myName, c: myColor, t: lobbyJoinT, lv: owned.length }); });
+  lobby.subscribe(st => { if (st === "SUBSCRIBED") lobby.track({ id: myId, n: myName, c: myColor, t: lobbyJoinT, lv: playerLevel() * 100 + owned.length }); });
   $("lobbyp").innerHTML = "<b>Connecting…</b>";
 }
 function leaveLobby() {
@@ -1171,7 +1223,7 @@ function flash(html) {   // thông báo nhanh giữa màn hình
   $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
 }
 function renderHud() {
-  $("score").textContent = score; $("coins").textContent = save.coins; $("lvl").textContent = "Lv." + playerLevel();
+  checkLevel(); $("score").textContent = score; $("coins").textContent = save.coins; $("lvl").textContent = "Lv." + playerLevel();
   $("energyBar").firstElementChild.style.width = save.energy + "%";
   $("statusIcons").textContent = (isPoisoned() ? "☠️ " : "") + (isProtected() ? "🛡️" : "");
 }
@@ -1405,15 +1457,32 @@ function spawnGhost(G) {
   G.tx = G.g.position.x; G.tz = G.g.position.z;
 }
 [1, 1, 2].forEach(makeGhost);
-function playerLevel() { return 1 + Math.floor(score / 60); }   // tạm: cấp = theo số sao
-function pickLine(G) {   // chọn đề riêng cho người chơi này
-  const mine = allCards().filter(c => owned.indexOf(c.w) >= 0).map(c => c.ex);   // câu trong thẻ đã có → ôn tập
+/* CẤP ĐỘ: theo ⭐ điểm (60 điểm / cấp). Từ cấp 5 trở lên, muốn lên cấp còn phải THUỘC thẻ: ≥ 70% thẻ đã có đạt 2 ⭐ trở lên. */
+function playerLevel() { return save.level || 1; }
+let lvBlockedShown = false;
+function checkLevel() {
+  if (!save.level) save.level = 1;
+  const target = 1 + Math.floor(score / 60);
+  while (save.level < target) {
+    if (save.level >= 5 && masteryRatio() < 0.7) {   // chưa thuộc bài → chưa cho lên cấp
+      if (!lvBlockedShown) { lvBlockedShown = true; flash("🔒 Practice your cards to reach Lv." + (save.level + 1) + "!<div style='font-size:13px;font-weight:400'>Cần ≥ 70% thẻ đạt ⭐⭐ (hiện " + Math.round(masteryRatio() * 100) + "%). Đánh Echo Ghost để luyện!</div>"); }
+      return;
+    }
+    save.level++; lvBlockedShown = false; saveNow();
+    flash("🎉 LEVEL UP! Lv." + save.level + "<div style='font-size:13px;font-weight:400'>New cards unlocked: +" + (cardCap("p") - cardCap("p", save.level - 1)) + " 💬 +" + (cardCap("q") - cardCap("q", save.level - 1)) + " ❓ +" + (cardCap("v") - cardCap("v", save.level - 1)) + " 📦</div>");
+    charAct(player, "Cheer"); speak("Level up! You are now level " + save.level + "!");
+  }
+}
+function pickLine(G) {   // chọn đề riêng: ưu tiên thẻ đã có mà còn ít sao (cả 3 loại), thỉnh thoảng câu mới i+1
+  const mine = allCards().filter(c => hasCard(c.id));
   const want = Math.min(3, Math.max(1, Math.ceil((playerLevel() + G.lv) / 2)));
   const r = Math.random();
-  let pool;
-  if (mine.length && r < 0.5) pool = mine;
-  else if (r < 0.8) pool = ECHO_LINES.filter(l => l[0] === want).map(l => l[1]);
-  else pool = ECHO_LINES.filter(l => l[0] === Math.min(3, want + 1)).map(l => l[1]);   // i+1: khó hơn một chút
+  if (mine.length && r < 0.75) {   // ôn thẻ: thẻ ít sao được chọn nhiều hơn, đôi khi lấy thẻ cũ đã thuộc
+    const w = mine.map(c => 4 - stars(c.id)), sum = w.reduce((a, b) => a + b, 0);
+    let k = Math.random() * sum; for (let i = 0; i < mine.length; i++) { k -= w[i]; if (k <= 0) { fight.card = mine[i].id; return mine[i].ex; } }
+  }
+  fight.card = null;
+  const pool = ECHO_LINES.filter(l => l[0] === (r < 0.9 ? want : Math.min(3, want + 1))).map(l => l[1]);   // i+1: khó hơn một chút
   return pool[Math.floor(Math.random() * pool.length)];
 }
 let fight = null, nearGhost = null, fightRec = null;
@@ -1495,7 +1564,7 @@ function hitGhost(acc) {
   const gr = gear();
   let dmg = Math.round(acc * (12 + words * 4) * (1 + playerLevel() * 0.1) * (1 + gr.voice / 100));   // 🗣️ Voice: sát thương cao hơn
   useEnergy(Math.max(2, 4 - Math.floor(gr.stamina / 6)));   // 💪 Stamina: tốn ít năng lượng hơn
-  spokeOk();
+  spokeOk(); if (fight.card) practice(fight.card);   // nói đúng câu của thẻ → +1 ⭐
   if (isPoisoned()) dmg = Math.round(dmg * 0.5);   // trúng độc: giọng yếu, sát thương giảm một nửa
   if (G.lv > playerLevel() + 1) dmg = Math.round(dmg * 0.3);   // quái quá mạnh: phải lên cấp trước
   soundWave(G.g.position);
@@ -2291,6 +2360,8 @@ function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng
   };
   const goods = (x, items) => (items || []).forEach((e, i) => { const sp = emojiSprite(e, 0.5); sp.position.set(x - 0.75 + (i % 3) * 0.75, 0.75 + 0.7 * Math.floor(i / 3), back + 1.25); g.add(sp); });   // hàng trưng bày trước tủ
   const counter = (color) => { addBox(g, 6, 0.85, 1, color, cx, 0.425, back + 3.4); addBox(g, 6.2, 0.1, 1.2, 0xf1f3f5, cx, 0.9, back + 3.4); P.room.solids.push({ x: cx, z: back + 3.4, hw: 3, hd: 0.5 }); };
+  if (P.layout === "greenhouse") { furnishGreenhouse(P, g, cx, cz, W, D, fur); return; }
+  if (P.layout === "posthall") { furnishPostHall(P, g, cx, cz, W, D, fur); return; }
   // chung cho mọi phòng: thảm, đèn cây, tranh, chậu cây cạnh cửa
   fur("rug_rectangle_stripes_A", cx, cz + 1.8, 0, 1.4);
   fur("lamp_standing", cx - 7.2, back + 0.7, 0, 1, 0.35, 0.35); fur("lamp_standing", cx + 7.2, back + 0.7, 0, 1, 0.35, 0.35);
@@ -2367,6 +2438,230 @@ function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng
     [0.6, 2.4, 4.2].forEach(dz => [-5, -3.8, -2.6, 2.6, 3.8, 5].forEach(dx => fur("chair_B_wood", cx + dx, cz + dz, Math.PI, 1, 0.35, 0.35))); }
   if (L === "home") furnishHome(P, g, cx, cz, W, D, fur);
 }
+/* CAFE SUA DA – nội thất kiểu nhà kính (theo ảnh): tường + mái kính khung thép đen, sàn xi măng, cây treo, bóng đèn dây,
+   quầy bar gỗ dọc cửa kính với ghế cao, góc sofa, góc cây cảnh + bình thủy sinh, quầy pha chế ở cuối quán.
+   3 khu: trước (góc cây – The Green Corner), giữa (chỗ ngồi), sau (quầy pha chế). */
+const GW = {};
+function glassWall(len, h, back) {   // tường kính khung đen; tường sau là tường gạch tối có kệ
+  const k = len + "x" + h + back; if (GW[k]) return GW[k];
+  const t = skin(len, h, 24, (x, W, H) => {
+    if (back) { x.fillStyle = "#3b3b3b"; x.fillRect(0, 0, W, H); x.fillStyle = "#454545"; for (let j = 0; j < H; j += 0.3) for (let i = (j / 0.3) % 2 * 0.4; i < W; i += 0.8) x.fillRect(i, j, 0.75, 0.26); return; }
+    x.fillStyle = "#cfe6d3"; x.fillRect(0, 0, W, H); x.fillStyle = "#a9d39a"; for (let i = 0; i < W; i += 2.3) { x.beginPath(); x.arc(i + 1, H * 0.55, 1.2, 0, 7); x.fill(); }   // cây xanh ngoài kính
+    x.fillStyle = "#2f2f2f"; x.fillRect(0, H - 0.7, W, 0.7); for (let i = 0; i <= W; i += 1.2) x.fillRect(i - 0.05, 0, 0.1, H - 0.7); for (let j = 0; j < H - 0.7; j += 1) x.fillRect(0, j, W, 0.07); });
+  return GW[k] = new THREE.MeshLambertMaterial({ map: t });
+}
+function furnishGreenhouse(P, g, cx, cz, W, D, fur) {
+  const back = cz - D / 2, front = cz + D / 2, H = (P.size || {}).h || 5.5, S = P.room.solids;
+  const wood = 0x9c6b3e, black = 0x2f2f2f, sol = (x, z, hw, hd) => S.push({ x, z, hw, hd });
+  const fl = g.children[0]; fl.material = new THREE.MeshLambertMaterial({ color: 0xb5b3ad });   // sàn xi măng
+  // mái kính: kèo thép đen
+  for (let z = back; z <= front + 0.01; z += 3) addBox(g, W, 0.15, 0.15, black, cx, H, z);
+  for (let x = -W / 2; x <= W / 2 + 0.01; x += 4) addBox(g, 0.12, 0.12, D, black, cx + x, H + 0.05, cz);
+  // ===== Khu sau: QUẦY PHA CHẾ =====
+  const cz0 = back + 9;
+  addBox(g, 13, 1.05, 1.2, wood, cx, 0.52, cz0); addBox(g, 13.2, 0.08, 1.4, 0xdee2e6, cx, 1.08, cz0); sol(cx, cz0, 6.5, 0.6);
+  addBox(g, 1, 0.75, 0.7, 0x868e96, cx - 2.2, 1.5, cz0 - 0.2); addBox(g, 0.9, 0.2, 0.2, 0x343a40, cx - 2.2, 1.35, cz0 + 0.2);   // máy pha espresso
+  const gr = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.22, 0.6, 12), new THREE.MeshLambertMaterial({ color: 0x343a40 })); gr.position.set(cx - 0.9, 1.42, cz0 - 0.2); g.add(gr);   // máy xay
+  const case_ = new THREE.Mesh(new THREE.BoxGeometry(2, 0.7, 0.9), new THREE.MeshLambertMaterial({ color: 0xd0ebff, transparent: true, opacity: 0.45 })); case_.position.set(cx + 3.4, 1.47, cz0); g.add(case_);   // tủ bánh kính
+  addBox(g, 0.6, 0.3, 0.4, 0x495057, cx + 5.4, 1.27, cz0);   // máy tính tiền
+  for (let i = 0; i < 4; i++) addBox(g, 0.22, 0.24, 0.22, 0xffffff, cx - 4.8 + i * 0.3, 1.24 + (i % 2) * 0.0, cz0 - 0.25);   // chồng ly
+  [-4.5, 4.5].forEach(dx => fur("shelf_B_large_decorated", cx + dx, back + 0.5, 0, 1.2, 1.4, 0.5));   // kệ tường sau
+  const menu = skin(4, 2.4, 60, (x, Wd, Hh) => { x.fillStyle = "#1e2b23"; x.fillRect(0, 0, Wd, Hh); x.strokeStyle = "#8d5a2b"; x.lineWidth = 0.1; x.strokeRect(0.05, 0.05, Wd - 0.1, Hh - 0.1);
+    x.fillStyle = "#ffe8a3"; x.font = "bold 0.3px system-ui"; x.textAlign = "center"; x.fillText("MENU", Wd / 2, 0.4); x.textAlign = "left"; x.font = "0.2px system-ui"; x.fillStyle = "#f1f3f5";
+    [["Cà phê sữa đá – Iced milk coffee", "25k"], ["Cà phê đen – Black coffee", "20k"], ["Bạc xỉu – White coffee", "28k"], ["Trà sữa – Milk tea", "30k"], ["Trà xanh – Green tea", "22k"], ["Bánh – Cakes", "35k"]].forEach(([n, pr], i) => { x.fillText(n, 0.25, 0.75 + i * 0.27); x.fillText(pr, Wd - 0.6, 0.75 + i * 0.27); }); });
+  [-1.2, 2.8].forEach((dx, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(i ? 3 : 4, 2.4), new THREE.MeshLambertMaterial({ map: menu })); m.position.set(cx + dx - (i ? 0 : 0), 3.2, back + 0.06); g.add(m); });
+  [-8, -7.2].forEach((dx, i) => { addBox(g, 0.7, 0.8, 0.6, 0x8d6e4e, cx + dx, 0.4, back + 1 + i * 0.8); }); sol(cx - 7.6, back + 1.4, 0.8, 0.8);   // bao cà phê
+  // ===== Khu giữa: CHỖ NGỒI =====
+  [-1, 1].forEach(s => {   // quầy bar gỗ dọc cửa kính + ghế cao
+    const bx = cx + s * (W / 2 - 0.45);
+    addBox(g, 0.7, 0.08, 20, wood, bx, 1.05, cz + 1); for (let z = -8; z <= 10; z += 3) addBox(g, 0.06, 1.05, 0.06, black, bx, 0.52, cz + 1 + z);
+    sol(bx, cz + 1, 0.35, 10);
+    for (let z = -8; z <= 10.1; z += 1.8) { const sx = cx + s * (W / 2 - 1.5), sz = cz + 1 + z;
+      const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshLambertMaterial({ color: wood })); seat.position.set(sx, 0.75, sz); g.add(seat);
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.12, 0.72, 6), new THREE.MeshLambertMaterial({ color: black })); leg.position.set(sx, 0.36, sz); g.add(leg); }
+  });
+  [[-3.5, -7, 0], [3.5, -1.5, 0], [-3.5, 4.5, 0]].forEach(([dx, dz]) => {   // 3 góc sofa
+    fur("couch_pillows", cx + dx, cz + dz - 1.6, 0, 1, 1.4, 0.6); fur("table_medium", cx + dx, cz + dz, 0, 0.9, 0.8, 0.6); fur("armchair_pillows", cx + dx, cz + dz + 1.6, Math.PI, 1, 0.7, 0.6);
+    fur("rug_oval_A", cx + dx, cz + dz, 0, 1.2); });
+  // cây treo + bóng đèn dây
+  for (let z = back + 12; z <= front - 2; z += 3.2) [-6, -2, 2, 6].forEach((dx, i) => {
+    const y = Math.min(H - 1, 5.2) - ((i + z) % 3) * 0.3;   // cây treo thả xuống tầm nhìn dù trần cao
+    addBox(g, 0.02, H - y, 0.02, black, cx + dx, (H + y) / 2, z);
+    const pl = new THREE.Mesh(new THREE.SphereGeometry(0.45, 10, 8), new THREE.MeshLambertMaterial({ color: (i + Math.round(z)) % 2 ? 0x5c940d : 0x74b816 })); pl.position.set(cx + dx, y - 0.3, z); pl.scale.y = 1.3; g.add(pl);
+    const drip = new THREE.Mesh(new THREE.ConeGeometry(0.3, 1, 8), new THREE.MeshLambertMaterial({ color: 0x82c91e })); drip.rotation.x = Math.PI; drip.position.set(cx + dx, y - 1, z); g.add(drip);
+  });
+  for (let z = back + 10.5; z <= front - 3; z += 2.4) [-4, 0, 4].forEach(dx => { const y = Math.min(H - 1.4, 4.6) - Math.abs(dx) * 0.1; addBox(g, 0.015, H - y, 0.015, black, cx + dx, (H + y) / 2, z);
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffe8a3 })); b.position.set(cx + dx, y - 0.1, z); g.add(b); });
+  addBox(g, 0.6, 1.8, 0.5, 0xf8f9fa, cx - W / 2 + 0.5, 0.9, front - 6); sol(cx - W / 2 + 0.5, front - 6, 0.3, 0.25);   // máy lạnh đứng
+  addBox(g, 1.6, 0.5, 0.3, 0xf8f9fa, cx + W / 2 - 0.2, H - 1, cz - 4);   // máy lạnh treo tường
+  // ===== Khu trước: GÓC CÂY (The Green Corner) =====
+  [[-4.5, front - 9], [4.5, front - 9]].forEach(([dx, z]) => {
+    addBox(g, 2, 0.1, 6, 0x8d6e4e, cx + dx, 0.95, z); [[-0.9, -2.8], [0.9, -2.8], [-0.9, 2.8], [0.9, 2.8]].forEach(([a, b]) => addBox(g, 0.06, 0.95, 0.06, black, cx + dx + a, 0.47, z + b));
+    addBox(g, 1.8, 0.06, 5.6, 0x6f4e37, cx + dx, 0.4, z); sol(cx + dx, z, 1, 3);
+    for (let k = -2; k <= 2; k++) {   // bình thủy sinh + khay sen đá
+      const jar = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.5, 12), new THREE.MeshLambertMaterial({ color: 0xd0ebff, transparent: true, opacity: 0.45 })); jar.position.set(cx + dx - 0.45, 1.25, z + k * 1.1); g.add(jar);
+      const moss = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 6), new THREE.MeshLambertMaterial({ color: 0x40c057 })); moss.position.set(cx + dx - 0.45, 1.12, z + k * 1.1); g.add(moss);
+      for (let q = 0; q < 3; q++) { const sc = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 5), new THREE.MeshLambertMaterial({ color: q % 2 ? 0x94d82d : 0x63e6be })); sc.position.set(cx + dx + 0.3 + q * 0.2, 1.06, z + k * 1.1); g.add(sc); }
+    }
+  });
+  [[-7.6, front - 2.5], [7.6, front - 2.5], [-8, front - 14], [8, cz - 10]].forEach(([dx, z]) => {   // cây lá to trong chậu
+    const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.35, 0.7, 12), new THREE.MeshLambertMaterial({ color: 0xb5651d })); pot.position.set(cx + dx, 0.35, z); g.add(pot); sol(cx + dx, z, 0.45, 0.45);
+    for (let k = 0; k < 6; k++) { const lf = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.04, 1.6), new THREE.MeshLambertMaterial({ color: k % 2 ? 0x2b8a3e : 0x37b24d })); lf.position.set(cx + dx, 1.3 + k * 0.12, z); lf.rotation.set(0.7, k * 1.05, 0); g.add(lf); }
+  });
+  const gc = textPlate("🌿 THE GREEN CORNER", 4, 0.6, "#2b8a3e", "#ffffff"); gc.position.set(cx, 3.2, front - 13.5); g.add(gc);
+  const bc = textPlate("☕ COFFEE BAR", 3.4, 0.6, "#3b2a1a", "#ffd43b"); bc.position.set(cx, 4.4, back + 0.06); g.add(bc);
+  // mái kính (nhìn từ trong lên thấy trời)
+  const roofG = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshBasicMaterial({ color: 0xe7f5ff, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false })); roofG.rotation.x = Math.PI / 2; roofG.position.set(cx, H + 0.1, cz); roofG.userData.flat = true; g.add(roofG);
+  // CHỖ BÀY ĐỒ TỪ VỰNG theo đúng khu (at trong VOCAB): [x, y, z, chỗ đứng hỏi x, z]
+  const row = (n, x0, x1, y, z, sz) => Array.from({ length: n }, (_, i) => { const x = n > 1 ? x0 + (x1 - x0) * i / (n - 1) : (x0 + x1) / 2; return [x, y, z, x, sz]; });
+  const A = P.anchors = {
+    bar: row(7, cx - 6, cx + 0.6, 1.32, cz0 + 0.3, cz0 + 1.6).concat(row(7, cx - 5.6, cx + 1, 1.62, cz0 - 0.3, cz0 + 1.6)),
+    cake: row(5, cx + 2.6, cx + 4.2, 1.5, cz0, cz0 + 1.6),
+    cashier: [[cx + 5, 1.35, cz0 + 0.35, cx + 5, cz0 + 1.6], [cx + 5.4, 1.75, cz0, cx + 5.4, cz0 + 1.6], [cx + 5.9, 1.35, cz0 + 0.35, cx + 5.9, cz0 + 1.6], [cx + 6.3, 1.35, cz0 - 0.2, cx + 6.3, cz0 + 1.6], [cx + 4.7, 1.75, cz0 - 0.3, cx + 4.7, cz0 + 1.6]],
+    shelf: row(4, cx - 5.7, cx - 3.3, 1.25, back + 0.7, back + 2.3).concat(row(3, cx + 3.5, cx + 5.5, 1.25, back + 0.7, back + 2.3)),
+    window: [[cx - W / 2 + 0.45, 1.3, cz - 5, cx - W / 2 + 2.2, cz - 5], [cx - W / 2 + 0.45, 1.3, cz + 1, cx - W / 2 + 2.2, cz + 1], [cx - W / 2 + 0.45, 1.3, cz + 7, cx - W / 2 + 2.2, cz + 7],
+      [cx + W / 2 - 0.45, 1.3, cz - 5, cx + W / 2 - 2.2, cz - 5], [cx + W / 2 - 0.45, 1.3, cz + 1, cx + W / 2 - 2.2, cz + 1], [cx + W / 2 - 0.45, 1.3, cz + 7, cx + W / 2 - 2.2, cz + 7]],
+    sofa: [[-3.5, -7], [3.5, -1.5], [-3.5, 4.5]].flatMap(([dx, dz]) => [[cx + dx - 0.35, 1, cz + dz, cx + dx - 1.9, cz + dz], [cx + dx + 0.35, 1, cz + dz, cx + dx + 1.9, cz + dz]]),
+    plants: row(4, front - 11.4, front - 6.6, 1.3, 0, 0).map(r => [cx - 4.2, r[1], r[0], cx - 2.4, r[0]]).concat(row(3, front - 11, front - 7, 1.3, 0, 0).map(r => [cx + 4.2, r[1], r[0], cx + 2.4, r[0]])),
+    ceiling: [[cx - 2, 4.3, cz + 8, cx - 2, cz + 8], [cx + 2, 4.6, cz - 2, cx + 2, cz - 2], [cx, H - 0.6, cz + 14, cx, cz + 14]],
+    door: [[cx - W / 2 + 0.5, 2.1, front - 6, cx - W / 2 + 2, front - 6], [cx + 8.4, 0.9, front - 3.2, cx + 7, front - 3.2], [cx + 1.6, 0.2, front - 1.4, cx + 2.4, front - 2.6], [cx - 8.4, 0.6, front - 3.4, cx - 7, front - 3.4], [cx - 2.4, 2.4, front - 0.15, cx - 2.4, front - 2.4]]
+  };
+  g.traverse(o => { if (o.isMesh && o.position.y > 2.6) o.userData.flat = true; });   // mái, cây treo, bóng đèn: không đổ bóng (đỡ rối mắt)
+  P.vgroup = new THREE.Group(); g.add(P.vgroup);
+}
+function refreshVocab(P) {   // bày MỌI món từ vựng đúng khu của nó; ❓ = chưa học, ✅ = đã có thẻ
+  if (!P.anchors || !VOCAB[P.id]) return;
+  const vg = P.vgroup; while (vg.children.length) vg.remove(vg.children[0]);
+  P.room.spots = (P.room.baseSpots || []).slice();
+  const used = {};
+  VOCAB[P.id].forEach(v => {
+    const k = used[v.at] = (used[v.at] || 0), S = (P.anchors[v.at] || [])[k]; used[v.at]++;
+    if (!S) return;   // hết chỗ trong khu này
+    const sp = emojiSprite(v.pic, v.at === "ceiling" ? 0.7 : 0.45); sp.position.set(S[0], S[1], S[2]); sp.userData.vocab = v; vg.add(sp);
+    const tag = emojiSprite(hasCard("v:" + v.w) ? "✅" : "❓", 0.22); tag.position.set(S[0], S[1] + 0.38, S[2]); vg.add(tag);
+    P.room.spots.push({ x: S[3], z: S[4], label: "❓ " + (hasCard("v:" + v.w) ? v.w : "What's this?"), fn: () => openVocab(v) });
+  });
+}
+/* Chạm thẳng vào đồ trưng bày (không cần đứng sát) để hỏi */
+const tapRay = new THREE.Raycaster(); tapRay.camera = camera; let tapDown = null;
+cv.addEventListener("pointerdown", e => { tapDown = { x: e.clientX, y: e.clientY }; });
+cv.addEventListener("pointerup", e => {
+  if (!tapDown || Math.hypot(e.clientX - tapDown.x, e.clientY - tapDown.y) > 8 || !room || !room.P.vgroup || talking) return;
+  tapRay.setFromCamera({ x: e.clientX / innerWidth * 2 - 1, y: -(e.clientY / innerHeight) * 2 + 1 }, camera);
+  const hit = tapRay.intersectObjects(room.P.vgroup.children).find(h => h.object.userData.vocab);
+  if (hit && hit.object.position.distanceTo(player.position) < 8) openVocab(hit.object.userData.vocab);
+});
+let vocabCur = null;
+function askLine(v) { return playerLevel() >= 20 && v.kind ? "What is this " + v.kind + "?" : "What is this?"; }   // từ Lv.20: hỏi rõ loại đồ (vẫn chấp nhận “What is this?”)
+function openVocab(v) {   // hỏi "What is this?" → NPC trả lời → nhận thẻ từ vựng
+  vocabCur = v; talking = true; $("actBtn").style.display = "none";
+  const has = hasCard("v:" + v.w);
+  $("vocabPic").textContent = v.pic;
+  $("vocabWord").innerHTML = has ? "<b>" + v.w + "</b> <span style='font-size:12px;opacity:.7'>(" + v.pos + ")</span>" : "❓ ❓ ❓";
+  $("vocabEx").textContent = has ? v.ex : "";
+  $("vocabHint").innerHTML = has ? "🎤 Say it to practise: “" + v.say + "” (+⭐)" : "🎤 Giữ nút và hỏi: <b>“" + askLine(v) + "”</b>";
+  $("vocabMic").style.display = SR ? "inline-block" : "none"; $("vocabFb").textContent = SR ? "" : "Cần micro (Chrome / Safari) để hỏi bằng giọng nói.";
+  $("vocabp").style.display = "block";
+}
+function revealVocab(voice) {
+  const v = vocabCur; if (!v) return;
+  $("vocabWord").innerHTML = "<b>" + v.w + "</b> <span style='font-size:12px;opacity:.7'>(" + v.pos + ")</span>"; $("vocabEx").textContent = v.ex;
+  speak(v.say + " " + v.ex);
+  if (voice) { score += 3; spokeOk(); renderHud(); }
+  const P = room && room.P; setTimeout(() => { gainCard(v, "v"); if (P) refreshVocab(P); $("vocabHint").textContent = "🔊 " + v.say; }, 1200);
+}
+/* POST OFFICE – sảnh lớn theo Bưu điện Trung tâm Sài Gòn: mái vòm cong có giếng trời, sườn sắt xanh, tường kem cửa vòm,
+   cột sắt xanh, quầy giao dịch 2 bên, quầy lưu niệm đỏ giữa sảnh, ghế gỗ, bản đồ cổ + đồng hồ ở tường cuối, buồng điện thoại, bàn viết thư. */
+const HW = {};
+function hallWall(len, h, end) {   // tường kem: hàng cửa sổ vòm phía trên, quầy/ô cửa xanh phía dưới
+  const k = len + "x" + h + end; if (HW[k]) return HW[k];
+  const t = skin(len, h, 20, (x, W, H) => {
+    x.fillStyle = "#f3dfb8"; x.fillRect(0, 0, W, H); x.fillStyle = "#e6cc9a"; x.fillRect(0, H - 3.2, W, 0.25); x.fillRect(0, 2.4, W, 0.3);
+    if (end) { x.fillStyle = "#e9d3a5"; archPath(x, W / 2 - 5, 0.8, 10, H - 0.8); x.fill(); return; }
+    for (let X = 1; X < W - 2; X += 4) { x.fillStyle = "#ffffff"; archPath(x, X - 0.15, 0.25, 2.3, 2.1); x.fill(); x.fillStyle = "#cfe3ee"; archPath(x, X, 0.4, 2, 1.95); x.fill(); x.strokeStyle = "#1f5c3a"; x.lineWidth = 0.06; for (let i = 0.5; i < 2; i += 0.5) { x.beginPath(); x.moveTo(X + i, 0.6); x.lineTo(X + i, 2.35); x.stroke(); } }
+    for (let X = 0.4; X < W; X += 4) { x.fillStyle = "#1f5c3a"; x.fillRect(X, H - 3, 3.2, 2.4); x.fillStyle = "#3d6b55"; for (let i = 0; i < 4; i++) x.fillRect(X + 0.2 + i * 0.75, H - 2.8, 0.6, 1.6); }   // ô cửa sắt xanh tầng dưới
+  });
+  return HW[k] = new THREE.MeshLambertMaterial({ map: t });
+}
+const fans = [];
+function furnishPostHall(P, g, cx, cz, W, D, fur) {
+  const back = cz - D / 2, front = cz + D / 2, H = (P.size || {}).h || 9, S = P.room.solids, R = W / 2, GREEN = 0x1f5c3a;
+  const sol = (x, z, hw, hd) => S.push({ x, z, hw, hd });
+  const tile = skin(2, 2, 64, (x) => { x.fillStyle = "#efe6d2"; x.fillRect(0, 0, 2, 2); x.fillStyle = "#2f4f3f"; x.beginPath(); x.moveTo(1, 0.4); x.lineTo(1.6, 1); x.lineTo(1, 1.6); x.lineTo(0.4, 1); x.fill(); x.fillStyle = "#c7b28a"; x.fillRect(0, 0, 0.25, 0.25); x.fillRect(1.75, 1.75, 0.25, 0.25); x.fillRect(1.75, 0, 0.25, 0.25); x.fillRect(0, 1.75, 0.25, 0.25); });
+  tile.wrapS = tile.wrapT = THREE.RepeatWrapping; tile.repeat.set(W / 2, D / 2); g.children[0].material = new THREE.MeshLambertMaterial({ map: tile });
+  // MÁI VÒM: nửa ống trụ + sườn sắt xanh + dải giếng trời
+  const vt = skin(8, 4, 40, (x, Wd, Hh) => { x.fillStyle = "#f6e7c4"; x.fillRect(0, 0, Wd, Hh); x.strokeStyle = "#e3cc9b"; x.lineWidth = 0.05; for (let i = 0; i < Wd; i += 0.5) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, Hh); x.stroke(); }
+    x.fillStyle = "#e7f5ff"; x.fillRect(Wd * 0.36, 0, Wd * 0.28, Hh); x.strokeStyle = "#1f5c3a"; x.lineWidth = 0.08; for (let i = Wd * 0.36; i <= Wd * 0.64; i += 0.45) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, Hh); x.stroke(); } for (let j = 0; j < Hh; j += 0.6) { x.beginPath(); x.moveTo(Wd * 0.36, j); x.lineTo(Wd * 0.64, j); x.stroke(); } });
+  vt.wrapT = THREE.RepeatWrapping; vt.repeat.set(1, D / 4);
+  const vault = new THREE.Mesh(new THREE.CylinderGeometry(R, R, D, 36, 1, true, Math.PI / 2, Math.PI), new THREE.MeshLambertMaterial({ map: vt, side: THREE.DoubleSide }));
+  vault.rotation.x = Math.PI / 2; vault.position.set(cx, H, cz); vault.userData.flat = true; g.add(vault);
+  for (let z = back + 2; z <= front - 1.9; z += 4) { const rib = new THREE.Mesh(new THREE.TorusGeometry(R - 0.15, 0.16, 6, 28, Math.PI), new THREE.MeshLambertMaterial({ color: GREEN })); rib.position.set(cx, H, z); rib.userData.flat = true; g.add(rib); }
+  [[back + 0.02, 0], [front - 0.02, Math.PI]].forEach(([z, ry], i) => {   // 2 đầu vòm: tường sau (đồng hồ), tường trước (cửa sổ quạt)
+    const cap = skin(2 * R, R, 20, (x, Wd, Hh) => { x.fillStyle = "#f3dfb8"; x.fillRect(0, 0, Wd, Hh);
+      if (i) { x.fillStyle = "#cfe3ee"; x.beginPath(); x.arc(Wd / 2, Hh, Hh * 0.7, Math.PI, 0); x.fill(); x.strokeStyle = "#1f5c3a"; x.lineWidth = 0.12; for (let a = 0; a <= Math.PI; a += Math.PI / 10) { x.beginPath(); x.moveTo(Wd / 2, Hh); x.lineTo(Wd / 2 + Math.cos(a + Math.PI) * Hh * 0.7, Hh + Math.sin(a + Math.PI) * Hh * 0.7); x.stroke(); } }
+      else { x.fillStyle = "#e9d3a5"; x.beginPath(); x.arc(Wd / 2, Hh, Hh * 0.75, Math.PI, 0); x.fill(); } });
+    const m = new THREE.Mesh(new THREE.CircleGeometry(R, 32, 0, Math.PI), new THREE.MeshLambertMaterial({ map: cap, side: THREE.DoubleSide })); m.position.set(cx, H, z); m.rotation.y = ry; m.userData.flat = true; g.add(m); });
+  // CỘT SẮT XANH
+  for (let z = back + 6; z <= front - 5.9; z += 6) [-1, 1].forEach(s => { const x = cx + s * (R - 3.2);
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, H, 10), new THREE.MeshLambertMaterial({ color: GREEN })); c.position.set(x, H / 2, z); g.add(c);
+    addBox(g, 0.8, 0.5, 0.8, 0xc9a227, x, H - 0.25, z); addBox(g, 0.7, 0.4, 0.7, GREEN, x, 0.2, z); sol(x, z, 0.3, 0.3); });
+  // QUẦY GIAO DỊCH 2 BÊN (ô cửa có số)
+  [-1, 1].forEach(s => { const x = cx + s * (R - 2), z0 = back + 4, z1 = front - 12, L = z1 - z0, zc = (z0 + z1) / 2;
+    addBox(g, 1, 1.15, L, 0x5c3d2e, x, 0.57, zc); addBox(g, 1.2, 0.08, L, 0xd8d2c4, x, 1.18, zc); sol(x, zc, 0.5, L / 2);
+    for (let z = z0; z <= z1 + 0.01; z += 3) { addBox(g, 0.08, 1.3, 0.08, GREEN, x - s * 0.3, 1.85, z); }
+    addBox(g, 0.05, 1.1, L, 0xd0ebff, x - s * 0.3, 1.8, zc).material = new THREE.MeshLambertMaterial({ color: 0xd0ebff, transparent: true, opacity: 0.25 });
+    addBox(g, 0.1, 0.12, L, GREEN, x - s * 0.3, 2.5, zc);
+    for (let n = 0; n < Math.floor(L / 3); n++) { const pl = textPlate(String(n + 1 + (s > 0 ? 10 : 0)), 0.6, 0.35, "#1f5c3a", "#ffd43b"); pl.position.set(x - s * 0.36, 2.75, z0 + 1.5 + n * 3); pl.rotation.y = -s * Math.PI / 2; g.add(pl); }
+  });
+  // QUẦY LƯU NIỆM ĐỎ GIỮA SẢNH
+  addBox(g, 4, 1.1, 2, 0xa61e2e, cx, 0.55, cz - 2); const gl = addBox(g, 3.8, 0.5, 1.8, 0xd0ebff, cx, 1.35, cz - 2); gl.material = new THREE.MeshLambertMaterial({ color: 0xd0ebff, transparent: true, opacity: 0.35 });
+  addBox(g, 4.1, 0.08, 2.1, 0x7a1414, cx, 1.62, cz - 2); sol(cx, cz - 2, 2, 1);
+  const ks = textPlate("SOUVENIRS · QUÀ LƯU NIỆM", 3.6, 0.5, "#a61e2e", "#ffe066"); ks.position.set(cx, 2.5, cz - 2); g.add(ks); addBox(g, 0.08, 0.9, 0.08, 0x7a1414, cx, 2, cz - 2);
+  // GHẾ CHỜ: gỗ, mặt ghế đỏ
+  [5, 9, 13].forEach(dz => [-1, 1].forEach(s => { const x = cx + s * 4, z = cz + dz;
+    addBox(g, 3, 0.12, 0.6, 0xa61e2e, x, 0.48, z); addBox(g, 3, 0.6, 0.1, 0x8d5a2b, x, 0.8, z + 0.3); [-1.3, 1.3].forEach(d => addBox(g, 0.1, 0.45, 0.5, 0x5c3d2e, x + d, 0.22, z)); sol(x, z, 1.5, 0.35); }));
+  [[-6.8, 9], [6.8, 9], [-6.8, -6], [6.8, -6]].forEach(([dx, dz]) => { const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.38, 0.8, 12), new THREE.MeshLambertMaterial({ color: 0xffffff })); pot.position.set(cx + dx, 0.4, cz + dz); g.add(pot); sol(cx + dx, cz + dz, 0.5, 0.5);
+    for (let k = 0; k < 7; k++) { const lf = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.04, 1.4), new THREE.MeshLambertMaterial({ color: k % 2 ? 0x2b8a3e : 0x40c057 })); lf.position.set(cx + dx, 1.2 + k * 0.15, cz + dz); lf.rotation.set(0.8, k * 0.9, 0); g.add(lf); } });
+  // TƯỜNG CUỐI: bản đồ cổ + đồng hồ + bảng tên
+  const map = skin(8, 5, 60, (x, Wd, Hh) => { x.fillStyle = "#e9d8a6"; x.fillRect(0, 0, Wd, Hh); x.strokeStyle = "#8d5a2b"; x.lineWidth = 0.15; x.strokeRect(0.1, 0.1, Wd - 0.2, Hh - 0.2);
+    x.fillStyle = "#a9c7a0"; x.beginPath(); x.ellipse(2.6, 2.6, 1.8, 1.4, 0.3, 0, 7); x.fill(); x.beginPath(); x.ellipse(5.6, 2.2, 1.5, 1.7, -0.2, 0, 7); x.fill();
+    x.fillStyle = "#4dabf7"; x.beginPath(); x.moveTo(4, 0.3); x.bezierCurveTo(3.6, 2, 4.6, 3, 4.1, 4.7); x.lineTo(4.3, 4.7); x.bezierCurveTo(4.8, 3, 3.8, 2, 4.2, 0.3); x.fill();
+    x.strokeStyle = "#c92a2a"; x.lineWidth = 0.03; x.setLineDash([0.1, 0.08]); x.beginPath(); x.moveTo(1.5, 3.5); x.lineTo(3, 2); x.lineTo(5.5, 2.5); x.lineTo(6.8, 1); x.stroke(); x.setLineDash([]);
+    x.fillStyle = "#3b2a1a"; x.font = "bold 0.35px serif"; x.textAlign = "center"; x.fillText("VERSE CITY · 1891", Wd / 2, 0.6); x.font = "0.22px serif"; x.fillText("Map of telegraph lines", Wd / 2, Hh - 0.35); });
+  const mp = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), new THREE.MeshLambertMaterial({ map })); mp.position.set(cx, 4.6, back + 0.1); g.add(mp); addBox(g, 8.4, 5.4, 0.04, 0x8d5a2b, cx, 4.6, back + 0.04);
+  const wm = textPlate("🌏 WORLD MAP", 3, 0.4, "#1f5c3a", "#ffffff"); wm.position.set(cx + 7.5, 3.6, back + 0.08); g.add(wm);
+  const wmap = skin(3, 2, 60, (x) => { x.fillStyle = "#cfe3ee"; x.fillRect(0, 0, 3, 2); x.fillStyle = "#94d82d"; [[0.6, 0.7, 0.5, 0.35], [0.8, 1.4, 0.25, 0.4], [1.6, 0.7, 0.35, 0.4], [1.7, 1.3, 0.25, 0.35], [2.3, 0.8, 0.45, 0.35], [2.5, 1.5, 0.25, 0.15]].forEach(([a, b, c, d]) => { x.beginPath(); x.ellipse(a, b, c, d, 0, 0, 7); x.fill(); }); x.fillStyle = "#e03131"; x.beginPath(); x.arc(2.35, 1.05, 0.06, 0, 7); x.fill(); });
+  const wmm = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), new THREE.MeshLambertMaterial({ map: wmap })); wmm.position.set(cx + 7.5, 2.3, back + 0.08); g.add(wmm);
+  const clk = skin(1.6, 1.6, 80, (x) => { x.fillStyle = "#fff"; x.beginPath(); x.arc(0.8, 0.8, 0.76, 0, 7); x.fill(); x.strokeStyle = "#1f5c3a"; x.lineWidth = 0.08; x.stroke(); x.strokeStyle = "#343a40"; x.lineWidth = 0.05; x.beginPath(); x.moveTo(0.8, 0.8); x.lineTo(0.8, 0.3); x.moveTo(0.8, 0.8); x.lineTo(1.15, 0.8); x.stroke(); });
+  const ck = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.8), new THREE.MeshLambertMaterial({ map: clk, transparent: true })); ck.position.set(cx, 10.6, back + 0.12); g.add(ck);
+  const nb = textPlate("VERSE CITY POST OFFICE · BƯU ĐIỆN", 7, 0.5, "#1f5c3a", "#ffd43b"); nb.position.set(cx, 1.6, back + 0.08); g.add(nb);
+  // BÀN VIẾT THƯ (Uncle Bay) + BUỒNG ĐIỆN THOẠI + LỐI VÀO
+  addBox(g, 2, 0.08, 0.9, 0x6f4e37, cx - 6, 0.8, back + 6.7); [-0.9, 0.9].forEach(d => addBox(g, 0.08, 0.8, 0.8, 0x5c3d2e, cx - 6 + d, 0.4, back + 6.7)); sol(cx - 6, back + 6.7, 1, 0.45);
+  fur("chair_B_wood", cx - 6, back + 5.6, 0, 1); fur("chair_B_wood", cx - 6, back + 7.8, Math.PI, 1);
+  [-1, 1].forEach(s => [front - 8, front - 5].forEach(z => { const x = cx + s * (R - 1);
+    addBox(g, 1.3, 2.5, 1.3, 0x6f4e37, x, 1.25, z); addBox(g, 0.05, 1.4, 0.9, 0xd0ebff, x - s * 0.66, 1.5, z); sol(x, z, 0.65, 0.65); }));
+  [-1, 1].forEach(s => { addBox(g, 0.7, 1.3, 0.6, 0xf2a516, cx + s * 6, 0.65, front - 2); sol(cx + s * 6, front - 2, 0.35, 0.3); });
+  addBox(g, 1, 1.9, 0.7, 0x495057, cx + 8.5, 0.95, front - 1.2); sol(cx + 8.5, front - 1.2, 0.5, 0.35);   // ATM
+  // ĐÈN TREO + QUẠT TRẦN
+  for (let z = back + 8; z <= front - 6; z += 8) [-4, 4].forEach(dx => { addBox(g, 0.03, H + 3 - 6.2, 0.03, 0x343a40, cx + dx, (H + 3 + 6.2) / 2, z);
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 10), new THREE.MeshBasicMaterial({ color: 0xfff3bf })); lamp.position.set(cx + dx, 6, z); g.add(lamp); });
+  for (let z = back + 12; z <= front - 10; z += 12) { const f = new THREE.Group(); f.position.set(cx, 7.5, z); g.add(f); fans.push(f); addBox(g, 0.05, H + 4 - 7.5, 0.05, 0x343a40, cx, (H + 4 + 7.5) / 2, z);
+    [0, Math.PI / 2].forEach(r => { const b = addBox(f, 2.6, 0.04, 0.3, 0x5c3d2e, 0, 0, 0); b.rotation.y = r; }); }
+  g.traverse(o => { if (o.isMesh && o.position.y > 5) o.userData.flat = true; });
+  // CHỖ BÀY ĐỒ TỪ VỰNG
+  const along = (n, x, y, z0, z1, sx) => Array.from({ length: n }, (_, i) => { const z = z0 + (z1 - z0) * i / (n - 1); return [x, y, z, sx, z]; });
+  P.anchors = {
+    counter: along(7, cx - R + 2, 1.35, back + 6, front - 14, cx - R + 3.9).concat(along(7, cx + R - 2, 1.35, back + 6, front - 14, cx + R - 3.9)),
+    kiosk: [[-1.5, -2.5], [-0.5, -2.5], [0.5, -2.5], [1.5, -2.5], [-1, -1.5], [1, -1.5]].map(([dx, dz]) => [cx + dx, 1.9, cz + dz, cx + dx, cz + 0.4]),
+    bench: [[-4, 5], [4, 9], [-4, 13], [6.8, 9]].map(([dx, dz]) => [cx + dx, dx === 6.8 ? 2.4 : 0.85, cz + dz, cx + (dx > 0 ? dx - 1.9 : dx + 1.9), cz + dz + (dx === 6.8 ? 0 : 0.9)]),
+    wall: [[cx, 10.6, back + 0.3, cx, back + 3], [cx - 2, 4.6, back + 0.3, cx - 2, back + 3], [cx + 7.5, 2.3, back + 0.3, cx + 7.5, back + 3]],
+    booth: [[cx - R + 1, 2.8, front - 8, cx - R + 2.7, front - 8], [cx + R - 1, 1.5, front - 5, cx + R - 2.7, front - 5], [cx + R - 1, 2.8, front - 8, cx + R - 2.7, front - 8]],
+    desk: [[-6.7, 0.95], [-6.2, 0.95], [-5.7, 0.95], [-5.2, 0.95], [-6.9, 1.4]].map(([dx, y]) => [cx + dx, y, back + 6.7, cx + dx, back + 8.6]),
+    door: [[cx - 6, 1.6, front - 2, cx - 6, front - 3.4], [cx + 8.5, 2.2, front - 1.2, cx + 7.2, front - 2.6]],
+    ceiling: [[cx, 7.4, cz, cx, cz + 1.5], [cx + 4, 6, back + 16, cx + 4, back + 16], [cx - 6, 8.6, cz + 6, cx - 6, cz + 6]]
+  };
+  P.vgroup = new THREE.Group(); g.add(P.vgroup);
+}
 /* NHÀ RIÊNG 🏠: giường, rương 🧰 cất đồ, gương 🪞 thay đồ, phòng trưng bày 🖼️ (thẻ, tinh linh, trang phục, cúp), đồ nội thất đã mua */
 const DECOR_SPOTS = [[-5.4, 2.6, Math.PI / 2], [5.4, 2.6, -Math.PI / 2], [-2.6, 4.4, Math.PI], [2.6, 4.4, Math.PI], [-6.6, 0, Math.PI / 2], [6.6, 0, -Math.PI / 2], [-1.5, 1.2, 0], [1.5, 1.2, 0]];
 function furnishHome(P, g, cx, cz, W, D, fur) {
@@ -2389,7 +2684,7 @@ function homeRefresh(P) {   // vẽ lại phần thay đổi: thẻ trên tườ
   const R = P.room, back = R.cz - R.d / 2, dyn = P.dyn; if (!dyn) return;
   while (dyn.children.length) dyn.remove(dyn.children[0]);
   R.solids = R.solids.filter(o => !o.decor);
-  const cards = allCards().filter(c => owned.indexOf(c.w) >= 0);
+  const cards = allCards().filter(c => hasCard(c.id));
   cards.slice(0, 14).forEach((c, i) => {   // khung thẻ trên tường sau
     const x = R.cx - 4.55 + (i % 7) * 1.5, y = 1.35 + Math.floor(i / 7) * 1.05;
     const fr = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.9, 0.06), new THREE.MeshLambertMaterial({ color: 0x8d5a2b })); fr.position.set(x, y, back + 0.05); dyn.add(fr);
@@ -2412,7 +2707,7 @@ function openGallery() {   // phòng trưng bày: các bộ sưu tập + đồ h
   const all = allCards(), outfits = Object.keys(ITEMS).filter(k => ITEMS[k].slot);
   const have = k => save.items[k] || save.chest[k] || Object.values(save.equip).indexOf(k) >= 0;
   const sec = (t, html) => "<div style='font-weight:700;margin-top:12px'>" + t + "</div>" + html;
-  let h = sec("🎴 Cards " + owned.length + "/" + all.length, "<div class='gal'>" + all.map(c => "<div" + (owned.indexOf(c.w) < 0 ? " style='opacity:.35'" : "") + "><div class='pic'>" + (owned.indexOf(c.w) >= 0 ? c.pic : "❔") + "</div>" + (owned.indexOf(c.w) >= 0 ? c.w : "???") + "</div>").join("") + "</div>");
+  let h = sec("🎴 Cards " + owned.length + "/" + all.length, "<div class='gal'>" + all.map(c => "<div" + (!hasCard(c.id) ? " style='opacity:.35'" : "") + "><div class='pic'>" + (hasCard(c.id) ? c.pic : "❔") + "</div>" + (hasCard(c.id) ? CARD_TYPES[c.type].icon + " " + c.w : "???") + "</div>").join("") + "</div>");
   h += sec("✨ Word Spirits: " + spiritCount, "<div style='font-size:13px;opacity:.8'>Free Echo Ghosts in Misty Park to collect more. / Giải thoát ma ở Misty Park để có thêm.</div>");
   h += sec("👕 Outfits " + outfits.filter(have).length + "/" + outfits.length, "<div class='gal'>" + outfits.map(k => { const it = ITEMS[k]; return "<div style='border-color:" + RARITY[it.rarity].color + (have(k) ? "" : ";opacity:.35") + "'><div class='pic'>" + it.icon + "</div>" + it.name + "</div>"; }).join("") + "</div>");
   h += sec("🏆 Legendary", LEGENDS.map(L => { const it = ITEMS[L.item], got = save.legends.indexOf(L.item) >= 0;
@@ -2423,17 +2718,17 @@ function openGallery() {   // phòng trưng bày: các bộ sưu tập + đồ h
   $("galleryBody").innerHTML = h; $("gallery").style.display = "block";
 }
 function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay vào trong (camera ở ngoài vẫn nhìn xuyên vào được)
-  const W = 16, D = 12, cx = 300 + i * 40, cz = 300, H = 3.4, g = new THREE.Group();
+  const Z = P.size || {}, W = Z.w || 16, D = Z.d || 12, cx = 300 + i * 40, cz = 300, H = Z.h || 3.4, g = new THREE.Group();   // size: phòng to riêng (vd quán cà phê 20 × 48 m)
   P.room = { cx, cz, w: W, d: D, solids: [], P };
   const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshLambertMaterial({ color: P.floor })); fl.rotation.x = -Math.PI / 2; fl.position.set(cx, 0, cz); fl.userData.flat = true; g.add(fl);
-  const wallM = new THREE.MeshLambertMaterial({ color: P.wall });
+  const wallM = P.layout === "greenhouse" || P.layout === "posthall" ? null : new THREE.MeshLambertMaterial({ color: P.wall });
   [[0, -D / 2, 0, W], [0, D / 2, Math.PI, W], [-W / 2, 0, Math.PI / 2, D], [W / 2, 0, -Math.PI / 2, D]].forEach(([x, z, ry, len]) => {
-    const wm = new THREE.Mesh(new THREE.PlaneGeometry(len, H), wallM); wm.position.set(cx + x, H / 2, cz + z); wm.rotation.y = ry; wm.userData.flat = true; g.add(wm);
+    const wm = new THREE.Mesh(new THREE.PlaneGeometry(len, H), wallM || (P.layout === "posthall" ? hallWall(len, H, x === 0) : glassWall(len, H, x === 0 && z < 0))); wm.position.set(cx + x, H / 2, cz + z); wm.rotation.y = ry; wm.userData.flat = true; g.add(wm);
   });
-  addBox(g, 16, 0.3, 0.05, P.awning, cx, 0.15, cz - D / 2 + 0.03);   // chân tường
+  addBox(g, W, 0.3, 0.05, P.awning, cx, 0.15, cz - D / 2 + 0.03);   // chân tường
   const door = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 2.6), new THREE.MeshLambertMaterial({ color: 0x8d5a2b })); door.position.set(cx, 1.3, cz + D / 2 - 0.02); door.rotation.y = Math.PI; g.add(door);
   addBox(g, 2.4, 0.04, 1.4, 0xc92a2a, cx, 0.02, cz + D / 2 - 0.8);   // thảm cửa
-  const plate = textPlate(P.name, 6, 0.9, "#ffffff", "#343a40"); plate.position.set(cx, 3, cz - D / 2 + 0.03); g.add(plate);
+  const plate = textPlate(P.name, 6, 0.9, "#ffffff", "#343a40"); plate.position.set(cx, H - 0.4, cz - D / 2 + 0.03); g.add(plate);
   furnish(P, g, cx, cz, W, D);
   let k = null;
   if (P.keeper) {   // người bán (nếu có)
@@ -2665,11 +2960,13 @@ function updateAmbient(dt) {
 const indoorBg = new THREE.Color(0x3b2f2a);
 function enterRoom(P) {
   room = P.room; P.int.visible = true;
-  player.position.set(room.exit.x, 0, room.exit.z - 0.6); camAngle = 0; camPitch = 0.85; camSnap = true;
+  player.position.set(room.exit.x, 0, room.exit.z - (P.size ? 3.5 : 0.6)); camAngle = 0; camPitch = 0.25; camSnap = true;   // phòng lớn: đứng lùi vào trong để camera có chỗ phía sau
   camera.fov = Math.min(80, 2 * Math.atan(Math.tan(38 * Math.PI / 180) / camera.aspect) * 180 / Math.PI); camera.updateProjectionMatrix();   // trong nhà: góc nhìn rộng để thấy cả phòng
   sky.visible = false; clouds.forEach(c => c.visible = false); scene.background = indoorBg; scene.fog = null; roomLight.intensity = 0.22;
   ["askBtn", "guide", "askp"].forEach(id => $(id).style.display = "none"); goal = null; arrow.visible = false;
+  if (P.layout === "greenhouse" || P.layout === "posthall") { scene.background = new THREE.Color(0xcfe8ff); roomLight.intensity = 0.35; }   // mái kính / giếng trời: nhìn lên thấy trời   // nhà kính: nhìn lên thấy trời qua mái kính
   if (P.type === "home") homeRefresh(P);
+  if (P.anchors) { if (!P.room.baseSpots) P.room.baseSpots = P.room.spots || []; refreshVocab(P); }
   speak(P.type === "home" ? "Welcome home, " + (myName || "friend") + "!" : "Welcome to " + P.name + "!");
 }
 function exitRoom() {
@@ -2694,7 +2991,7 @@ function updateCity(dt) {
   if (room) {
     if (Math.hypot(player.position.x - room.exit.x, player.position.z - room.exit.z) < 1.8) nearDoor = room.P;
     if (room.P.keeperMesh && Math.hypot(player.position.x - room.P.keeperMesh.position.x, player.position.z - room.P.keeperMesh.position.z) < 4.3) nearKeeper = room.P;   // người bán đứng sau quầy nên cho phép xa hơn chút
-    (room.spots || []).forEach(S => { if (Math.hypot(player.position.x - S.x, player.position.z - S.z) < 1.8) nearSpot = S; });   // rương, gương, phòng trưng bày…
+    let bd = 1.8; (room.spots || []).forEach(S => { const d = Math.hypot(player.position.x - S.x, player.position.z - S.z); if (d < bd) { bd = d; nearSpot = S; } });   // rương, gương, đồ trưng bày… (chọn chỗ gần nhất)
   } else {
     CITY.forEach(P => { if (Math.hypot(player.position.x - P.doorPos.x, player.position.z - P.doorPos.z) < 2) nearDoor = P; });
     METRO.forEach(M => { if (M.doorPos && Math.hypot(player.position.x - M.doorPos.x, player.position.z - M.doorPos.z) < 3) nearSpot = { label: "🚇 Metro", fn: () => openMetro(M) }; });   // trạm metro
@@ -2808,6 +3105,23 @@ function setWide(on) {   // 🔭 góc rộng (nhìn tổng thể đường phố
   lodT = 1;   // cập nhật ngay nhà nào được vẽ
 }
 $("zoomBtn").onclick = () => setWide(!camWide);
+$("vocabClose").onclick = () => { $("vocabp").style.display = "none"; talking = false; vocabCur = null; };
+holdMic($("vocabMic"), t => $("vocabFb").textContent = "🎙️ " + t, (alts, conf, err) => {   // tự hỏi bằng giọng nói
+  if (MIC_DENIED(err)) { $("vocabFb").textContent = "Hãy cho phép micro, hoặc bấm nút ❓."; return; }
+  if (!alts.length) { $("vocabFb").textContent = "Không nghe thấy – giữ nút và nói to hơn nhé!"; return; }
+  const v = vocabCur; if (!v) return;
+  const h = alts.join(" ").toLowerCase();
+  if (hasCard("v:" + v.w)) {   // đã có thẻ: nói lại từ để luyện
+    if (alts.some(a => match(v.say, a) >= 0.6 || a.toLowerCase().indexOf(v.w) >= 0)) { $("vocabFb").textContent = "👍 Great! +1 ⭐"; $("vocabFb").style.color = "var(--ok)"; practice("v:" + v.w); spokeOk(); score += 1; renderHud(); refreshVocab(room.P); }
+    else { $("vocabFb").textContent = "“" + alts[0] + "” – try: “" + v.say + "”"; $("vocabFb").style.color = "var(--bad)"; }
+    return;
+  }
+  if (/\bwhat/.test(h) && /\b(this|that|it)\b/.test(h)) {   // “What is this?” / “What's this?” / (Lv.20) “What is this drink?”
+    const full = v.kind && h.indexOf(v.kind) >= 0;
+    $("vocabFb").textContent = "👍 “" + alts[0] + "”" + (full ? " – full question! +2 ⭐" : ""); $("vocabFb").style.color = "var(--ok)";
+    if (full) score += 2; revealVocab(true); }
+  else { $("vocabFb").textContent = "“" + alts[0] + "” – try: “What is this?”"; $("vocabFb").style.color = "var(--bad)"; speak("Sorry? You can ask: what is this?"); }
+});
 /* ===== 8b. BẢN ĐỒ NHỎ (góc phải) + BẢN ĐỒ LỚN (chạm vào bản đồ nhỏ) =====
    Bản đồ nhỏ xoay theo camera: phía trên bản đồ = phía trước mặt mình. Bản đồ lớn: phía bắc ở trên, có tên địa điểm. */
 function mapRect(P) { const sw = P.door === "east" || P.door === "west"; return { x: P.x, z: P.z, w: sw ? P.d : P.w, d: sw ? P.w : P.d }; }
@@ -2931,7 +3245,8 @@ function loop() {
   spinners.forEach(h => h.rotation.z += dt * 1.2);
   flags.forEach((f, i) => f.rotation.y = Math.sin(t * 2 + i) * 0.25);   // cờ bay
   cranes.forEach((c, i) => c.rotation.y = Math.sin(t * 0.15 + i) * 1.2);   // cần cẩu xoay chậm
-  ySpin.forEach(m => m.material.map.offset.y -= dt * 0.4);   // cột đèn tiệm cắt tóc (sọc chạy lên)
+  ySpin.forEach(m => m.material.map.offset.y -= dt * 0.4);
+  fans.forEach(f => f.rotation.y += dt * 3);   // quạt trần bưu điện   // cột đèn tiệm cắt tóc (sọc chạy lên)
   if (fountainSpray) { fountainSpray.scale.set(1 + Math.sin(t * 5) * 0.06, 1 + Math.sin(t * 7) * 0.12, 1 + Math.sin(t * 5) * 0.06); fountainSpray.rotation.y += dt; }
   clouds.forEach(c => { c.userData.a += dt * 0.004; c.position.x = Math.cos(c.userData.a) * c.userData.r; c.position.z = 20 + Math.sin(c.userData.a) * c.userData.r; });
   if (!talking) {
@@ -2950,10 +3265,18 @@ function loop() {
     camera.position.set(cx, half / Math.min(vt, ht), cz + 0.01);
     camera.lookAt(cx, 0, cz);
   } else {
-    if (keys["r"]) camPitch = Math.max(0.1, camPitch - 1.2 * dt);
-    if (keys["f"]) camPitch = Math.min(1.35, camPitch + 1.2 * dt);
-    if (room) camPitch = Math.max(0.7, camPitch);   // trong nhà: nhìn chếch xuống cho thấy cả phòng
-    camD += ((creating ? 5.5 : room ? 9 : camWide && !talking ? 26 : 11) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
+    if (keys["r"]) camPitch = Math.max(room ? -0.7 : 0.1, camPitch - 1.2 * dt);
+    if (keys["f"]) camPitch = Math.min(room ? 1.0 : 1.35, camPitch + 1.2 * dt);
+    if (room) {   // TRONG NHÀ: camera luôn ở bên trong phòng, sau lưng nhân vật; kéo xuống để ngẩng nhìn trần
+      const R = room, H = (R.P.size || {}).h || 3.4, Dc = 4.2, up = camPitch < 0, cp = up ? 1 : Math.cos(camPitch);
+      const want = new THREE.Vector3(p.x + Math.sin(camAngle) * cp * Dc, 1.5 + (up ? camPitch * 0.8 : Math.sin(camPitch) * Dc), p.z + Math.cos(camAngle) * cp * Dc);   // ngẩng lên: camera vẫn ở sau lưng, chỉ hướng nhìn ngước lên
+      want.x = Math.min(R.cx + R.w / 2 - 0.3, Math.max(R.cx - R.w / 2 + 0.3, want.x)); want.z = Math.min(R.cz + R.d / 2 - 0.3, Math.max(R.cz - R.d / 2 + 0.3, want.z));
+      want.y = Math.min(H - 0.3, Math.max(0.35, want.y));
+      if (camSnap) { camera.position.copy(want); camSnap = false; } else camera.position.lerp(want, 0.15);
+      if (up) camera.lookAt(p.x - Math.sin(camAngle) * 3, 1.4 - Math.sin(camPitch) * 6, p.z - Math.cos(camAngle) * 3); else camera.lookAt(p.x, 1.4 - Math.sin(camPitch) * 1.6, p.z);
+      sky.position.set(camera.position.x, 0, camera.position.z); renderer.render(scene, camera); return;
+    }
+    camD += ((creating ? 5.5 : room ? (room.P.layout === "greenhouse" ? 7.5 : 9) : camWide && !talking ? 26 : 11) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
     const D = camD, ch = Math.cos(creating ? 0.25 : camPitch) * D;
     const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(creating ? 0.25 : camPitch) * D, p.z + Math.cos(camAngle) * ch);
     if (!room && !camWide) {   // góc gần: có tường/nhà chắn giữa nhân vật và camera → kéo camera lại gần (góc rộng thì bỏ qua, camera ở trên cao)
