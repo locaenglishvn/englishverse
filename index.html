@@ -578,7 +578,7 @@ const cv = renderer.domElement;
 cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener("pointermove", e => {
   if (look && look.id === e.pointerId) { camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;
-    if (!maze) camPitch = Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera
+    if (!maze) camPitch = room ? Math.min(1.0, Math.max(-0.7, camPitch + (e.clientY - look.y) * 0.006)) : Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera (trong nhà: ngẩng lên được để nhìn trần)
     look.y = e.clientY; }
 });
 const endLook = e => { if (look && look.id === e.pointerId) look = null; };
@@ -2509,28 +2509,47 @@ function furnishGreenhouse(P, g, cx, cz, W, D, fur) {
   });
   const gc = textPlate("🌿 THE GREEN CORNER", 4, 0.6, "#2b8a3e", "#ffffff"); gc.position.set(cx, 3.2, front - 13.5); g.add(gc);
   const bc = textPlate("☕ COFFEE BAR", 3.4, 0.6, "#3b2a1a", "#ffd43b"); bc.position.set(cx, 4.4, back + 0.06); g.add(bc);
-  // CHỖ TRƯNG BÀY TỪ VỰNG: [chỗ đặt đồ x, y, z, chỗ đứng hỏi x, z] (đồ bày đổi theo người chơi, xem refreshVocab)
-  P.vocabSpots = [
-    [cx - 4.2, 1.45, cz0 - 0.1, cx - 4.2, cz0 + 1.5], [cx + 0.4, 1.4, cz0 - 0.1, cx + 0.4, cz0 + 1.5], [cx + 3.4, 1.55, cz0, cx + 3.4, cz0 + 1.5],
-    [cx - W / 2 + 0.5, 1.35, cz - 2, cx - W / 2 + 2.3, cz - 2], [cx + W / 2 - 0.5, 1.35, cz + 5, cx + W / 2 - 2.3, cz + 5],
-    [cx - 3.5, 0.95, cz - 7, cx - 1.5, cz - 7], [cx + 3.5, 0.95, cz - 1.5, cx + 1.5, cz - 1.5],
-    [cx - 4.5, 1.35, front - 11, cx - 2.6, front - 11], [cx + 4.5, 1.35, front - 7, cx + 2.6, front - 7], [cx, 3.3, cz + 8, cx, cz + 8]
-  ];
+  // mái kính (nhìn từ trong lên thấy trời)
+  const roofG = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshBasicMaterial({ color: 0xe7f5ff, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false })); roofG.rotation.x = Math.PI / 2; roofG.position.set(cx, H + 0.1, cz); roofG.userData.flat = true; g.add(roofG);
+  // CHỖ BÀY ĐỒ TỪ VỰNG theo đúng khu (at trong VOCAB): [x, y, z, chỗ đứng hỏi x, z]
+  const row = (n, x0, x1, y, z, sz) => Array.from({ length: n }, (_, i) => { const x = n > 1 ? x0 + (x1 - x0) * i / (n - 1) : (x0 + x1) / 2; return [x, y, z, x, sz]; });
+  const A = P.anchors = {
+    bar: row(7, cx - 6, cx + 0.6, 1.32, cz0 + 0.3, cz0 + 1.6).concat(row(7, cx - 5.6, cx + 1, 1.62, cz0 - 0.3, cz0 + 1.6)),
+    cake: row(5, cx + 2.6, cx + 4.2, 1.5, cz0, cz0 + 1.6),
+    cashier: [[cx + 5, 1.35, cz0 + 0.35, cx + 5, cz0 + 1.6], [cx + 5.4, 1.75, cz0, cx + 5.4, cz0 + 1.6], [cx + 5.9, 1.35, cz0 + 0.35, cx + 5.9, cz0 + 1.6], [cx + 6.3, 1.35, cz0 - 0.2, cx + 6.3, cz0 + 1.6], [cx + 4.7, 1.75, cz0 - 0.3, cx + 4.7, cz0 + 1.6]],
+    shelf: row(4, cx - 5.7, cx - 3.3, 1.25, back + 0.7, back + 2.3).concat(row(3, cx + 3.5, cx + 5.5, 1.25, back + 0.7, back + 2.3)),
+    window: [[cx - W / 2 + 0.45, 1.3, cz - 5, cx - W / 2 + 2.2, cz - 5], [cx - W / 2 + 0.45, 1.3, cz + 1, cx - W / 2 + 2.2, cz + 1], [cx - W / 2 + 0.45, 1.3, cz + 7, cx - W / 2 + 2.2, cz + 7],
+      [cx + W / 2 - 0.45, 1.3, cz - 5, cx + W / 2 - 2.2, cz - 5], [cx + W / 2 - 0.45, 1.3, cz + 1, cx + W / 2 - 2.2, cz + 1], [cx + W / 2 - 0.45, 1.3, cz + 7, cx + W / 2 - 2.2, cz + 7]],
+    sofa: [[-3.5, -7], [3.5, -1.5], [-3.5, 4.5]].flatMap(([dx, dz]) => [[cx + dx - 0.35, 1, cz + dz, cx + dx - 1.9, cz + dz], [cx + dx + 0.35, 1, cz + dz, cx + dx + 1.9, cz + dz]]),
+    plants: row(4, front - 11.4, front - 6.6, 1.3, 0, 0).map(r => [cx - 4.2, r[1], r[0], cx - 2.4, r[0]]).concat(row(3, front - 11, front - 7, 1.3, 0, 0).map(r => [cx + 4.2, r[1], r[0], cx + 2.4, r[0]])),
+    ceiling: [[cx - 2, 3.4, cz + 8, cx - 2, cz + 8], [cx + 2, 3.6, cz - 2, cx + 2, cz - 2], [cx, H - 0.4, cz + 14, cx, cz + 14]],
+    door: [[cx - W / 2 + 0.5, 2.1, front - 6, cx - W / 2 + 2, front - 6], [cx + 8.4, 0.9, front - 3.2, cx + 7, front - 3.2], [cx + 1.6, 0.2, front - 1.4, cx + 2.4, front - 2.6], [cx - 8.4, 0.6, front - 3.4, cx - 7, front - 3.4], [cx - 2.4, 2.4, front - 0.15, cx - 2.4, front - 2.4]]
+  };
   g.traverse(o => { if (o.isMesh && o.position.y > 2.6) o.userData.flat = true; });   // mái, cây treo, bóng đèn: không đổ bóng (đỡ rối mắt)
   P.vgroup = new THREE.Group(); g.add(P.vgroup);
 }
-function refreshVocab(P) {   // bày đồ theo người chơi: món chưa học trước, rồi món ít sao
-  if (!P.vocabSpots || !VOCAB[P.id]) return;
+function refreshVocab(P) {   // bày MỌI món từ vựng đúng khu của nó; ❓ = chưa học, ✅ = đã có thẻ
+  if (!P.anchors || !VOCAB[P.id]) return;
   const vg = P.vgroup; while (vg.children.length) vg.remove(vg.children[0]);
-  const list = VOCAB[P.id].slice(), id = v => "v:" + v.w;
-  const order = list.filter(v => !hasCard(id(v))).concat(list.filter(v => hasCard(id(v))).sort((a, b) => stars(id(a)) - stars(id(b))));
   P.room.spots = (P.room.baseSpots || []).slice();
-  P.vocabSpots.forEach((S, i) => { const v = order[i]; if (!v) return;
-    const sp = emojiSprite(v.pic, 0.55); sp.position.set(S[0], S[1], S[2]); vg.add(sp);
-    const tag = emojiSprite(hasCard(id(v)) ? "✅" : "❓", 0.3); tag.position.set(S[0], S[1] + 0.5, S[2]); tag.userData.bob = true; vg.add(tag);
-    P.room.spots.push({ x: S[3], z: S[4], label: "❓ What's this?", fn: () => openVocab(v) });
+  const used = {};
+  VOCAB[P.id].forEach(v => {
+    const k = used[v.at] = (used[v.at] || 0), S = (P.anchors[v.at] || [])[k]; used[v.at]++;
+    if (!S) return;   // hết chỗ trong khu này
+    const sp = emojiSprite(v.pic, v.at === "ceiling" ? 0.7 : 0.45); sp.position.set(S[0], S[1], S[2]); sp.userData.vocab = v; vg.add(sp);
+    const tag = emojiSprite(hasCard("v:" + v.w) ? "✅" : "❓", 0.22); tag.position.set(S[0], S[1] + 0.38, S[2]); vg.add(tag);
+    P.room.spots.push({ x: S[3], z: S[4], label: "❓ " + (hasCard("v:" + v.w) ? v.w : "What's this?"), fn: () => openVocab(v) });
   });
 }
+/* Chạm thẳng vào đồ trưng bày (không cần đứng sát) để hỏi */
+const tapRay = new THREE.Raycaster(); tapRay.camera = camera; let tapDown = null;
+cv.addEventListener("pointerdown", e => { tapDown = { x: e.clientX, y: e.clientY }; });
+cv.addEventListener("pointerup", e => {
+  if (!tapDown || Math.hypot(e.clientX - tapDown.x, e.clientY - tapDown.y) > 8 || !room || !room.P.vgroup || talking) return;
+  tapRay.setFromCamera({ x: e.clientX / innerWidth * 2 - 1, y: -(e.clientY / innerHeight) * 2 + 1 }, camera);
+  const hit = tapRay.intersectObjects(room.P.vgroup.children).find(h => h.object.userData.vocab);
+  if (hit && hit.object.position.distanceTo(player.position) < 8) openVocab(hit.object.userData.vocab);
+});
 let vocabCur = null;
 function openVocab(v) {   // hỏi "What is this?" → NPC trả lời → nhận thẻ từ vựng
   vocabCur = v; talking = true; $("actBtn").style.display = "none";
@@ -2848,12 +2867,13 @@ function updateAmbient(dt) {
 const indoorBg = new THREE.Color(0x3b2f2a);
 function enterRoom(P) {
   room = P.room; P.int.visible = true;
-  player.position.set(room.exit.x, 0, room.exit.z - 0.6); camAngle = 0; camPitch = 0.85; camSnap = true;
+  player.position.set(room.exit.x, 0, room.exit.z - (P.size ? 3.5 : 0.6)); camAngle = 0; camPitch = 0.25; camSnap = true;   // phòng lớn: đứng lùi vào trong để camera có chỗ phía sau
   camera.fov = Math.min(80, 2 * Math.atan(Math.tan(38 * Math.PI / 180) / camera.aspect) * 180 / Math.PI); camera.updateProjectionMatrix();   // trong nhà: góc nhìn rộng để thấy cả phòng
   sky.visible = false; clouds.forEach(c => c.visible = false); scene.background = indoorBg; scene.fog = null; roomLight.intensity = 0.22;
   ["askBtn", "guide", "askp"].forEach(id => $(id).style.display = "none"); goal = null; arrow.visible = false;
+  if (P.layout === "greenhouse") { scene.background = new THREE.Color(0xcfe8ff); roomLight.intensity = 0.35; }   // nhà kính: nhìn lên thấy trời qua mái kính
   if (P.type === "home") homeRefresh(P);
-  if (P.vocabSpots) { if (!P.room.baseSpots) P.room.baseSpots = P.room.spots || []; refreshVocab(P); }
+  if (P.anchors) { if (!P.room.baseSpots) P.room.baseSpots = P.room.spots || []; refreshVocab(P); }
   speak(P.type === "home" ? "Welcome home, " + (myName || "friend") + "!" : "Welcome to " + P.name + "!");
 }
 function exitRoom() {
@@ -2878,7 +2898,7 @@ function updateCity(dt) {
   if (room) {
     if (Math.hypot(player.position.x - room.exit.x, player.position.z - room.exit.z) < 1.8) nearDoor = room.P;
     if (room.P.keeperMesh && Math.hypot(player.position.x - room.P.keeperMesh.position.x, player.position.z - room.P.keeperMesh.position.z) < 4.3) nearKeeper = room.P;   // người bán đứng sau quầy nên cho phép xa hơn chút
-    (room.spots || []).forEach(S => { if (Math.hypot(player.position.x - S.x, player.position.z - S.z) < 1.8) nearSpot = S; });   // rương, gương, phòng trưng bày…
+    let bd = 1.8; (room.spots || []).forEach(S => { const d = Math.hypot(player.position.x - S.x, player.position.z - S.z); if (d < bd) { bd = d; nearSpot = S; } });   // rương, gương, đồ trưng bày… (chọn chỗ gần nhất)
   } else {
     CITY.forEach(P => { if (Math.hypot(player.position.x - P.doorPos.x, player.position.z - P.doorPos.z) < 2) nearDoor = P; });
     METRO.forEach(M => { if (M.doorPos && Math.hypot(player.position.x - M.doorPos.x, player.position.z - M.doorPos.z) < 3) nearSpot = { label: "🚇 Metro", fn: () => openMetro(M) }; });   // trạm metro
@@ -3149,9 +3169,17 @@ function loop() {
     camera.position.set(cx, half / Math.min(vt, ht), cz + 0.01);
     camera.lookAt(cx, 0, cz);
   } else {
-    if (keys["r"]) camPitch = Math.max(0.1, camPitch - 1.2 * dt);
-    if (keys["f"]) camPitch = Math.min(1.35, camPitch + 1.2 * dt);
-    if (room) camPitch = Math.max(0.7, camPitch);   // trong nhà: nhìn chếch xuống cho thấy cả phòng
+    if (keys["r"]) camPitch = Math.max(room ? -0.7 : 0.1, camPitch - 1.2 * dt);
+    if (keys["f"]) camPitch = Math.min(room ? 1.0 : 1.35, camPitch + 1.2 * dt);
+    if (room) {   // TRONG NHÀ: camera luôn ở bên trong phòng, sau lưng nhân vật; kéo xuống để ngẩng nhìn trần
+      const R = room, H = (R.P.size || {}).h || 3.4, Dc = 4.2, up = camPitch < 0, cp = up ? 1 : Math.cos(camPitch);
+      const want = new THREE.Vector3(p.x + Math.sin(camAngle) * cp * Dc, 1.5 + (up ? camPitch * 0.8 : Math.sin(camPitch) * Dc), p.z + Math.cos(camAngle) * cp * Dc);   // ngẩng lên: camera vẫn ở sau lưng, chỉ hướng nhìn ngước lên
+      want.x = Math.min(R.cx + R.w / 2 - 0.3, Math.max(R.cx - R.w / 2 + 0.3, want.x)); want.z = Math.min(R.cz + R.d / 2 - 0.3, Math.max(R.cz - R.d / 2 + 0.3, want.z));
+      want.y = Math.min(H - 0.3, Math.max(0.35, want.y));
+      if (camSnap) { camera.position.copy(want); camSnap = false; } else camera.position.lerp(want, 0.15);
+      if (up) camera.lookAt(p.x - Math.sin(camAngle) * 3, 1.4 - Math.sin(camPitch) * 6, p.z - Math.cos(camAngle) * 3); else camera.lookAt(p.x, 1.4 - Math.sin(camPitch) * 1.6, p.z);
+      sky.position.set(camera.position.x, 0, camera.position.z); renderer.render(scene, camera); return;
+    }
     camD += ((creating ? 5.5 : room ? (room.P.layout === "greenhouse" ? 7.5 : 9) : camWide && !talking ? 26 : 11) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
     const D = camD, ch = Math.cos(creating ? 0.25 : camPitch) * D;
     const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(creating ? 0.25 : camPitch) * D, p.z + Math.cos(camAngle) * ch);

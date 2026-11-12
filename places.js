@@ -261,34 +261,78 @@ const AMBIENT = [
   { name: "Guard Thu – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, 10.5]],            say: "Find a team and play together!" }
 ];
 
-/* THẺ TỪ VỰNG 📦: đồ trưng bày trong từng nơi (theo id trong CITY). Chạm vào đồ → hỏi "What is this?" → nhận thẻ.
-   w = từ, pic = hình, pos = loại từ, say = câu NPC trả lời, ex = câu ví dụ (ưu tiên có tính từ / trạng từ đi kèm).
-   Đồ trưng bày tự đổi theo người chơi: món CHƯA học được bày ra trước; học hết thì món mới được bày tiếp. */
+/* THẺ TỪ VỰNG 📦: đồ trưng bày trong từng nơi (theo id trong CITY). Chạm vào đồ (hoặc đứng gần bấm ❓) → hỏi "What is this?" → nhận thẻ.
+   w = từ, pic = hình, pos = loại từ, say = câu NPC trả lời, ex = câu ví dụ (ưu tiên có tính từ / trạng từ đi kèm)
+   at = đồ được bày ở khu nào trong quán (đúng ngữ cảnh): bar (quầy pha chế), cake (tủ bánh), cashier (quầy tính tiền), shelf (kệ tường sau),
+        window (quầy gỗ cạnh cửa kính), sofa (góc sofa), plants (góc cây), ceiling (trần), door (lối vào) */
 const VOCAB = {
   cafe: [
-    { w: "cup",            pic: "☕", pos: "noun", say: "It's a cup.",              ex: "A small white cup of hot coffee." },
-    { w: "coffee beans",   pic: "🫘", pos: "noun", say: "They're coffee beans.",    ex: "These dark coffee beans smell wonderful." },
-    { w: "phin filter",    pic: "⏳", pos: "noun", say: "It's a phin filter.",      ex: "A phin filter drips coffee slowly." },
-    { w: "condensed milk", pic: "🥫", pos: "noun", say: "It's condensed milk.",     ex: "Vietnamese iced coffee uses sweet condensed milk." },
-    { w: "ice cubes",      pic: "🧊", pos: "noun", say: "They're ice cubes.",       ex: "Put two ice cubes in my glass, please." },
-    { w: "teapot",         pic: "🫖", pos: "noun", say: "It's a teapot.",           ex: "The teapot is very hot. Pour slowly!" },
-    { w: "milk tea",       pic: "🧋", pos: "noun", say: "It's milk tea.",           ex: "Iced milk tea is really popular in Vietnam." },
-    { w: "green tea",      pic: "🍵", pos: "noun", say: "It's green tea.",          ex: "Hot green tea tastes slightly bitter." },
-    { w: "croissant",      pic: "🥐", pos: "noun", say: "It's a croissant.",        ex: "I'd like a warm, crispy croissant." },
-    { w: "cake",           pic: "🍰", pos: "noun", say: "It's a piece of cake.",    ex: "This chocolate cake is really soft." },
-    { w: "cookie",         pic: "🍪", pos: "noun", say: "It's a cookie.",           ex: "These cookies are freshly baked." },
-    { w: "spoon",          pic: "🥄", pos: "noun", say: "It's a spoon.",            ex: "Stir your coffee gently with a spoon." },
-    { w: "honey",          pic: "🍯", pos: "noun", say: "It's honey.",              ex: "Add a little honey to your tea." },
-    { w: "straw",          pic: "🥤", pos: "noun", say: "It's a straw.",            ex: "Can I have a paper straw, please?" },
-    { w: "menu",           pic: "📋", pos: "noun", say: "It's the menu.",           ex: "Read the menu carefully before you order." },
-    { w: "receipt",        pic: "🧾", pos: "noun", say: "It's a receipt.",          ex: "Here is your receipt. Keep it safely." },
-    { w: "light bulb",     pic: "💡", pos: "noun", say: "It's a light bulb.",       ex: "The light bulbs hang beautifully from the ceiling." },
-    { w: "potted plant",   pic: "🪴", pos: "noun", say: "It's a potted plant.",     ex: "Water the potted plant once a week." },
-    { w: "succulent",      pic: "🌵", pos: "noun", say: "It's a succulent.",        ex: "Succulents grow slowly and need very little water." },
-    { w: "fern",           pic: "🌿", pos: "noun", say: "It's a fern.",             ex: "A long green fern hangs from the glass roof." },
-    { w: "jar",            pic: "🫙", pos: "noun", say: "It's a glass jar.",        ex: "A tiny garden grows quietly inside the glass jar." },
-    { w: "stool",          pic: "🪑", pos: "noun", say: "It's a stool.",            ex: "Sit on the tall wooden stool by the window." },
-    { w: "sofa",           pic: "🛋️", pos: "noun", say: "It's a sofa.",             ex: "This soft sofa is perfect for reading." },
-    { w: "wifi password",  pic: "📶", pos: "noun", say: "It's the wifi password.",  ex: "Excuse me, what's the wifi password?" }
+    // quầy pha chế
+    { w: "espresso machine", pic: "☕", pos: "noun", at: "bar", say: "It's an espresso machine.", ex: "The big espresso machine works very fast." },
+    { w: "coffee grinder",   pic: "⚙️", pos: "noun", at: "bar", say: "It's a coffee grinder.",    ex: "The coffee grinder is quite noisy." },
+    { w: "phin filter",      pic: "⏳", pos: "noun", at: "bar", say: "It's a phin filter.",       ex: "A phin filter drips coffee slowly." },
+    { w: "coffee beans",     pic: "🫘", pos: "noun", at: "bar", say: "They're coffee beans.",     ex: "These dark coffee beans smell wonderful." },
+    { w: "cup",              pic: "🍵", pos: "noun", at: "bar", say: "It's a cup.",               ex: "A small white cup of hot tea." },
+    { w: "mug",              pic: "☕", pos: "noun", at: "bar", say: "It's a mug.",               ex: "I drink coffee from a big mug every morning." },
+    { w: "milk jug",         pic: "🥛", pos: "noun", at: "bar", say: "It's a milk jug.",          ex: "She pours the milk carefully from the jug." },
+    { w: "kettle",           pic: "🫖", pos: "noun", at: "bar", say: "It's a kettle.",            ex: "The kettle is boiling loudly." },
+    { w: "ice cubes",        pic: "🧊", pos: "noun", at: "bar", say: "They're ice cubes.",        ex: "Put two ice cubes in my glass, please." },
+    { w: "straw",            pic: "🥤", pos: "noun", at: "bar", say: "It's a straw.",             ex: "Can I have a paper straw, please?" },
+    { w: "spoon",            pic: "🥄", pos: "noun", at: "bar", say: "It's a spoon.",             ex: "Stir your coffee gently with a spoon." },
+    { w: "tray",             pic: "🍽️", pos: "noun", at: "bar", say: "It's a tray.",              ex: "The waiter carries the tray very carefully." },
+    { w: "napkin",           pic: "🧻", pos: "noun", at: "bar", say: "It's a napkin.",            ex: "Here is a clean napkin for you." },
+    { w: "milk tea",         pic: "🧋", pos: "noun", at: "bar", say: "It's milk tea.",            ex: "Iced milk tea is really popular in Vietnam." },
+    // tủ bánh
+    { w: "croissant",        pic: "🥐", pos: "noun", at: "cake", say: "It's a croissant.",        ex: "I'd like a warm, crispy croissant." },
+    { w: "cake",             pic: "🍰", pos: "noun", at: "cake", say: "It's a piece of cake.",    ex: "This chocolate cake is really soft." },
+    { w: "cupcake",          pic: "🧁", pos: "noun", at: "cake", say: "It's a cupcake.",          ex: "The pink cupcake looks so sweet." },
+    { w: "cookie",           pic: "🍪", pos: "noun", at: "cake", say: "It's a cookie.",           ex: "These cookies are freshly baked." },
+    { w: "doughnut",         pic: "🍩", pos: "noun", at: "cake", say: "It's a doughnut.",         ex: "A round doughnut with sugar on top." },
+    // quầy tính tiền
+    { w: "cash register",    pic: "🖥️", pos: "noun", at: "cashier", say: "It's a cash register.", ex: "The cashier opens the cash register quickly." },
+    { w: "card machine",     pic: "💳", pos: "noun", at: "cashier", say: "It's a card machine.",  ex: "You can pay easily with the card machine." },
+    { w: "receipt",          pic: "🧾", pos: "noun", at: "cashier", say: "It's a receipt.",       ex: "Here is your receipt. Keep it safely." },
+    { w: "tip jar",          pic: "🫙", pos: "noun", at: "cashier", say: "It's a tip jar.",       ex: "Put a little money in the tip jar." },
+    { w: "menu",             pic: "📋", pos: "noun", at: "cashier", say: "It's the menu.",        ex: "Read the menu carefully before you order." },
+    // kệ tường sau
+    { w: "condensed milk",   pic: "🥫", pos: "noun", at: "shelf", say: "It's condensed milk.",    ex: "Vietnamese iced coffee uses sweet condensed milk." },
+    { w: "honey",            pic: "🍯", pos: "noun", at: "shelf", say: "It's honey.",             ex: "Add a little honey to your tea." },
+    { w: "sugar",            pic: "🧂", pos: "noun", at: "shelf", say: "It's sugar.",             ex: "No sugar, please. I like it bitter." },
+    { w: "tea leaves",       pic: "🍃", pos: "noun", at: "shelf", say: "They're tea leaves.",     ex: "Fresh tea leaves smell lovely." },
+    { w: "bottle",           pic: "🍾", pos: "noun", at: "shelf", say: "It's a bottle.",          ex: "A tall glass bottle of syrup." },
+    { w: "glass",            pic: "🥛", pos: "noun", at: "shelf", say: "It's a glass.",           ex: "Can I have a glass of cold water?" },
+    { w: "coffee bag",       pic: "🛍️", pos: "noun", at: "shelf", say: "It's a bag of coffee.",   ex: "This bag of coffee is very heavy." },
+    // quầy gỗ cạnh cửa kính
+    { w: "stool",            pic: "🪑", pos: "noun", at: "window", say: "It's a stool.",          ex: "Sit on the tall wooden stool by the window." },
+    { w: "laptop",           pic: "💻", pos: "noun", at: "window", say: "It's a laptop.",         ex: "He works quietly on his laptop." },
+    { w: "notebook",         pic: "📓", pos: "noun", at: "window", say: "It's a notebook.",       ex: "I write new words neatly in my notebook." },
+    { w: "headphones",       pic: "🎧", pos: "noun", at: "window", say: "They're headphones.",    ex: "She listens to music with big headphones." },
+    { w: "phone charger",    pic: "🔌", pos: "noun", at: "window", say: "It's a phone charger.",  ex: "Can I borrow your phone charger?" },
+    { w: "wifi password",    pic: "📶", pos: "noun", at: "window", say: "It's the wifi password.", ex: "Excuse me, what's the wifi password?" },
+    // góc sofa
+    { w: "sofa",             pic: "🛋️", pos: "noun", at: "sofa", say: "It's a sofa.",            ex: "This soft sofa is perfect for reading." },
+    { w: "cushion",          pic: "🟧", pos: "noun", at: "sofa", say: "It's a cushion.",          ex: "Lean back on the soft cushion." },
+    { w: "board game",       pic: "🎲", pos: "noun", at: "sofa", say: "It's a board game.",       ex: "Let's play a fun board game together!" },
+    { w: "newspaper",        pic: "📰", pos: "noun", at: "sofa", say: "It's a newspaper.",        ex: "My grandpa reads the newspaper slowly." },
+    { w: "book",             pic: "📖", pos: "noun", at: "sofa", say: "It's a book.",             ex: "This book is really interesting." },
+    { w: "candle",           pic: "🕯️", pos: "noun", at: "sofa", say: "It's a candle.",           ex: "A small candle burns brightly on the table." },
+    // góc cây
+    { w: "succulent",        pic: "🌵", pos: "noun", at: "plants", say: "It's a succulent.",      ex: "Succulents grow slowly and need very little water." },
+    { w: "terrarium",        pic: "🫙", pos: "noun", at: "plants", say: "It's a terrarium.",      ex: "A tiny garden grows quietly inside the terrarium." },
+    { w: "potted plant",     pic: "🪴", pos: "noun", at: "plants", say: "It's a potted plant.",   ex: "Water the potted plant once a week." },
+    { w: "watering can",     pic: "🚿", pos: "noun", at: "plants", say: "It's a watering can.",   ex: "Fill the watering can with clean water." },
+    { w: "seeds",            pic: "🌱", pos: "noun", at: "plants", say: "They're seeds.",         ex: "Plant the seeds carefully in the soil." },
+    { w: "flower",           pic: "🌸", pos: "noun", at: "plants", say: "It's a flower.",         ex: "What a beautiful pink flower!" },
+    { w: "price tag",        pic: "🏷️", pos: "noun", at: "plants", say: "It's a price tag.",      ex: "The price tag says thirty thousand dong." },
+    // trần
+    { w: "light bulb",       pic: "💡", pos: "noun", at: "ceiling", say: "It's a light bulb.",    ex: "The light bulbs hang beautifully from the ceiling." },
+    { w: "hanging plant",    pic: "🌿", pos: "noun", at: "ceiling", say: "It's a hanging plant.", ex: "A long green plant hangs from the glass roof." },
+    { w: "glass roof",       pic: "🪟", pos: "noun", at: "ceiling", say: "It's a glass roof.",    ex: "The sun shines brightly through the glass roof." },
+    // lối vào
+    { w: "air conditioner",  pic: "❄️", pos: "noun", at: "door", say: "It's an air conditioner.", ex: "The air conditioner keeps the room cool." },
+    { w: "umbrella",         pic: "☂️", pos: "noun", at: "door", say: "It's an umbrella.",        ex: "Take an umbrella. It's raining heavily." },
+    { w: "doormat",          pic: "🟫", pos: "noun", at: "door", say: "It's a doormat.",          ex: "Wipe your shoes on the doormat, please." },
+    { w: "trash can",        pic: "🗑️", pos: "noun", at: "door", say: "It's a trash can.",        ex: "Please throw your cup in the trash can." },
+    { w: "open sign",        pic: "🪧", pos: "noun", at: "door", say: "It's an open sign.",       ex: "The open sign means the café is open now." }
   ]
 };

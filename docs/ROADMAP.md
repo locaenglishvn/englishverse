@@ -112,11 +112,12 @@ Lời mở đầu (dự kiến):
 - **Độ thuộc 0–3 ⭐ mỗi thẻ:** tăng khi nói đúng câu của thẻ lúc đánh Echo Ghost, gặp lại NPC, hoặc nói lại từ ở chỗ trưng bày. Quái chọn đề từ cả 3 loại thẻ, thẻ ít sao ra nhiều hơn.
 - **Lên cấp:** 60 điểm / cấp; **từ cấp 5 trở lên phải có ≥ 70% thẻ đạt 2 ⭐** mới lên được (`checkLevel`). Cấp lưu trong `save.level`.
 - **NPC theo cấp:** `minLv` trong lessons.js (vd Uncle Tu – Cafe Owner chỉ tiếp từ Lv.5). Tên trên đầu ghi "· Lv.5".
-- **Đồ trưng bày cá nhân hóa:** mỗi nơi có ~10 chỗ bày (`vocabSpots`), bày món CHƯA học trước, học hết thì món đã có (ít sao trước) được bày lại để luyện.
+- **Đồ trưng bày đúng ngữ cảnh:** mỗi món có `at` = khu đặt (quầy pha chế, tủ bánh, quầy tính tiền, kệ, quầy cửa kính, sofa, góc cây, trần, lối vào). Bày **tất cả** cùng lúc (không xoay vòng theo người chơi – người dùng đã chốt). ❓ = chưa học, ✅ = đã có thẻ. Hỏi bằng cách **chạm thẳng vào đồ** hoặc đứng gần bấm ❓.
 
 ### Nội thất (làm theo ảnh người dùng gửi, từng nơi)
 - Phòng có thể to riêng: `size: { w, d, h }` trong places.js (mặc định 16 × 12).
-- **Cafe Sua Da** (20 × 48 m, kiểu nhà kính – theo ảnh quán cà phê nhà kính): khu trước "The Green Corner" (bàn bình thủy sinh, sen đá, cây lá to), khu giữa chỗ ngồi (quầy bar gỗ dọc cửa kính + ghế cao, 3 góc sofa, cây treo, bóng đèn dây, máy lạnh), khu sau quầy pha chế (máy espresso, máy xay, tủ bánh, máy tính tiền, menu bảng đen, kệ, bao cà phê). 6 NPC: Mia (barista), Vy (thu ngân), Bao (phục vụ), Grace (khách), Mr. Kha (bán cây), Uncle Tu (chủ quán, Lv.5). 24 từ vựng.
+- **Camera trong nhà luôn ở bên trong phòng** (sau lưng nhân vật, không vượt tường/trần); kéo màn hình xuống để ngước lên nhìn trần.
+- **Cafe Sua Da** (20 × 48 m, kiểu nhà kính – theo ảnh quán cà phê nhà kính): khu trước "The Green Corner" (bàn bình thủy sinh, sen đá, cây lá to), khu giữa chỗ ngồi (quầy bar gỗ dọc cửa kính + ghế cao, 3 góc sofa, cây treo, bóng đèn dây, máy lạnh), khu sau quầy pha chế (máy espresso, máy xay, tủ bánh, máy tính tiền, menu bảng đen, kệ, bao cà phê). 6 NPC: Mia (barista), Vy (thu ngân), Bao (phục vụ), Grace (khách), Mr. Kha (bán cây), Uncle Tu (chủ quán, Lv.5). **58 từ vựng**. Mái kính trong suốt (nhìn lên thấy trời).
 
 ### Kinh tế
 - 🪙 Xu: từ NPC, hạ quái, mê cung, (sau này) bán đồ tự làm.
@@ -223,7 +224,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 14. **Bản đồ nhỏ** xoay theo hướng nhìn; chạm để mở bản đồ lớn, chạm địa điểm để được chỉ đường
 15. Giọng đọc tự nhiên hơn; tinh linh không bay quanh người nữa (trưng ở nhà); thư viện để trong `lib/`
 16. Ngoại thất riêng đợt 1: Town Hall, City Hospital, Verse School, Cafe Sua Da, My Home (cờ bay, bản đồ nhỏ vẽ đúng hình khối)
-22. **Sổ thẻ 3 loại + hạn mức theo cấp + sao luyện tập**; NPC theo cấp; **nội thất Cafe Sua Da** kiểu nhà kính 20 × 48 m, 5 NPC mới, 24 từ vựng
+22. **Sổ thẻ 3 loại + hạn mức theo cấp + sao luyện tập**; NPC theo cấp; **nội thất Cafe Sua Da** kiểu nhà kính 20 × 48 m, 5 NPC mới, 58 từ vựng bày đúng ngữ cảnh, camera trong nhà nhìn được tường và trần
 21. Verse Plaza (trung tâm thương mại); NPC đi tuần/trực gác (`AMBIENT` trong places.js: công an, lính cứu hỏa, lính gác Arena – chào khi đi ngang); cổng Arena 3 cửa đi qua được; cửa chính đồn công an
 20. Ngoại thất đồn công an, trạm cứu hỏa; **đảo đấu trường Verse Arena** (sông, cầu, tường thành, 3 cổng Ngọ Môn, Grand Arena), The Maze dời vào đảo
 19. Ngoại thất đợt 3 (khu hành chính): Post Office, Verse Bank, Verse Library, City Museum. Sửa lỗi trang tự phóng to (chặn chụm/chạm 2 lần) và camera giật sát khi bị nhà chắn
