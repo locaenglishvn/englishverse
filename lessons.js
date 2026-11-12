@@ -101,7 +101,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Green – Librarian", color: 0x364fc7, place: "library", x: 0, z: -3.6,
+  name: "Ms. Green – Librarian", color: 0x364fc7, place: "library", x: 0, z: 0,
   steps: [
     { say: "Shh… Hello! Can I help you?",
       card: { w: "borrow", pic: "📚", ex: "I’d like to borrow this book." },
@@ -124,7 +124,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Linh – Bank Teller", color: 0x2b8a3e, place: "bank", x: 0, z: -3.6,
+  name: "Linh – Bank Teller", color: 0x1b5e3b, place: "bank", x: 0, z: -10.3,
   steps: [
     { say: "Good afternoon! How can I help you today?",
       card: { w: "save money", pic: "🐷", ex: "I want to save money." },
@@ -645,6 +645,203 @@ const LESSONS = [
         { t: "Thank you. I’ll keep that in mind.", ok: true,  fb: "Wise words! +10" },
         { t: "Mind is keep.",                      ok: false, fb: "Say “I’ll keep that in mind.”" },
         { t: "OK bye.",                            ok: false, fb: "Say thank you first :)" } ] }
+  ]
+}
+/* ===== VERSE LIBRARY (phòng đọc bầu dục 28 × 40 m, quầy thủ thư ở tâm, bàn đọc tỏa nan quạt) ===== */
+,{
+  name: "Tom – Student", color: 0x1c7ed6, place: "library", x: 8.7, z: 2.3,
+  steps: [
+    { say: "Hi! Are you looking for a seat?",
+      q: { w: "Is this seat free?", pic: "🪑", ex: "Excuse me, is this seat free?" },
+      card: { w: "Is this seat free?", pic: "🪑", ex: "Excuse me, is this seat free?" },
+      choices: [
+        { t: "Yes. Is this seat free?",  ok: true,  fb: "Polite question! +10" },
+        { t: "Seat free me?",            ok: false, fb: "Say “Is this seat free?”" },
+        { t: "Move, please.",            ok: false, fb: "Too rude. Ask “Is this seat free?”" } ] },
+    { say: "Sure, sit down. I’m doing my homework. What are you reading?",
+      q: { w: "What are you reading?", pic: "📖", ex: "What are you reading?" },
+      card: { w: "I’m reading…", pic: "📖", ex: "I’m reading a book about space." },
+      choices: [
+        { t: "I’m reading a book about space.", ok: true,  fb: "Great! +10" },
+        { t: "Read I space book.",              ok: false, fb: "Say “I’m reading a book about…”" },
+        { t: "Homework is you.",                ok: false, fb: "He asked about YOUR book :)" } ] },
+    { say: "Cool! Shh… we have to speak quietly here.",
+      card: { w: "speak quietly", pic: "🤫", ex: "Please speak quietly in the library." },
+      choices: [
+        { t: "Oh, sorry. I’ll speak quietly.", ok: true,  fb: "Good manners! +10" },
+        { t: "I speak loud!",                  ok: false, fb: "Not in a library :)" },
+        { t: "Quiet is speak.",                ok: false, fb: "Say “I’ll speak quietly.”" } ] }
+  ]
+},
+{
+  name: "Mrs. Hoa – Book Shelver", color: 0x9c36b5, place: "library", x: 9.2, z: -9.2,
+  steps: [
+    { say: "Hello! I’m putting books back on the shelves. Can I help you?",
+      q: { w: "Can I help you?", pic: "🙋", ex: "Hello! Can I help you?" },
+      card: { w: "Where can I find…?", pic: "🔎", ex: "Where can I find books about animals?" },
+      choices: [
+        { t: "Where can I find books about animals?", ok: true,  fb: "Clear question! +10" },
+        { t: "Animal book where?",                    ok: false, fb: "Say “Where can I find books about…?”" },
+        { t: "I am an animal.",                       ok: false, fb: "Haha! Ask for the books :)" } ] },
+    { say: "They’re on the second shelf, next to the science books.",
+      card: { w: "next to", pic: "↔️", ex: "The atlas is next to the dictionary." },
+      choices: [
+        { t: "Next to the science books. Got it!", ok: true,  fb: "You listened well! +10" },
+        { t: "Science is animals.",                ok: false, fb: "Repeat: “next to the science books”" },
+        { t: "On the floor?",                      ok: false, fb: "She said the second SHELF." } ] },
+    { say: "When you finish, please don’t put the book back. Leave it on the cart.",
+      card: { w: "leave it on…", pic: "🛒", ex: "Leave it on the cart, please." },
+      choices: [
+        { t: "OK, I’ll leave it on the cart.", ok: true,  fb: "Perfect! +10" },
+        { t: "I put it back shelf.",           ok: false, fb: "She said leave it on the cart." },
+        { t: "Cart is book.",                  ok: false, fb: "Say “I’ll leave it on the cart.”" } ] }
+  ]
+},
+{
+  name: "Lily – Little Reader", color: 0xf06595, place: "library", x: -8.7, z: 2.3,
+  steps: [
+    { say: "Hi! Do you like reading?",
+      q: { w: "Do you like…?", pic: "❤️", ex: "Do you like reading?" },
+      card: { w: "I love reading.", pic: "❤️", ex: "Yes! I love reading." },
+      choices: [
+        { t: "Yes! I love reading.", ok: true,  fb: "Me too! +10" },
+        { t: "Reading is like.",     ok: false, fb: "Say “I love reading.”" },
+        { t: "No books.",            ok: false, fb: "Try “Yes, I love reading.”" } ] },
+    { say: "What’s your favourite book?",
+      q: { w: "What’s your favourite…?", pic: "⭐", ex: "What’s your favourite book?" },
+      card: { w: "My favourite book is…", pic: "⭐", ex: "My favourite book is Harry Potter." },
+      choices: [
+        { t: "My favourite book is a comic about a robot.", ok: true,  fb: "Sounds fun! +10" },
+        { t: "Favourite me book.",                          ok: false, fb: "Say “My favourite book is…”" },
+        { t: "Yes, favourite.",                             ok: false, fb: "She asked WHAT. Name a book :)" } ] },
+    { say: "Can you read this word for me? I don’t know it.",
+      card: { w: "Let me see.", pic: "👀", ex: "Let me see. It says “dinosaur”." },
+      choices: [
+        { t: "Let me see. It says “dinosaur”.", ok: true,  fb: "Kind helper! +10" },
+        { t: "No time.",                        ok: false, fb: "Be kind :) Say “Let me see.”" },
+        { t: "See me word.",                    ok: false, fb: "Say “Let me see.”" } ] }
+  ]
+},
+{
+  name: "Grandpa Vinh – Old Reader", color: 0x495057, place: "library", x: -6.4, z: -6.4, minLv: 5,
+  steps: [
+    { say: "Ah, a young reader! I come here every morning to read the newspaper.",
+      q: { w: "How often do you…?", pic: "🔁", ex: "How often do you come here?" },
+      card: { w: "every morning", pic: "🌅", ex: "I read every morning." },
+      choices: [
+        { t: "Every morning? That’s a good habit.", ok: true,  fb: "Nice reply! +10" },
+        { t: "Morning is every.",                   ok: false, fb: "Say “That’s a good habit.”" },
+        { t: "I hate newspapers.",                  ok: false, fb: "Be polite :)" } ] },
+    { say: "When I was young, this library had no computers. We used paper cards to find books.",
+      card: { w: "When I was young…", pic: "👴", ex: "When I was young, there were no phones." },
+      choices: [
+        { t: "Really? How did you find books?", ok: true,  fb: "Curious question! +10" },
+        { t: "You young was.",                  ok: false, fb: "Ask “How did you find books?”" },
+        { t: "Computers are paper.",            ok: false, fb: "Listen again :)" } ] },
+    { say: "We looked at the cards in big drawers. It was slow, but fun! Now, tell me: why do you read?",
+      q: { w: "Why do you…?", pic: "❓", ex: "Why do you read?" },
+      card: { w: "because…", pic: "💭", ex: "I read because it’s fun." },
+      choices: [
+        { t: "I read because I want to learn new things.", ok: true,  fb: "Wonderful reason! +10" },
+        { t: "Because read.",                              ok: false, fb: "Say “I read because…”" },
+        { t: "Slow and fun.",                              ok: false, fb: "He asked WHY you read." } ] }
+  ]
+}
+/* ===== VERSE BANK (sảnh lớn 28 × 44 m: cột đá granite, giếng trời kính cam, quầy giao dịch chữ U, phòng két) ===== */
+,{
+  name: "Mr. Hai – Security Guard", color: 0x343a40, place: "bank", x: 3.5, z: 15,
+  steps: [
+    { say: "Good morning! Welcome to Verse Bank. What do you need today?",
+      q: { w: "What do you need?", pic: "🙋", ex: "What do you need today?" },
+      card: { w: "I need to…", pic: "🏦", ex: "I need to open an account." },
+      choices: [
+        { t: "I need to open an account.", ok: true,  fb: "Clear! +10" },
+        { t: "Need bank I.",               ok: false, fb: "Say “I need to…”" },
+        { t: "You are a guard.",           ok: false, fb: "True :) But tell him what you need." } ] },
+    { say: "OK. Please take a number from the machine and wait for your turn.",
+      card: { w: "wait for your turn", pic: "⏳", ex: "Please wait for your turn." },
+      choices: [
+        { t: "OK. I’ll take a number and wait.", ok: true,  fb: "Good listener! +10" },
+        { t: "I go first!",                      ok: false, fb: "Wait for your turn :)" },
+        { t: "Number is wait.",                  ok: false, fb: "Say “I’ll take a number and wait.”" } ] },
+    { say: "Your number will appear on the screen. Have a nice day!",
+      card: { w: "Have a nice day!", pic: "☀️", ex: "Thank you. Have a nice day!" },
+      choices: [
+        { t: "Thank you. You too!", ok: true,  fb: "Friendly! +10" },
+        { t: "Day nice.",           ok: false, fb: "Say “You too!”" },
+        { t: "Screen.",             ok: false, fb: "Say thank you :)" } ] }
+  ]
+},
+{
+  name: "Ms. Mai – Currency Exchange", color: 0x1b5e3b, place: "bank", x: 7.2, z: -5,
+  steps: [
+    { say: "Hello! This is the currency exchange counter. How can I help?",
+      card: { w: "change money", pic: "💱", ex: "I’d like to change some money." },
+      choices: [
+        { t: "I’d like to change dollars into dong.", ok: true,  fb: "Perfect! +10" },
+        { t: "Dollar dong change.",                   ok: false, fb: "Say “I’d like to change dollars into dong.”" },
+        { t: "I want a dollar shop.",                 ok: false, fb: "Try “I’d like to change…”" } ] },
+    { say: "Of course. How many dollars do you have?",
+      q: { w: "How many…do you have?", pic: "🔢", ex: "How many dollars do you have?" },
+      card: { w: "one hundred dollars", pic: "💵", ex: "I have one hundred dollars." },
+      choices: [
+        { t: "I have one hundred dollars.", ok: true,  fb: "+10" },
+        { t: "Many dollars.",               ok: false, fb: "Give a number: “I have…”" },
+        { t: "Yes, I have.",                ok: false, fb: "She asked HOW MANY." } ] },
+    { say: "Today’s exchange rate is on the board. Please count your money before you leave.",
+      card: { w: "count your money", pic: "🧮", ex: "Count your money before you leave." },
+      choices: [
+        { t: "OK, I’ll count it now. Thank you.", ok: true,  fb: "Smart! +10" },
+        { t: "Money count no.",                   ok: false, fb: "Say “I’ll count it now.”" },
+        { t: "Board is money.",                   ok: false, fb: "Try “Thank you.”" } ] }
+  ]
+},
+{
+  name: "Grandma Sau – Customer", color: 0x862e9c, place: "bank", x: 10.8, z: 13.5,
+  steps: [
+    { say: "Oh dear, this machine is new. Can you help me, please?",
+      q: { w: "Can you help me?", pic: "🆘", ex: "Excuse me, can you help me, please?" },
+      card: { w: "Sure, I can help.", pic: "🤝", ex: "Sure, I can help you." },
+      choices: [
+        { t: "Sure, I can help you.", ok: true,  fb: "So kind! +10" },
+        { t: "Help is machine.",      ok: false, fb: "Say “Sure, I can help.”" },
+        { t: "No.",                   ok: false, fb: "Be kind to Grandma :)" } ] },
+    { say: "Thank you! What do I do first?",
+      card: { w: "insert your card", pic: "💳", ex: "First, insert your card." },
+      choices: [
+        { t: "First, insert your card here.", ok: true,  fb: "Clear instruction! +10" },
+        { t: "Card the in.",                  ok: false, fb: "Say “First, insert your card.”" },
+        { t: "Give me your card.",            ok: false, fb: "Never take someone’s card! Say “Insert your card.”" } ] },
+    { say: "Now it asks for my PIN. Should I tell you?",
+      card: { w: "Keep it secret.", pic: "🤐", ex: "Don’t tell anyone your PIN. Keep it secret." },
+      choices: [
+        { t: "No! Don’t tell anyone. Keep it secret.", ok: true,  fb: "Safe and smart! +10" },
+        { t: "Yes, tell me.",                          ok: false, fb: "Never ask for a PIN!" },
+        { t: "PIN is 1234.",                           ok: false, fb: "Keep it secret :)" } ] }
+  ]
+},
+{
+  name: "Mr. Quang – Bank Manager", color: 0x0b3d2a, place: "bank", x: -4, z: -17, minLv: 5,
+  steps: [
+    { say: "Welcome! I’m the manager. Behind me is our vault. Do you know what a vault is?",
+      q: { w: "Do you know what…is?", pic: "❓", ex: "Do you know what a vault is?" },
+      card: { w: "vault", pic: "🏦", ex: "The bank keeps gold in the vault." },
+      choices: [
+        { t: "It’s a strong room for money and gold.", ok: true,  fb: "Excellent! +10" },
+        { t: "Vault is eat.",                          ok: false, fb: "A vault is a strong room for money." },
+        { t: "I don’t care.",                          ok: false, fb: "Be curious :)" } ] },
+    { say: "Right! Now, a question for you: if you get 100,000 dong, what will you do?",
+      card: { w: "I’ll save half.", pic: "🐷", ex: "I’ll save half and spend half." },
+      choices: [
+        { t: "I’ll save half and spend half.", ok: true,  fb: "Smart plan! +10" },
+        { t: "Spend all now!",                 ok: false, fb: "Hmm. Try saving some :)" },
+        { t: "Half is money.",                 ok: false, fb: "Say “I’ll save half.”" } ] },
+    { say: "Very wise. Saving a little every week makes a big difference.",
+      card: { w: "make a big difference", pic: "📈", ex: "Small steps make a big difference." },
+      choices: [
+        { t: "I’ll start saving this week.", ok: true,  fb: "Great goal! +10" },
+        { t: "Difference big make.",         ok: false, fb: "Say “I’ll start saving.”" },
+        { t: "Week is save.",                ok: false, fb: "Try “I’ll start saving this week.”" } ] }
   ]
 }
 ];
