@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>EnglishVerse</title>
 <style>
 :root{--panel:rgba(255,255,255,.95);--ink:#1f2937;--accent:#e8590c;--ok:#2f9e44;--bad:#c92a2a;color-scheme:light dark}
@@ -551,6 +551,12 @@ function endDrag() { dragging = false; input.x = 0; input.z = 0; knob.style.tran
 stick.addEventListener("pointerup", endDrag);
 stick.addEventListener("pointercancel", endDrag);
 
+/* Chặn trình duyệt tự phóng to trang (chụm 2 ngón, chạm 2 lần trên iPhone) – trước đây làm các nút bị đẩy ra ngoài màn hình */
+["gesturestart", "gesturechange", "gestureend"].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
+let lastTap = 0;
+document.addEventListener("touchend", e => { const now = Date.now(); if (now - lastTap < 320 && e.target.tagName !== "INPUT") e.preventDefault(); lastTap = now; }, { passive: false });
+document.addEventListener("dblclick", e => e.preventDefault());
+document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 /* Xoay camera: kéo ngón tay (hoặc chuột) trên màn hình; phím Q/E trên máy tính */
 let camAngle = 0, camPitch = 0.75, look = null;   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
 const cv = renderer.domElement;
@@ -2018,6 +2024,127 @@ Object.assign(EXTERIOR, {
     R.solids.push([-2.4, 5.6, 1.4, 0.6], [3.8, 5.8, 0.3, 0.3]); return R;
   }
 });
+/* ===== 8f. NGOẠI THẤT ĐỢT 3: khu hành chính (bưu điện, ngân hàng, thư viện, bảo tàng) =====
+   Mặt bên và mặt sau suy ra từ mặt trước (cùng kiểu cửa sổ, phào chỉ). */
+function umbrella(g, x, z, c) { lc(g, 0.04, 0.04, 2.2, 0x868e96, x, 1.1, z, 6); const u = new THREE.Mesh(new THREE.ConeGeometry(1.3, 0.6, 8), mat(c)); u.position.set(x, 2.4, z); g.add(u); }
+function columnRow(g, xs, z, h, r, c, y0) { xs.forEach(x => { lc(g, r, r * 1.1, h, c, x, (y0 || 0) + h / 2, z, 12); lb(g, r * 2.6, 0.3, r * 2.6, c, x, (y0 || 0) + h - 0.15, z); lb(g, r * 2.6, 0.3, r * 2.6, c, x, (y0 || 0) + 0.15, z); }); }
+Object.assign(EXTERIOR, {
+  /* POST OFFICE – theo Bưu điện Quận 5: kiểu art-deco màu kem vàng, góc bo tròn, khối tháp giữa có chữ + đồng hồ, cột ăng-ten phía sau */
+  post(g) {
+    const C = 0xf3e2b3, W = 16, D = 12, H = 7.5;
+    const fac = (w) => skin(w, H, 40, (x, Wd, Hh) => { x.fillStyle = "#f3e2b3"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#e3cd93"; x.fillRect(0, 0, Wd, 0.5); x.fillRect(0, 3.6, Wd, 0.25); x.fillRect(0, Hh - 0.5, Wd, 0.5);
+      for (let X = 0.6; X < Wd - 0.8; X += 1.9) { rectWin(x, X, 1, 1.1, 2, "#6b5a3e", "#fff6dc"); rectWin(x, X, 4.3, 1.1, 2.1, "#6b5a3e", "#fff6dc"); x.fillStyle = "#e3cd93"; x.fillRect(X - 0.25, 0.5, 0.12, Hh - 1); } });
+    lb(g, W, H, D, C, 0, H / 2, 0);
+    face(g, fac(W), W, H, 0, H / 2, D / 2 + 0.02); face(g, fac(D), D, H, W / 2 + 0.02, H / 2, 0, Math.PI / 2); face(g, fac(D), D, H, -W / 2 - 0.02, H / 2, 0, -Math.PI / 2); face(g, fac(W), W, H, 0, H / 2, -D / 2 - 0.02, Math.PI);
+    [-1, 1].forEach(s => { lc(g, 1.3, 1.3, H, C, s * (W / 2 - 0.6), H / 2, D / 2 - 0.6, 20); lc(g, 1.35, 1.35, 0.5, 0xe3cd93, s * (W / 2 - 0.6), H - 0.25, D / 2 - 0.6, 20); });   // góc bo tròn
+    lb(g, W + 0.4, 0.6, D + 0.4, 0xe3cd93, 0, H + 0.3, 0);   // gờ mái
+    // khối tháp giữa
+    lb(g, 5, 11, 1.6, C, 0, 5.5, D / 2 + 0.3);
+    const tw = skin(5, 11, 50, (x, Wd, Hh) => { x.fillStyle = "#f6e8c0"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#e3cd93"; x.fillRect(0, 0, Wd, 0.4); x.fillRect(0.2, 0.4, 0.3, Hh); x.fillRect(Wd - 0.5, 0.4, 0.3, Hh);
+      x.fillStyle = "#fff6dc"; x.fillRect(0.7, 0.7, 3.6, 0.9); signText(x, "POST OFFICE", 2.5, 1.15, 3.4, 0.55, "#5b7f9a");
+      x.fillStyle = "#ffffff"; x.beginPath(); x.arc(1.6, 2.6, 0.6, 0, 7); x.fill(); x.strokeStyle = "#5b7f9a"; x.lineWidth = 0.06; x.stroke(); x.beginPath(); x.moveTo(1.6, 2.6); x.lineTo(1.6, 2.2); x.moveTo(1.6, 2.6); x.lineTo(1.9, 2.7); x.stroke();
+      x.fillStyle = "#5b7f9a"; x.fillRect(2.6, 2.1, 1.3, 0.9); x.fillStyle = "#fff6dc"; x.beginPath(); x.moveTo(2.6, 2.1); x.lineTo(3.25, 2.6); x.lineTo(3.9, 2.1); x.fill();   // biểu tượng phong bì
+      rectWin(x, 1.2, 3.8, 2.6, 2.2, "#6b5a3e", "#fff6dc"); x.fillStyle = "#e3cd93"; x.fillRect(0, 6.3, Wd, 0.3);
+      x.fillStyle = "#f2a516"; x.fillRect(0, 6.9, Wd, 0.9); signText(x, "BƯU ĐIỆN", 2.5, 7.35, 4.4, 0.55, "#ffffff");
+      x.fillStyle = "#3b2a1a"; x.fillRect(1, 8.3, 3, 2.7); x.fillStyle = "#c5e3f6"; x.fillRect(1.15, 8.45, 1.3, 2.55); x.fillRect(2.55, 8.45, 1.3, 2.55); });
+    face(g, tw, 5, 11, 0, 5.5, D / 2 + 1.12);
+    lb(g, 5.4, 0.5, 2, 0xe3cd93, 0, 11.2, D / 2 + 0.3); lb(g, 3.4, 0.6, 1.4, C, 0, 11.7, D / 2 + 0.3);
+    [-1.6, 1.6].forEach(dx => lc(g, 0.03, 0.03, 4, 0xadb5bd, dx, 13.5, D / 2 + 0.3, 6));   // 2 cột thu lôi
+    // dải biển cam tầng trệt 2 bên
+    const band = skin(5, 0.9, 50, (x, Wd, Hh) => { x.fillStyle = "#f2a516"; x.fillRect(0, 0, Wd, Hh); signText(x, "POST · MAIL · PARCELS", Wd / 2, Hh / 2, Wd - 0.3, 0.38, "#ffffff"); });
+    [-5, 5].forEach(x => face(g, band, 5, 0.9, x, 3.3, D / 2 + 0.05));
+    flagPole(g, -3.5, D / 2 + 0.4, 2.2); g.children.slice(-2).forEach(m => m.position.y += 7.8);
+    // cột ăng-ten phía sau
+    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 1.8, 26, 4, 8, true), new THREE.MeshBasicMaterial({ color: 0x4c6ef5, wireframe: true })); ant.position.set(4, 13, -3); g.add(ant);
+    lb(g, 0.15, 3, 0.15, 0xe03131, 4, 27.5, -3);
+    // hàng quán trước bưu điện + hòm thư
+    umbrella(g, -6.5, 8, 0xe03131); umbrella(g, 6.5, 8.2, 0x1c7ed6);
+    lb(g, 0.7, 1.2, 0.6, 0xf2a516, 3, 0.6, 7.6); const mb = textPlate("MAIL", 0.6, 0.25, "#f2a516", "#ffffff"); mb.position.set(3, 0.95, 7.92); g.add(mb);
+    return { solids: [[0, 0, W / 2, D / 2], [0, D / 2 + 0.3, 2.5, 0.8], [-6.5, 8, 0.15, 0.15], [6.5, 8.2, 0.15, 0.15], [3, 7.6, 0.35, 0.3]], door: [0, D / 2 + 2.6], map: [[0, 0, W, D]] };
+  },
+  /* VERSE BANK – theo Ngân hàng Nhà nước (TP.HCM): đá granite xám, hàng cột cao 2 tầng, phào chỉ nặng, lan can trang trí, mái ngói cam có giếng trời kính */
+  bank(g) {
+    const W = 20, D = 14, H = 10, G = 0xb9b4a8;
+    const side = (w) => skin(w, H, 30, (x, Wd, Hh) => { x.fillStyle = "#b9b4a8"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#a59f92"; for (let j = 0.5; j < Hh; j += 0.6) x.fillRect(0, j, Wd, 0.03);
+      x.fillStyle = "#9c968a"; x.fillRect(0, Hh - 1.6, Wd, 1.6); x.fillStyle = "#c9c4b8"; x.fillRect(0, 0, Wd, 1.2);
+      for (let X = 0.8; X < Wd - 1; X += 2.2) { x.fillStyle = "#c9c4b8"; x.fillRect(X - 0.3, 1.2, 0.4, Hh - 2.8); rectWin(x, X + 0.4, 2, 1.1, 2.4, "#3e4347", "#a59f92"); rectWin(x, X + 0.4, 5.4, 1.1, 2.2, "#3e4347", "#a59f92"); } });
+    lb(g, W, H, D, G, 0, H / 2, 0);
+    face(g, side(D), D, H, W / 2 + 0.02, H / 2, 0, Math.PI / 2); face(g, side(D), D, H, -W / 2 - 0.02, H / 2, 0, -Math.PI / 2); face(g, side(W), W, H, 0, H / 2, -D / 2 - 0.02, Math.PI);
+    const fr = skin(W, H, 30, (x, Wd, Hh) => { x.fillStyle = "#aaa598"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#c9c4b8"; x.fillRect(0, 0, Wd, 1.3);   // mặt sau hàng cột: hốc tối sâu
+      x.fillStyle = "#d6d1c4"; x.fillRect(0.5, 0.35, Wd - 1, 0.65); signText(x, "VERSE BANK · NGÂN HÀNG", Wd / 2, 0.7, Wd - 3, 0.55, "#b02a2a");
+      for (let X = 1; X < Wd - 1; X += 2) { x.fillStyle = "#3a3d40"; x.fillRect(X + 0.35, 1.7, 1.3, 3.2); x.fillRect(X + 0.35, 5.4, 1.3, 3.4); x.fillStyle = "#6f7b82"; x.fillRect(X + 0.5, 2, 1, 2.6); x.fillRect(X + 0.5, 5.7, 1, 2.8); }
+      x.fillStyle = "#2b2b2b"; x.fillRect(Wd / 2 - 1.4, 4.9, 2.8, Hh - 4.9); x.fillStyle = "#c9a227"; x.fillRect(Wd / 2 - 1.4, 4.9, 2.8, 0.12); });
+    face(g, fr, W, H, 0, H / 2, D / 2 + 0.02);
+    const xs = []; for (let x = -9; x <= 9.01; x += 2) xs.push(x); columnRow(g, xs, D / 2 + 0.7, 7.6, 0.38, 0xc9c4b8, 1.2);   // hàng cột lớn
+    lb(g, W + 0.4, 1.2, 1.6, 0xc9c4b8, 0, 0.6, D / 2 + 0.6);   // bệ cột
+    lb(g, W + 1, 0.7, D + 1.6, 0x9c968a, 0, H - 0.6, 0.4); lb(g, W + 1.2, 0.35, D + 1.8, 0xc9c4b8, 0, H - 0.1, 0.4);   // phào chỉ
+    for (let x = -9.5; x <= 9.51; x += 1) { lb(g, 0.5, 0.8, 0.5, 0xb9b4a8, x, H + 0.45, D / 2 + 0.9); if (Math.round(x * 2) % 4 === 0) { const o = new THREE.Mesh(new THREE.SphereGeometry(0.3, 8, 6), mat(0xa59f92)); o.position.set(x, H + 1, D / 2 + 0.9); g.add(o); } }   // lan can trang trí
+    hipRoof(g, W - 1, D - 1.5, 2.4, 0xe8803a, 0, H + 0.1, -0.4);
+    lb(g, 4, 1.2, 4, mat(0x9ad0f5, { transparent: true, opacity: 0.8 }), 0, H + 1.3, -0.4);   // giếng trời kính
+    lb(g, 6, 0.3, 1.2, 0xc9c4b8, 0, 0.15, D / 2 + 2); lb(g, 5, 0.3, 0.8, 0xc9c4b8, 0, 0.45, D / 2 + 1.7);   // bậc thềm
+    flagPole(g, 6, 2, 3); g.children.slice(-2).forEach(m => m.position.y += H + 0.2);
+    [-7, 7].forEach(x => { const n = g.children.length; bigTree(g, x, D / 2 + 3.4, 0.55); });
+    return { solids: [[0, 0.45, W / 2, D / 2 + 0.5], [-7, D / 2 + 3.4, 0.3, 0.3], [7, D / 2 + 3.4, 0.3, 0.3]], door: [0, D / 2 + 2.9], map: [[0, 0, W, D]] };
+  },
+  /* VERSE LIBRARY – theo Thư viện Khoa học Tổng hợp: nhà hiện đại, tầng trên bọc lam bê tông hoa văn, mái đua có công-xôn, sảnh mái bằng lớn, bậc thang rộng */
+  library(g) {
+    const W = 20, D = 12, C = 0xc9c6bf;
+    const lattice = (w, h) => skin(w, h, 40, (x, Wd, Hh) => { x.fillStyle = "#4a4d50"; x.fillRect(0, 0, Wd, Hh); x.strokeStyle = "#e6e2da"; x.lineWidth = 0.09;
+      for (let X = 0; X < Wd; X += 0.8) for (let Y = 0; Y < Hh; Y += 0.8) { x.strokeRect(X + 0.05, Y + 0.05, 0.7, 0.7); x.beginPath(); x.moveTo(X + 0.4, Y + 0.05); x.lineTo(X + 0.4, Y + 0.35); x.moveTo(X + 0.05, Y + 0.4); x.lineTo(X + 0.3, Y + 0.4); x.moveTo(X + 0.75, Y + 0.45); x.lineTo(X + 0.45, Y + 0.45); x.stroke(); }
+      x.fillStyle = "#e6e2da"; for (let X = 3.2; X < Wd; X += 6.4) { x.fillRect(X - 0.1, 0, 0.2, Hh); x.strokeRect(X - 1.2, Hh / 2 - 1, 2.4, 2); x.beginPath(); x.arc(X, Hh / 2, 0.6, 0, 7); x.stroke(); } });
+    const glass = (w) => skin(w, 3.2, 40, (x, Wd, Hh) => { x.fillStyle = "#cfd6d9"; x.fillRect(0, 0, Wd, Hh); for (let X = 0.2; X < Wd; X += 1.2) { x.fillStyle = "#6c8592"; x.fillRect(X, 0.3, 1, 2.4); } x.fillStyle = "#e9ecef"; x.fillRect(0, 2.4, Wd, 0.15); for (let X = 0.1; X < Wd; X += 0.35) x.fillRect(X, 2.55, 0.06, 0.6); x.fillStyle = "#2f9e44"; x.fillRect(Wd / 2 - 1.5, 0.4, 3, 2.3); });
+    lb(g, W - 1, 3.2, D - 2, 0xcfd6d9, 0, 1.6, -0.5); face(g, glass(W - 1), W - 1, 3.2, 0, 1.6, 4.52);   // tầng trệt lùi vào, mặt kính
+    lb(g, W, 4.2, D, C, 0, 5.3, 0);   // tầng trên
+    face(g, lattice(W, 4.2), W, 4.2, 0, 5.3, D / 2 + 0.03); face(g, lattice(D, 4.2), D, 4.2, W / 2 + 0.03, 5.3, 0, Math.PI / 2); face(g, lattice(D, 4.2), D, 4.2, -W / 2 - 0.03, 5.3, 0, -Math.PI / 2); face(g, lattice(W, 4.2), W, 4.2, 0, 5.3, -D / 2 - 0.03, Math.PI);
+    for (let x = -9; x <= 9.01; x += 3) lb(g, 0.45, 7.4, 0.45, 0xb5b2ab, x, 3.7, D / 2 + 0.4);   // cột chạy suốt mặt tiền
+    lb(g, W + 2, 0.5, D + 2.4, 0x9e9b95, 0, 7.65, 0);   // mái đua
+    for (let x = -9; x <= 9.01; x += 1.5) { const b = lb(g, 0.25, 0.25, 1.4, 0x9e9b95, x, 7.15, D / 2 + 0.5); b.rotation.x = 0.5; }   // công-xôn đỡ mái
+    lb(g, 7, 0.6, 4.4, 0xb5b2ab, 0, 3.5, D / 2 + 2.2);   // sảnh mái bằng
+    const st = textPlate("VERSE LIBRARY · THƯ VIỆN", 6.4, 0.5, "#3a3d40", "#e8c547"); st.position.set(0, 3.5, D / 2 + 4.42); g.add(st);
+    [-1.4, 1.4].forEach(x => lb(g, 0.35, 3.2, 0.35, 0xb5b2ab, x, 1.6, D / 2 + 3.8));
+    for (let k = 0; k < 4; k++) lb(g, 8 - k * 0.4, 0.22, 1.2, 0xdee2e6, 0, 0.11 + k * 0.0, D / 2 + 4.8 + k * 0.6).position.y = 0.4 - k * 0.1;   // bậc thang rộng
+    [-4.5, 4.5].forEach(x => { lb(g, 0.3, 0.9, 3, 0xdee2e6, x, 0.45, D / 2 + 5.3); });
+    flagPole(g, -2.4, D / 2 + 0.6, 4.5); g.children.slice(-2).forEach(m => m.position.y += 3.8);
+    pot(g, -6, D / 2 + 3, 1.1); pot(g, 6, D / 2 + 3, 1.1); bigTree(g, -9.5, D / 2 + 4, 0.7);
+    const lamp = (x) => { lc(g, 0.05, 0.06, 2.6, 0xc9a227, x, 1.3, D / 2 + 3.2, 8); [-0.25, 0.25].forEach(d => { const b = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 6), new THREE.MeshBasicMaterial({ color: 0xfffbe6 })); b.position.set(x + d, 2.7, D / 2 + 3.2); g.add(b); }); };
+    lamp(-7.5); lamp(7.5);
+    return { solids: [[0, 0, W / 2, D / 2 + 0.6], [-1.4, D / 2 + 3.8, 0.2, 0.2], [1.4, D / 2 + 3.8, 0.2, 0.2], [-4.5, D / 2 + 5.3, 0.15, 1.5], [4.5, D / 2 + 5.3, 0.15, 1.5], [-6, D / 2 + 3, 0.4, 0.4], [6, D / 2 + 3, 0.4, 0.4], [-9.5, D / 2 + 4, 0.35, 0.35]],
+      door: [0, D / 2 + 2.4], map: [[0, 0, W, D]] };
+  },
+  /* CITY MUSEUM – theo Bảo tàng TP.HCM: tòa tân cổ điển xám trắng, hàng cột đôi, khối giữa có trán tam giác, ban công, sảnh vòm bán nguyệt, cầu thang tròn */
+  museum(g) {
+    const W = 26, D = 12, H = 8, C = 0xdfe3e6, Wt = 0xf8f9fa;
+    const wall = (w) => skin(w, H, 30, (x, Wd, Hh) => { x.fillStyle = "#dfe3e6"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#c8ced3"; x.fillRect(0, 0, Wd, 1.3); x.fillRect(0, Hh - 1.2, Wd, 1.2);
+      for (let X = 0.9; X < Wd - 0.8; X += 2.4) { rectWin(x, X, 2.1, 1.2, 3.2, "#5d6b74", "#f1f3f5"); x.fillStyle = "#9aa5ad"; x.beginPath(); x.moveTo(X - 0.15, 2.1); x.lineTo(X + 1.35, 2.1); x.lineTo(X + 1.55, 2.6); x.lineTo(X - 0.35, 2.6); x.fill(); rectWin(x, X + 0.1, Hh - 1.9, 1, 0.5, "#5d6b74", "#f1f3f5"); }
+      for (let X = 0.3; X < Wd; X += 0.6) { x.fillStyle = "#c8ced3"; x.beginPath(); x.arc(X, 0.7, 0.18, 0, 7); x.fill(); } });
+    lb(g, W, H, D, C, 0, H / 2, 0);
+    [[W, 0, D / 2 + 0.02, 0], [W, 0, -D / 2 - 0.02, Math.PI], [D, W / 2 + 0.02, 0, Math.PI / 2], [D, -W / 2 - 0.02, 0, -Math.PI / 2]].forEach(([w, x, z, r]) => face(g, wall(w), w, H, x, H / 2, z, r));
+    const xs = []; [-1, 1].forEach(s => { for (let k = 0; k < 4; k++) { const cx = s * (5.6 + k * 2.4); xs.push(cx - 0.42, cx + 0.42); } });
+    columnRow(g, xs, D / 2 + 0.55, 6.2, 0.26, Wt, 0.9);   // hàng cột đôi
+    lb(g, W + 0.2, 0.9, 1.4, 0xc8ced3, 0, 0.45, D / 2 + 0.5);
+    lb(g, W + 0.8, 0.6, D + 1.8, 0xc8ced3, 0, H + 0.1, 0.4); for (let x = -12.5; x <= 12.51; x += 1.6) { const o = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 6), mat(0xc8ced3)); o.position.set(x, H + 0.65, D / 2 + 1.1); g.add(o); }   // phào + hoa văn mái
+    lb(g, W - 1, 0.8, D - 1, 0xb8c0c6, 0, H + 0.6, 0);   // mái bằng
+    // khối giữa nhô ra: trán tam giác, ban công, sảnh vòm
+    lb(g, 7, 10, 2.6, Wt, 0, 5, D / 2 + 1.1);
+    const tri = new THREE.Shape(); tri.moveTo(-4, 0); tri.lineTo(4, 0); tri.lineTo(0, 2.6); tri.lineTo(-4, 0);
+    const tg = new THREE.Mesh(new THREE.ExtrudeGeometry(tri, { depth: 2.8, bevelEnabled: false }), mat(Wt)); tg.position.set(0, 10, D / 2 - 0.3); g.add(tg);
+    const ped = skin(6, 1.9, 50, (x, Wd, Hh) => { x.fillStyle = "#c8ced3"; x.beginPath(); x.moveTo(0.2, Hh); x.lineTo(Wd / 2, 0.1); x.lineTo(Wd - 0.2, Hh); x.fill(); x.fillStyle = "#9aa5ad"; x.beginPath(); x.arc(Wd / 2, Hh * 0.62, 0.45, 0, 7); x.fill(); x.fillRect(Wd / 2 - 1.6, Hh * 0.55, 1, 0.2); x.fillRect(Wd / 2 + 0.6, Hh * 0.55, 1, 0.2); });
+    face(g, ped, 6, 1.9, 0, 11, D / 2 + 2.51);
+    const ctr = skin(7, 10, 40, (x, Wd, Hh) => { x.fillStyle = "#f1f3f5"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#dfe3e6"; x.fillRect(0, 0, Wd, 0.6); x.fillRect(0, 4.2, Wd, 0.25); signText(x, "CITY MUSEUM · BẢO TÀNG", Wd / 2, 0.95, Wd - 0.6, 0.42, "#5d6b74");
+      rectWin(x, 2.3, 1.6, 2.4, 2.2, "#5d6b74", "#ffffff"); x.fillStyle = "#3b4248"; archPath(x, 2.2, 5.2, 2.6, Hh - 5.2); x.fill(); });
+    face(g, ctr, 7, 10, 0, 5, D / 2 + 2.42);
+    lb(g, 4.4, 0.25, 1.4, Wt, 0, 6, D / 2 + 3.1); for (let x = -2; x <= 2.01; x += 0.4) lc(g, 0.07, 0.09, 0.7, Wt, x, 6.45, D / 2 + 3.7, 8); lb(g, 4.4, 0.12, 0.2, Wt, 0, 6.85, D / 2 + 3.7);   // ban công
+    const roof = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 0.5, 24, 1, false, -Math.PI / 2, Math.PI), mat(Wt)); roof.position.set(0, 5.4, D / 2 + 2.4); g.add(roof);   // mái sảnh bán nguyệt
+    [-80, -35, 35, 80].forEach(a => { const r = a * Math.PI / 180; lc(g, 0.24, 0.27, 4.4, Wt, Math.sin(r) * 2.7, 3.15, D / 2 + 2.4 + Math.cos(r) * 2.7, 12); });
+    for (let k = 0; k < 4; k++) { const st = new THREE.Mesh(new THREE.CylinderGeometry(4.4 - k * 0.5, 4.4 - k * 0.5, 0.22, 28, 1, false, -Math.PI / 2, Math.PI), mat(0xe9ecef)); st.position.set(0, 0.11 + k * 0.22, D / 2 + 2.4); g.add(st); }   // cầu thang tròn
+    flagPole(g, 0, D / 2 + 1.1, 3); g.children.slice(-2).forEach(m => m.position.y += 12.4);
+    [-1, 1].forEach(s => { lb(g, 7, 0.9, 1.4, 0x5fae4e, s * 8.5, 0.45, D / 2 + 3); bigTree(g, s * 12.5, D / 2 + 3.5, 0.6); pot(g, s * 4.8, D / 2 + 2.6, 1); });
+    const car = new THREE.Group(); car.position.set(10, 0, D / 2 + 5.6); g.add(car);   // xe cổ trưng bày
+    lb(car, 3.2, 0.7, 1.5, 0x212529, 0, 0.75, 0); lb(car, 1.7, 0.7, 1.4, 0x212529, -0.2, 1.4, 0); [-1.1, 1.1].forEach(x => [-0.75, 0.75].forEach(z => { const w = lc(car, 0.35, 0.35, 0.2, 0x111111, x, 0.35, z); w.rotation.x = Math.PI / 2; }));
+    return { solids: [[0, 0, W / 2, D / 2 + 0.9], [0, D / 2 + 1.1, 3.5, 1.3], [-8.5, D / 2 + 3, 3.5, 0.7], [8.5, D / 2 + 3, 3.5, 0.7], [-12.5, D / 2 + 3.5, 0.3, 0.3], [12.5, D / 2 + 3.5, 0.3, 0.3], [10, D / 2 + 5.6, 1.6, 0.8]],
+      door: [0, D / 2 + 5.4], map: [[0, 0, W, D]] };
+  }
+});
 function buildCustom(P) {   // dựng ngoại thất riêng rồi xoay theo hướng cửa
   const g = new THREE.Group(), R = EXTERIOR[P.exterior](g, P), ry = ROT[P.door], up = new THREE.Vector3(0, 1, 0);
   const W = (x, z) => { const v = new THREE.Vector3(x, 0, z).applyAxisAngle(up, ry); return { x: P.x + v.x, z: P.z + v.z }; };
@@ -2649,11 +2776,11 @@ function loop() {
     camD += ((creating ? 5.5 : room ? 9 : camWide && !talking ? 26 : 11) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
     const D = camD, ch = Math.cos(creating ? 0.25 : camPitch) * D;
     const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(creating ? 0.25 : camPitch) * D, p.z + Math.cos(camAngle) * ch);
-    if (!room) {   // có tường/nhà chắn giữa nhân vật và camera → kéo camera lại gần
+    if (!room && !camWide) {   // góc gần: có tường/nhà chắn giữa nhân vật và camera → kéo camera lại gần (góc rộng thì bỏ qua, camera ở trên cao)
       const head = camRay.ray.origin.set(p.x, 1.5, p.z), dir = camRay.ray.direction.copy(want).sub(head), dist = dir.length();
       dir.normalize(); camRay.far = dist;
-      const hit = camRay.intersectObjects(camBlockers, true)[0];
-      if (hit) { want.copy(head).addScaledVector(dir, Math.max(0.8, hit.distance - 0.4)); camera.position.copy(want); }
+      const hit = camRay.intersectObjects(camBlockers, true).find(h => h.object.isMesh && !h.object.isSprite && !h.object.userData.flag);   // bỏ qua chữ nổi, cờ
+      if (hit) want.copy(head).addScaledVector(dir, Math.max(2.5, hit.distance - 0.4));   // không sát quá 2,5 m
     }
     if (camSnap) { camera.position.copy(want); camSnap = false; } else camera.position.lerp(want, 0.12);
     if (creating) camera.lookAt(p.x, 0.35, p.z); else
