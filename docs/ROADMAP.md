@@ -118,6 +118,7 @@ Lời mở đầu (dự kiến):
 - Phòng có thể to riêng: `size: { w, d, h }` trong places.js (mặc định 16 × 12).
 - **Camera trong nhà luôn ở bên trong phòng** (sau lưng nhân vật, không vượt tường/trần); kéo màn hình xuống để ngước lên nhìn trần.
 - **Post Office** (24 × 48 m, theo Bưu điện Trung tâm Sài Gòn): mái vòm cong có giếng trời + sườn sắt xanh, tường kem cửa sổ vòm, cột sắt xanh, quầy giao dịch 2 bên có số, quầy lưu niệm đỏ giữa sảnh, ghế gỗ mặt đỏ, bản đồ cổ + bản đồ thế giới + đồng hồ ở tường cuối (không treo chân dung lãnh tụ), buồng điện thoại, bàn viết thư, quạt trần, đèn treo. 5 NPC: Mr. Brown, Ms. Thu (quầy gửi hàng), Kevin (khách du lịch), Mrs. Lan (bán lưu niệm), Uncle Bay (người viết thư, Lv.5). 40 từ vựng.
+- **Verse Library** (28 × 40 m, trần 12 m, `layout: "oval"`, theo ảnh phòng đọc bầu dục): tường cong 3 tầng kệ sách dưới các vòm, 2 tầng ban công lan can, mái vòm có cửa sổ tròn + giếng trời kính, quầy thủ thư tròn ở tâm (Ms. Green đứng trong), 11 dãy bàn đọc tỏa ra như nan quạt có đèn chụp xanh (vẽ bằng `InstancedMesh` cho nhẹ), thảm xanh ngọc, lối vào thẳng từ cửa. Camera bị giữ trong hình elip. Code: `furnishReadingRoom`.
 - **Cafe Sua Da** (20 × 48 m, trần 8 m, kiểu nhà kính – theo ảnh quán cà phê nhà kính): khu trước "The Green Corner" (bàn bình thủy sinh, sen đá, cây lá to), khu giữa chỗ ngồi (quầy bar gỗ dọc cửa kính + ghế cao, 3 góc sofa, cây treo, bóng đèn dây, máy lạnh), khu sau quầy pha chế (máy espresso, máy xay, tủ bánh, máy tính tiền, menu bảng đen, kệ, bao cà phê). 6 NPC: Mia (barista), Vy (thu ngân), Bao (phục vụ), Grace (khách), Mr. Kha (bán cây), Uncle Tu (chủ quán, Lv.5). **58 từ vựng**. Mái kính trong suốt (nhìn lên thấy trời).
 
 ### Kinh tế
@@ -154,7 +155,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 - **Vùng hoang dã có quái (ý tưởng người dùng, làm sau):** quái không chỉ ở Misty Park mà ở **toàn bộ vùng bên ngoài thành phố**, nhiều cảnh khác nhau (rừng, đồi, đầm lầy, hang, phế tích…), càng xa càng mạnh. Cổng bắc/nam của đảo và các đường ra rìa bản đồ sẽ dẫn ra vùng này. Ranh giới hiện tại: x −360…150, z ±150.
 - **Metro**: mỗi khu 1 trạm (chữ M xanh), đứng gần bấm 🚇 Metro để đi nhanh. **Bus Stop** chỉ để trang trí / nhiệm vụ. **Train Station** sau này dùng để đi sang thành phố khác.
 - **🚧 Ô đất chờ xây** (`LOTS`): hàng rào cam trắng + bảng "Coming soon"; ô lớn (`big: true`) có cần cẩu. Khi xây thật: chuyển ô đó thành một mục trong `CITY` cùng tọa độ.
-- Ngoại thất vẽ riêng theo ảnh thật (mục `8c`, `8e` trong index.html, `exterior:` trong places.js): Town Hall (UBND TP.HCM), City Hospital (BV Chợ Rẫy), Verse School (trường Lê Quý Đôn), Cafe Sua Da (nhà ống Việt Nam), My Home, Train Station (ga Đà Lạt: 3 đầu hồi vàng viền đỏ, tàu xanh lá), Banh Mi Bakery (ổ bánh mì khổng lồ), Green Cross Pharmacy, Clothes Shop, Saigon Barber (cột đèn sọc xoay), Shop 24h (cửa hàng tiện lợi), Home & Cozy (sofa trên nóc), Police Station (trụ sở công an kiểu Pháp ở Hà Nội: tường vàng, cổng sắt, chòi gác), Fire Station (gạch đỏ, tháp canh, xe cứu hỏa), Verse Plaza (trung tâm thương mại theo Gigamall: ốp lưới thoi, tháp tròn kính xanh), Post Office (Bưu điện Q5, art-deco, cột ăng-ten), Verse Bank (Ngân hàng Nhà nước, cột granite, mái cam giếng trời), Verse Library (Thư viện KHTH, lam bê tông hoa văn), City Museum (Bảo tàng TP.HCM, cột đôi, sảnh bán nguyệt). Biển hiệu tự thiết kế, **không dùng logo thương hiệu thật**. Các nơi khác vẫn dùng tạm mô hình nhà phố KayKit; người dùng gửi hình theo đợt.
+- Ngoại thất vẽ riêng theo ảnh thật (mục `8c`, `8e` trong index.html, `exterior:` trong places.js): Town Hall (UBND TP.HCM), City Hospital (BV Chợ Rẫy), Verse School (trường Lê Quý Đôn), Cafe Sua Da (nhà ống Việt Nam), My Home, Train Station (ga Đà Lạt: 3 đầu hồi vàng viền đỏ, tàu xanh lá), Banh Mi Bakery (ổ bánh mì khổng lồ), Green Cross Pharmacy, Clothes Shop, Saigon Barber (cột đèn sọc xoay), Shop 24h (cửa hàng tiện lợi), Home & Cozy (sofa trên nóc), Police Station (trụ sở công an kiểu Pháp ở Hà Nội: tường vàng, cổng sắt, chòi gác), Fire Station (gạch đỏ, tháp canh, xe cứu hỏa), Verse Plaza (trung tâm thương mại theo Gigamall: ốp lưới thoi, tháp tròn kính xanh), Post Office (Bưu điện Trung tâm Sài Gòn: tường vàng, 2 tầng cửa vòm, khối giữa có đồng hồ, mái ngói cam, sân cỏ + cây cọ; mặt tiền 28 m), Verse Bank (Ngân hàng Nhà nước, cột granite, mái cam giếng trời), Verse Library (Thư viện KHTH, lam bê tông hoa văn), City Museum (Bảo tàng TP.HCM, cột đôi, sảnh bán nguyệt). Biển hiệu tự thiết kế, **không dùng logo thương hiệu thật**. Các nơi khác vẫn dùng tạm mô hình nhà phố KayKit; người dùng gửi hình theo đợt.
 - **My Home sẽ nâng cấp được** (ý tưởng của người dùng): bỏ xu (+ điều kiện thành tích) để xây to hơn, nhiều kiểu nhà, giá khác nhau.
 - Camera 2 chế độ: 🔍 gần (giao tiếp, thao tác) / 🔭 rộng (nhìn tổng thể; tự về gần khi đang nói chuyện). Tốc độ đi 6 m/giây.
 - Mỗi địa điểm cần: **nhu cầu trong game + từ vựng/mẫu câu riêng + thứ để sưu tầm/khám phá**.
@@ -248,12 +249,14 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 21. Verse Plaza (trung tâm thương mại); NPC đi tuần/trực gác (`AMBIENT`); cổng Arena 3 cửa đi qua được
 22. **Sổ thẻ 3 loại + hạn mức theo cấp + sao luyện tập**; NPC theo cấp; **nội thất Cafe Sua Da** (nhà kính 20 × 48 m, trần 8 m), 6 NPC, 58 từ vựng; camera trong nhà nhìn được tường và trần
 23. Hỏi từ vựng **bắt buộc bằng giọng nói**, câu hỏi theo cấp (Lv.20+); câu ví dụ đơn giản; **nội thất Post Office** (sảnh vòm kiểu Bưu điện Sài Gòn), 5 NPC, 40 từ vựng
+24. **Ngoại thất Post Office** làm lại theo Bưu điện Trung tâm Sài Gòn; **nội thất Verse Library** (phòng đọc bầu dục, mái vòm)
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |
 |---|---|---|---|
 | Cafe Sua Da | ✅ nhà kính, 3 khu | 6 | 58 |
 | Post Office | ✅ sảnh vòm | 5 | 40 |
+| Verse Library | ✅ phòng đọc bầu dục (chưa đủ NPC) | 1 | chưa có (đã có chỗ bày: `desk`, `table`, `shelf`, `gallery`, `ceiling`, `door`) |
 | Các nơi còn lại | ⏳ phòng mẫu 16 × 12 (bày đồ theo `layout` cũ) | 1 (hoặc người bán) | chưa có |
 
 ---

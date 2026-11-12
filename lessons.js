@@ -101,7 +101,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Green – Librarian", color: 0x364fc7, place: "library", x: 0, z: -3.6,
+  name: "Ms. Green – Librarian", color: 0x364fc7, place: "library", x: 0, z: 0,
   steps: [
     { say: "Shh… Hello! Can I help you?",
       card: { w: "borrow", pic: "📚", ex: "I’d like to borrow this book." },
