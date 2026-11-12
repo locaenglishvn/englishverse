@@ -22,12 +22,12 @@ const ITEMS = {
   springroll: { name: "Spring rolls",  icon: "🌯", price: 10, energy: 30, desc: "Fresh rolls with shrimp. +30 energy." },
   lemontea:   { name: "Lemon tea",     icon: "🍹", price: 5,  energy: 12, desc: "Cold lemon tea. +12 energy." },
   popcorn:    { name: "Popcorn",       icon: "🍿", price: 6,  energy: 15, desc: "Salty popcorn for the movie. +15 energy." },
-  // 💇 Dịch vụ cắt tóc (Hair Salon): đổi khuôn mặt + kiểu tóc ngay, không vào túi
+  // 💇 Dịch vụ cắt tóc (Saigon Barber): đổi khuôn mặt + kiểu tóc ngay, không vào túi
   hair_Rogue:     { name: "Long hair",   icon: "👩", price: 12, head: "Rogue",     desc: "Long red hair (Alex style)." },
   hair_Knight:    { name: "Short hair",  icon: "👱", price: 12, head: "Knight",    desc: "Short blond hair (Sam style)." },
   hair_Mage:      { name: "Black hair",  icon: "🧑", price: 12, head: "Mage",      desc: "Thick black hair (Robin style)." },
   hair_Barbarian: { name: "Beard style", icon: "🧔", price: 12, head: "Barbarian", desc: "Bald head with a big beard (Max style)." },
-  // 🛋️ Nội thất (Furniture Store): giao thẳng về nhà (🏠 My Home); decor = mô hình trong assets/furniture
+  // 🛋️ Nội thất (Home & Cozy): giao thẳng về nhà (🏠 My Home); decor = mô hình trong assets/furniture
   d_couch:   { name: "Sofa",          icon: "🛋️", price: 60, decor: "couch_pillows",            desc: "A soft sofa for your home." },
   d_chair:   { name: "Armchair",      icon: "💺", price: 35, decor: "armchair_pillows",         desc: "A cosy armchair." },
   d_lamp:    { name: "Floor lamp",    icon: "💡", price: 25, decor: "lamp_standing",            desc: "A tall lamp." },
@@ -38,7 +38,7 @@ const ITEMS = {
   d_rug:     { name: "Round rug",     icon: "🟠", price: 20, decor: "rug_oval_A",               desc: "A round rug for the floor." }
 };
 
-/* TRANG PHỤC (mặc vào nhân vật, bán ở Style Box)
+/* TRANG PHỤC (mặc vào nhân vật, bán ở Clothes Shop)
    slot   = ô trang bị: hat (🧢 mũ), top (👕 áo), legs (👟 quần + giày), cape (🎒 phụ kiện: áo choàng)
    model  = lấy bộ phận từ nhân vật nào: Rogue, Knight, Mage, Barbarian (hat thì thêm part = tên mũ; hood = mũ trùm thay cả đầu)
    plain  = true: bản vải trơn (đen trắng) để nhuộm màu bằng tint; tint = màu nhuộm (0xRRGGBB)
@@ -103,17 +103,17 @@ const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", le
    model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5)
    exterior = ngoại thất vẽ riêng (townhall, hospital, school, cafe, home – xem mục 8c trong index.html); khi có thì bỏ qua model */
 const CITY = [
-  { id: "bakery", name: "Golden Bakery", type: "bakery", x: 56, z: -10, w: 10, d: 10, door: "south", model: "building_A",
+  { id: "bakery", name: "Banh Mi Bakery", type: "bakery", x: 56, z: -10, w: 10, d: 10, door: "south", exterior: "banhmi",
     color: 0xffe8cc, roof: 0xc0392b, awning: 0xe67e22, floor: 0xe9c99a, wall: 0xfff4e0,
     keeper: { name: "Anna – Baker", color: 0xf08c00, greet: "Good morning! Everything is fresh today. What would you like?", hint: "Can I have a banh mi, please?" },
     sells: ["banhmi", "donut", "milk"] },
-  { id: "pharmacy", name: "Green Cross Pharmacy", type: "pharmacy", x: 68, z: -10, w: 10, d: 10, door: "south", model: "building_F",
+  { id: "pharmacy", name: "Green Cross Pharmacy", type: "pharmacy", x: 68, z: -10, w: 10, d: 10, door: "south", exterior: "pharmacy",
     color: 0xe6fcf5, roof: 0x2b8a3e, awning: 0x37b24d, floor: 0xdee2e6, wall: 0xf8f9fa,
     keeper: { name: "Sam – Pharmacist", color: 0x1c7ed6, greet: "Hello! How are you feeling today?", hint: "I have a sore throat. Can I have some throat syrup?" },
     sells: ["syrup", "vaccine"] },
-  { id: "clothes", name: "Style Box", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", model: "building_G",
+  { id: "clothes", name: "Clothes Shop", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", exterior: "clothes",
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
-    keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to Style Box. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
+    keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to the Clothes Shop. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
     sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
   { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -44, w: 32, d: 13, door: "south", exterior: "townhall",
     color: 0xf1f3f5, roof: 0x495057, awning: 0x1c7ed6, floor: 0xc9a27e, wall: 0xf8f0e3,
@@ -144,21 +144,21 @@ const CITY = [
   { id: "lab", name: "Science Lab", type: "science lab", x: -75, z: -112, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
     color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
   // Hàng giữa (cửa nhìn ra Market Street)
-  { id: "furniture", name: "Home & Co", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", model: "building_A", layout: "showroom",
+  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "showroom",
     color: 0xf8f0e3, roof: 0x8d5a2b, awning: 0xa0522d, floor: 0xd9b38c, wall: 0xfff8f0, goods: [],
-    keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Do you need furniture for your home?", hint: "I’d like the sofa, please." },
+    keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Welcome to Home & Cozy. Do you need furniture for your home?", hint: "I’d like the sofa, please." },
     sells: ["d_couch", "d_chair", "d_lamp", "d_cactus", "d_shelf", "d_table", "d_cabinet", "d_rug"] },
   { id: "restaurant", name: "Pho Corner", type: "restaurant", x: 108, z: -10, w: 10, d: 10, door: "south", model: "building_E", layout: "tables",
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xf03e3e, floor: 0xe9c99a, wall: 0xfff4e6, goods: ["🍜", "🌯", "🍹", "🥢", "🍚", "🌶️"],
     keeper: { name: "Chef Bao – Cook", color: 0xf8f9fa, greet: "Welcome to Pho Corner! Are you hungry?", hint: "Can I have a bowl of pho, please?" },
     sells: ["pho", "springroll", "lemontea"] },
-  { id: "salon", name: "Happy Hair", type: "hair salon", x: 92, z: -10, w: 10, d: 10, door: "south", model: "building_G", layout: "salon",
+  { id: "salon", name: "Saigon Barber", type: "barber shop", x: 92, z: -10, w: 10, d: 10, door: "south", exterior: "barber", layout: "salon",
     color: 0xf3f0ff, roof: 0x7048e8, awning: 0x9775fa, floor: 0xf1f3f5, wall: 0xf8f0fc, goods: ["✂️", "💈", "🪮", "🧴", "💇", "🪞"],
-    keeper: { name: "Lily – Hairdresser", color: 0x9775fa, greet: "Hi! What hairstyle would you like today?", hint: "I’d like short hair, please." },
+    keeper: { name: "Lily – Hairdresser", color: 0x9775fa, greet: "Hi! Welcome to Saigon Barber. What hairstyle would you like today?", hint: "I’d like short hair, please." },
     sells: ["hair_Rogue", "hair_Knight", "hair_Mage", "hair_Barbarian"] },
-  { id: "supermarket", name: "Fresh Mart", type: "supermarket", x: 134, z: -11, w: 12, d: 12, door: "south", model: "building_A", scale: 6, layout: "shelves",
+  { id: "supermarket", name: "Shop 24h", type: "convenience store", x: 134, z: -11, w: 12, d: 12, door: "south", exterior: "shop24", layout: "shelves",
     color: 0xebfbee, roof: 0x2f9e44, awning: 0x40c057, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🍎", "🍌", "🥛", "🍙", "💧", "🥕"],
-    keeper: { name: "Nam – Cashier", color: 0x40c057, greet: "Hello! Can I help you find something?", hint: "Can I have an apple and some water, please?" },
+    keeper: { name: "Nam – Cashier", color: 0x40c057, greet: "Hi! Shop 24h is open all day and all night. Can I help you?", hint: "Can I have an apple and some water, please?" },
     sells: ["apple", "banana", "water", "riceball", "milk"] },
   { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 75, z: -86, w: 10, d: 10, door: "north", model: "building_B", layout: "lab",
     color: 0xf1f3f5, roof: 0x495057, awning: 0xfab005, floor: 0xadb5bd, wall: 0xe9ecef, goods: ["🔧", "🔨", "🪛", "🚲", "⚙️", "🪚"], keeper: null, sells: [] },
