@@ -252,7 +252,8 @@ function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
 function blocked(x, z) {
   if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
   if (room) return Math.abs(x - room.cx) > room.w / 2 - 0.6 || Math.abs(z - room.cz) > room.d / 2 - 0.6 || room.solids.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);   // đang ở trong nhà
-  if (Math.abs(x) > 150 || Math.abs(z) > 150) return true;   // ranh giới thành phố
+  if (x < -360 || x > 150 || Math.abs(z) > 150) return true;   // ranh giới thế giới (thành phố + đảo đấu trường bên trái)
+  if (inRiver(x, z)) return true;   // sông quanh đảo: chỉ đi qua cầu
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
 
@@ -276,7 +277,7 @@ for (let i = 0; i < 10; i++) {   // mây: vài quả cầu trắng ghép lại, 
   c.traverse(m => m.userData.flat = true);   // mây không đổ bóng
   scene.add(c); clouds.push(c);
 }
-flat(400, 400, 0x8fd17a, 0, 20, -0.04);   // cỏ trải tới chân trời
+flat(1000, 700, 0x8fd17a, -100, 0, -0.04);   // cỏ trải tới chân trời
 function flat(w, d, color, x, z, y) {   // mặt phẳng nằm trên đất: cỏ, đường, quảng trường
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color }));
   m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); m.userData.flat = true; scene.add(m);
@@ -286,6 +287,11 @@ function flat(w, d, color, x, z, y) {   // mặt phẳng nằm trên đất: c�
 const ROADS = [];   // đường đi (để vẽ bản đồ nhỏ)
 function road(w, d, x, z, y) { flat(w, d, 0xbfb6a8, x, z, y || 0.012); ROADS.push({ x, z, w, d }); }
 flat(310, 310, 0x8fd17a, 0, 0, -0.025);    // cỏ thành phố
+/* ĐẢO ĐẤU TRƯỜNG (bên trái thành phố): sông bao quanh, tường thành, 3 cổng (đông – từ thành phố, bắc, nam) */
+const ISLAND = { x0: -310, x1: -210, z0: -80, z1: 80 }, RIVER = { x0: -335, x1: -185, z0: -105, z1: 105 };
+const BRIDGES = [{ x0: -212, x1: -183, z0: -4, z1: 4 }, { x0: -264, x1: -256, z0: -107, z1: -78 }, { x0: -264, x1: -256, z0: 78, z1: 107 }];
+const inR = (r, x, z) => x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1;
+function inRiver(x, z) { return inR(RIVER, x, z) && !inR(ISLAND, x, z) && !BRIDGES.some(b => inR(b, x, z)); }
 road(6, 300, -47, 0); road(6, 300, 47, 0); road(300, 6, 0, -63); road(300, 6, 0, 63);   // đường vành đai
 road(5, 120, -20, 0); road(5, 120, 20, 0);   // 2 bên quảng trường
 road(24, 5, -32, -20); road(24, 5, 32, -20); road(24, 5, -32, 22); road(24, 5, 32, 22);   // đường ngang khu hành chính
@@ -345,7 +351,7 @@ solid(0, 24, 2.7, 2.7);
   [-60, 140], [-140, 100], [-60, 100], [60, 100], [70, 140], [140, 100], [145, 140], [110, 140], [-30, 140], [30, 140], [-36, 108], [36, 108]
 ].forEach(q => tree(q[0], q[1]));
 // Cổng mê cung (khu thể thao) – trạm mini-game
-const MAZE_GX = -36, MAZE_GZ = -100;
+const MAZE_GX = -232, MAZE_GZ = -24;   // cổng mê cung nằm trong đảo đấu trường
 box(1, 4, 1, 0x495057, MAZE_GX, 2, MAZE_GZ - 2.5);
 box(1, 4, 1, 0x495057, MAZE_GX, 2, MAZE_GZ + 2.5);
 box(1, 1, 6, 0x495057, MAZE_GX, 4.5, MAZE_GZ);
@@ -895,7 +901,7 @@ function startMatch(m) {
    Mọi máy trong trận tạo CÙNG một mê cung từ mã trận đấu. Mỗi đội chơi trong một bản sao riêng (không đụng nhau).
    Walker nhìn ngang tầm mắt; guide nhìn từ trên cao nhưng không điều khiển được gì. Walker tới ô xanh = đội thắng. */
 const MZ = { W: 7, H: 7, C: 3 };   // 7 x 7 ô, mỗi ô rộng 3 m
-const ORIGIN = { red: { x: -200, z: 0 }, blue: { x: -200, z: 40 } };   // nằm ngoài thị trấn
+const ORIGIN = { red: { x: -700, z: 0 }, blue: { x: -700, z: 40 } };   // nằm rất xa, ngoài bản đồ
 const MAZE_GUIDE = ["Go straight!", "Turn left!", "Turn right!", "Stop!", "Turn around!", "Go back!", "Keep going!", "You’re close!", "Great job!"];
 const MAZE_WALK = ["Left or right?", "Where now?", "I see a wall.", "Wait!", "I’m lost!", "OK!", "Can you say that again?", "Thank you!"];
 let maze = null, savedFog = null;
@@ -2145,6 +2151,54 @@ Object.assign(EXTERIOR, {
       door: [0, D / 2 + 5.4], map: [[0, 0, W, D]] };
   }
 });
+Object.assign(EXTERIOR, {
+  /* POLICE STATION – theo trụ sở công an kiểu Pháp ở Hà Nội: tường vàng, mái xám xanh có cửa sổ mái, hàng rào sắt, cổng giữa, 2 chòi gác mái ngói */
+  police(g) {
+    const Y = 0xf2d16b, W = 16;
+    const fac = (w) => skin(w, 7, 40, (x, Wd, Hh) => { x.fillStyle = "#f2d16b"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#fbe7a8"; x.fillRect(0, 0, Wd, 0.45); x.fillRect(0, 3.4, Wd, 0.25); x.fillRect(0, Hh - 0.6, Wd, 0.6);
+      for (let X = 0.7; X < Wd - 0.8; X += 2.1) { archWin(x, X, 0.9, 1.1, 2.1, "#3e5a4a", "#ffffff"); archWin(x, X, 4, 1.1, 2.2, "#3e5a4a", "#ffffff"); x.fillStyle = "#fbe7a8"; x.fillRect(X - 0.35, 0.45, 0.15, Hh - 1.05); } });
+    lb(g, W, 7, 8, Y, 0, 3.5, -2); face(g, fac(W), W, 7, 0, 3.5, 2.02); face(g, fac(8), 8, 7, W / 2 + 0.02, 3.5, -2, Math.PI / 2); face(g, fac(8), 8, 7, -W / 2 - 0.02, 3.5, -2, -Math.PI / 2);
+    const roof = hipRoof(g, W + 0.6, 8.6, 3, 0x5b6b7a, 0, 7, -2);
+    for (let x = -6; x <= 6.01; x += 3) { lb(g, 1, 1.2, 0.8, 0xf8f9fa, x, 7.9, 1.2); lb(g, 0.7, 0.8, 0.1, 0x3e5a4a, x, 7.9, 1.62); }   // cửa sổ mái
+    lb(g, 4, 8.4, 1, Y, 0, 4.2, 2.4); const pl = textPlate("POLICE · CÔNG AN", 3.6, 0.55, "#b02a2a", "#ffd43b"); pl.position.set(0, 7.3, 2.92); g.add(pl);   // khối cửa chính
+    const ban = textPlate("Safe city · Thành phố an toàn", 7, 0.9, "#c92a2a", "#ffd43b"); ban.position.set(0, 3.3, 6.1); g.add(ban);
+    // hàng rào sắt + cổng + chòi gác
+    [-1, 1].forEach(s => {
+      for (let x = 2.4; x <= 7.9; x += 0.35) lb(g, 0.06, 1.8, 0.06, 0x212529, s * x, 0.9, 6); lb(g, 5.6, 0.1, 0.1, 0x212529, s * 5.15, 1.75, 6); lb(g, 5.6, 0.5, 0.3, 0xf2d16b, s * 5.15, 0.25, 6);
+      lb(g, 2.2, 2.8, 2.2, Y, s * 3.6, 1.4, 7.4); hipRoof(g, 3, 3, 1.2, 0xb5502b, s * 3.6, 2.8, 7.4);   // chòi gác
+      lb(g, 0.9, 1.2, 0.1, 0x3e5a4a, s * 3.6, 1.5, 8.52);
+      lb(g, 0.5, 2.6, 0.5, Y, s * 2.2, 1.3, 6); 
+    });
+    for (let x = -1.9; x <= 1.91; x += 0.3) lb(g, 0.05, 2, 0.05, 0x212529, x, 1, 6.1);   // cổng sắt (mở hé)
+    [-6, -3, 0, 3, 6].forEach((x, i) => { const n = g.children.length; flagPole(g, x, 1, 1.6); g.children.slice(n).forEach(m => m.position.y += 7.2); });
+    bigTree(g, -7.2, 8.6, 0.6);
+    const sol = [[0, -2, W / 2, 4], [0, 2.4, 2, 0.5], [-3.6, 7.4, 1.1, 1.1], [3.6, 7.4, 1.1, 1.1], [-5.15, 6, 2.8, 0.2], [5.15, 6, 2.8, 0.2], [-7.2, 8.6, 0.3, 0.3]];
+    return { solids: sol, door: [0, 7.6], map: [[0, -2, W, 8]] };
+  },
+  /* FIRE STATION – trạm cứu hỏa gạch đỏ: 2 tầng, mái đỏ dốc, tháp canh mái xám, cửa sổ vòm, 2 cửa ga-ra, xe cứu hỏa */
+  fire(g) {
+    const R = 0xd2543e, W = 10;
+    const fac = skin(W, 7, 40, (x, Wd, Hh) => { x.fillStyle = "#d2543e"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#bd4632"; for (let j = 0; j < Hh; j += 0.3) for (let i = (j / 0.3) % 2 * 0.35; i < Wd; i += 0.7) x.fillRect(i, j, 0.65, 0.25);
+      x.fillStyle = "#f1d3b3"; x.fillRect(0, 3.2, Wd, 0.3); x.fillRect(0, 0, Wd, 0.35);
+      [1.2, 4.4, 7.6].forEach(X => archWin(x, X, 0.8, 1.2, 2, "#3e4a5a", "#f1d3b3"));
+      [0.8, 5.4].forEach(X => { x.fillStyle = "#f1d3b3"; archPath(x, X - 0.15, 3.85, 3.6, 3.15); x.fill(); x.fillStyle = "#868e96"; archPath(x, X, 4, 3.3, 3); x.fill(); x.fillStyle = "#adb5bd"; for (let j = 4.6; j < Hh; j += 0.3) x.fillRect(X, j, 3.3, 0.08); });   // 2 cửa ga-ra
+      signText(x, "FIRE STATION · CỨU HỎA", Wd / 2, 3.35, Wd - 1, 0.24, "#7a1f12"); });
+    const side = skin(10, 7, 40, (x, Wd, Hh) => { x.fillStyle = "#d2543e"; x.fillRect(0, 0, Wd, Hh); x.fillStyle = "#f1d3b3"; x.fillRect(0, 3.2, Wd, 0.3); [1, 4.2, 7.4].forEach(X => { archWin(x, X, 0.8, 1.2, 2, "#3e4a5a", "#f1d3b3"); archWin(x, X, 4, 1.2, 2.2, "#3e4a5a", "#f1d3b3"); }); });
+    lb(g, W, 7, 10, R, 0, 3.5, 0); face(g, fac, W, 7, 0, 3.5, 5.02); face(g, side, 10, 7, W / 2 + 0.02, 3.5, 0, Math.PI / 2); face(g, side, 10, 7, -W / 2 - 0.02, 3.5, 0, -Math.PI / 2);
+    hipRoof(g, W + 0.8, 10.8, 3.2, 0xc0392b, 0, 7, 0); lb(g, W + 0.8, 0.3, 10.8, 0xf1d3b3, 0, 7, 0);
+    lb(g, 2.6, 4, 2.6, R, -2.5, 9.2, 1.5); lb(g, 2.9, 0.3, 2.9, 0xf1d3b3, -2.5, 11.2, 1.5); const cap = new THREE.Mesh(new THREE.ConeGeometry(2.1, 1.8, 4), mat(0x5c5f66)); cap.rotation.y = Math.PI / 4; cap.position.set(-2.5, 12.3, 1.5); g.add(cap);   // tháp canh
+    const em = skin(1.4, 1.4, 80, (x) => { x.fillStyle = "#f1d3b3"; x.beginPath(); x.arc(0.7, 0.7, 0.68, 0, 7); x.fill(); x.fillStyle = "#c92a2a"; x.beginPath(); x.arc(0.7, 0.7, 0.55, 0, 7); x.fill(); signText(x, "🔥", 0.7, 0.74, 0.8, 0.6, "#fff", ""); });
+    face(g, em, 1.4, 1.4, -2.5, 9.6, 2.82);
+    // xe cứu hỏa trước ga-ra trái
+    const tk = new THREE.Group(); tk.position.set(-2.4, 0, 7.6); g.add(tk);
+    lb(tk, 2.2, 1.8, 4.6, 0xe03131, 0, 1.3, 0); lb(tk, 2.1, 1.1, 1.4, 0xe03131, 0, 2.6, 1.5); lb(tk, 2, 0.7, 0.1, 0x9ad0f5, 0, 2.7, 2.22);
+    lb(tk, 2.25, 0.25, 4.65, 0xf8f9fa, 0, 1.05, 0); lb(tk, 0.5, 0.15, 3.8, 0xdee2e6, 0, 2.3, -0.6); lb(tk, 1.2, 0.2, 0.3, 0x1c7ed6, 0, 3.25, 1.5);   // thang, đèn
+    [-1.5, 1.4].forEach(z => [-1.1, 1.1].forEach(x => { const w = lc(tk, 0.42, 0.42, 0.3, 0x212529, x, 0.42, z); w.rotation.z = Math.PI / 2; }));
+    lc(g, 0.18, 0.2, 0.8, 0xe03131, 4.2, 0.4, 5.8, 10);   // trụ nước cứu hỏa
+    bigTree(g, 4.6, 8.4, 0.55);
+    return { solids: [[0, 0, W / 2, 5], [-2.4, 7.6, 1.2, 2.4], [4.2, 5.8, 0.25, 0.25], [4.6, 8.4, 0.3, 0.3]], door: [2.2, 6.6], map: [[0, 0, W, 10]] };
+  }
+});
 function buildCustom(P) {   // dựng ngoại thất riêng rồi xoay theo hướng cửa
   const g = new THREE.Group(), R = EXTERIOR[P.exterior](g, P), ry = ROT[P.door], up = new THREE.Vector3(0, 1, 0);
   const W = (x, z) => { const v = new THREE.Vector3(x, 0, z).applyAxisAngle(up, ry); return { x: P.x + v.x, z: P.z + v.z }; };
@@ -2378,7 +2432,7 @@ for (let z = -54; z <= 54; z += 13) if (Math.abs(z + 20) > 4 && Math.abs(z - 22)
 [["car_taxi", 128, 1.8, Math.PI / 2], ["car_sedan", 112, 1.8, Math.PI / 2], ["car_hatchback", 130, -1.8, -Math.PI / 2], ["car_sedan", -146, -1.8, -Math.PI / 2], ["car_police", -70, 1.8, Math.PI / 2], ["car_hatchback", -120, -1.8, -Math.PI / 2], ["car_taxi", 6, 70, 0]]
   .forEach(([n, x, z, r]) => prop(n, x, z, r, 4.6, 1, 2.2));   // xe đậu ven đường
 [[-47, 0], [47, 0], [-20, -63], [20, -63], [-20, 63], [20, 63]].forEach(([x, z]) => prop("trafficlight_A", x + 4, z + 4, Math.PI, 4.6, 0.3, 0.3, true));   // đèn giao thông ở ngã tư
-[[-24, -12], [58, -4], [-80, 3.8], [26, 30]].forEach(([x, z]) => prop("firehydrant", x, z, 0, 4.6, 0.3, 0.3, true));
+[[-24, -12], [58, -4], [-88, 3.8], [26, 30]].forEach(([x, z]) => prop("firehydrant", x, z, 0, 4.6, 0.3, 0.3, true));
 /* ĐỊA ĐIỂM NGOÀI TRỜI (SPOTS trong places.js): dựng tạm bằng khối đơn giản, sẽ thay mô hình đẹp sau */
 const spinners = [];   // cánh quạt gió (quay liên tục)
 function cyl(rt, rb, h, color, x, y, z, seg) { const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 16), new THREE.MeshLambertMaterial({ color })); m.position.set(x, y, z); scene.add(m); return m; }
@@ -2478,6 +2532,68 @@ const STATION = { name: "Train Station", x: 0, z: 80, door: "north", exterior: "
   [93.4, 94.6].forEach(z => box(300, 0.12, 0.12, 0x868e96, 0, 0.1, z)); }
 LOTS.forEach(L => { L.exterior = "lot"; buildCustom(L); });
 METRO.forEach(M => { M.door = M.door || "south"; M.exterior = "metro"; buildCustom(M); });
+/* ĐẢO ĐẤU TRƯỜNG – VERSE ARENA: nơi người chơi so tài theo đội, mọi trò đều phải giao tiếp tiếng Anh.
+   Sông bao quanh, tường thành gạch, 3 cổng kiểu Ngọ Môn (Huế), đấu trường tròn Grand Arena ở giữa. */
+{
+  const wat = new THREE.Mesh(new THREE.PlaneGeometry(RIVER.x1 - RIVER.x0, RIVER.z1 - RIVER.z0), new THREE.MeshLambertMaterial({ color: 0x3b8fd6 }));
+  wat.rotation.x = -Math.PI / 2; wat.position.set((RIVER.x0 + RIVER.x1) / 2, 0.01, 0); wat.userData.flat = true; scene.add(wat);
+  flat(ISLAND.x1 - ISLAND.x0 + 4, ISLAND.z1 - ISLAND.z0 + 4, 0xb8a27a, (ISLAND.x0 + ISLAND.x1) / 2, 0, 0.015);   // bờ kè
+  flat(ISLAND.x1 - ISLAND.x0, ISLAND.z1 - ISLAND.z0, 0x9fcf7f, (ISLAND.x0 + ISLAND.x1) / 2, 0, 0.02);   // cỏ trên đảo
+  road(36, 6, -165, 0); road(59, 6, -239.5, 0); road(5, 156, -260, 0); road(5, 42, -260, -128); road(5, 42, -260, 128);
+  BRIDGES.forEach(B => { const w = B.x1 - B.x0, d = B.z1 - B.z0, along = w > d;
+    box(w, 0.4, d, 0x8d5a2b, (B.x0 + B.x1) / 2, 0.2, (B.z0 + B.z1) / 2);
+    [-1, 1].forEach(s => box(along ? w : 0.25, 1, along ? 0.25 : d, 0xa0522d, (B.x0 + B.x1) / 2 + (along ? 0 : s * (w / 2 - 0.1)), 0.9, (B.z0 + B.z1) / 2 + (along ? s * (d / 2 - 0.1) : 0))); });
+  const ART = new THREE.Group(); scene.add(ART);
+  const brick = skin(26, 7, 30, (x, W, H) => { x.fillStyle = "#9a6b55"; x.fillRect(0, 0, W, H); x.fillStyle = "#86594a"; for (let j = 0; j < H; j += 0.35) for (let i = (j / 0.35) % 2 * 0.4; i < W; i += 0.8) x.fillRect(i, j, 0.75, 0.3);
+    x.fillStyle = "#c9b79c"; x.fillRect(0, 0, W, 0.5); x.fillRect(0, H - 0.4, W, 0.4);
+    [[7, 2.6, 3.6], [19, 2.6, 3.6], [13, 5.8, 4.9]].forEach(([cx, w, h]) => { x.fillStyle = "#3a2a22"; archPath(x, cx - w / 2, H - h, w, h); x.fill(); }); });
+  function citadelGate(cx, cz, ry) {   // cổng thành kiểu Ngọ Môn: bệ gạch có cửa vòm, lầu 2 tầng mái ngói vàng, cột đỏ
+    const g = new THREE.Group(); g.position.set(cx, 0, cz); g.rotation.y = ry; ART.add(g);
+    [-1, 1].forEach(s => { lb(g, 10, 7, 8, 0x9a6b55, s * 8, 3.5, 0); });
+    lb(g, 6, 2.4, 8, 0x9a6b55, 0, 5.8, 0);
+    [4.01, -4.01].forEach(z => { face(g, brick, 26, 7, 0, 3.5, z, z < 0 ? Math.PI : 0); });
+    const arch = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 8.2, 16, 1, true, 0, Math.PI), mat(0x3a2a22, { side: THREE.DoubleSide })); arch.rotation.x = Math.PI / 2; arch.rotation.y = Math.PI / 2; arch.position.set(0, 4.6, 0); g.add(arch);
+    lb(g, 26.4, 0.6, 8.4, 0xc9b79c, 0, 7.3, 0);
+    for (let x = -12.5; x <= 12.51; x += 1.25) lb(g, 0.15, 0.8, 0.15, 0xe9dcc0, x, 8, 3.9);   // lan can
+    const pav = (px, w, d, h, roofY, big) => {   // lầu: cột đỏ + 2 tầng mái
+      for (let x = -w / 2 + 0.5; x <= w / 2 - 0.49; x += (w - 1) / 4) [-d / 2 + 0.5, d / 2 - 0.5].forEach(z => lc(g, 0.2, 0.22, h, 0xb02a2a, px + x, 7.6 + h / 2, z, 8));
+      lb(g, w - 1, h * 0.8, d - 1.2, 0xe9dcc0, px, 7.6 + h * 0.4, 0);
+      hipRoof(g, w + 2, d + 2, 1.4, 0xe7b53a, px, roofY, 0); lb(g, w + 2.1, 0.3, d + 2.1, 0x2f6b4f, px, roofY, 0);
+      if (big) { lb(g, w - 2, 1.4, d - 2.5, 0xb02a2a, px, roofY + 1.6, 0); hipRoof(g, w, d, 1.8, 0xe7b53a, px, roofY + 2.2, 0); lb(g, w + 0.1, 0.3, d + 0.1, 0x2f6b4f, px, roofY + 2.2, 0); }
+    };
+    pav(0, 10, 7, 3, 10.6, true); pav(-9, 6, 5.5, 2.4, 10, false); pav(9, 6, 5.5, 2.4, 10, false);
+    const pl = textPlate("VERSE ARENA", 3.4, 0.6, "#2f6b4f", "#ffd43b"); pl.position.set(0, 9.9, 3.62); g.add(pl);
+    flagPole(g, -11, 0, 3); g.children.slice(-2).forEach(m => m.position.y += 7.6); flagPole(g, 11, 0, 3); g.children.slice(-2).forEach(m => m.position.y += 7.6);
+    const up = new THREE.Vector3(0, 1, 0);
+    [[-8, 0, 5, 4], [8, 0, 5, 4]].forEach(([x, z, hw, hd]) => { const v = new THREE.Vector3(x, 0, z).applyAxisAngle(up, ry), sw = Math.abs(Math.sin(ry)) > 0.7; solid(cx + v.x, cz + v.z, sw ? hd : hw, sw ? hw : hd); });
+  }
+  // tường thành quanh đảo (chừa chỗ 3 cổng rộng 26 m)
+  const T = 3, H = 5.5, wallSeg = (x0, z0, x1, z1) => { const w = Math.abs(x1 - x0) || T, d = Math.abs(z1 - z0) || T, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    lb(ART, w, H, d, 0x9a6b55, cx, H / 2, cz); lb(ART, w + 0.4, 0.5, d + 0.4, 0xc9b79c, cx, H, cz); solid(cx, cz, w / 2, d / 2);
+    const n = Math.floor(Math.max(w, d) / 3); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n; lb(ART, w > d ? 1.4 : T + 0.4, 0.9, w > d ? T + 0.4 : 1.4, 0x9a6b55, x0 + (x1 - x0) * t || cx, H + 0.7, z0 + (z1 - z0) * t || cz); } };   // răng cưa trên tường
+  const X0 = ISLAND.x0 + 1.5, X1 = ISLAND.x1 - 1.5, Z0 = ISLAND.z0 + 1.5, Z1 = ISLAND.z1 - 1.5;
+  wallSeg(X1, Z0, X1, -13); wallSeg(X1, 13, X1, Z1);   // tường đông (cổng thành phố)
+  wallSeg(X0, Z0, X0, Z1);   // tường tây
+  wallSeg(X0, Z0, -273, Z0); wallSeg(-247, Z0, X1, Z0);   // tường bắc
+  wallSeg(X0, Z1, -273, Z1); wallSeg(-247, Z1, X1, Z1);   // tường nam
+  [[X0, Z0], [X1, Z0], [X0, Z1], [X1, Z1]].forEach(([x, z]) => { lb(ART, 5, 7, 5, 0x8a5a44, x, 3.5, z); hipRoof(ART, 5.6, 5.6, 2, 0xe7b53a, x, 7, z); solid(x, z, 2.5, 2.5); });   // vọng lâu 4 góc
+  citadelGate(X1, 0, Math.PI / 2); citadelGate(-260, Z0, Math.PI); citadelGate(-260, Z1, 0);
+  // GRAND ARENA – đấu trường tròn (cửa vào phía đông)
+  const AX = -285, AZ = 0, AR = 16, N = 24;
+  const arc = skin(4.4, 9, 40, (x, W, H) => { x.fillStyle = "#d9b38c"; x.fillRect(0, 0, W, H); x.fillStyle = "#c49a6c"; x.fillRect(0, 2.8, W, 0.25); x.fillRect(0, 5.9, W, 0.25); x.fillRect(0, 0, W, 0.4);
+    x.fillStyle = "#5a3a22"; archPath(x, 1, 0.8, 2.4, 1.9); x.fill(); archPath(x, 1, 3.6, 2.4, 2); x.fill(); archPath(x, 1, 6.6, 2.4, 2.4); x.fill(); });
+  for (let i = 0; i < N; i++) { const a = i / N * Math.PI * 2; if (Math.abs(Math.atan2(Math.sin(a), Math.cos(a))) < 0.3) continue;   // chừa cửa phía đông
+    const x = AX + Math.cos(a) * AR, z = AZ + Math.sin(a) * AR, seg = new THREE.Group(); seg.position.set(x, 0, z); seg.rotation.y = -a + Math.PI / 2; ART.add(seg);
+    lb(seg, 4.4, 9, 1.6, 0xd9b38c, 0, 4.5, 0); face(seg, arc, 4.4, 9, 0, 4.5, 0.81); face(seg, arc, 4.4, 9, 0, 4.5, -0.81, Math.PI);
+    if (i % 4 === 2) { const n = seg.children.length; flagPole(seg, 0, 0, 2.5); seg.children.slice(n).forEach(m => m.position.y += 9); }
+    solid(x, z, 1.6, 1.6); }
+  const sand = new THREE.Mesh(new THREE.CircleGeometry(AR - 1, 32), mat(0xe9d8a6)); sand.rotation.x = -Math.PI / 2; sand.position.set(AX, 0.03, AZ); sand.userData.flat = true; ART.add(sand);
+  const ga = textPlate("GRAND ARENA", 5, 0.9, "#b02a2a", "#ffd43b"); ga.position.set(AX + AR + 1, 9.6, AZ); ga.rotation.y = Math.PI / 2; ART.add(ga);
+  [-3.2, 3.2].forEach(dz => { lb(ART, 1.2, 10, 1.2, 0xc49a6c, AX + AR + 0.6, 5, AZ + dz); solid(AX + AR + 0.6, AZ + dz, 0.6, 0.6); });
+  sign("Team games – coming soon!", AX, AZ + 6, 5);
+  [[-300, -30], [-300, 30], [-222, -70], [-222, 70], [-275, -70], [-245, 70], [-300, -70], [-300, 70]].forEach(([x, z]) => tree(x, z));
+  shade(ART);
+}
 { // tượng đài quả cầu EnglishVerse ở cuối quảng trường
   const gq = new THREE.Group(); gq.position.set(0, 0, 50); scene.add(gq);
   lc(gq, 2.6, 3, 0.8, 0xdee2e6, 0, 0.4, 0, 24); lc(gq, 1.2, 1.6, 1.4, 0xced4da, 0, 1.5, 0, 16);
@@ -2637,8 +2753,13 @@ $("zoomBtn").onclick = () => setWide(!camWide);
    Bản đồ nhỏ xoay theo camera: phía trên bản đồ = phía trước mặt mình. Bản đồ lớn: phía bắc ở trên, có tên địa điểm. */
 function mapRect(P) { const sw = P.door === "east" || P.door === "west"; return { x: P.x, z: P.z, w: sw ? P.d : P.w, d: sw ? P.w : P.d }; }
 function drawCity(x) {   // vẽ thành phố trong hệ tọa độ thế giới (x, z)
-  x.fillStyle = "#8fd17a"; x.fillRect(-155, -155, 310, 310);
-  ZONES.forEach(Z => { x.fillStyle = Z.color; x.fillRect(Z.x0, Z.z0, Z.x1 - Z.x0, Z.z1 - Z.z0); });   // màu nền từng khu
+  x.fillStyle = "#8fd17a"; x.fillRect(-365, -155, 520, 310);
+  x.fillStyle = "#4dabf7"; x.fillRect(RIVER.x0, RIVER.z0, RIVER.x1 - RIVER.x0, RIVER.z1 - RIVER.z0);   // sông
+  x.fillStyle = "#e9dcc0"; x.fillRect(ISLAND.x0, ISLAND.z0, ISLAND.x1 - ISLAND.x0, ISLAND.z1 - ISLAND.z0);   // đảo
+  x.strokeStyle = "#8a5a44"; x.lineWidth = 3; x.strokeRect(ISLAND.x0 + 1.5, ISLAND.z0 + 1.5, ISLAND.x1 - ISLAND.x0 - 3, ISLAND.z1 - ISLAND.z0 - 3);   // tường thành
+  x.fillStyle = "#a0522d"; BRIDGES.forEach(b => x.fillRect(b.x0, b.z0, b.x1 - b.x0, b.z1 - b.z0));
+  x.fillStyle = "#d9b38c"; x.beginPath(); x.arc(-285, 0, 16, 0, 7); x.fill();   // Grand Arena
+  ZONES.forEach(Z => { if (Z.id === "arena") return; x.fillStyle = Z.color; x.fillRect(Z.x0, Z.z0, Z.x1 - Z.x0, Z.z1 - Z.z0); });   // màu nền từng khu
   x.fillStyle = "#e9e2d0"; ROADS.forEach(r => x.fillRect(r.x - r.w / 2, r.z - r.d / 2, r.w, r.d));
   x.fillStyle = "#74c0fc"; x.beginPath(); x.arc(0, 24, 2.7, 0, 7); x.fill(); x.fillStyle = "#1864ab"; x.beginPath(); x.arc(0, 50, 2.5, 0, 7); x.fill();   // đài phun nước, tượng đài
   x.fillStyle = "#868e96"; x.fillRect(-150, 93, 300, 2);   // đường ray
@@ -2678,28 +2799,28 @@ function updateMini(dt) {
 }
 let bigK = 1;
 function drawBig() {   // bản đồ lớn cả thành phố (phóng to, kéo để xem), phía bắc ở trên
-  const cv = $("bigCv"), w = Math.max(600, ($("bigWrap").clientWidth || 320) * 2), h = w, dpr = Math.min(2, devicePixelRatio || 1);
+  const cv = $("bigCv"), w = Math.max(600, ($("bigWrap").clientWidth || 320) * 2), h = Math.round(w * 310 / 520), dpr = Math.min(2, devicePixelRatio || 1);
   cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
-  const x = cv.getContext("2d"); bigK = w / 310;
-  x.setTransform(dpr * bigK, 0, 0, dpr * bigK, dpr * 155 * bigK, dpr * 155 * bigK);
+  const x = cv.getContext("2d"); bigK = w / 520;
+  x.setTransform(dpr * bigK, 0, 0, dpr * bigK, dpr * 365 * bigK, dpr * 155 * bigK);
   drawCity(x, bigK, true); drawDots(x, 1.3);
   x.setTransform(dpr, 0, 0, dpr, 0, 0);   // chữ: cỡ cố định theo pixel
   x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 11px system-ui, sans-serif"; x.lineJoin = "round";
   const lab = (t, X, Z) => { const ws = t.split(" "), lines = []; ws.forEach(wd => { const L = lines[lines.length - 1]; if (L && (L + " " + wd).length <= 8) lines[lines.length - 1] = L + " " + wd; else lines.push(wd); });
-    lines.forEach((l, i) => { const px = (X + 155) * bigK, py = (Z + 155) * bigK + (i - (lines.length - 1) / 2) * 12; x.lineWidth = 3; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(l, px, py); x.fillStyle = "#212529"; x.fillText(l, px, py); }); };
+    lines.forEach((l, i) => { const px = (X + 365) * bigK, py = (Z + 155) * bigK + (i - (lines.length - 1) / 2) * 12; x.lineWidth = 3; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(l, px, py); x.fillStyle = "#212529"; x.fillText(l, px, py); }); };
   CITY.forEach(P => lab((P.id === "home" ? "🏠 " : "") + P.name, P.x, P.z));
   SPOTS.forEach(S => lab(S.name, S.x, S.z + (S.type === "market" ? 6 : 0)));
   PLACES.forEach(P => lab(P.name.replace("the ", "").replace(/^./, c => c.toUpperCase()), P.x, P.z + 3));
   LOTS.forEach(L => lab("🚧 " + L.name, L.x, L.z));
-  x.font = "bold 14px system-ui, sans-serif"; ZONES.forEach(Z => { const px = ((Z.x0 + Z.x1) / 2 + 155) * bigK, py = (Z.z0 + 155) * bigK + 12;   // tên khu
+  x.font = "bold 14px system-ui, sans-serif"; ZONES.forEach(Z => { const px = ((Z.x0 + Z.x1) / 2 + 365) * bigK, py = (Z.z0 + 155) * bigK + 12;   // tên khu
     x.lineWidth = 4; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(Z.name.toUpperCase(), px, py); x.fillStyle = "#7048e8"; x.fillText(Z.name.toUpperCase(), px, py); });
   const p = room ? room.P.doorPos : player.position, wr = $("bigWrap");
-  wr.scrollLeft = (p.x + 155) * bigK - wr.clientWidth / 2; wr.scrollTop = (p.z + 155) * bigK - wr.clientHeight / 2;   // cuộn tới chỗ mình đang đứng
+  wr.scrollLeft = (p.x + 365) * bigK - wr.clientWidth / 2; wr.scrollTop = (p.z + 155) * bigK - wr.clientHeight / 2;   // cuộn tới chỗ mình đang đứng
 }
 $("mini").onclick = () => { if (maze) return; $("bigmap").style.display = "block"; drawBig(); };
 $("bigClose").onclick = () => $("bigmap").style.display = "none";
 $("bigCv").onclick = e => {   // chạm địa điểm trên bản đồ lớn → chỉ đường tới đó
-  const r = $("bigCv").getBoundingClientRect(), wx = (e.clientX - r.left) / bigK - 155, wz = (e.clientY - r.top) / bigK - 155;
+  const r = $("bigCv").getBoundingClientRect(), wx = (e.clientX - r.left) / bigK - 365, wz = (e.clientY - r.top) / bigK - 155;
   let best = null, bd = 9;
   targets().filter(t => !t.npc).forEach(t => { const P = CITY.find(c => c.name === t.name), d = P ? Math.hypot(P.x - wx, P.z - wz) : Math.hypot(t.x - wx, t.z - wz); if (d < bd) { bd = d; best = t; } });
   if (!best || room) return;

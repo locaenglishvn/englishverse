@@ -162,9 +162,9 @@ const CITY = [
     sells: ["apple", "banana", "water", "riceball", "milk"] },
   { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 75, z: -86, w: 10, d: 10, door: "north", model: "building_B", layout: "lab",
     color: 0xf1f3f5, roof: 0x495057, awning: 0xfab005, floor: 0xadb5bd, wall: 0xe9ecef, goods: ["🔧", "🔨", "🪛", "🚲", "⚙️", "🪚"], keeper: null, sells: [] },
-  { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 10, d: 10, door: "north", model: "building_F", layout: "desks",
+  { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 16, d: 12, door: "north", exterior: "police", layout: "desks",
     color: 0xe7f5ff, roof: 0x1864ab, awning: 0x1c7ed6, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["🚓", "🔦", "📋", "🗺️", "🔑", "🚨"], keeper: null, sells: [] },
-  { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", model: "building_G", layout: "lab",
+  { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", exterior: "fire", layout: "lab",
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
   // Hàng phía nam (cửa nhìn lên Market Street)
   { id: "home", name: "My Home", type: "home", x: -125, z: -14, w: 12, d: 11, door: "south", exterior: "home", layout: "home",
@@ -200,6 +200,7 @@ const ZONES = [
   { id: "living",   name: "Maple Town",        vi: "Khu dân cư & công cộng", x0: -150, x1: -50, z0: -60,  z1: 60,   color: "#e8dcc8" },
   { id: "market",   name: "Market District",   vi: "Khu thương mại, dịch vụ", x0: 50, x1: 150,  z0: -60,  z1: 60,   color: "#f5d9c8" },
   { id: "transit",  name: "Station Square",    vi: "Khu nhà ga, hồ",        x0: -44, x1: 44,   z0: 66,   z1: 150,  color: "#cfe3f1" },
+  { id: "arena",    name: "Verse Arena",       vi: "Đảo đấu trường",        x0: -310, x1: -210, z0: -80, z1: 80,   color: "#e9dcc0" },
   { id: "farm",     name: "Green Fields",      vi: "Khu nông nghiệp",       x0: -150, x1: -50, z0: 66,   z1: 150,  color: "#d9ecb0" },
   { id: "nature",   name: "Wild Woods",        vi: "Khu thiên nhiên",       x0: 50,  x1: 150,  z0: 66,   z1: 150,  color: "#b9e0a5" }
 ];
@@ -213,6 +214,7 @@ const METRO = [
   { zone: "living",   name: "Maple Town",      x: -94,  z: 8 },
   { zone: "market",   name: "Market Street",   x: 106,  z: 8 },
   { zone: "transit",  name: "Central Station", x: -14,  z: 72, door: "north" },
+  { zone: "arena",    name: "Verse Arena",     x: -224, z: 10, door: "east" },
   { zone: "farm",     name: "Green Fields",    x: -106, z: 70, door: "north" },
   { zone: "nature",   name: "Wild Woods",      x: 106,  z: 70, door: "north" }
 ];
@@ -238,5 +240,10 @@ const LOTS = [
   { name: "Fish Pond",        x: -80,  z: 125,  w: 18, d: 16, door: "north" },
   { name: "Rice Field",       x: -125, z: 125,  w: 20, d: 18, door: "north" },
   { name: "Botanical Garden", x: 80,   z: 125,  w: 20, d: 18, door: "north", big: true },
+  // Đảo đấu trường: các trạm trò chơi đồng đội sẽ làm (mê cung The Maze đã có)
+  { name: "Quiz Tower",       x: -240, z: -52, w: 16, d: 14, door: "east",  big: true },
+  { name: "Word Race",        x: -240, z: 52,  w: 16, d: 14, door: "east",  big: true },
+  { name: "Treasure Hunt",    x: -290, z: -55, w: 18, d: 14, door: "south", big: true },
+  { name: "Team Battle",      x: -290, z: 55,  w: 18, d: 14, door: "north", big: true },
   { name: "Bus Terminal",     x: 34,   z: 84,   w: 14, d: 10, door: "north" }
 ];
