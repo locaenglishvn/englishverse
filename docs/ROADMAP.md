@@ -119,6 +119,12 @@ Lời mở đầu (dự kiến):
 - **Camera trong nhà luôn ở bên trong phòng** (sau lưng nhân vật, không vượt tường/trần); kéo màn hình xuống để ngước lên nhìn trần.
 - **Post Office** (24 × 48 m, theo Bưu điện Trung tâm Sài Gòn): mái vòm cong có giếng trời + sườn sắt xanh, tường kem cửa sổ vòm, cột sắt xanh, quầy giao dịch 2 bên có số, quầy lưu niệm đỏ giữa sảnh, ghế gỗ mặt đỏ, bản đồ cổ + bản đồ thế giới + đồng hồ ở tường cuối (không treo chân dung lãnh tụ), buồng điện thoại, bàn viết thư, quạt trần, đèn treo. 5 NPC: Mr. Brown, Ms. Thu (quầy gửi hàng), Kevin (khách du lịch), Mrs. Lan (bán lưu niệm), Uncle Bay (người viết thư, Lv.5). 40 từ vựng.
 - **Verse Library** (28 × 40 m, trần 12 m, `layout: "oval"`, theo ảnh phòng đọc bầu dục): tường cong 3 tầng kệ sách dưới các vòm, 2 tầng ban công lan can, mái vòm có cửa sổ tròn + giếng trời kính, quầy thủ thư tròn ở tâm (Ms. Green đứng trong), 5 NPC (Ms. Green, Tom – học sinh, Mrs. Hoa – xếp sách, Lily – bé đọc sách, Grandpa Vinh – Lv.5), 32 từ vựng, 11 dãy bàn đọc tỏa ra như nan quạt có đèn chụp xanh (vẽ bằng `InstancedMesh` cho nhẹ), thảm xanh ngọc, lối vào thẳng từ cửa. Camera bị giữ trong hình elip. Code: `furnishReadingRoom`.
+- **City Museum** (60 × 72 m, trần 14 m, `layout: "museumhall"`, code `furnishMuseum` + `museumPaint`): **sảnh chính** dọc giữa (quầy vé, bản đồ bảo tàng, tủ gửi đồ, hộp quyên góp, trụ chỉ đường, cửa hàng lưu niệm cuối sảnh; Leo – hướng dẫn viên) và **4 khu 24 × 36 m**, mỗi khu 4 NPC (1 NPC Lv.5):
+  - 🦖 **Dinosaur Hall** (trước–trái): tường đá Romanesque 2 tầng vòm, mái vòm có 2 dải ô kính, cầu thang lớn, bộ xương T. rex + khủng long cổ dài, thằn lằn bay treo trần, đầu khủng long 3 sừng, tổ trứng, thiên thạch, 6 tủ hóa thạch, bảng niên đại. NPC: Dr. Rex, Ben, Ms. Ivy, Dr. Kim (Lv.5).
+  - 🗿 **Sculpture & Antiques** (sau–trái): sân trong mái kính, tường đá vòm cuốn sáng ấm, bậc thềm có lan can + 2 tượng ngựa, tượng cẩm thạch (giơ tay, suy tư, ném đĩa…), tượng sư tử, tượng bán thân, 2 cây xanh, tủ cổ vật, **trống đồng Đông Sơn**, áo giáp, bình gốm. NPC: Marco, Anna, Uncle Tuan, Dr. Phuong (Lv.5).
+  - 🖼️ **Painting Gallery** (sau–phải): tường đỏ, trần vòm hắt hoa văn + giếng trời dài, sàn gỗ xương cá, 12 tranh khung vàng có bảng tên (Mona Lisa trong tủ kính + dây chắn, The Starry Night, Sunflowers, The Scream, The Great Wave, Girl with a Pearl Earring, Water Lilies + tranh của "Verse City Artist"), ghế nhung, góc vẽ tranh. NPC: Mrs. Rose, Nam, Sophie, Mr. Henry (Lv.5).
+  - 🚀 **Science & Space** (trước–phải): mái vòm lưới thép trắng, tường xanh có chòm sao, quả địa cầu khổng lồ (chấm đỏ = Việt Nam), 2 tên lửa, trạm vũ trụ, máy bay trên cột, hành tinh treo (Sao Thổ có vành), phi hành gia, robot, chuỗi ADN, kính thiên văn, góc thí nghiệm, cuộn Tesla. NPC: Captain Sky, Ms. Nova, Robo-7, Dr. Minh (Lv.5).
+  - Kỹ thuật: vách ngăn là mặt phẳng quay vào trong từng khu; `P.zones` giữ camera trong khu đang đứng; phòng rộng > 40 m đặt ở hàng z = 440 để không chồng lên phòng khác.
 - **Verse Bank** (28 × 44 m, trần 13 m, `layout: "bankhall"`, theo ảnh Ngân hàng Nhà nước TP.HCM + **màu thương hiệu xanh lá đậm** `BANK_GREEN`, logo tự chế: tròn xanh, chữ V trắng, đồng xu vàng – `bankLogo()`): 6 cột đá granite + dầm đá quanh giếng trời kính cam – vàng 2 tầng, tầng lửng lan can sắt đen 2 bên + phía trước, băng rôn xanh, quầy giao dịch chữ U (kính, hoa sắt, số 1–10 xanh), dây xếp hàng, tủ trưng bày tiền xưa dọc 2 tường, khu chờ ghế xanh + màn hình "NOW SERVING" + máy lấy số, 3 ATM, bảng tiền Verse City, bảng tỷ giá, cửa chính hoa sắt hình tròn + cổng an ninh, phòng két cuối sảnh (cửa két tròn, tủ két sắt). 5 NPC: Linh (giao dịch), Mr. Hai (bảo vệ), Ms. Mai (đổi tiền), Grandma Sau (nhờ dùng ATM – dạy giữ bí mật mã PIN), Mr. Quang (giám đốc, Lv.5). 34 từ vựng. Code: `furnishBankHall`.
 - **Cafe Sua Da** (20 × 48 m, trần 8 m, kiểu nhà kính – theo ảnh quán cà phê nhà kính): khu trước "The Green Corner" (bàn bình thủy sinh, sen đá, cây lá to), khu giữa chỗ ngồi (quầy bar gỗ dọc cửa kính + ghế cao, 3 góc sofa, cây treo, bóng đèn dây, máy lạnh), khu sau quầy pha chế (máy espresso, máy xay, tủ bánh, máy tính tiền, menu bảng đen, kệ, bao cà phê). 6 NPC: Mia (barista), Vy (thu ngân), Bao (phục vụ), Grace (khách), Mr. Kha (bán cây), Uncle Tu (chủ quán, Lv.5). **58 từ vựng**. Mái kính trong suốt (nhìn lên thấy trời).
 
@@ -252,6 +258,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 23. Hỏi từ vựng **bắt buộc bằng giọng nói**, câu hỏi theo cấp (Lv.20+); câu ví dụ đơn giản; **nội thất Post Office** (sảnh vòm kiểu Bưu điện Sài Gòn), 5 NPC, 40 từ vựng
 24. **Ngoại thất Post Office** làm lại theo Bưu điện Trung tâm Sài Gòn; **nội thất Verse Library** (phòng đọc bầu dục, mái vòm)
 25. Library đủ 5 NPC + 32 từ vựng; **đổi chỗ Verse Plaza ↔ Star Cinema** (Verse Plaza ở x 64,5 z 16, quay mặt về quảng trường); **nội thất Verse Bank** (5 NPC, 34 từ vựng)
+26. **Nội thất City Museum** 4 khu (khủng long, điêu khắc & cổ vật, tranh nổi tiếng, khoa học & vũ trụ), 17 NPC, 68 từ vựng
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |
@@ -260,12 +267,13 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 | Post Office | ✅ sảnh vòm | 5 | 40 |
 | Verse Library | ✅ phòng đọc bầu dục | 5 | 32 |
 | Verse Bank | ✅ sảnh giao dịch, giếng trời kính | 5 | 34 |
+| City Museum | ✅ 60 × 72 m: sảnh + 4 khu | 17 | 68 |
 | Các nơi còn lại | ⏳ phòng mẫu 16 × 12 (bày đồ theo `layout` cũ) | 1 (hoặc người bán) | chưa có |
 
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
-1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: City Museum, Town Hall, City Hospital, Verse School, các cửa hàng Market Street, Verse Plaza.
+1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Town Hall, City Hospital, Verse School, các cửa hàng Market Street, Verse Plaza.
 2. **Ngoại thất** các nơi còn dùng mẫu nhà phố (Science Lab, Fix-It Workshop, Pho Corner, Star Cinema…) và các ô 🚧 khi người dùng gửi ảnh.
 3. **Trò chơi đồng đội ở Verse Arena** (Quiz Tower, Word Race, Treasure Hunt, Team Battle) – đều bắt buộc giao tiếp tiếng Anh.
 4. **Vùng hoang dã có quái** quanh thành phố (rừng, đồi, đầm lầy, hang, phế tích), càng xa càng mạnh; thêm quái Riddle Bug, Scramble Worm; vũ khí nhạc cụ.
