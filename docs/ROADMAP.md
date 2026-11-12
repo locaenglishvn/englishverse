@@ -121,11 +121,21 @@ Lời mở đầu (dự kiến):
 
 *Nội dung danh nhân phải chính xác lịch sử, không bịa trích dẫn, có người duyệt; tránh nhân vật chính trị nhạy cảm và người còn sống.*
 
-### Thành phố – các địa điểm
-- **Đã có (vào được):** Sunny Café, Golden Bakery, Green Cross Pharmacy, Style Box, Town Hall, City Hospital, Verse School, City Museum, Library, Verse Bank, Post Office, Science Lab, Home & Co (nội thất), Pho Corner (nhà hàng), Happy Hair (cắt tóc), Fresh Mart (siêu thị), Fix-It Workshop, Police Station, Fire Station, Star Cinema, **My Home** (nhà riêng).
-- **Đã có (ngoài trời, `SPOTS` trong places.js):** Bus Stop, Wet Market, City Zoo, Green Farm, Stadium, Power Plant, Airfield; Train Station, Plaza, Misty Park (quái), cổng mê cung.
-- Ngoại thất các nơi mới đang **dùng tạm mô hình nhà phố KayKit** / khối đơn giản. Người dùng sẽ gửi hình để làm lại ngoại thất.
-- **Dự kiến:** vùng ngoại ô sương mù (rừng, hang, phế tích) có quái mạnh dần; School thành phòng thi CEFR; Wet Market thành chợ người chơi; Stadium thành đấu trường.
+### Thành phố – quy hoạch (PR #22)
+Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `LOTS` cuối `places.js`). Bắc = phía z âm. Kích thước ≈ 300 × 300 m, ranh giới ±150.
+
+| | Tây (x −150…−50) | Giữa (x −44…44) | Đông (x 50…150) |
+|---|---|---|---|
+| **Bắc** (z −150…−66) | Tech Valley – công nghệ cao: Science Lab, 🚧 Tech Park, Robotics Lab, Space Center | Sports District – thể thao: Stadium, cổng Maze, 🚧 Sports Center, Swimming Pool | Industrial Park – công nghiệp: Power Plant, Fix-It Workshop, Airfield, 🚧 Factory |
+| **Giữa** (z −60…60) | Maple Town – dân cư & công cộng: My Home, School, Hospital, Police, Fire, 🚧 nhà ở, Clinic | **Civic Center – hành chính**: Town Hall + quảng trường đi bộ dài (kiểu Nguyễn Huệ: bồn hoa, hàng cây, đài phun nước, tượng đài quả cầu EnglishVerse), Post Office, Bank, Cafe Sua Da, Museum, Library, 🚧 Verse Hotel | Market District – thương mại, dịch vụ: Market Street (bakery, pharmacy, Style Box, salon, Pho Corner, Home & Co, Fresh Mart), Star Cinema, Wet Market, 🚧 Shopping Mall, Bookshop, Toy Store |
+| **Nam** (z 66…150) | Green Fields – nông nghiệp: Green Farm, 🚧 Orchard, Fish Pond, Rice Field | Station Square: Train Station (nhìn thẳng về Town Hall), Bus Stop, Verse Lake, 🚧 Bus Terminal | Wild Woods – thiên nhiên: City Zoo, Misty Park (quái), 🚧 Botanical Garden |
+
+- Đường vành đai x = ±47, z = ±63; mỗi khu có trục đường riêng. Nhà quay mặt ra đường gần nhất (đủ 4 hướng).
+- **Metro**: mỗi khu 1 trạm (chữ M xanh), đứng gần bấm 🚇 Metro để đi nhanh. **Bus Stop** chỉ để trang trí / nhiệm vụ. **Train Station** sau này dùng để đi sang thành phố khác.
+- **🚧 Ô đất chờ xây** (`LOTS`): hàng rào cam trắng + bảng "Coming soon"; ô lớn (`big: true`) có cần cẩu. Khi xây thật: chuyển ô đó thành một mục trong `CITY` cùng tọa độ.
+- Ngoại thất vẽ riêng theo ảnh thật (mục `8c` trong index.html, `exterior:` trong places.js): Town Hall (UBND TP.HCM), City Hospital (BV Chợ Rẫy), Verse School (trường Lê Quý Đôn), Cafe Sua Da (nhà ống Việt Nam), My Home, Train Station. Các nơi khác vẫn dùng tạm mô hình nhà phố KayKit; người dùng gửi hình theo đợt.
+- **My Home sẽ nâng cấp được** (ý tưởng của người dùng): bỏ xu (+ điều kiện thành tích) để xây to hơn, nhiều kiểu nhà, giá khác nhau.
+- Camera 2 chế độ: 🔍 gần (giao tiếp, thao tác) / 🔭 rộng (nhìn tổng thể; tự về gần khi đang nói chuyện). Tốc độ đi 6 m/giây.
 - Mỗi địa điểm cần: **nhu cầu trong game + từ vựng/mẫu câu riêng + thứ để sưu tầm/khám phá**.
 
 ### Xã hội & an toàn
@@ -177,7 +187,7 @@ Lời mở đầu (dự kiến):
 
 ---
 
-## 5. Đã làm (PR #1–#21)
+## 5. Đã làm (PR #1–#22)
 1. `CLAUDE.md`, tầm nhìn metaverse
 2. Thị trấn ban đầu; hỏi đường "Where is …?" có mũi tên dẫn đường
 3. Thẻ từ vựng và sổ sưu tập
@@ -193,11 +203,13 @@ Lời mở đầu (dự kiến):
 13. **Bản đồ mở rộng** (≈ 210 × 175 m): 15 địa điểm mới vào được + 7 khu ngoài trời; 16 NPC mới có hội thoại theo nghề; tên + nghề trên đầu NPC
 14. **Bản đồ nhỏ** xoay theo hướng nhìn; chạm để mở bản đồ lớn, chạm địa điểm để được chỉ đường
 15. Giọng đọc tự nhiên hơn; tinh linh không bay quanh người nữa (trưng ở nhà); thư viện để trong `lib/`
+16. Ngoại thất riêng đợt 1: Town Hall, City Hospital, Verse School, Cafe Sua Da, My Home (cờ bay, bản đồ nhỏ vẽ đúng hình khối)
+17. **Quy hoạch lại thành phố** 9 khu, quảng trường đi bộ trước Town Hall, metro mỗi khu, 20 ô đất chờ xây, nhà ga mới + đường ray, hồ, camera gần/rộng, đi nhanh hơn 50%, bảng tên khu khi đi vào
 
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
-1. **Ngoại thất thật** cho các địa điểm mới (người dùng gửi hình); nội thất riêng cho từng nơi.
+1. **Ngoại thất thật** cho các địa điểm còn lại (người dùng gửi hình theo đợt); nội thất riêng cho từng nơi; nâng cấp nhà riêng.
 2. **Đồng bộ quái cho cả cộng đồng:** một con quái, nhiều người cùng thấy và cùng đánh, máu chung; mỗi người vẫn nhận đề riêng.
 3. **Bảng nhiệm vụ ở Town Hall** (nhiệm vụ hằng ngày).
 4. **Chuỗi nhiệm vụ Pasteur** ở bệnh viện → kỹ năng pha thuốc.
