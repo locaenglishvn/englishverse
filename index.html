@@ -539,7 +539,7 @@ player.position.set(0, 0, 34);   // xuất hiện trên quảng trường, nhìn
 LESSONS.forEach(L => {
   L.mesh = makeChar(L.color);
   L.mesh.position.set(L.x, 0, L.z);
-  { const I = npcInfo(L.name); L.mesh.add(nameTag(I.short, I.job + (L.minLv ? " · Lv." + L.minLv : ""))); }   // tên + nghề nghiệp trên đầu
+  { const I = npcInfo(L.name); L.tag = nameTag(I.short, I.job + (L.minLv ? " · Lv." + L.minLv : "")); L.mesh.add(L.tag); }   // tên + nghề nghiệp trên đầu
   L.mark = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffd43b }));
   scene.add(L.mark);
   if (!L.place) solid(L.x, L.z, 0.4, 0.4);   // NPC trong nhà: va chạm đặt sau khi dựng phòng
@@ -3787,6 +3787,7 @@ $("bigCv").onclick = e => {   // chạm địa điểm trên bản đồ lớn �
 const clock = new THREE.Clock();
 const camRay = new THREE.Raycaster(); camRay.camera = camera;   // camera: cần khi tia chạm vào hình emoji (sprite)
 let camSnap = true;   // true = camera nhảy ngay tới chỗ mới (sau khi dịch chuyển), không bay từ từ
+let tagZone = null;
 function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
@@ -3815,6 +3816,8 @@ function loop() {
     player.rotation.y = Math.atan2(wx, wz);
   }
   LESSONS.forEach(L => L.mark.position.set(L.x, 3.05 + Math.sin(t * 3) * 0.12, L.z));
+  { const Zs = room && room.P.zones, pp = player.position, inZ = (z, x, y) => x >= z.x0 && x <= z.x1 && y >= z.z0 && y <= z.z1, Zn = Zs ? Zs.find(z => inZ(z, pp.x, pp.z)) : null;   // nơi nhiều khu (bảo tàng): chỉ hiện tên NPC trong khu đang đứng
+    if (Zn !== tagZone) { tagZone = Zn; LESSONS.forEach(L => { const on = !Zn || inZ(Zn, L.x, L.z); L.tag.visible = on; L.mark.visible = on; }); } }
   updateGuide(dt, t);
   updateOnline(dt);
   updateMazeGate();
