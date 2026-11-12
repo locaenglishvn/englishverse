@@ -147,9 +147,10 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Brown – Postman", color: 0xe8590c, place: "post", x: 0, z: -3.6,
+  name: "Mr. Brown – Postman", color: 0xe8590c, place: "post", x: -10.9, z: -10,
   steps: [
     { say: "Hello! Do you want to send something?",
+      q: { w: "Do you want to…?", pic: "🙋", ex: "Do you want to send something?" },
       card: { w: "send a letter", pic: "✉️", ex: "I want to send a letter." },
       choices: [
         { t: "Yes. I want to send this letter to Hanoi.", ok: true,  fb: "Clear and complete! +10" },
@@ -544,6 +545,106 @@ const LESSONS = [
         { t: "Wow, that’s why it tastes so rich!", ok: true,  fb: "Great reaction! +10" },
         { t: "Drop is slow me.",                   ok: false, fb: "Try “That’s why it tastes so rich!”" },
         { t: "I like tea.",                        ok: false, fb: "Stay on topic :)" } ] }
+  ]
+}
+/* ===== POST OFFICE (sảnh lớn 24 × 48 m, quầy giao dịch 2 bên, quầy lưu niệm giữa sảnh) ===== */
+,{
+  name: "Ms. Thu – Counter Clerk", color: 0x2b8a3e, place: "post", x: 10.9, z: -10,
+  steps: [
+    { say: "Good morning! What’s inside the parcel?",
+      q: { w: "What’s inside…?", pic: "📦", ex: "What’s inside the parcel?" },
+      card: { w: "It’s a gift.", pic: "🎁", ex: "It’s a gift for my friend." },
+      choices: [
+        { t: "It’s a gift for my friend. Some books.", ok: true,  fb: "Clear answer! +10" },
+        { t: "Inside is gift is.",                     ok: false, fb: "Say “It’s a gift.”" },
+        { t: "I don’t tell you.",                      ok: false, fb: "She needs to know. Be polite :)" } ] },
+    { say: "OK. Let me weigh it. It’s two kilos. Where are you sending it?",
+      q: { w: "Where are you sending it?", pic: "📍", ex: "Where are you sending it?" },
+      card: { w: "send it to…", pic: "✈️", ex: "I’m sending it to Da Nang." },
+      choices: [
+        { t: "I’m sending it to Da Nang.", ok: true,  fb: "+10" },
+        { t: "Send Da Nang it.",           ok: false, fb: "Say “I’m sending it to Da Nang.”" },
+        { t: "Two kilos.",                 ok: false, fb: "She asked WHERE, not how heavy." } ] },
+    { say: "Express or standard? Express takes one day.",
+      card: { w: "express", pic: "⚡", ex: "Express, please. It’s urgent." },
+      choices: [
+        { t: "Express, please. It’s urgent.", ok: true,  fb: "Great word: urgent! +10" },
+        { t: "Fast fast.",                     ok: false, fb: "Say “Express, please.”" },
+        { t: "One day is me.",                 ok: false, fb: "Try “Express, please.”" } ] }
+  ]
+},
+{
+  name: "Kevin – Tourist", color: 0x1c7ed6, place: "post", x: -1, z: 7,
+  steps: [
+    { say: "Hi! Sorry, where can I buy stamps?",
+      q: { w: "Where can I buy…?", pic: "🛒", ex: "Where can I buy stamps?" },
+      card: { w: "over there", pic: "👉", ex: "You can buy stamps over there." },
+      choices: [
+        { t: "At the counter over there.", ok: true,  fb: "Helpful! +10" },
+        { t: "Stamp is there buy.",        ok: false, fb: "Say “At the counter over there.”" },
+        { t: "I am a stamp.",              ok: false, fb: "Haha, no :)" } ] },
+    { say: "Thanks! This building is beautiful. Is it very old?",
+      q: { w: "Is it very old?", pic: "🏛️", ex: "Is this building very old?" },
+      card: { w: "more than 100 years old", pic: "💯", ex: "It’s more than one hundred years old." },
+      choices: [
+        { t: "Yes, it’s more than 100 years old.", ok: true,  fb: "Correct! +10" },
+        { t: "It old very.",                       ok: false, fb: "Say “It’s very old.”" },
+        { t: "I am 100 years old.",                ok: false, fb: "You’re not that old :)" } ] },
+    { say: "Amazing! I want to send postcards to my family in Australia.",
+      card: { w: "That’s a great idea!", pic: "💡", ex: "Postcards? That’s a great idea!" },
+      choices: [
+        { t: "That’s a great idea! They’ll love it.", ok: true,  fb: "Friendly! +10" },
+        { t: "Idea is great that.",                  ok: false, fb: "Say “That’s a great idea!”" },
+        { t: "Australia is far.",                    ok: false, fb: "True, but be encouraging :)" } ] }
+  ]
+},
+{
+  name: "Mrs. Lan – Souvenir Seller", color: 0xc92a2a, place: "post", x: 2.8, z: -2,
+  steps: [
+    { say: "Hello dear! Postcards, magnets, keychains! What are you looking for?",
+      q: { w: "What are you looking for?", pic: "🔍", ex: "What are you looking for?" },
+      card: { w: "I’m looking for…", pic: "🏞️", ex: "I’m looking for postcards." },
+      choices: [
+        { t: "I’m looking for postcards.", ok: true,  fb: "+10" },
+        { t: "Look postcard I.",           ok: false, fb: "Say “I’m looking for postcards.”" },
+        { t: "I look you.",                ok: false, fb: "Try “I’m looking for…”" } ] },
+    { say: "Here they are. How many would you like?",
+      q: { w: "How many would you like?", pic: "🔢", ex: "How many would you like?" },
+      card: { w: "five, please", pic: "5️⃣", ex: "Five postcards, please." },
+      choices: [
+        { t: "Five, please.",    ok: true,  fb: "Short and polite! +10" },
+        { t: "Much five.",       ok: false, fb: "Say “Five, please.”" },
+        { t: "How many is it?",  ok: false, fb: "She asked you. Give a number :)" } ] },
+    { say: "That’s 50,000 dong. Do you want a bag?",
+      card: { w: "No, thanks.", pic: "🙅", ex: "No, thanks. I have a bag." },
+      choices: [
+        { t: "No, thanks. I have a bag.", ok: true,  fb: "Good for the planet! +10" },
+        { t: "No bag me.",                ok: false, fb: "Say “No, thanks.”" },
+        { t: "Bag is good.",              ok: false, fb: "Try “Yes, please” or “No, thanks.”" } ] }
+  ]
+},
+{
+  name: "Uncle Bay – Letter Writer", color: 0x495057, place: "post", x: -6, z: -18.5, minLv: 5,
+  steps: [
+    { say: "Hello, young friend. Who would you like to write to?",
+      q: { w: "Who would you like to…?", pic: "✍️", ex: "Who would you like to write to?" },
+      card: { w: "I’d like to write to…", pic: "💌", ex: "I’d like to write to my pen pal." },
+      choices: [
+        { t: "I’d like to write to my pen pal in England.", ok: true,  fb: "Lovely! +10" },
+        { t: "Write pen pal I.",                            ok: false, fb: "Say “I’d like to write to…”" },
+        { t: "England is write.",                           ok: false, fb: "Try “I’d like to write to my pen pal.”" } ] },
+    { say: "A good letter starts with “Dear…”. How do you end a letter?",
+      card: { w: "Best wishes,", pic: "🌟", ex: "Best wishes, Lily." },
+      choices: [
+        { t: "Best wishes, and then my name.", ok: true,  fb: "Perfect ending! +10" },
+        { t: "Goodbye forever.",               ok: false, fb: "Too sad! Try “Best wishes,”" },
+        { t: "Dear end.",                      ok: false, fb: "“Dear” is for the beginning :)" } ] },
+    { say: "Excellent. Remember: write clearly, and always say thank you.",
+      card: { w: "I’ll keep that in mind.", pic: "🧠", ex: "Thank you. I’ll keep that in mind." },
+      choices: [
+        { t: "Thank you. I’ll keep that in mind.", ok: true,  fb: "Wise words! +10" },
+        { t: "Mind is keep.",                      ok: false, fb: "Say “I’ll keep that in mind.”" },
+        { t: "OK bye.",                            ok: false, fb: "Say thank you first :)" } ] }
   ]
 }
 ];

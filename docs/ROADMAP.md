@@ -106,7 +106,7 @@ Lời mở đầu (dự kiến):
 |---|---|---|
 | 💬 Câu nói (phrase) | Trả lời đúng NPC | `card` trong mỗi bước ở lessons.js |
 | ❓ Câu hỏi (question) | NPC hỏi mình, trả lời đúng | `q` trong mỗi bước ở lessons.js |
-| 📦 Từ vựng (vocab) | Chạm đồ trưng bày → hỏi "What is this?" (tự nói +3 ⭐) | `VOCAB[placeId]` trong places.js (có `pos`, câu ví dụ kèm tính từ/trạng từ) |
+| 📦 Từ vựng (vocab) | Chạm đồ trưng bày → **bắt buộc giữ 🎤 và hỏi** "What is this?" (không có nút bấm thay thế). Từ Lv.20 gợi ý hỏi rõ loại: "What is this drink / food / tool / machine / plant / furniture / thing?" (`kind`), vẫn chấp nhận câu ngắn; hỏi đủ +2 ⭐ | `VOCAB[placeId]` trong places.js (có `pos`, `kind`, `at`; câu ví dụ ngắn, tự nhiên – tính từ/trạng từ chỉ thêm khi hợp lý, không làm khó người mới) |
 
 - **Hạn mức theo cấp (riêng từng loại):** cấp 1–5: 6 câu nói, 2 câu hỏi, 10 từ vựng. Từ cấp 6: mỗi cấp thêm 3 / 1 / 5 (tỉ lệ 3 : 1 : 5). Đầy hạn mức thì NPC vẫn nói chuyện nhưng không cho thẻ mới, nhắc đi luyện.
 - **Độ thuộc 0–3 ⭐ mỗi thẻ:** tăng khi nói đúng câu của thẻ lúc đánh Echo Ghost, gặp lại NPC, hoặc nói lại từ ở chỗ trưng bày. Quái chọn đề từ cả 3 loại thẻ, thẻ ít sao ra nhiều hơn.
@@ -117,7 +117,8 @@ Lời mở đầu (dự kiến):
 ### Nội thất (làm theo ảnh người dùng gửi, từng nơi)
 - Phòng có thể to riêng: `size: { w, d, h }` trong places.js (mặc định 16 × 12).
 - **Camera trong nhà luôn ở bên trong phòng** (sau lưng nhân vật, không vượt tường/trần); kéo màn hình xuống để ngước lên nhìn trần.
-- **Cafe Sua Da** (20 × 48 m, kiểu nhà kính – theo ảnh quán cà phê nhà kính): khu trước "The Green Corner" (bàn bình thủy sinh, sen đá, cây lá to), khu giữa chỗ ngồi (quầy bar gỗ dọc cửa kính + ghế cao, 3 góc sofa, cây treo, bóng đèn dây, máy lạnh), khu sau quầy pha chế (máy espresso, máy xay, tủ bánh, máy tính tiền, menu bảng đen, kệ, bao cà phê). 6 NPC: Mia (barista), Vy (thu ngân), Bao (phục vụ), Grace (khách), Mr. Kha (bán cây), Uncle Tu (chủ quán, Lv.5). **58 từ vựng**. Mái kính trong suốt (nhìn lên thấy trời).
+- **Post Office** (24 × 48 m, theo Bưu điện Trung tâm Sài Gòn): mái vòm cong có giếng trời + sườn sắt xanh, tường kem cửa sổ vòm, cột sắt xanh, quầy giao dịch 2 bên có số, quầy lưu niệm đỏ giữa sảnh, ghế gỗ mặt đỏ, bản đồ cổ + bản đồ thế giới + đồng hồ ở tường cuối (không treo chân dung lãnh tụ), buồng điện thoại, bàn viết thư, quạt trần, đèn treo. 5 NPC: Mr. Brown, Ms. Thu (quầy gửi hàng), Kevin (khách du lịch), Mrs. Lan (bán lưu niệm), Uncle Bay (người viết thư, Lv.5). 40 từ vựng.
+- **Cafe Sua Da** (20 × 48 m, trần 8 m, kiểu nhà kính – theo ảnh quán cà phê nhà kính): khu trước "The Green Corner" (bàn bình thủy sinh, sen đá, cây lá to), khu giữa chỗ ngồi (quầy bar gỗ dọc cửa kính + ghế cao, 3 góc sofa, cây treo, bóng đèn dây, máy lạnh), khu sau quầy pha chế (máy espresso, máy xay, tủ bánh, máy tính tiền, menu bảng đen, kệ, bao cà phê). 6 NPC: Mia (barista), Vy (thu ngân), Bao (phục vụ), Grace (khách), Mr. Kha (bán cây), Uncle Tu (chủ quán, Lv.5). **58 từ vựng**. Mái kính trong suốt (nhìn lên thấy trời).
 
 ### Kinh tế
 - 🪙 Xu: từ NPC, hạ quái, mê cung, (sau này) bán đồ tự làm.
@@ -207,7 +208,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 ---
 
-## 5. Đã làm (PR #1–#26)
+## 5. Đã làm (PR #1–#27)
 1. `CLAUDE.md`, tầm nhìn metaverse
 2. Thị trấn ban đầu; hỏi đường "Where is …?" có mũi tên dẫn đường
 3. Thẻ từ vựng và sổ sưu tập
@@ -224,6 +225,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 14. **Bản đồ nhỏ** xoay theo hướng nhìn; chạm để mở bản đồ lớn, chạm địa điểm để được chỉ đường
 15. Giọng đọc tự nhiên hơn; tinh linh không bay quanh người nữa (trưng ở nhà); thư viện để trong `lib/`
 16. Ngoại thất riêng đợt 1: Town Hall, City Hospital, Verse School, Cafe Sua Da, My Home (cờ bay, bản đồ nhỏ vẽ đúng hình khối)
+23. Hỏi từ vựng bắt buộc bằng giọng nói, câu hỏi theo cấp (Lv.20+); câu ví dụ đơn giản lại; trần quán cà phê cao hơn; **nội thất Post Office** (sảnh vòm kiểu Bưu điện Sài Gòn), 4 NPC mới, 40 từ vựng
 22. **Sổ thẻ 3 loại + hạn mức theo cấp + sao luyện tập**; NPC theo cấp; **nội thất Cafe Sua Da** kiểu nhà kính 20 × 48 m, 5 NPC mới, 58 từ vựng bày đúng ngữ cảnh, camera trong nhà nhìn được tường và trần
 21. Verse Plaza (trung tâm thương mại); NPC đi tuần/trực gác (`AMBIENT` trong places.js: công an, lính cứu hỏa, lính gác Arena – chào khi đi ngang); cổng Arena 3 cửa đi qua được; cửa chính đồn công an
 20. Ngoại thất đồn công an, trạm cứu hỏa; **đảo đấu trường Verse Arena** (sông, cầu, tường thành, 3 cổng Ngọ Môn, Grand Arena), The Maze dời vào đảo
