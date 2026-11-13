@@ -2,7 +2,7 @@
    PHO CORNER – quán phở Việt: tường vàng nhạt, chân tường gỗ, bếp mở sau người bán (nồi nước dùng lớn, rổ bánh phở, kệ gia vị),
    4 bàn gỗ thấp + ghế đẩu nhựa đỏ, tủ mát đồ uống tường trái, đèn lồng đỏ + thực đơn + lịch trên tường. Khu: kitchen, table, drinks, wall. */
 function furnishPho(P, g, cx, cz, W, D, fur) {
-  const K = shopKit(P, g, cx, cz, W, D, { floor: ["#e9e2d0", "#d6cdb6"], wall: ["#fff3c4", "#8d5a2b"], trim: "#c92a2a", counter: 0xc92a2a, counterTop: 0xe9ecef, sign: "PHỞ BÒ · PHỞ GÀ", signBg: "#c92a2a", signFg: "#ffe066" });
+  const K = shopKit(P, g, cx, cz, W, D, { floor: ["#e9e2d0", "#d6cdb6"], wall: ["#fff3c4", "#8d5a2b"], trim: "#c92a2a", counter: 0xc92a2a, counterTop: 0xe9ecef, sign: "PHO BO · PHO GA", signBg: "#c92a2a", signFg: "#ffe066" });
   const { back, B, sol, plate, pic, A } = K;
   // BẾP MỞ (kitchen): kệ bếp inox 2 bên người bán, nồi nước dùng, rổ bánh phở, thớt, kệ gia vị trên tường
   [-1, 1].forEach(s => { B(5, 0.95, 0.8, 0xadb5bd, cx + s * 4.1, 0.48, back + 0.4); B(5.05, 0.05, 0.85, 0xdee2e6, cx + s * 4.1, 0.97, back + 0.4); sol(cx + s * 4.1, back + 0.4, 2.55, 0.45); });
@@ -23,7 +23,7 @@ function furnishPho(P, g, cx, cz, W, D, fur) {
   // TƯỜNG (wall): đèn lồng đỏ treo trần, bảng thực đơn, lịch, quạt treo tường, tranh phố cổ
   const lantern = (x, y, z) => { const l = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), mat(0xe03131)); l.scale.y = 1.25; l.position.set(x, y, z); g.add(l); B(0.25, 0.08, 0.25, 0xfab005, x, y + 0.32, z); B(0.2, 0.06, 0.2, 0xfab005, x, y - 0.32, z); lc(g, 0.01, 0.01, 4.5 - y - 0.3, 0x343a40, x, (4.5 + y + 0.3) / 2, z, 4); };
   [[-2.6, -1], [2.6, -1], [-5, 6.5], [5, 6.5]].forEach(([dx, dz]) => lantern(cx + dx, 3.75, cz + dz));
-  const menu = skin(3.2, 2, 50, x => { x.fillStyle = "#3b2a1a"; x.fillRect(0, 0, 3.2, 2); x.fillStyle = "#ffe066"; x.font = "bold 0.26px system-ui"; x.textAlign = "center"; x.fillText("MENU · THỰC ĐƠN", 1.6, 0.32);
+  const menu = skin(3.2, 2, 50, x => { x.fillStyle = "#3b2a1a"; x.fillRect(0, 0, 3.2, 2); x.fillStyle = "#ffe066"; x.font = "bold 0.26px system-ui"; x.textAlign = "center"; x.fillText("MENU · THUC DON", 1.6, 0.32);
     x.fillStyle = "#ffffff"; x.font = "0.18px system-ui"; x.textAlign = "left"; [["Beef pho", "45k"], ["Chicken pho", "40k"], ["Spring rolls", "30k"], ["Lemon tea", "10k"], ["Iced coffee", "20k"]].forEach(([a, b], i) => { x.fillText(a, 0.3, 0.7 + i * 0.27); x.fillText(b, 2.5, 0.7 + i * 0.27); }); });
   pic(menu, 3.2, 2, cx + W / 2 - 0.04, 2.6, cz - 3, -Math.PI / 2);
   const cal = skin(0.8, 1.1, 60, x => { x.fillStyle = "#ffffff"; x.fillRect(0, 0, 0.8, 1.1); x.fillStyle = "#e03131"; x.fillRect(0, 0, 0.8, 0.3); x.fillStyle = "#ffffff"; x.font = "bold 0.16px system-ui"; x.textAlign = "center"; x.fillText("NOV", 0.4, 0.2); x.fillStyle = "#e03131"; x.font = "bold 0.45px system-ui"; x.fillText("14", 0.4, 0.8); });

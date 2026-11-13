@@ -108,7 +108,7 @@ const LESSONS = [
       choices: [
         { t: "Yes, please. I’d like to borrow this book.", ok: true,  fb: "Perfect! +10" },
         { t: "Give book.",                                 ok: false, fb: "Too short. Try “I’d like to borrow…”" },
-        { t: "I want to lend a book.",                     ok: false, fb: "“Lend” = cho mượn. You want to BORROW." } ] },
+        { t: "I want to lend a book.",                     ok: false, fb: "“Lend” = cho muon. You want to BORROW." } ] },
     { say: "Sure. Do you have a library card?",
       card: { w: "library card", pic: "🪪", ex: "Here is my library card." },
       choices: [
@@ -361,7 +361,7 @@ const LESSONS = [
       card: { w: "warm up", pic: "🤸", ex: "Let’s warm up before we play." },
       choices: [
         { t: "Yes, I’m ready!",    ok: true,  fb: "Let’s go! +10" },
-        { t: "I am warm already.", ok: false, fb: "Warm up = khởi động. Say “I’m ready!”" },
+        { t: "I am warm already.", ok: false, fb: "Warm up = khoi dong. Say “I’m ready!”" },
         { t: "Ready is me.",       ok: false, fb: "Say “I’m ready!”" } ] },
     { say: "Great! What sport do you like best?",
       card: { w: "football", pic: "⚽", ex: "I like football best." },
@@ -419,14 +419,14 @@ const LESSONS = [
       card: { w: "fasten", pic: "🪢", ex: "Fasten your seat belt." },
       choices: [
         { t: "Done! Let’s fly!",       ok: true,  fb: "+10" },
-        { t: "Belt is fast.",          ok: false, fb: "Fasten = thắt. Say “Done!”" },
+        { t: "Belt is fast.",          ok: false, fb: "Fasten = that. Say “Done!”" },
         { t: "No belt for me.",        ok: false, fb: "Safety first! Fasten it :)" } ] }
   ]
 }
 /* ===== CAFE SUA DA: thêm nhân viên và khách trong quán (quán rộng 20 × 48 m, z âm = quầy pha chế phía sau)
    minLv = cấp tối thiểu để NPC này chịu nói chuyện (nội dung khó hơn) ===== */
 ,{
-  name: "Bao – Waiter", color: 0x2b8a3e, place: "cafe", x: 0, z: 1,
+  name: "Liam – Waiter", color: 0x2b8a3e, place: "cafe", x: 0, z: 1,
   steps: [
     { say: "Good afternoon! Table for how many?",
       q: { w: "Table for how many?", pic: "🍽️", ex: "Good afternoon! Table for how many?" },
@@ -450,7 +450,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Vy – Cashier", color: 0xe64980, place: "cafe", x: 5, z: -16.7,
+  name: "Chloe – Cashier", color: 0xe64980, place: "cafe", x: 5, z: -16.7,
   steps: [
     { say: "That’s 45,000 dong. Cash or card?",
       q: { w: "Cash or card?", pic: "💵", ex: "Would you like to pay by cash or card?" },
@@ -549,7 +549,7 @@ const LESSONS = [
 }
 /* ===== POST OFFICE (sảnh lớn 24 × 48 m, quầy giao dịch 2 bên, quầy lưu niệm giữa sảnh) ===== */
 ,{
-  name: "Ms. Thu – Counter Clerk", color: 0x2b8a3e, place: "post", x: 10.9, z: -10,
+  name: "Ms. Laura – Counter Clerk", color: 0x2b8a3e, place: "post", x: 10.9, z: -10,
   steps: [
     { say: "Good morning! What’s inside the parcel?",
       q: { w: "What’s inside…?", pic: "📦", ex: "What’s inside the parcel?" },
@@ -599,7 +599,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Lan – Souvenir Seller", color: 0xc92a2a, place: "post", x: 2.8, z: -2,
+  name: "Mrs. Molly – Souvenir Seller", color: 0xc92a2a, place: "post", x: 2.8, z: -2,
   steps: [
     { say: "Hello dear! Postcards, magnets, keychains! What are you looking for?",
       q: { w: "What are you looking for?", pic: "🔍", ex: "What are you looking for?" },
@@ -649,7 +649,7 @@ const LESSONS = [
 }
 /* ===== VERSE LIBRARY (phòng đọc bầu dục 28 × 40 m, quầy thủ thư ở tâm, bàn đọc tỏa nan quạt) ===== */
 ,{
-  name: "Tom – Student", color: 0x1c7ed6, place: "library", x: 8.7, z: 2.3,
+  name: "Oliver – Student", color: 0x1c7ed6, place: "library", x: 8.7, z: 2.3,
   steps: [
     { say: "Hi! Are you looking for a seat?",
       q: { w: "Is this seat free?", pic: "🪑", ex: "Excuse me, is this seat free?" },
@@ -674,7 +674,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Hoa – Book Shelver", color: 0x9c36b5, place: "library", x: 9.2, z: -9.2,
+  name: "Mrs. Helen – Book Shelver", color: 0x9c36b5, place: "library", x: 9.2, z: -9.2,
   steps: [
     { say: "Hello! I’m putting books back on the shelves. Can I help you?",
       q: { w: "Can I help you?", pic: "🙋", ex: "Hello! Can I help you?" },
@@ -698,7 +698,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Lily – Little Reader", color: 0xf06595, place: "library", x: -8.7, z: 2.3,
+  name: "Mila – Little Reader", color: 0xf06595, place: "library", x: -8.7, z: 2.3,
   steps: [
     { say: "Hi! Do you like reading?",
       q: { w: "Do you like…?", pic: "❤️", ex: "Do you like reading?" },
@@ -749,7 +749,7 @@ const LESSONS = [
 }
 /* ===== VERSE BANK (sảnh lớn 28 × 44 m: cột đá granite, giếng trời kính cam, quầy giao dịch chữ U, phòng két) ===== */
 ,{
-  name: "Mr. Hai – Security Guard", color: 0x343a40, place: "bank", x: 3.5, z: 15,
+  name: "Mr. Frank – Security Guard", color: 0x343a40, place: "bank", x: 3.5, z: 15,
   steps: [
     { say: "Good morning! Welcome to Verse Bank. What do you need today?",
       q: { w: "What do you need?", pic: "🙋", ex: "What do you need today?" },
@@ -773,7 +773,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Mai – Currency Exchange", color: 0x1b5e3b, place: "bank", x: 7.2, z: -5,
+  name: "Ms. Julia – Currency Exchange", color: 0x1b5e3b, place: "bank", x: 7.2, z: -5,
   steps: [
     { say: "Hello! This is the currency exchange counter. How can I help?",
       card: { w: "change money", pic: "💱", ex: "I’d like to change some money." },
@@ -871,7 +871,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ben – Kid Explorer", color: 0x1c7ed6, place: "museum", x: -24, z: 19,
+  name: "Max – Kid Explorer", color: 0x1c7ed6, place: "museum", x: -24, z: 19,
   steps: [
     { say: "Look at that long neck! How tall do you think it is?",
       q: { w: "How tall…?", pic: "📏", ex: "How tall is it?" },
@@ -920,7 +920,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Dr. Kim – Fossil Scientist", color: 0x5f3dc4, place: "museum", x: -26.5, z: 15.5, minLv: 5,
+  name: "Dr. Alan – Fossil Scientist", color: 0x5f3dc4, place: "museum", x: -26.5, z: 15.5, minLv: 5,
   steps: [
     { say: "Do you know why the dinosaurs disappeared?",
       q: { w: "Do you know why…?", pic: "❓", ex: "Do you know why the dinosaurs disappeared?" },
@@ -970,7 +970,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Anna – Art Student", color: 0xe64980, place: "museum", x: -16, z: -15,
+  name: "Bella – Art Student", color: 0xe64980, place: "museum", x: -16, z: -15,
   steps: [
     { say: "Hi! I’m drawing the statues for my art class.",
       q: { w: "What are you drawing?", pic: "✏️", ex: "What are you drawing?" },
@@ -995,7 +995,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Uncle Tuan – Security Guard", color: 0x343a40, place: "museum", x: -8.5, z: -14,
+  name: "Uncle Peter – Security Guard", color: 0x343a40, place: "museum", x: -8.5, z: -14,
   steps: [
     { say: "Hello! Please don’t touch the statues. They are very old.",
       card: { w: "Don’t touch.", pic: "🚫", ex: "Please don’t touch the statues." },
@@ -1069,7 +1069,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Nam – Young Painter", color: 0xf08c00, place: "museum", x: 13, z: -7.5,
+  name: "Noah – Young Painter", color: 0xf08c00, place: "museum", x: 13, z: -7.5,
   steps: [
     { say: "Hi! I’m copying a painting to practise. Can you guess which one?",
       q: { w: "Can you guess…?", pic: "🤔", ex: "Can you guess which one?" },
@@ -1146,7 +1146,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Captain Sky – Astronaut", color: 0xf1f3f5, place: "museum", x: 14.5, z: 11,
+  name: "Captain Orion – Astronaut", color: 0xf1f3f5, place: "museum", x: 14.5, z: 11,
   steps: [
     { say: "Hello, future astronaut! Which planet is the biggest?",
       q: { w: "Which…is the biggest?", pic: "🪐", ex: "Which planet is the biggest?" },
@@ -1171,7 +1171,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Nova – Science Teacher", color: 0x7048e8, place: "museum", x: 25.5, z: 25.5,
+  name: "Ms. Stella – Science Teacher", color: 0x7048e8, place: "museum", x: 25.5, z: 25.5,
   steps: [
     { say: "Welcome to the lab corner! What happens if you put a magnet near a nail?",
       q: { w: "What happens if…?", pic: "❓", ex: "What happens if you heat ice?" },
@@ -1248,7 +1248,7 @@ const LESSONS = [
 },
 /* ----- Verse Plaza (mall) ----- */
 {
-  name: "Mai – Information Staff", color: 0x0b7285, place: "mall", x: -6, z: 14,
+  name: "Amy – Information Staff", color: 0x0b7285, place: "mall", x: -6, z: 14,
   steps: [
     { say: "Welcome to Verse Plaza! Where do you want to go?",
       card: { w: "I’m going to…", pic: "🚶", ex: "I’m going to the food court." },
@@ -1272,7 +1272,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tam – Security Guard", color: 0x2f9e44, place: "mall", x: 6, z: 16,
+  name: "George – Security Guard", color: 0x2f9e44, place: "mall", x: 6, z: 16,
   steps: [
     { say: "Hello! Are you lost? Don’t worry. Tell me what happened.",
       card: { w: "I’m lost.", pic: "😟", ex: "I’m lost. I can’t find my mom." },
@@ -1347,7 +1347,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Duy – Sports Seller", color: 0x862e9c, place: "mall", x: -11, z: -15,
+  name: "Jake – Sports Seller", color: 0x862e9c, place: "mall", x: -11, z: -15,
   steps: [
     { say: "Welcome to Sport Star! What size shoes do you wear?",
       card: { w: "I wear size…", pic: "👟", ex: "I wear size thirty-six shoes." },
@@ -1372,7 +1372,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Lan – Food Court Cook", color: 0xd9480f, place: "mall", x: 10, z: -15,
+  name: "Rita – Food Court Cook", color: 0xd9480f, place: "mall", x: 10, z: -15,
   steps: [
     { say: "Hi! What would you like to eat today?",
       card: { w: "a pizza, please", pic: "🍕", ex: "I’d like a pizza, please." },
@@ -1397,7 +1397,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Phong – Desk Officer", color: 0x1971c2, place: "police", x: -5, z: 8,
+  name: "Paul – Desk Officer", color: 0x1971c2, place: "police", x: -5, z: 8,
   steps: [
     { say: "Hello! How can we help you today?",
       card: { w: "report", pic: "📝", ex: "I want to report a lost bag." },
@@ -1422,7 +1422,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Thi – Dispatcher", color: 0x0b7285, place: "police", x: -7, z: -6,
+  name: "Kate – Dispatcher", color: 0x0b7285, place: "police", x: -7, z: -6,
   steps: [
     { say: "Hi! Where do you want to go?",
       card: { w: "directions", pic: "🧭", ex: "Can you tell me the way, please?" },
@@ -1446,7 +1446,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Hieu – Traffic Officer", color: 0xe8590c, place: "police", x: 7, z: -9,
+  name: "Mike – Traffic Officer", color: 0xe8590c, place: "police", x: 7, z: -9,
   steps: [
     { say: "Hello! Wear a helmet when you ride. Do you ride a bike?",
       card: { w: "wear a helmet", pic: "⛑️", ex: "Always wear a helmet on your bike." },
@@ -1470,7 +1470,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Vu – Detective", color: 0x495057, place: "police", x: -2, z: -11, minLv: 5,
+  name: "Owen – Detective", color: 0x495057, place: "police", x: -2, z: -11, minLv: 5,
   steps: [
     { say: "Hello! I’m looking for a lost cat. Have you seen it?",
       card: { w: "missing", pic: "🐱", ex: "My cat is missing since morning." },
@@ -1494,7 +1494,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Khang – Firefighter", color: 0xc92a2a, place: "fire", x: -1, z: -4,
+  name: "Adam – Firefighter", color: 0xc92a2a, place: "fire", x: -1, z: -4,
   steps: [
     { say: "Hi! This is our big red fire truck. Do you like it?",
       card: { w: "fire truck", pic: "🚒", ex: "The fire truck is big and red." },
@@ -1519,7 +1519,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Bach – Firefighter", color: 0xe03131, place: "fire", x: 8, z: -6,
+  name: "Lucas – Firefighter", color: 0xe03131, place: "fire", x: 8, z: -6,
   steps: [
     { say: "Hi! I wear special clothes at work. Do you like my helmet?",
       card: { w: "protective gear", pic: "🧥", ex: "Firefighters wear protective gear." },
@@ -1543,7 +1543,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Hoang – Fire Cook", color: 0xe8590c, place: "fire", x: 8, z: 8,
+  name: "Harry – Fire Cook", color: 0xe8590c, place: "fire", x: 8, z: 8,
   steps: [
     { say: "Hi! I cook lunch for the team. Are you hungry?",
       card: { w: "hungry", pic: "🍜", ex: "I’m hungry. What’s for lunch?" },
@@ -1567,7 +1567,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Nga – Safety Instructor", color: 0x2f9e44, place: "fire", x: -6, z: 10, minLv: 5,
+  name: "Olivia – Safety Instructor", color: 0x2f9e44, place: "fire", x: -6, z: 10, minLv: 5,
   steps: [
     { say: "Hello! Today we practise a fire escape plan. Are you ready?",
       card: { w: "escape plan", pic: "🗺️", ex: "Every family needs an escape plan." },
@@ -1617,7 +1617,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Hung – Records Clerk", color: 0x0b7285, place: "townhall", x: -10, z: 0,
+  name: "Victor – Records Clerk", color: 0x0b7285, place: "townhall", x: -10, z: 0,
   steps: [
     { say: "Hi! Do you want to register your new address?",
       card: { w: "register", pic: "✍️", ex: "I want to register my address." },
@@ -1641,7 +1641,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tuan – Quest Board Officer", color: 0xe64980, place: "townhall", x: 11, z: 2,
+  name: "Dylan – Quest Board Officer", color: 0xe64980, place: "townhall", x: 11, z: 2,
   steps: [
     { say: "Hi! Our city needs help. Do you want a quest today?",
       card: { w: "quest", pic: "📜", ex: "I want to do a quest." },
@@ -1666,7 +1666,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grace – Council Member", color: 0x364fc7, place: "townhall", x: -8, z: -12,
+  name: "Mrs. Clara – Council Member", color: 0x364fc7, place: "townhall", x: -8, z: -12,
   steps: [
     { say: "Welcome to the meeting! What do you think about our city park?",
       card: { w: "I think…", pic: "💭", ex: "I think the park is nice." },
@@ -1789,7 +1789,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Bao – Young Patient", color: 0xf59f00, place: "hospital", x: -8, z: -15,
+  name: "Toby – Young Patient", color: 0xf59f00, place: "hospital", x: -8, z: -15,
   steps: [
     { say: "Hi! I broke my arm. But I feel better now!",
       card: { w: "feel better", pic: "😊", ex: "I feel better today." },
@@ -1863,7 +1863,7 @@ const LESSONS = [
 },
 /* ----- Verse School (school) ----- */
 {
-  name: "Mr. Kim – Science Teacher", color: 0x0ca678, place: "school", x: -11, z: -7,
+  name: "Mr. Carter – Science Teacher", color: 0x0ca678, place: "school", x: -11, z: -7,
   steps: [
     { say: "Hello, class! Today we will learn about magnets. Are you ready?",
       card: { w: "magnet", pic: "🧲", ex: "This magnet picks up nails." },
@@ -1913,7 +1913,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Nam – Student", color: 0x3b5bdb, place: "school", x: -11, z: 9,
+  name: "Ethan – Student", color: 0x3b5bdb, place: "school", x: -11, z: 9,
   steps: [
     { say: "Oh no! I forgot my homework. What should I do?",
       card: { w: "I forgot…", pic: "😵", ex: "I forgot my homework today." },
@@ -1963,7 +1963,7 @@ const LESSONS = [
 },
 /* ----- Banh Mi Bakery (bakery) ----- */
 {
-  name: "Minh – Baker Helper", color: 0xe8590c, place: "bakery", x: -5, z: -2,
+  name: "Finn – Baker Helper", color: 0xe8590c, place: "bakery", x: -5, z: -2,
   steps: [
     { say: "Hi! I make the bread here. Would you like a warm roll?",
       card: { w: "I’d like a roll.", pic: "🥖", ex: "I’d like a warm roll, please." },
@@ -2036,7 +2036,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Thao – Shopper", color: 0xd6336c, place: "bakery", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Wendy – Shopper", color: 0xd6336c, place: "bakery", x: 5, z: 4, minLv: 5,
   steps: [
     { say: "Hi! My son wants cake. Should I buy bread instead?",
       card: { w: "I think you should…", pic: "🤔", ex: "I think you should buy bread." },
@@ -2085,31 +2085,7 @@ const LESSONS = [
         { t: "Bowl is my friend, yes.",              ok: false, fb: "Ha! A bowl is not a friend :) Try “It smells good!”" } ] }
   ]
 },
-{
-  name: "Khoa – Kid Diner", color: 0x1098ad, place: "restaurant", x: 5, z: -2,
-  steps: [
-    { say: "I’m very hungry! What is your favourite food?",
-      card: { w: "My favourite food is…", pic: "⭐", ex: "My favourite food is pho." },
-      q: { w: "What’s your favourite food?", pic: "❓", ex: "What is your favourite food?" },
-      choices: [
-        { t: "My favourite food is pho. It’s delicious!", ok: true,  fb: "Yum! Good answer. +10" },
-        { t: "Food favourite is my pho, yes.",            ok: false, fb: "Word order: “My favourite food is pho.”" },
-        { t: "I am a favourite spoon.",                   ok: false, fb: "Ha! You are not a spoon :) Try “My favourite food is…”" } ] },
-    { say: "Can you pass me the salt, please? Thank you!",
-      card: { w: "Here you are.", pic: "🧂", ex: "Here you are. Take the salt." },
-      choices: [
-        { t: "Here you are!",         ok: true,  fb: "Thank you! Very kind. +10" },
-        { t: "Salt is you here are.", ok: false, fb: "Word order: “Here you are.”" },
-        { t: "No, salt is a fish.",   ok: false, fb: "Ha! Salt is not a fish :) Try “Here you are.”" } ] },
-    { say: "Yesterday I ate pho with my dad. What did you eat yesterday?",
-      card: { w: "I ate…", pic: "🍜", ex: "I ate rice and fish yesterday." },
-      q: { w: "What did you eat?", pic: "🕒", ex: "What did you eat yesterday?" },
-      choices: [
-        { t: "I ate rice and fish yesterday.", ok: true,  fb: "Great! Past tense: ate. +10" },
-        { t: "Yesterday eat I rice and fish.", ok: false, fb: "Word order: “I ate rice and fish yesterday.”" },
-        { t: "Yesterday I am a red bicycle.",  ok: false, fb: "Haha! Bicycles don’t eat rice :) Try “I ate…”" } ] }
-  ]
-},
+
 {
   name: "Emma – Tourist", color: 0xf08c00, place: "restaurant", x: -5, z: 4,
   steps: [
@@ -2161,7 +2137,7 @@ const LESSONS = [
 },
 /* ----- Shop 24h (supermarket) ----- */
 {
-  name: "Tuyet – Shop Assistant", color: 0x2f9e44, place: "supermarket", x: -5, z: -2,
+  name: "Hannah – Shop Assistant", color: 0x2f9e44, place: "supermarket", x: -5, z: -2,
   steps: [
     { say: "Hello! Can I help you? We have fresh fruit today.",
       card: { w: "Can I have an apple?", pic: "🍎", ex: "Can I have an apple, please?" },
@@ -2185,7 +2161,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Bin – Kid Shopper", color: 0xf59f00, place: "supermarket", x: 5, z: -2,
+  name: "Billy – Kid Shopper", color: 0xf59f00, place: "supermarket", x: 5, z: -2,
   steps: [
     { say: "Hi! I love snacks! What is your favourite snack?",
       card: { w: "My favourite snack is…", pic: "🍿", ex: "My favourite snack is popcorn." },
@@ -2209,7 +2185,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Jack – Tourist", color: 0x1c7ed6, place: "supermarket", x: -5, z: 4,
+  name: "Ryan – Tourist", color: 0x1c7ed6, place: "supermarket", x: -5, z: 4,
   steps: [
     { say: "Excuse me! Where are the cold drinks?",
       card: { w: "in the fridge", pic: "🧊", ex: "The cold drinks are in the fridge." },
@@ -2233,7 +2209,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Long – Dad Shopper", color: 0x099268, place: "supermarket", x: 5, z: 4, minLv: 5,
+  name: "Mr. Mark – Dad Shopper", color: 0x099268, place: "supermarket", x: 5, z: 4, minLv: 5,
   steps: [
     { say: "My daughter wants snacks. Which is healthier: crisps or fruit?",
       card: { w: "is healthier than", pic: "🥗", ex: "Fruit is healthier than crisps." },
@@ -2258,7 +2234,7 @@ const LESSONS = [
 },
 /* ----- Green Cross Pharmacy (pharmacy) ----- */
 {
-  name: "Pim – Pharmacy Helper", color: 0x0b7285, place: "pharmacy", x: -5, z: -2,
+  name: "Penny – Pharmacy Helper", color: 0x0b7285, place: "pharmacy", x: -5, z: -2,
   steps: [
     { say: "Hello! How can I help you today?",
       card: { w: "I have a sore throat.", pic: "🤒", ex: "I have a sore throat today." },
@@ -2282,7 +2258,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tin – Little Patient", color: 0xe03131, place: "pharmacy", x: 5, z: -2,
+  name: "Timmy – Little Patient", color: 0xe03131, place: "pharmacy", x: 5, z: -2,
   steps: [
     { say: "Ouch! I fell down. My knee hurts!",
       card: { w: "Don’t worry.", pic: "😊", ex: "Don’t worry. Let’s clean it first." },
@@ -2330,7 +2306,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Yen – Mum Shopper", color: 0xae3ec9, place: "pharmacy", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Susan – Mum Shopper", color: 0xae3ec9, place: "pharmacy", x: 5, z: 4, minLv: 5,
   steps: [
     { say: "My son has a cold. Should I ask the pharmacist first?",
       card: { w: "You should ask the pharmacist.", pic: "💬", ex: "You should ask the pharmacist first, because children need care." },
@@ -2356,7 +2332,7 @@ const LESSONS = [
 },
 /* ----- Clothes Shop (clothes) ----- */
 {
-  name: "Quynh – Shop Assistant", color: 0xf783ac, place: "clothes", x: -5, z: -2,
+  name: "Zara – Shop Assistant", color: 0xf783ac, place: "clothes", x: -5, z: -2,
   steps: [
     { say: "Hello! Are you looking for a T-shirt or a jacket?",
       card: { w: "I’m looking for a jacket.", pic: "🧥", ex: "I’m looking for a jacket for winter." },
@@ -2380,7 +2356,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Chi – Teen Shopper", color: 0xf06595, place: "clothes", x: 5, z: -2,
+  name: "Megan – Teen Shopper", color: 0xf06595, place: "clothes", x: 5, z: -2,
   steps: [
     { say: "This shirt is too big for me. What should I do?",
       card: { w: "Try a smaller size.", pic: "🔎", ex: "Try a smaller size, it might fit better." },
@@ -2405,7 +2381,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Phat – Dad Shopper", color: 0x5c940d, place: "clothes", x: -5, z: 4,
+  name: "Mr. Steve – Dad Shopper", color: 0x5c940d, place: "clothes", x: -5, z: 4,
   steps: [
     { say: "Excuse me! Where are the sandals? I need size five.",
       card: { w: "They’re on the shoe shelf.", pic: "👟", ex: "They’re on the shoe shelf, over there." },
@@ -2429,7 +2405,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Dung – Fashion Shopper", color: 0xd6336c, place: "clothes", x: 5, z: 4, minLv: 5,
+  name: "Ms. Vivian – Fashion Shopper", color: 0xd6336c, place: "clothes", x: 5, z: 4, minLv: 5,
   steps: [
     { say: "Should I buy the red dress or the yellow one?",
       card: { w: "You should buy the red dress.", pic: "👗", ex: "You should buy the red dress, because it’s pretty." },
@@ -2454,7 +2430,7 @@ const LESSONS = [
 },
 /* ----- Saigon Barber (salon) ----- */
 {
-  name: "Lam – Junior Barber", color: 0x5c7cfa, place: "salon", x: -5, z: -2,
+  name: "Jason – Junior Barber", color: 0x5c7cfa, place: "salon", x: -5, z: -2,
   steps: [
     { say: "Hi! Do you want short hair or long hair today?",
       card: { w: "I’d like short hair.", pic: "✂️", ex: "I’d like short hair, please." },
@@ -2478,7 +2454,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ti – Young Customer", color: 0xe8590c, place: "salon", x: 5, z: -2,
+  name: "Danny – Young Customer", color: 0xe8590c, place: "salon", x: 5, z: -2,
   steps: [
     { say: "My hair is wet. Can I have a towel, please?",
       card: { w: "Sure, here is a towel.", pic: "🧻", ex: "Sure, here is a towel for you." },
@@ -2501,58 +2477,11 @@ const LESSONS = [
         { t: "Twenty is my tall tree.",        ok: false, fb: "Ha! Twenty is a number, not a tree :) Try “It takes…”" } ] }
   ]
 },
-{
-  name: "Mr. Viet – Dad Customer", color: 0x1971c2, place: "salon", x: -5, z: 4,
-  steps: [
-    { say: "Excuse me! Is it my turn now? I waited a long time.",
-      card: { w: "Please wait a little more.", pic: "⏳", ex: "Please wait a little more, it’s almost ready." },
-      choices: [
-        { t: "Please wait a little more. It’s almost ready.", ok: true,  fb: "Kind and clear! +10" },
-        { t: "Turn my is it, now wait.",                       ok: false, fb: "Word order: “Please wait a little more.”" },
-        { t: "Turns are my shiny spaceship.",                  ok: false, fb: "Ha! Turns are not spaceships :) Try “Please wait a little more.”" } ] },
-    { say: "Okay. My son wants a new hairstyle. Should he have short hair?",
-      card: { w: "Yes, short hair is cool.", pic: "😎", ex: "Yes, short hair is cool for kids." },
-      q: { w: "What do you think?", pic: "🤔", ex: "What do you think about short hair?" },
-      choices: [
-        { t: "Yes, short hair is cool for kids.", ok: true,  fb: "Good advice! +10" },
-        { t: "Hair cool short is kids, yes for.", ok: false, fb: "Word order: “Yes, short hair is cool for kids.”" },
-        { t: "Son is my big blue stool.",         ok: false, fb: "Ha! A son is not a stool :) Try “Yes, short hair is cool.”" } ] },
-    { say: "Thanks! I’ll buy some hair gel from the shelf too.",
-      card: { w: "The hair gel is on the shelf.", pic: "🧴", ex: "The hair gel is on the shelf over there." },
-      choices: [
-        { t: "The hair gel is on the shelf over there.", ok: true,  fb: "Thank you! Very helpful. +10" },
-        { t: "Shelf the on is gel hair, there.",         ok: false, fb: "Word order: “The hair gel is on the shelf.”" },
-        { t: "Hair gel is my big yellow dog.",           ok: false, fb: "Ha! Hair gel is not a dog :) Try “The hair gel is on the shelf.”" } ] }
-  ]
-},
-{
-  name: "Mrs. Hanh – Mum Customer", color: 0xae3ec9, place: "salon", x: 5, z: 4, minLv: 5,
-  steps: [
-    { say: "My daughter has long hair. Should she cut it short?",
-      card: { w: "Yes, she should cut it short.", pic: "✂️", ex: "Yes, she should cut it short, I think." },
-      q: { w: "Should she cut it?", pic: "❓", ex: "Should she cut it short, or keep it long?" },
-      choices: [
-        { t: "Yes, she should, because short hair is easier to wash.", ok: true,  fb: "Excellent! A clear reason with “because”. +10" },
-        { t: "Short should she hair cut, because yes.",                 ok: false, fb: "Word order: “Yes, she should cut it short.”" },
-        { t: "Daughter is my big green bus.",                           ok: false, fb: "Ha! A daughter is not a bus :) Try “Yes, she should…”" } ] },
-    { say: "Which is easier to wash, short hair or long hair?",
-      card: { w: "Short hair is easier to wash.", pic: "🚿", ex: "Short hair is easier to wash than long hair." },
-      q: { w: "Which is easier?", pic: "🚿", ex: "Which is easier to wash, short or long hair?" },
-      choices: [
-        { t: "Short hair is easier to wash than long hair.", ok: true,  fb: "Great comparison! +10" },
-        { t: "Easier wash to hair is short than long.",       ok: false, fb: "Word order: “Short hair is easier to wash than long hair.”" },
-        { t: "Long hair is my tall, happy whale.",            ok: false, fb: "Ha! Hair is not a whale :) Try “Short hair is easier…”" } ] },
-    { say: "Okay! Where should I wait while she gets her haircut?",
-      card: { w: "You can wait by the door.", pic: "🚪", ex: "You can wait by the door, on the chair." },
-      choices: [
-        { t: "You can wait by the door, on the chair.", ok: true,  fb: "Yes! The waiting chairs are near the door. +10" },
-        { t: "Door the by can wait you, chair.",        ok: false, fb: "Word order: “You can wait by the door.”" },
-        { t: "Haircut is a big purple mouse.",          ok: false, fb: "Ha! A haircut is not a mouse :) Try “You can wait by the door.”" } ] }
-  ]
-},
+
+
 /* ----- Home & Cozy (furniture) ----- */
 {
-  name: "Ngan – Delivery Helper", color: 0x2f9e44, place: "furniture", x: -5, z: -2,
+  name: "Eric – Delivery Helper", color: 0x2f9e44, place: "furniture", x: -5, z: -2,
   steps: [
     { say: "Hi! Do you need furniture for your living room or bedroom?",
       card: { w: "I need it for my living room.", pic: "🛋️", ex: "I need a sofa for my living room." },
@@ -2601,7 +2530,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Khanh – Kid Shopper", color: 0x12b886, place: "furniture", x: -5, z: 4,
+  name: "Ellie – Kid Shopper", color: 0x12b886, place: "furniture", x: -5, z: 4,
   steps: [
     { say: "Wow! I want a big bed! Can I try this one?",
       card: { w: "Yes, you can try it.", pic: "🛏️", ex: "Yes, you can try it, it’s very soft." },
@@ -2625,7 +2554,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Dao – Home Shopper", color: 0xc2255c, place: "furniture", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Fiona – Home Shopper", color: 0xc2255c, place: "furniture", x: 5, z: 4, minLv: 5,
   steps: [
     { say: "Should I buy a round table or a square one?",
       card: { w: "You should buy a round table.", pic: "⭕", ex: "You should buy a round table, because it’s safe." },

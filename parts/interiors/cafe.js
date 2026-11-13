@@ -30,7 +30,7 @@ function furnishGreenhouse(P, g, cx, cz, W, D, fur) {
   [-4.5, 4.5].forEach(dx => fur("shelf_B_large_decorated", cx + dx, back + 0.5, 0, 1.2, 1.4, 0.5));   // kệ tường sau
   const menu = skin(4, 2.4, 60, (x, Wd, Hh) => { x.fillStyle = "#1e2b23"; x.fillRect(0, 0, Wd, Hh); x.strokeStyle = "#8d5a2b"; x.lineWidth = 0.1; x.strokeRect(0.05, 0.05, Wd - 0.1, Hh - 0.1);
     x.fillStyle = "#ffe8a3"; x.font = "bold 0.3px system-ui"; x.textAlign = "center"; x.fillText("MENU", Wd / 2, 0.4); x.textAlign = "left"; x.font = "0.2px system-ui"; x.fillStyle = "#f1f3f5";
-    [["Cà phê sữa đá – Iced milk coffee", "25k"], ["Cà phê đen – Black coffee", "20k"], ["Bạc xỉu – White coffee", "28k"], ["Trà sữa – Milk tea", "30k"], ["Trà xanh – Green tea", "22k"], ["Bánh – Cakes", "35k"]].forEach(([n, pr], i) => { x.fillText(n, 0.25, 0.75 + i * 0.27); x.fillText(pr, Wd - 0.6, 0.75 + i * 0.27); }); });
+    [["Ca phe sua da – Iced milk coffee", "25k"], ["Ca phe den – Black coffee", "20k"], ["Bac xiu – White coffee", "28k"], ["Tra sua – Milk tea", "30k"], ["Tra xanh – Green tea", "22k"], ["Banh – Cakes", "35k"]].forEach(([n, pr], i) => { x.fillText(n, 0.25, 0.75 + i * 0.27); x.fillText(pr, Wd - 0.6, 0.75 + i * 0.27); }); });
   [-1.2, 2.8].forEach((dx, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(i ? 3 : 4, 2.4), new THREE.MeshLambertMaterial({ map: menu })); m.position.set(cx + dx - (i ? 0 : 0), 3.2, back + 0.06); g.add(m); });
   [-8, -7.2].forEach((dx, i) => { addBox(g, 0.7, 0.8, 0.6, 0x8d6e4e, cx + dx, 0.4, back + 1 + i * 0.8); }); sol(cx - 7.6, back + 1.4, 0.8, 0.8);   // bao cà phê
   // ===== Khu giữa: CHỖ NGỒI =====

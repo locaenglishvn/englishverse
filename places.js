@@ -144,7 +144,7 @@ const CITY = [
   { id: "lab", name: "Science Lab", type: "science lab", x: -75, z: -112, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
     color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
   // Hàng giữa (cửa nhìn ra Market Street)
-  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "furnishop", size: { w: 16, d: 18, h: 4.5 },
+  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 62, z: 44, w: 22, d: 16, door: "west", exterior: "furniturebig", layout: "furnihall", size: { w: 40, d: 54, h: 10 },   // cạnh Verse Plaza (phía nam)
     color: 0xf8f0e3, roof: 0x8d5a2b, awning: 0xa0522d, floor: 0xd9b38c, wall: 0xfff8f0, goods: [],
     keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Welcome to Home & Cozy. Do you need furniture for your home?", hint: "I’d like the sofa, please." },
     sells: ["d_couch", "d_chair", "d_lamp", "d_cactus", "d_shelf", "d_table", "d_cabinet", "d_rug"] },
@@ -166,6 +166,8 @@ const CITY = [
     color: 0xe7f5ff, roof: 0x1864ab, awning: 0x1c7ed6, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["🚓", "🔦", "📋", "🗺️", "🔑", "🚨"], keeper: null, sells: [] },
   { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", exterior: "fire", layout: "firehall", size: { w: 24, d: 32, h: 8 },
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
+  { id: "electronics", name: "Verse Electronics", type: "electronics store", x: 86, z: 44, w: 22, d: 16, door: "east", exterior: "electronics", layout: "electrohall", size: { w: 40, d: 54, h: 10 },   // siêu thị điện máy (phong cách điện máy xanh – lá, vàng), cạnh Home & Cozy
+    color: 0x2b8a3e, roof: 0x2b8a3e, awning: 0xfab005, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: [], keeper: null, sells: [] },
   { id: "mall", name: "Verse Plaza", type: "shopping mall", x: 64.5, z: 16, w: 24, d: 20, door: "west",   // quay mặt về quảng trường (phía tây)
     exterior: "mall", layout: "mallhall", size: { w: 36, d: 44, h: 12 },
     color: 0xf1f3f5, roof: 0x748ffc, awning: 0x4c6ef5, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🛍️", "👟", "🎮", "📱", "🧸", "⌚"], keeper: null, sells: [] },
@@ -196,16 +198,16 @@ const SPOTS = [
    Bắc = phía z âm (trên bản đồ). Đường vành đai: x = ±47, z = ±63.
    ZONES: x0..x1, z0..z1 = phạm vi khu; color = màu nền trên bản đồ. */
 const ZONES = [
-  { id: "admin",    name: "Civic Center",      vi: "Khu hành chính",        x0: -44, x1: 44,   z0: -60,  z1: 60,   color: "#f1e3c6" },
-  { id: "sports",   name: "Sports District",   vi: "Khu thể thao",          x0: -44, x1: 44,   z0: -150, z1: -66,  color: "#c3e6b4" },
-  { id: "tech",     name: "Tech Valley",       vi: "Khu công nghệ cao",     x0: -150, x1: -50, z0: -150, z1: -66,  color: "#c5dcf0" },
-  { id: "industry", name: "Industrial Park",   vi: "Khu công nghiệp",       x0: 50,  x1: 150,  z0: -150, z1: -66,  color: "#d6d6d6" },
-  { id: "living",   name: "Maple Town",        vi: "Khu dân cư & công cộng", x0: -150, x1: -50, z0: -60,  z1: 60,   color: "#e8dcc8" },
-  { id: "market",   name: "Market District",   vi: "Khu thương mại, dịch vụ", x0: 50, x1: 150,  z0: -60,  z1: 60,   color: "#f5d9c8" },
-  { id: "transit",  name: "Station Square",    vi: "Khu nhà ga, hồ",        x0: -44, x1: 44,   z0: 66,   z1: 150,  color: "#cfe3f1" },
-  { id: "arena",    name: "Verse Arena",       vi: "Đảo đấu trường",        x0: -310, x1: -210, z0: -80, z1: 80,   color: "#e9dcc0" },
-  { id: "farm",     name: "Green Fields",      vi: "Khu nông nghiệp",       x0: -150, x1: -50, z0: 66,   z1: 150,  color: "#d9ecb0" },
-  { id: "nature",   name: "Wild Woods",        vi: "Khu thiên nhiên",       x0: 50,  x1: 150,  z0: 66,   z1: 150,  color: "#b9e0a5" }
+  { id: "admin",    name: "Civic Center",      vi: "Khu hanh chinh",        x0: -44, x1: 44,   z0: -60,  z1: 60,   color: "#f1e3c6" },
+  { id: "sports",   name: "Sports District",   vi: "Khu the thao",          x0: -44, x1: 44,   z0: -150, z1: -66,  color: "#c3e6b4" },
+  { id: "tech",     name: "Tech Valley",       vi: "Khu cong nghe cao",     x0: -150, x1: -50, z0: -150, z1: -66,  color: "#c5dcf0" },
+  { id: "industry", name: "Industrial Park",   vi: "Khu cong nghiep",       x0: 50,  x1: 150,  z0: -150, z1: -66,  color: "#d6d6d6" },
+  { id: "living",   name: "Maple Town",        vi: "Khu dan cu & cong cong", x0: -150, x1: -50, z0: -60,  z1: 60,   color: "#e8dcc8" },
+  { id: "market",   name: "Market District",   vi: "Khu thuong mai, dich vu", x0: 50, x1: 150,  z0: -60,  z1: 60,   color: "#f5d9c8" },
+  { id: "transit",  name: "Station Square",    vi: "Khu nha ga, ho",        x0: -44, x1: 44,   z0: 66,   z1: 150,  color: "#cfe3f1" },
+  { id: "arena",    name: "Verse Arena",       vi: "Dao dau truong",        x0: -310, x1: -210, z0: -80, z1: 80,   color: "#e9dcc0" },
+  { id: "farm",     name: "Green Fields",      vi: "Khu nong nghiep",       x0: -150, x1: -50, z0: 66,   z1: 150,  color: "#d9ecb0" },
+  { id: "nature",   name: "Wild Woods",        vi: "Khu thien nhien",       x0: 50,  x1: 150,  z0: 66,   z1: 150,  color: "#b9e0a5" }
 ];
 
 /* METRO: mỗi khu một trạm nhỏ, đứng gần bấm 🚇 để đi nhanh tới khu khác */
@@ -236,6 +238,7 @@ const LOTS = [
   { name: "House",            x: -140, z: 14,   w: 10, d: 10, door: "north" },
   { name: "House",            x: -125, z: 14,   w: 10, d: 10, door: "north" },
   { name: "Clinic",           x: -110, z: 14,   w: 10, d: 10, door: "north" },
+  { name: "Gift Shop",        x: 120,  z: -10,  w: 10, d: 10, door: "south" },   // chỗ cũ của Home & Cozy
   { name: "Bookshop",         x: 145,  z: -10,  w: 9,  d: 10, door: "south" },
   { name: "Toy Store",        x: 145,  z: 11,   w: 9,  d: 10, door: "north" },
   { name: "Orchard",          x: -125, z: 80,   w: 20, d: 18, door: "north", big: true },
@@ -254,12 +257,12 @@ const LOTS = [
    path = các điểm đi qua lại (1 điểm = đứng gác tại chỗ); look = bộ nhân vật; say = câu chào */
 const AMBIENT = [
   { name: "Officer Duc – Police Officer",  color: 0x1864ab, look: "Knight",    path: [[-70, 1.6], [-54, 1.6]],  say: "Hello! Stay safe!" },
-  { name: "Officer Vy – Police Officer",   color: 0x1864ab, look: "Rogue",     path: [[-66.4, 3.2]],            say: "Good morning! Can I help you?" },
-  { name: "Officer Long – Police Officer", color: 0x1864ab, look: "Barbarian", path: [[-57.6, 3.2]],            say: "Please walk on the sidewalk." },
-  { name: "Tuan – Firefighter",            color: 0xc92a2a, look: "Knight",    path: [[-84, 4.4], [-79.5, 4.4]], say: "Fire safety first!" },
-  { name: "Mai – Firefighter",             color: 0xc92a2a, look: "Mage",      path: [[-72.6, 2.5], [-72.6, 8]], say: "Our fire truck is ready!" },
-  { name: "Guard Nam – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, -10.5]],           say: "Welcome to Verse Arena!" },
-  { name: "Guard Thu – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, 10.5]],            say: "Find a team and play together!" }
+  { name: "Officer Ray – Police Officer",   color: 0x1864ab, look: "Rogue",     path: [[-66.4, 3.2]],            say: "Good morning! Can I help you?" },
+  { name: "Officer Hugo – Police Officer", color: 0x1864ab, look: "Barbarian", path: [[-57.6, 3.2]],            say: "Please walk on the sidewalk." },
+  { name: "Nick – Firefighter",            color: 0xc92a2a, look: "Knight",    path: [[-84, 4.4], [-79.5, 4.4]], say: "Fire safety first!" },
+  { name: "Sara – Firefighter",             color: 0xc92a2a, look: "Mage",      path: [[-72.6, 2.5], [-72.6, 8]], say: "Our fire truck is ready!" },
+  { name: "Guard Felix – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, -10.5]],           say: "Welcome to Verse Arena!" },
+  { name: "Guard Nora – Arena Guard",       color: 0xb02a2a, look: "Knight",    path: [[-206, 10.5]],            say: "Find a team and play together!" }
 ];
 
 /* THẺ TỪ VỰNG 📦: đồ trưng bày trong từng nơi (theo id trong CITY). Giữ nút 🎤 và hỏi "What is this?" → nhận thẻ.
@@ -430,7 +433,7 @@ const VOCAB = {
     { w: "umbrella",         pic: "☂️", pos: "noun", kind: "thing",   at: "door", say: "It's an umbrella.",        ex: "Take an umbrella. It's raining." },
     { w: "doormat",          pic: "🟫", pos: "noun", kind: "thing",   at: "door", say: "It's a doormat.",          ex: "Wipe your shoes on the doormat." },
     { w: "trash can",        pic: "🗑️", pos: "noun", kind: "thing",   at: "door", say: "It's a trash can.",        ex: "Put your cup in the trash can." },
-    { w: "open sign",        pic: "🪧", pos: "noun", kind: "thing",   at: "door", say: "It's an open sign.",       ex: "The sign says the café is open." }
+    { w: "open sign",        pic: "🪧", pos: "noun", kind: "thing",   at: "door", say: "It's an open sign.",       ex: "The sign says the cafe is open." }
   ],
   post: [
     // quầy giao dịch (2 bên)
@@ -453,7 +456,7 @@ const VOCAB = {
     { w: "souvenir",         pic: "🎁", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a souvenir.",        ex: "I bought a souvenir for my mom." },
     { w: "keychain",         pic: "🔑", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a keychain.",        ex: "This keychain is cute." },
     { w: "fridge magnet",    pic: "🧲", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a fridge magnet.",   ex: "I collect fridge magnets." },
-    { w: "conical hat",      pic: "👒", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a conical hat.",     ex: "A conical hat is called nón lá in Vietnam." },
+    { w: "conical hat",      pic: "👒", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a conical hat.",     ex: "A conical hat is called non la in Vietnam." },
     { w: "calendar",         pic: "📅", pos: "noun", kind: "thing",   at: "kiosk", say: "It's a calendar.",        ex: "Look at the calendar. Today is Monday." },
     // ghế chờ
     { w: "bench",            pic: "🪑", pos: "noun", kind: "furniture", at: "bench", say: "It's a bench.",         ex: "Let's sit on the bench and wait." },

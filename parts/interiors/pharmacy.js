@@ -14,7 +14,7 @@ function furnishPharmacy(P, g, cx, cz, W, D, fur) {
   pic(cross, 1.4, 1.4, cx, 3.35, back + 0.04);
   // KỆ THUỐC (shelf) – tường trái
   B(0.6, 2.3, 10, 0xf8f9fa, cx - 7.7, 1.15, cz - 1); [0.45, 0.95, 1.45, 1.95].forEach((y, r) => { B(0.6, 0.04, 10, 0xced4da, cx - 7.6, y, cz - 1); boxes(cx - 7.5, y + 0.02, cz - 1, 9.6, true, r); }); sol(cx - 7.7, cz - 1, 0.35, 5);
-  plate("MEDICINE · THUỐC", 2.6, 0.4, "#2b8a3e", "#ffffff", cx - W / 2 + 0.03, 2.75, cz - 1, Math.PI / 2);
+  plate("MEDICINE · THUOC", 2.6, 0.4, "#2b8a3e", "#ffffff", cx - W / 2 + 0.03, 2.75, cz - 1, Math.PI / 2);
   // KỆ CHĂM SÓC CÁ NHÂN (care) – tường phải: chai, tuýp, bàn chải
   B(0.6, 2.3, 8, 0xf8f9fa, cx + 7.7, 1.15, cz - 2); sol(cx + 7.7, cz - 2, 0.35, 4);
   [0.45, 0.95, 1.45, 1.95].forEach((y, r) => { B(0.6, 0.04, 8, 0xced4da, cx + 7.6, y, cz - 2); for (let z = -5.7; z <= 1.7; z += 0.3) lc(g, 0.08, 0.09, 0.26 + (r % 2) * 0.08, [0x74c0fc, 0xffa8a8, 0x8ce99a, 0xffd43b, 0xb197fc][(Math.round(z * 3.3) + r + 50) % 5], cx + 7.5, y + 0.17, cz + z, 8); });

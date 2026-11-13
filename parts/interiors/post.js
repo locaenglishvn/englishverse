@@ -46,7 +46,7 @@ function furnishPostHall(P, g, cx, cz, W, D, fur) {
   // QUẦY LƯU NIỆM ĐỎ GIỮA SẢNH
   addBox(g, 4, 1.1, 2, 0xa61e2e, cx, 0.55, cz - 2); const gl = addBox(g, 3.8, 0.5, 1.8, 0xd0ebff, cx, 1.35, cz - 2); gl.material = new THREE.MeshLambertMaterial({ color: 0xd0ebff, transparent: true, opacity: 0.35 });
   addBox(g, 4.1, 0.08, 2.1, 0x7a1414, cx, 1.62, cz - 2); sol(cx, cz - 2, 2, 1);
-  const ks = textPlate("SOUVENIRS · QUÀ LƯU NIỆM", 3.6, 0.5, "#a61e2e", "#ffe066"); ks.position.set(cx, 2.5, cz - 2); g.add(ks); addBox(g, 0.08, 0.9, 0.08, 0x7a1414, cx, 2, cz - 2);
+  const ks = textPlate("SOUVENIRS · QUA LUU NIEM", 3.6, 0.5, "#a61e2e", "#ffe066"); ks.position.set(cx, 2.5, cz - 2); g.add(ks); addBox(g, 0.08, 0.9, 0.08, 0x7a1414, cx, 2, cz - 2);
   // GHẾ CHỜ: gỗ, mặt ghế đỏ
   [5, 9, 13].forEach(dz => [-1, 1].forEach(s => { const x = cx + s * 4, z = cz + dz;
     addBox(g, 3, 0.12, 0.6, 0xa61e2e, x, 0.48, z); addBox(g, 3, 0.6, 0.1, 0x8d5a2b, x, 0.8, z + 0.3); [-1.3, 1.3].forEach(d => addBox(g, 0.1, 0.45, 0.5, 0x5c3d2e, x + d, 0.22, z)); sol(x, z, 1.5, 0.35); }));
@@ -64,7 +64,7 @@ function furnishPostHall(P, g, cx, cz, W, D, fur) {
   const wmm = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), new THREE.MeshLambertMaterial({ map: wmap })); wmm.position.set(cx + 7.5, 2.3, back + 0.08); g.add(wmm);
   const clk = skin(1.6, 1.6, 80, (x) => { x.fillStyle = "#fff"; x.beginPath(); x.arc(0.8, 0.8, 0.76, 0, 7); x.fill(); x.strokeStyle = "#1f5c3a"; x.lineWidth = 0.08; x.stroke(); x.strokeStyle = "#343a40"; x.lineWidth = 0.05; x.beginPath(); x.moveTo(0.8, 0.8); x.lineTo(0.8, 0.3); x.moveTo(0.8, 0.8); x.lineTo(1.15, 0.8); x.stroke(); });
   const ck = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.8), new THREE.MeshLambertMaterial({ map: clk, transparent: true })); ck.position.set(cx, 10.6, back + 0.12); g.add(ck);
-  const nb = textPlate("VERSE CITY POST OFFICE · BƯU ĐIỆN", 7, 0.5, "#1f5c3a", "#ffd43b"); nb.position.set(cx, 1.6, back + 0.08); g.add(nb);
+  const nb = textPlate("VERSE CITY POST OFFICE · BUU DIEN", 7, 0.5, "#1f5c3a", "#ffd43b"); nb.position.set(cx, 1.6, back + 0.08); g.add(nb);
   // BÀN VIẾT THƯ (Uncle Bay) + BUỒNG ĐIỆN THOẠI + LỐI VÀO
   addBox(g, 2, 0.08, 0.9, 0x6f4e37, cx - 6, 0.8, back + 6.7); [-0.9, 0.9].forEach(d => addBox(g, 0.08, 0.8, 0.8, 0x5c3d2e, cx - 6 + d, 0.4, back + 6.7)); sol(cx - 6, back + 6.7, 1, 0.45);
   fur("chair_B_wood", cx - 6, back + 5.6, 0, 1); fur("chair_B_wood", cx - 6, back + 7.8, Math.PI, 1);

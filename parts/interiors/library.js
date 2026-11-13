@@ -62,7 +62,7 @@ function furnishReadingRoom(P, g, cx, cz, W, D, fur) {
   const top = new THREE.Mesh(new THREE.RingGeometry(1.2, 2.05, 32), mat(0x3e2a1a, { side: THREE.DoubleSide })); top.rotation.x = -Math.PI / 2; top.position.set(cx, 1.06, cz); g.add(top);
   S.push({ x: cx, z: cz, hw: 1.75, hd: 1.75 });
   lc(g, 0.05, 0.05, 3, 0xc9a227, cx, 2.5, cz - 1.6, 8);
-  const ask = textPlate("ASK HERE · HỎI THỦ THƯ", 2.4, 0.4, "#2f5d3a", "#ffe9a8"); ask.position.set(cx, 3.8, cz - 1.55); g.add(ask);
+  const ask = textPlate("ASK HERE · HOI THU THU", 2.4, 0.4, "#2f5d3a", "#ffe9a8"); ask.position.set(cx, 3.8, cz - 1.55); g.add(ask);
   // BÀN ĐỌC DÀI TỎA RA TỪ TÂM + ĐÈN BÀN CHỤP XANH + GHẾ (InstancedMesh cho nhẹ máy)
   const N = 12, spokes = [];
   for (let k = 0; k < N; k++) { const t = k * Math.PI * 2 / N; if (Math.abs(t - Math.PI / 2) < 0.1) continue; spokes.push(t); }   // chừa lối đi từ cửa vào

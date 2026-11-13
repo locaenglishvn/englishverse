@@ -23,7 +23,7 @@ function furnishBakery(P, g, cx, cz, W, D, fur) {
   B(0.8, 2.4, 9, 0x8d5a2b, cx - 7.6, 1.2, cz + 0.5); sol(cx - 7.6, cz + 0.5, 0.42, 4.5);
   [0.55, 1.15, 1.75].forEach(y => { B(0.85, 0.05, 9, 0xb07a4a, cx - 7.45, y, cz + 0.5); for (let z = -3.6; z <= 4.6; z += 0.55) bread(cx - 7.35, y + 0.1, cz + z, y > 1.5 ? 0.7 : 1); });
   [[-3, 0xd9a05b], [1.5, 0xc98f4f]].forEach(([dz, c]) => { lc(g, 0.35, 0.28, 0.35, 0xc8a165, cx - 7.1, 2.55, cz + dz, 12); });
-  plate("BREAD · BÁNH MÌ", 3, 0.45, "#8d5a2b", "#fff4e0", cx - W / 2 + 0.03, 3.2, cz + 0.5, Math.PI / 2);
+  plate("BREAD · BANH MI", 3, 0.45, "#8d5a2b", "#fff4e0", cx - W / 2 + 0.03, 3.2, cz + 0.5, Math.PI / 2);
   // QUẦY BAR ngồi ăn – tường phải + bàn nhỏ góc trước trái (table)
   B(0.7, 0.08, 8, 0xfff4e0, cx + 7.6, 1.1, cz + 0.5); B(0.15, 1.05, 8, 0xe8873a, cx + 7.3, 0.53, cz + 0.5); sol(cx + 7.6, cz + 0.5, 0.42, 4);
   [-2.6, 0.6, 3.6].forEach(dz => { lc(g, 0.22, 0.22, 0.06, 0xc0392b, cx + 6.7, 0.75, cz + dz, 12); lc(g, 0.04, 0.04, 0.72, 0x495057, cx + 6.7, 0.37, cz + dz, 6); sol(cx + 6.7, cz + dz, 0.22, 0.22); });

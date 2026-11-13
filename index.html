@@ -243,6 +243,7 @@ button{font:inherit;cursor:pointer}
 <script src="parts/interiors/furniture.js"></script>
 <script src="parts/interiors/police.js"></script>
 <script src="parts/interiors/fire.js"></script>
+<script src="parts/interiors/electronics.js"></script>
 <script>
 /* ===== 2. DỰNG CẢNH 3D ===== */
 const scene = new THREE.Scene();
@@ -2603,8 +2604,10 @@ function openGallery() {   // phòng trưng bày: các bộ sưu tập + đồ h
       "<div style='font-size:12px;margin-top:4px'>🎤 Sentences spoken " + Math.min(save.spoken, L.need.spoken) + "/" + L.need.spoken + "</div><div class='bar'><div style='width:" + p2 * 100 + "%'></div></div></div>"; }).join(""));
   $("galleryBody").innerHTML = h; $("gallery").style.display = "block";
 }
+let ROOM_X = 300;   // mép trái của phòng tiếp theo (các phòng trong nhà nằm xa thành phố, x ≥ 300)
 function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay vào trong (camera ở ngoài vẫn nhìn xuyên vào được)
-  const Z = P.size || {}, W = Z.w || 16, D = Z.d || 12, cx = 300 + i * 40, cz = W > 40 ? 440 : 300, H = Z.h || 3.4, g = new THREE.Group();   // size: phòng to riêng (vd quán cà phê 20 × 48 m); phòng rất lớn (bảo tàng) đặt hàng riêng z = 440 để không chồng phòng khác
+  const Z = P.size || {}, W = Z.w || 16, D = Z.d || 12, cx = ROOM_X + W / 2, cz = 300, H = Z.h || 3.4, g = new THREE.Group();   // size: phòng to riêng (vd quán cà phê 20 × 48 m); các phòng xếp thành 1 hàng theo bề rộng thật, cách nhau 20 m (không chồng nhau dù to cỡ nào)
+  ROOM_X += W + 20;
   P.room = { cx, cz, w: W, d: D, solids: [], P };
   const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshLambertMaterial({ color: P.floor })); fl.rotation.x = -Math.PI / 2; fl.position.set(cx, 0, cz); fl.userData.flat = true; g.add(fl);
   const IN = INTERIORS[P.layout] || {}, wallM = IN.wall ? null : new THREE.MeshLambertMaterial({ color: P.wall }), oval = !!IN.customWalls;   // nội thất file riêng: tường vẽ riêng (wall) hoặc tự dựng hết (customWalls)
@@ -2617,14 +2620,15 @@ function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay v�
   const plate = textPlate(P.name, 6, 0.9, "#ffffff", "#343a40"); plate.position.set(cx, H - 0.4, cz - D / 2 + 0.03); if (!oval) g.add(plate);
   furnish(P, g, cx, cz, W, D);
   let k = null;
+  const KP = P.keeperAt || { x: cx, z: cz - D / 2 + 2.4, ry: 0 };   // chỗ người bán: mặc định giữa, sát tường sau; nội thất có thể đặt P.keeperAt = { x, z, ry } (toạ độ tuyệt đối)
   if (P.keeper) {   // người bán (nếu có)
-    k = makeChar(P.keeper.color); k.position.set(cx, 0, cz - D / 2 + 2.4); { const I = npcInfo(P.keeper.name); k.add(nameTag(I.short, I.job)); }
-    P.room.solids.push({ x: cx, z: cz - D / 2 + 2.4, hw: 0.4, hd: 0.4 });
+    k = makeChar(P.keeper.color); k.position.set(KP.x, 0, KP.z); k.rotation.y = KP.ry || 0; { const I = npcInfo(P.keeper.name); k.add(nameTag(I.short, I.job)); }
+    P.room.solids.push({ x: KP.x, z: KP.z, hw: 0.4, hd: 0.4 });
   }
   P.keeperMesh = k;
   P.room.exit = { x: cx, z: cz + D / 2 - 1 };
   shade(g); scene.add(g);
-  if (k) { g.add(k); k.position.set(cx, 0, cz - D / 2 + 2.4); }
+  if (k) { g.add(k); k.position.set(KP.x, 0, KP.z); }
   P.int = g; g.visible = false;
 }
 Object.assign(EXTERIOR, EXTERIORS_EXTRA);   // ngoại thất file riêng (parts/exteriors/)
