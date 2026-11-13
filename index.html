@@ -238,13 +238,13 @@ sun.position.set(12, 22, 9);
 renderer.shadowMap.enabled = true;   // bóng đổ mềm
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.mapSize.set(1024, 1024);   // 1024 đủ nét cho vùng bóng 68 × 68 m, nhẹ hơn 4 lần so với 2048
 Object.assign(sun.shadow.camera, { left: -34, right: 34, top: 34, bottom: -34, near: 1, far: 80 });
 sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.05;   // tránh vệt tối trên tường lớn
 const roomLight = new THREE.AmbientLight(0xfff4e6, 0); scene.add(roomLight);   // đèn trong nhà (bật khi vào nhà)
 scene.add(sun, sun.target);
 function shade(obj) {   // bật đổ bóng cho mọi khối trong obj (trừ mặt phẳng nằm đất)
-  obj.traverse(m => { if (m.isMesh) { m.castShadow = !m.userData.flat; m.receiveShadow = true; } });
+  obj.traverse(m => { if (m.isMesh) { m.castShadow = m.isSkinnedMesh ? true : castsShadow(m); m.receiveShadow = true; } });   // khối nhỏ không đổ bóng (castsShadow, mục 9)
 }
 
 const camBlockers = [];   // vật cản camera (tường, nhà): camera không xuyên qua
@@ -448,7 +448,8 @@ function attachModel(g) {
   let m;
   if (typeof look === "object") m = buildComposite(look);
   else { const tpl = modelTpl[look]; m = THREE.SkeletonUtils.clone(tpl.scene); m.scale.setScalar(tpl.scale); }
-  m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = false; o.frustumCulled = false; } });
+  m.traverse(o => { if (o.isMesh) { o.castShadow = g === player; o.receiveShadow = false; o.frustumCulled = false; } });   // chỉ nhân vật của mình đổ bóng thật; NPC dùng bóng tròn dưới chân (nhẹ hơn 6 lần)
+  if (g.userData.blob) g.userData.blob.visible = g !== player;
   g.add(m); g.userData.mesh = m;
   g.userData.chibi.forEach(c => c.visible = false);
   const mixer = new THREE.AnimationMixer(m), acts = {};
@@ -474,6 +475,7 @@ function setAvatar(g, look) {   // look: tên bộ nhân vật (NPC) hoặc { he
   g.userData.model = look; attachModel(g);
 }
 function sameLook(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+const BLOB_GEO = new THREE.CircleGeometry(0.42, 20), BLOB_MAT = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false });
 function makeChar(bodyColor, avatar) {   // nhân vật: tạo khung chibi ngay, rồi thay bằng mô hình 3D khi tải xong
   const g = new THREE.Group(), M = c => new THREE.MeshLambertMaterial({ color: c });
   const skin = M(0xffd8b5), dark = new THREE.MeshBasicMaterial({ color: 0x1f1f1f }), white = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -498,6 +500,7 @@ function makeChar(bodyColor, avatar) {   // nhân vật: tạo khung chibi ngay,
   });
   const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.015, 6, 12, Math.PI), dark); mouth.position.set(0, 1.15, 0.43); mouth.rotation.z = Math.PI; g.add(mouth);
   g.userData = { arms, legs, last: new THREE.Vector3(), phase: 0, chibi: g.children.slice() };
+  const blob = new THREE.Mesh(BLOB_GEO, BLOB_MAT); blob.rotation.x = -Math.PI / 2; blob.position.y = 0.03; blob.userData.flat = true; g.add(blob); g.userData.blob = blob;   // bóng tròn mềm dưới chân
   scene.add(g); chars.push(g); shade(g);
   g.traverse(m => { if (m.isMesh) m.receiveShadow = false; });   // nhân vật không nhận bóng (tránh vệt lạ trên mặt/tóc)
   setAvatar(g, typeof avatar === "object" && avatar ? avatar : AVATARS[avatar] ? avatar : AV_KEYS[bodyColor % AV_KEYS.length]);
@@ -2574,6 +2577,12 @@ function furnishGreenhouse(P, g, cx, cz, W, D, fur) {
   g.traverse(o => { if (o.isMesh && o.position.y > 2.6) o.userData.flat = true; });   // mái, cây treo, bóng đèn: không đổ bóng (đỡ rối mắt)
   P.vgroup = new THREE.Group(); g.add(P.vgroup);
 }
+const VTEX = {};
+function vocabSprite(pic, badge, size) {   // hình món đồ (dưới) + dấu ❓/✅ nhỏ phía trên, cùng 1 ảnh
+  const k = pic + badge; if (!VTEX[k]) { const c = document.createElement("canvas"); c.width = 96; c.height = 144; const x = c.getContext("2d"); x.textAlign = "center"; x.textBaseline = "middle";
+    x.font = "72px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; x.fillText(pic, 48, 102); x.font = "36px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; x.fillText(badge, 48, 24); VTEX[k] = new THREE.CanvasTexture(c); }
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: VTEX[k] })); s.scale.set(size, size * 1.5, 1); s.center.set(0.5, 42 / 144); return s;
+}
 function refreshVocab(P) {   // bày MỌI món từ vựng đúng khu của nó; ❓ = chưa học, ✅ = đã có thẻ
   if (!P.anchors || !VOCAB[P.id]) return;
   const vg = P.vgroup; while (vg.children.length) vg.remove(vg.children[0]);
@@ -2582,8 +2591,7 @@ function refreshVocab(P) {   // bày MỌI món từ vựng đúng khu của nó
   VOCAB[P.id].forEach(v => {
     const k = used[v.at] = (used[v.at] || 0), S = (P.anchors[v.at] || [])[k]; used[v.at]++;
     if (!S) return;   // hết chỗ trong khu này
-    const sp = emojiSprite(v.pic, v.at === "ceiling" ? 0.7 : 0.45); sp.position.set(S[0], S[1], S[2]); sp.userData.vocab = v; vg.add(sp);
-    const tag = emojiSprite(hasCard("v:" + v.w) ? "✅" : "❓", 0.22); tag.position.set(S[0], S[1] + 0.38, S[2]); vg.add(tag);
+    const sz = v.at === "ceiling" ? 0.7 : 0.45, sp = vocabSprite(v.pic, hasCard("v:" + v.w) ? "✅" : "❓", sz); sp.position.set(S[0], S[1], S[2]); sp.userData.vocab = v; vg.add(sp);   // món đồ + dấu ❓/✅ chung 1 hình (1 lần vẽ)
     P.room.spots.push({ x: S[3], z: S[4], label: "❓ " + (hasCard("v:" + v.w) ? v.w : "What's this?"), fn: () => openVocab(v) });
   });
 }
@@ -3543,7 +3551,7 @@ function updateAmbient(dt) {
 }
 const indoorBg = new THREE.Color(0x3b2f2a);
 function enterRoom(P) {
-  room = P.room; P.int.visible = true;
+  room = P.room; P.int.visible = true; lodT = 1;   // cập nhật ngay NPC nào hiện
   player.position.set(room.exit.x, 0, room.exit.z - (P.size ? 3.5 : 0.6)); camAngle = 0; camPitch = 0.25; camSnap = true;   // phòng lớn: đứng lùi vào trong để camera có chỗ phía sau
   camera.fov = Math.min(80, 2 * Math.atan(Math.tan(38 * Math.PI / 180) / camera.aspect) * 180 / Math.PI); camera.updateProjectionMatrix();   // trong nhà: góc nhìn rộng để thấy cả phòng
   sky.visible = false; clouds.forEach(c => c.visible = false); scene.background = indoorBg; scene.fog = null; roomLight.intensity = 0.22;
@@ -3554,7 +3562,7 @@ function enterRoom(P) {
   speak(P.type === "home" ? "Welcome home, " + (myName || "friend") + "!" : "Welcome to " + P.name + "!");
 }
 function exitRoom() {
-  const P = room.P; P.int.visible = false; room = null;
+  const P = room.P; P.int.visible = false; room = null; lodT = 1;
   player.position.set(P.doorPos.x, 0, P.doorPos.z); camAngle = ROT[P.door]; camPitch = 0.75; camSnap = true;
   camera.fov = 55; camera.updateProjectionMatrix();
   roomLight.intensity = 0; sky.visible = true; clouds.forEach(c => c.visible = true); scene.background = new THREE.Color(0xcfe8ff); scene.fog = outdoorFog();
@@ -3569,6 +3577,9 @@ function updateCity(dt) {
     const far = camWide ? 150 : 95;   // góc rộng: vẽ xa hơn
     CITY.forEach(P => P.ext.visible = !room && Math.hypot(player.position.x - P.x, player.position.z - P.z) < far);
     PROPS.forEach(g => g.visible = !room && Math.hypot(player.position.x - g.position.x, player.position.z - g.position.z) < far - 20);
+    const near = (o) => Math.hypot(player.position.x - o.position.x, player.position.z - o.position.z) < far;   // nhân vật: cùng tầm nhìn với nhà cửa; NPC trong phòng khác không vẽ
+    LESSONS.forEach(L => L.mesh.visible = L.inPlace ? L.inPlace.room === room : !room && near(L.mesh));
+    AMBIENT.forEach(A => A.mesh.visible = !room && near(A.mesh));
   }
   nearDoor = null; nearKeeper = null; nearSpot = null;
   if (maze || talking) { $("doorBtn").style.display = "none"; $("shopBtn").style.display = "none"; $("actBtn").style.display = "none"; return; }
@@ -3787,7 +3798,7 @@ $("bigCv").onclick = e => {   // chạm địa điểm trên bản đồ lớn �
 const clock = new THREE.Clock();
 const camRay = new THREE.Raycaster(); camRay.camera = camera;   // camera: cần khi tia chạm vào hình emoji (sprite)
 let camSnap = true;   // true = camera nhảy ngay tới chỗ mới (sau khi dịch chuyển), không bay từ từ
-let tagZone = null;
+let tagZone = null, tagRoom = undefined;
 function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
@@ -3817,7 +3828,8 @@ function loop() {
   }
   LESSONS.forEach(L => L.mark.position.set(L.x, 3.05 + Math.sin(t * 3) * 0.12, L.z));
   { const Zs = room && room.P.zones, pp = player.position, inZ = (z, x, y) => x >= z.x0 && x <= z.x1 && y >= z.z0 && y <= z.z1, Zn = Zs ? Zs.find(z => inZ(z, pp.x, pp.z)) : null;   // nơi nhiều khu (bảo tàng): chỉ hiện tên NPC trong khu đang đứng
-    if (Zn !== tagZone) { tagZone = Zn; LESSONS.forEach(L => { const on = !Zn || inZ(Zn, L.x, L.z); L.tag.visible = on; L.mark.visible = on; }); } }
+    if (Zn !== tagZone || room !== tagRoom) { tagZone = Zn; tagRoom = room;   // NPC ở phòng khác: không vẽ (đỡ nặng)
+      LESSONS.forEach(L => { const here = L.inPlace ? L.inPlace.room === room : !room, on = here && (!Zn || inZ(Zn, L.x, L.z)); L.tag.visible = on; L.mark.visible = on; }); } }
   updateGuide(dt, t);
   updateOnline(dt);
   updateMazeGate();
@@ -3881,7 +3893,75 @@ function loop() {
   sky.position.set(camera.position.x, 0, camera.position.z);   // trời luôn bao quanh camera
   renderer.render(scene, camera);
 }
-shade(scene); renderHud();
+/* ===== 9. TỐI ƯU: GỘP KHỐI TĨNH =====
+   Nhà, đồ trang trí được ghép từ rất nhiều khối nhỏ; mỗi khối = 1 lần vẽ → điện thoại phải vẽ hơn 1.000 lần mỗi khung hình.
+   Chạy 1 lần lúc tải game: gộp các khối ĐỨNG YÊN cùng chất liệu (cùng màu, cùng ảnh) thành 1 mảng lớn. Nhìn không đổi, ít lần vẽ hơn nhiều.
+   Không gộp: nhân vật, cờ bay, quạt, cần cẩu, mây, mũi tên chỉ đường, đồ từ vựng, đồ tải sau (mô hình .gltf), chữ biển hiệu (mỗi biển 1 ảnh riêng). */
+function matKey(m) {
+  if (!m.isMeshLambertMaterial && !m.isMeshBasicMaterial) return "u" + m.uuid;
+  return [m.type, m.color.getHex(), m.map ? m.map.uuid : "", m.transparent, m.opacity, m.side, m.alphaTest, m.depthWrite, m.depthTest, m.wireframe, m.emissive ? m.emissive.getHex() : ""].join("|");
+}
+function castsShadow(m) {   // bóng đổ thông minh: khối nhỏ (bán kính < 0,4 m) và mặt phẳng nằm đất không đổ bóng
+  if (m.userData.flat) return false;
+  const g = m.geometry; if (!g) return false; if (!g.boundingSphere) g.computeBoundingSphere();
+  const s = m.scale, r = g.boundingSphere.radius * Math.max(Math.abs(s.x), Math.abs(s.y), Math.abs(s.z));
+  if (r < 0.4 || m.material.isMeshBasicMaterial) return false;   // khối nhỏ, biển chữ / đèn tự sáng
+  if (!g.boundingBox) g.computeBoundingBox(); const b = g.boundingBox;
+  return Math.min((b.max.x - b.min.x) * Math.abs(s.x), (b.max.y - b.min.y) * Math.abs(s.y), (b.max.z - b.min.z) * Math.abs(s.z)) > 0.03 || !(g.type === "PlaneGeometry" || g.type === "CircleGeometry" || g.type === "ShapeGeometry");   // tấm phẳng mỏng (ảnh dán tường, biển hiệu) không đổ bóng
+}
+function mergeGeos(geos) {
+  let nv = 0, ni = 0; geos.forEach(g => { nv += g.attributes.position.count; ni += g.index.count; });
+  const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uv = new Float32Array(nv * 2), idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
+  let ov = 0, oi = 0;
+  geos.forEach(g => { const P = g.attributes.position, N = g.attributes.normal, U = g.attributes.uv, I = g.index, n = P.count;
+    for (let i = 0; i < n; i++) { pos[(ov + i) * 3] = P.getX(i); pos[(ov + i) * 3 + 1] = P.getY(i); pos[(ov + i) * 3 + 2] = P.getZ(i);
+      nor[(ov + i) * 3] = N.getX(i); nor[(ov + i) * 3 + 1] = N.getY(i); nor[(ov + i) * 3 + 2] = N.getZ(i); if (U) { uv[(ov + i) * 2] = U.getX(i); uv[(ov + i) * 2 + 1] = U.getY(i); } }
+    for (let i = 0; i < I.count; i++) idx[oi + i] = I.getX(i) + ov;
+    ov += n; oi += I.count; });
+  const m = new THREE.BufferGeometry(); m.setAttribute("position", new THREE.BufferAttribute(pos, 3)); m.setAttribute("normal", new THREE.BufferAttribute(nor, 3)); m.setAttribute("uv", new THREE.BufferAttribute(uv, 2)); m.setIndex(new THREE.BufferAttribute(idx, 1));
+  m.computeBoundingSphere(); m.computeBoundingBox(); return m;
+}
+const BAKED = new Map();   // khối gốc → mảng đã gộp (để cập nhật danh sách chắn camera)
+function bakeStatic(root, skip, cell) {
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert(), buckets = new Map(), wp = new THREE.Vector3();
+  const walk = (o) => {
+    if (skip.has(o) || (o !== root && !o.visible)) return;
+    if (o.isBone || o.isSkinnedMesh || o.isInstancedMesh || o.isSprite || o.getObjectByProperty("isSkinnedMesh", true)) return;   // nhân vật: không đụng
+    if (o.isMesh && !o.userData.flag && !Array.isArray(o.material) && o.geometry && o.geometry.attributes.position) {
+      const cast = castsShadow(o); o.castShadow = cast; o.receiveShadow = true;
+      o.getWorldPosition(wp); const k = matKey(o.material) + "|" + cast + (cell ? "|" + Math.floor(wp.x / cell) + "," + Math.floor(wp.z / cell) : "");
+      (buckets.get(k) || buckets.set(k, []).get(k)).push(o);
+    }
+    o.children.slice().forEach(walk);
+  };
+  walk(root);
+  buckets.forEach(list => {
+    if (list.length < 2) return;
+    const geos = list.map(m => { const mt = new THREE.Matrix4().multiplyMatrices(inv, m.matrixWorld), g = m.geometry.clone(); g.applyMatrix4(mt);
+      if (!g.index) { const n = g.attributes.position.count, a = new Uint32Array(n); for (let i = 0; i < n; i++) a[i] = i; g.setIndex(new THREE.BufferAttribute(a, 1)); }
+      if (!g.attributes.normal) g.computeVertexNormals();
+      if (mt.determinant() < 0) { const I = g.index; for (let i = 0; i < I.count; i += 3) { const t = I.getX(i + 1); I.setX(i + 1, I.getX(i + 2)); I.setX(i + 2, t); } }
+      return g; });
+    const mesh = new THREE.Mesh(mergeGeos(geos), list[0].material);
+    mesh.castShadow = list[0].castShadow; mesh.receiveShadow = true; mesh.userData.flat = !mesh.castShadow; mesh.userData.baked = true;
+    root.add(mesh); list.forEach(m => { m.parent.remove(m); BAKED.set(m, mesh); });
+  });
+}
+function bakeWorld() {
+  const dyn = [...spinners, ...flags, ...cranes, ...ySpin, ...fans, ...clouds, sky, arrow, mateArrow, fountainSpray, player]
+    .concat(LESSONS.map(L => L.mesh), LESSONS.map(L => L.mark), AMBIENT.map(A => A.mesh), ghosts.map(G => G.g)).filter(Boolean);
+  const skip = new Set(dyn);
+  CITY.forEach(P => {
+    if (P.ext && P.exterior) bakeStatic(P.ext, skip);   // nhà dùng mô hình .gltf (tải sau) thì để nguyên
+    if (P.int) bakeStatic(P.int, new Set(dyn.concat([P.vgroup, P.dyn, P.keeperMesh].filter(Boolean))));
+  });
+  const done = new Set(dyn.concat(CITY.map(P => P.ext), CITY.map(P => P.int), PROPS));
+  bakeStatic(scene, done, 40);   // phần còn lại ngoài trời (cây, đường, quảng trường, đảo Arena…), chia ô 40 m để vẫn bỏ qua được phần ngoài tầm nhìn
+  for (let i = 0; i < camBlockers.length; i++) if (BAKED.has(camBlockers[i])) camBlockers[i] = BAKED.get(camBlockers[i]);
+  const seen = new Set(); for (let i = camBlockers.length - 1; i >= 0; i--) { if (seen.has(camBlockers[i])) camBlockers.splice(i, 1); else seen.add(camBlockers[i]); }
+}
+shade(scene); bakeWorld(); renderHud();
 loop();
 addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
