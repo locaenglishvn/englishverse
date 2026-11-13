@@ -285,6 +285,12 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 ---
 
+## 5b. ĐANG DỞ – đợt 1 (cập nhật 13/11)
+- ✅ Xong (chưa merge `main`): Banh Mi Bakery, Town Hall, City Hospital (cần chỉnh: hơi nhạt, hành lang trống), giới hạn 120 phút/ngày.
+- ⏳ Còn lại, theo thứ tự: **Verse School → Verse Hotel → Star Cinema → Home & Cozy → Verse Electronics**. Đề bài: `docs/briefs/<id>.md`; phần làm dở: `wip/<id>/`.
+- Lưu ý: chưa merge lên `main` vì CITY đã trỏ tới 5 nơi trên (phòng rỗng / nhà tạm). Nếu cần merge gấp: tạm bỏ `layout`/`size` của nơi chưa xong.
+- Cách chạy tiếp: mở **phiên mới**, nói "Làm tiếp đợt 1 theo docs/TEAM.md" → CTO giao Writer (Haiku) + Builder (Sonnet) từng nơi một.
+
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
 1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Town Hall, City Hospital, Verse School, các cửa hàng Market Street, Verse Plaza.
 2. **Ngoại thất** các nơi còn dùng mẫu nhà phố (Science Lab, Fix-It Workshop, Pho Corner, Star Cinema…) và các ô 🚧 khi người dùng gửi ảnh.

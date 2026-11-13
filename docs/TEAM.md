@@ -27,7 +27,11 @@
 
 Quyền của agent phụ không bao giờ vượt quyền CTO. Mọi thứ vào `main` đều đi qua CTO.
 
-**Tiết kiệm:** Opus chỉ làm phần cần phán đoán (thiết kế, đề bài, rà soát). Việc theo khuôn → Sonnet/Haiku. Đề bài phải đủ rõ để agent làm 1 lần là đạt (đỡ tốn lượt sửa).
+**Đội cố định 3 vai – mỗi vai tối đa 1 bản chạy cùng lúc** (chốt 13/11 sau khi 8 bản Sonnet song song làm hết hạn mức 5 giờ trong ~1 giờ):
+- **Opus (CTO):** đề bài (`docs/briefs/<id>.md`), rà soát cuối (QA + 1 ảnh ghép), ghép & merge. Không tự dựng 3D trừ việc nhỏ.
+- **Sonnet (Builder):** dựng 3D 1 nơi / lần, đọc `docs/KIT.md` + đề bài + phần dở trong `wip/`, KHÔNG đọc index.html / museum.js.
+- **Haiku (Writer):** viết NPC + từ vựng theo đề bài (rẻ nhất), chạy song song được với Builder vì sửa file khác.
+- **Tiết kiệm token:** (1) mỗi đợt việc mở **phiên mới** (phiên dài = mỗi bước đắt dần); (2) agent mới cho mỗi nơi, không "gọi lại" agent cũ đã dừng (nạp lại cả lịch sử); (3) không bật nhiều bản cùng vai; (4) xem ảnh ghép `tools/qa/shot.js` thay cho nhiều ảnh lẻ.
 
 ## 3. Phân quyền quyết định
 
@@ -37,13 +41,13 @@ Quyền của agent phụ không bao giờ vượt quyền CTO. Mọi thứ vào
 | 🟡 **CTO quyết, báo để biết** | Chi tiết thiết kế trong phong cách đã có (bố trí đồ, tên NPC, màu phụ). Chỉnh nhỏ độ khó, giá đồ, phần thưởng | Gom vào báo cáo; chủ dự án phản đối thì sửa lại |
 | 🔴 **Phải hỏi trước** | Hệ thống chơi mới, cốt truyện. Kinh tế lớn (Legendary, tiền thật). Đổi phong cách hình ảnh / quy hoạch bản đồ. Xoá tính năng. **Đổi cấu trúc dữ liệu lưu của người chơi.** Dịch vụ ngoài / chi phí mới. **An toàn trẻ em, dữ liệu cá nhân, thu thập dữ liệu nghiên cứu.** Nội dung nhạy cảm (lịch sử, chính trị, người thật, thương hiệu thật) | Đưa 2–3 phương án + gợi ý, chờ chọn |
 
-## 4. Quy trình một đợt việc
-
-1. **Đề bài (CTO):** từ mục tiêu + ảnh/tên toà nhà → chốt bố cục, viết đề bài theo mẫu mục 5.
-2. **Làm (agent):** mỗi agent 1 việc, trên bản sao repo riêng (git worktree, nhánh riêng). Mỗi nơi 1 file riêng → không đè nhau.
-3. **Cổng QA:** agent phải chạy `node tools/qa/run.js <id>` và đạt ✅ trước khi nộp. Trượt → tự sửa.
-4. **Rà soát (CTO):** xem ảnh `tools/qa/out/<id>.png` so với ảnh gốc, đọc hội thoại (tự nhiên? đúng trình độ? an toàn cho trẻ?), chỉnh lần cuối.
-5. **Phát hành (CTO):** ghi mốc bản đang chạy vào `docs/RELEASES.md` → merge qua PR → chạy lại QA toàn bộ → báo cáo kèm ảnh.
+## 4. Quy trình một đợt việc (nối tiếp, tiết kiệm)
+1. **CTO:** viết / cập nhật `docs/briefs/<id>.md` (hình ảnh, NPC, tên khu `at`, phần dở).
+2. **Writer (Haiku)** – có thể chạy song song với bước 3 vì sửa file khác: viết NPC (x, z tạm = 0) + từ vựng với đúng tên khu trong đề bài.
+3. **Builder (Sonnet):** dựng nội thất / ngoại thất bằng `docs/KIT.md`, tạo `P.anchors` đủ chỗ cho từng khu, đặt lại x, z cho NPC, chạy `node tools/qa/run.js <id>` + `node tools/qa/shot.js <id>`.
+4. **CTO:** chạy lại QA, xem 1 ảnh ghép, đọc lướt hội thoại, chỉnh nhỏ, commit, ghi `docs/RELEASES.md`, merge.
+5. Hết đợt: cập nhật ROADMAP, báo cáo, **đóng phiên**; đợt sau mở phiên mới.
+Agent làm thẳng trên nhánh của CTO (không cần bản sao riêng vì chạy nối tiếp; Writer và Builder không sửa chung file).
 
 ## 5. Mẫu đề bài (CTO → agent)
 

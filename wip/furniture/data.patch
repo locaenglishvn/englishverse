@@ -1,0 +1,109 @@
+diff --git a/places.js b/places.js
+index c9d1da8..4e6d2bb 100644
+--- a/places.js
++++ b/places.js
+@@ -557,6 +557,104 @@ const VOCAB = {
+   ],
+   /* ===== VOCAB.furniture – điền món vào trong mảng dưới đây ===== */
+   furniture: [
++    // living
++    { w: "sofa", pic: "🛋️", pos: "noun", kind: "furniture", at: "living", say: "It's a sofa.", ex: "This sofa is very soft." },
++    { w: "armchair", pic: "💺", pos: "noun", kind: "furniture", at: "living", say: "It's an armchair.", ex: "Grandpa sits in the armchair." },
++    { w: "coffee table", pic: "☕", pos: "noun", kind: "furniture", at: "living", say: "It's a coffee table.", ex: "Put the book on the coffee table." },
++    { w: "TV", pic: "📺", pos: "noun", kind: "machine", at: "living", say: "It's a TV.", ex: "We watch TV in the living room." },
++    { w: "remote control", pic: "🎛️", pos: "noun", kind: "tool", at: "living", say: "It's a remote control.", ex: "Where is the remote control?" },
++    { w: "floor lamp", pic: "💡", pos: "noun", kind: "furniture", at: "living", say: "It's a floor lamp.", ex: "The floor lamp is next to the sofa." },
++    { w: "display cabinet", pic: "🗄️", pos: "noun", kind: "furniture", at: "living", say: "It's a display cabinet.", ex: "Mum keeps her plates in the display cabinet." },
++    // dining
++    { w: "fruit bowl", pic: "🍎", pos: "noun", kind: "thing", at: "dining", say: "It's a fruit bowl.", ex: "There are apples in the fruit bowl." },
++    { w: "chair", pic: "🪑", pos: "noun", kind: "furniture", at: "dining", say: "It's a chair.", ex: "Please sit on the chair." },
++    { w: "plate", pic: "🍽️", pos: "noun", kind: "thing", at: "dining", say: "It's a plate.", ex: "Put the food on the plate." },
++    { w: "bowl", pic: "🥣", pos: "noun", kind: "thing", at: "dining", say: "It's a bowl.", ex: "I eat soup from a bowl." },
++    { w: "fork", pic: "🍴", pos: "noun", kind: "tool", at: "dining", say: "It's a fork.", ex: "I use a fork for noodles." },
++    { w: "chopsticks", pic: "🥢", pos: "noun", kind: "tool", at: "dining", say: "It's a pair of chopsticks.", ex: "I eat rice with chopsticks." },
++    { w: "sideboard", pic: "🗄️", pos: "noun", kind: "furniture", at: "dining", say: "It's a sideboard.", ex: "The glasses are in the sideboard." },
++    { w: "dining table", pic: "🍽️", pos: "noun", kind: "furniture", at: "dining", say: "It's a dining table.", ex: "Our family eats at the dining table." },
++    // study
++    { w: "office chair", pic: "🪑", pos: "noun", kind: "furniture", at: "study", say: "It's an office chair.", ex: "The office chair can turn around." },
++    { w: "monitor", pic: "🖥️", pos: "noun", kind: "machine", at: "study", say: "It's a monitor.", ex: "The monitor is on the desk." },
++    { w: "keyboard", pic: "⌨️", pos: "noun", kind: "machine", at: "study", say: "It's a keyboard.", ex: "Type your name on the keyboard." },
++    { w: "printer", pic: "🖨️", pos: "noun", kind: "machine", at: "study", say: "It's a printer.", ex: "The printer is next to the shelf." },
++    { w: "filing cabinet", pic: "🗃️", pos: "noun", kind: "furniture", at: "study", say: "It's a filing cabinet.", ex: "The papers are in the filing cabinet." },
++    { w: "whiteboard", pic: "📋", pos: "noun", kind: "thing", at: "study", say: "It's a whiteboard.", ex: "Write the answer on the whiteboard." },
++    { w: "pencil holder", pic: "✏️", pos: "noun", kind: "thing", at: "study", say: "It's a pencil holder.", ex: "The pens are in the pencil holder." },
++    // garden
++    { w: "parasol", pic: "⛱️", pos: "noun", kind: "thing", at: "garden", say: "It's a parasol.", ex: "The parasol gives us shade." },
++    { w: "deck chair", pic: "🏖️", pos: "noun", kind: "furniture", at: "garden", say: "It's a deck chair.", ex: "I read a book in the deck chair." },
++    { w: "barbecue grill", pic: "🍖", pos: "noun", kind: "machine", at: "garden", say: "It's a barbecue grill.", ex: "We cook sausages on the barbecue grill." },
++    { w: "garden hose", pic: "🚿", pos: "noun", kind: "tool", at: "garden", say: "It's a garden hose.", ex: "Water the flowers with the garden hose." },
++    { w: "lantern", pic: "🏮", pos: "noun", kind: "thing", at: "garden", say: "It's a lantern.", ex: "The lantern is on the table." },
++    { w: "rake", pic: "🧹", pos: "noun", kind: "tool", at: "garden", say: "It's a rake.", ex: "Use the rake to clean the leaves." },
++    { w: "garden gnome", pic: "🧙", pos: "noun", kind: "thing", at: "garden", say: "It's a garden gnome.", ex: "The garden gnome has a red hat." },
++    // kitchen
++    { w: "fridge", pic: "🧊", pos: "noun", kind: "machine", at: "kitchen", say: "It's a fridge.", ex: "The milk is in the fridge." },
++    { w: "stove", pic: "🔥", pos: "noun", kind: "machine", at: "kitchen", say: "It's a stove.", ex: "Mum is cooking on the stove." },
++    { w: "oven", pic: "♨️", pos: "noun", kind: "machine", at: "kitchen", say: "It's an oven.", ex: "The cake is in the oven." },
++    { w: "sink", pic: "🚰", pos: "noun", kind: "thing", at: "kitchen", say: "It's a sink.", ex: "Wash your hands in the sink." },
++    { w: "microwave", pic: "📟", pos: "noun", kind: "machine", at: "kitchen", say: "It's a microwave.", ex: "Heat the soup in the microwave." },
++    { w: "toaster", pic: "🍞", pos: "noun", kind: "machine", at: "kitchen", say: "It's a toaster.", ex: "The toaster makes brown bread." },
++    { w: "rice cooker", pic: "🍚", pos: "noun", kind: "machine", at: "kitchen", say: "It's a rice cooker.", ex: "The rice cooker is on the counter." },
++    { w: "frying pan", pic: "🍳", pos: "noun", kind: "tool", at: "kitchen", say: "It's a frying pan.", ex: "Fry an egg in the frying pan." },
++    { w: "saucepan", pic: "🥘", pos: "noun", kind: "tool", at: "kitchen", say: "It's a saucepan.", ex: "The soup is in the saucepan." },
++    { w: "cutting board", pic: "🔪", pos: "noun", kind: "tool", at: "kitchen", say: "It's a cutting board.", ex: "Cut the carrots on the cutting board." },
++    // bathroom
++    { w: "bathtub", pic: "🛁", pos: "noun", kind: "furniture", at: "bathroom", say: "It's a bathtub.", ex: "The baby is in the bathtub." },
++    { w: "toilet", pic: "🚽", pos: "noun", kind: "thing", at: "bathroom", say: "It's a toilet.", ex: "The toilet is next to the bathtub." },
++    { w: "washbasin", pic: "🚰", pos: "noun", kind: "furniture", at: "bathroom", say: "It's a washbasin.", ex: "Brush your teeth at the washbasin." },
++    { w: "shower", pic: "🚿", pos: "noun", kind: "machine", at: "bathroom", say: "It's a shower.", ex: "I take a shower every morning." },
++    { w: "soap", pic: "🧼", pos: "noun", kind: "thing", at: "bathroom", say: "It's a soap.", ex: "Wash your hands with soap." },
++    { w: "toothbrush", pic: "🪥", pos: "noun", kind: "tool", at: "bathroom", say: "It's a toothbrush.", ex: "My toothbrush is blue." },
++    { w: "toothpaste", pic: "🦷", pos: "noun", kind: "thing", at: "bathroom", say: "It's a toothpaste.", ex: "Put toothpaste on your toothbrush." },
++    { w: "bath mat", pic: "🟩", pos: "noun", kind: "thing", at: "bathroom", say: "It's a bath mat.", ex: "The bath mat is on the floor." },
++    { w: "toilet paper", pic: "🧻", pos: "noun", kind: "thing", at: "bathroom", say: "It's a roll of toilet paper.", ex: "We need more toilet paper." },
++    // bedroom
++    { w: "bed", pic: "🛏️", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a bed.", ex: "The bed is big and soft." },
++    { w: "pillow", pic: "😴", pos: "noun", kind: "thing", at: "bedroom", say: "It's a pillow.", ex: "I sleep with two pillows." },
++    { w: "blanket", pic: "🧣", pos: "noun", kind: "thing", at: "bedroom", say: "It's a blanket.", ex: "The blanket keeps me warm." },
++    { w: "wardrobe", pic: "👔", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a wardrobe.", ex: "My clothes are in the wardrobe." },
++    { w: "bedside table", pic: "🛋️", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a bedside table.", ex: "The book is on the bedside table." },
++    { w: "bedside lamp", pic: "💡", pos: "noun", kind: "thing", at: "bedroom", say: "It's a bedside lamp.", ex: "Turn off the bedside lamp, please." },
++    { w: "dresser", pic: "🗄️", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a dresser.", ex: "My socks are in the dresser." },
++    { w: "mirror", pic: "🪞", pos: "noun", kind: "thing", at: "bedroom", say: "It's a mirror.", ex: "I look in the mirror." },
++    { w: "slippers", pic: "🩴", pos: "noun", kind: "thing", at: "bedroom", say: "It's a pair of slippers.", ex: "Put on your slippers." },
++    // kids
++    { w: "bunk bed", pic: "🛏️", pos: "noun", kind: "furniture", at: "kids", say: "It's a bunk bed.", ex: "My brother sleeps in the top bunk bed." },
++    { w: "toy box", pic: "🧸", pos: "noun", kind: "furniture", at: "kids", say: "It's a toy box.", ex: "The toys are in the toy box." },
++    { w: "teddy bear", pic: "🧸", pos: "noun", kind: "thing", at: "kids", say: "It's a teddy bear.", ex: "I sleep with my teddy bear." },
++    { w: "building blocks", pic: "🧱", pos: "noun", kind: "thing", at: "kids", say: "It's a set of building blocks.", ex: "We build a tower with building blocks." },
++    { w: "dollhouse", pic: "🏠", pos: "noun", kind: "thing", at: "kids", say: "It's a dollhouse.", ex: "The dollhouse has a small kitchen." },
++    { w: "night light", pic: "🌙", pos: "noun", kind: "thing", at: "kids", say: "It's a night light.", ex: "The night light is yellow." },
++    { w: "play tent", pic: "⛺", pos: "noun", kind: "thing", at: "kids", say: "It's a play tent.", ex: "The children play in the play tent." },
++    { w: "crayons", pic: "🖍️", pos: "noun", kind: "tool", at: "kids", say: "It's a box of crayons.", ex: "Draw a picture with crayons." },
++    // market
++    { w: "teapot", pic: "🫖", pos: "noun", kind: "thing", at: "market", say: "It's a teapot.", ex: "Mum makes tea in the teapot." },
++    { w: "jar", pic: "🫙", pos: "noun", kind: "thing", at: "market", say: "It's a jar.", ex: "The jar is full of cookies." },
++    { w: "towel", pic: "🧖", pos: "noun", kind: "thing", at: "market", say: "It's a towel.", ex: "Dry your hands with a towel." },
++    { w: "throw pillow", pic: "🟪", pos: "noun", kind: "thing", at: "market", say: "It's a throw pillow.", ex: "The throw pillow is purple." },
++    { w: "tablecloth", pic: "🟦", pos: "noun", kind: "thing", at: "market", say: "It's a tablecloth.", ex: "The tablecloth is blue and white." },
++    { w: "photo frame", pic: "🖼️", pos: "noun", kind: "thing", at: "market", say: "It's a photo frame.", ex: "Put the photo in a photo frame." },
++    { w: "flower pot", pic: "🪴", pos: "noun", kind: "plant", at: "market", say: "It's a flower pot.", ex: "The flower pot is on the shelf." },
++    { w: "candle holder", pic: "🕯️", pos: "noun", kind: "thing", at: "market", say: "It's a candle holder.", ex: "The candle holder is small." },
++    { w: "basket", pic: "🧺", pos: "noun", kind: "thing", at: "market", say: "It's a basket.", ex: "Put the apples in the basket." },
++    { w: "wall clock", pic: "🕰️", pos: "noun", kind: "thing", at: "market", say: "It's a wall clock.", ex: "The wall clock is on the wall." },
++    // checkout
++    { w: "shopping basket", pic: "🛒", pos: "noun", kind: "thing", at: "checkout", say: "It's a shopping basket.", ex: "I carry a shopping basket." },
++    { w: "trolley", pic: "🛒", pos: "noun", kind: "thing", at: "checkout", say: "It's a trolley.", ex: "Push the trolley, please." },
++    { w: "paper bag", pic: "🛍️", pos: "noun", kind: "thing", at: "checkout", say: "It's a paper bag.", ex: "Please put it in a paper bag." },
++    { w: "gift card", pic: "🎁", pos: "noun", kind: "thing", at: "checkout", say: "It's a gift card.", ex: "A gift card is a nice present." },
++    // laundry
++    { w: "washing machine", pic: "🧺", pos: "noun", kind: "machine", at: "laundry", say: "It's a washing machine.", ex: "The washing machine is noisy." },
++    { w: "laundry basket", pic: "🧺", pos: "noun", kind: "thing", at: "laundry", say: "It's a laundry basket.", ex: "Put dirty socks in the laundry basket." },
++    { w: "iron", pic: "♨️", pos: "noun", kind: "tool", at: "laundry", say: "It's an iron.", ex: "Mum uses the iron on my shirt." },
++    { w: "ironing board", pic: "📐", pos: "noun", kind: "thing", at: "laundry", say: "It's an ironing board.", ex: "The iron is on the ironing board." },
++    { w: "storage box", pic: "📦", pos: "noun", kind: "thing", at: "laundry", say: "It's a storage box.", ex: "Keep your toys in a storage box." },
++    { w: "shoe rack", pic: "👟", pos: "noun", kind: "furniture", at: "laundry", say: "It's a shoe rack.", ex: "Put your shoes on the shoe rack." },
++    { w: "vacuum cleaner", pic: "🧹", pos: "noun", kind: "machine", at: "laundry", say: "It's a vacuum cleaner.", ex: "The vacuum cleaner is loud." },
++    { w: "drying rack", pic: "👕", pos: "noun", kind: "thing", at: "laundry", say: "It's a drying rack.", ex: "The shirts are on the drying rack." }
+   ],
+   /* ===== VOCAB.electronics – điền món vào trong mảng dưới đây ===== */
+   electronics: [

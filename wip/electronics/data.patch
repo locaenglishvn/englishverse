@@ -1,0 +1,346 @@
+diff --git a/lessons.js b/lessons.js
+index fd78cbb..ec75620 100644
+--- a/lessons.js
++++ b/lessons.js
+@@ -1246,4 +1246,165 @@ const LESSONS = [
+         { t: "Ask my mom.", ok: false, fb: "Try “do an experiment” :)" } ] }
+   ]
+ }
++
++/* ===== NPC: townhall – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++
++/* ===== NPC: hospital – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++
++/* ===== NPC: school – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++
++/* ===== NPC: bakery – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++
++/* ===== NPC: furniture – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++
++/* ===== NPC: electronics – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++,{
++  name: "Kiet – Sales Assistant", color: 0x1c7ed6, place: "electronics", x: -2.5, z: -27.5,
++  steps: [
++    { say: "Hello! Welcome to Verse Electronics. Are you looking for a TV?",
++      card: { w: "I’m looking for…", pic: "🔎", ex: "I’m looking for a new TV." },
++      choices: [
++        { t: "Yes, I’m looking for a new TV.", ok: true,  fb: "Clear and polite! +10" },
++        { t: "Yes, I look TV new.",            ok: false, fb: "Try “I’m looking for a new TV.”" },
++        { t: "I am a television.",             ok: false, fb: "Ha! You are the customer :)" } ] },
++    { say: "This TV is bigger, but that one is cheaper. Which one do you like?",
++      q: { w: "Which one…?", pic: "🤔", ex: "Which one do you like?" },
++      card: { w: "bigger / cheaper", pic: "📏", ex: "This TV is bigger. That TV is cheaper." },
++      choices: [
++        { t: "This one is bigger, but that one is cheaper.", ok: true,  fb: "Great comparison! +10" },
++        { t: "This one is more big.",                        ok: false, fb: "Say “bigger” (big → bigger)." },
++        { t: "TV is TV.",                                    ok: false, fb: "Compare them: “bigger”, “cheaper”." } ] },
++    { say: "Good choice! Do you have any questions about this TV?",
++      card: { w: "Does it have…?", pic: "📶", ex: "Does it have Wi-Fi?" },
++      choices: [
++        { t: "Does it have Wi-Fi?", ok: true,  fb: "Perfect question! +10" },
++        { t: "It have Wi-Fi?",      ok: false, fb: "Start with “Does it have…?”" },
++        { t: "Wi-Fi is TV have?",   ok: false, fb: "Try “Does it have Wi-Fi?”" } ] }
++  ]
++},
++{
++  name: "Hana – Cashier", color: 0xe8590c, place: "electronics", x: 16, z: 30.9,
++  steps: [
++    { say: "Hi! Is that everything for today?",
++      card: { w: "That’s all.", pic: "✅", ex: "Yes, that’s all, thank you." },
++      choices: [
++        { t: "Yes, that’s all, thank you.", ok: true,  fb: "Natural! +10" },
++        { t: "I am all.",                   ok: false, fb: "Say “That’s all.”" },
++        { t: "Everything is yes.",          ok: false, fb: "Try “Yes, that’s all.”" } ] },
++    { say: "The total is two hundred thousand dong. Cash or card?",
++      q: { w: "Cash or card?", pic: "💵", ex: "Would you like to pay cash or card?" },
++      card: { w: "Can I pay by card?", pic: "💳", ex: "Can I pay by card?" },
++      choices: [
++        { t: "Can I pay by card?", ok: true,  fb: "Very polite! +10" },
++        { t: "I pay card can?",    ok: false, fb: "Word order: “Can I pay by card?”" },
++        { t: "Card is money.",     ok: false, fb: "Ask: “Can I pay by card?”" } ] },
++    { say: "Of course! Here is your card back. Do you need a receipt?",
++      card: { w: "Yes, please.", pic: "🧾", ex: "Yes, please. Thank you!" },
++      choices: [
++        { t: "Yes, please. Thank you!", ok: true,  fb: "Lovely! +10" },
++        { t: "Yes, I am receipt.",      ok: false, fb: "Say “Yes, please.”" },
++        { t: "No receipt yes.",         ok: false, fb: "Choose one: “Yes, please.”" } ] }
++  ]
++},
++{
++  name: "Mr. Sang – Technician", color: 0x495057, place: "electronics", x: -17, z: 30.9,
++  steps: [
++    { say: "Good morning. This is the warranty desk. How can I help you?",
++      card: { w: "It’s broken.", pic: "🔧", ex: "My hair dryer is broken." },
++      choices: [
++        { t: "My hair dryer is broken.", ok: true,  fb: "Clear problem! +10" },
++        { t: "My hair dryer broke is.",  ok: false, fb: "Say “It’s broken.”" },
++        { t: "My hair dryer is angry.",  ok: false, fb: "Ha! Try “It’s broken.”" } ] },
++    { say: "I see. When did you buy it?",
++      card: { w: "two weeks ago", pic: "📆", ex: "I bought it two weeks ago." },
++      choices: [
++        { t: "I bought it two weeks ago.", ok: true,  fb: "Good past tense! +10" },
++        { t: "I buy it two week ago.",     ok: false, fb: "Use past: “I bought it…”" },
++        { t: "Yesterday I am buy.",        ok: false, fb: "Try “I bought it two weeks ago.”" } ] },
++    { say: "It still has a warranty, so we can fix it for free. Please wait ten minutes.",
++      q: { w: "warranty", pic: "📄", ex: "Is it still under warranty?" },
++      card: { w: "for free", pic: "🆓", ex: "Great! You can fix it for free." },
++      choices: [
++        { t: "Great! Thank you very much.", ok: true,  fb: "Happy customer! +10" },
++        { t: "Free? I pay ten minutes.",    ok: false, fb: "Say “Great! Thank you.”" },
++        { t: "No, I don’t have it.",        ok: false, fb: "He is helping you. Say thanks :)" } ] }
++  ]
++},
++{
++  name: "Mrs. Hanh – Shopper", color: 0xd6336c, place: "electronics", x: -25.5, z: -2.5,
++  steps: [
++    { say: "We need a new fridge. This one is small, and that one is bigger.",
++      card: { w: "bigger", pic: "📏", ex: "This fridge is bigger than that one." },
++      choices: [
++        { t: "The bigger one is better for a family.", ok: true,  fb: "Nice advice! +10" },
++        { t: "Big one is more better.",                ok: false, fb: "Say “bigger” or “better”, not “more better”." },
++        { t: "I like the fish fridge.",                ok: false, fb: "Try “The bigger one is better.”" } ] },
++    { say: "Excuse me, I can’t see the price. How much is this fridge?",
++      q: { w: "How much is…?", pic: "💰", ex: "How much is this fridge?" },
++      card: { w: "It’s ten million dong.", pic: "🏷️", ex: "It’s ten million dong." },
++      choices: [
++        { t: "It’s ten million dong.", ok: true,  fb: "Helpful! +10" },
++        { t: "It is much.",            ok: false, fb: "Read the price: “It’s ten million.”" },
++        { t: "Ten million is I.",      ok: false, fb: "Say “It’s ten million dong.”" } ] },
++    { say: "Oh, that’s expensive! Is there a cheaper and quieter one?",
++      card: { w: "quieter", pic: "🤫", ex: "This fridge is cheaper and quieter." },
++      choices: [
++        { t: "Yes, this one is cheaper and quieter.", ok: true,  fb: "Great comparatives! +10" },
++        { t: "Yes, this one is more cheap.",          ok: false, fb: "Say “cheaper” (cheap → cheaper)." },
++        { t: "Yes, I have expensive.",                ok: false, fb: "Try “This one is cheaper.”" } ] }
++  ]
++},
++{
++  name: "Mr. Duc – Shopper", color: 0x364fc7, place: "electronics", x: -25, z: 1.6, minLv: 5,
++  steps: [
++    { say: "I’m comparing these two fridges. Which one uses less electricity?",
++      q: { w: "Which one uses less…?", pic: "🤔", ex: "Which one uses less electricity?" },
++      card: { w: "uses less electricity", pic: "⚡", ex: "This fridge uses less electricity." },
++      choices: [
++        { t: "The inverter one uses less electricity.", ok: true,  fb: "Excellent grammar! +10" },
++        { t: "The inverter one use electricity less.",  ok: false, fb: "Say “uses less electricity.”" },
++        { t: "Electricity is not use.",                 ok: false, fb: "Try “It uses less electricity.”" } ] },
++    { say: "Look at the energy label. Five stars means it saves a lot of money.",
++      card: { w: "save money", pic: "🐷", ex: "It will save money every month." },
++      choices: [
++        { t: "That’s good. It will save money every month.", ok: true,  fb: "Smart shopper! +10" },
++        { t: "Five stars is a hotel.",                       ok: false, fb: "Ha! It means a good energy label." },
++        { t: "Saves is money many.",                         ok: false, fb: "Try “It will save money.”" } ] },
++    { say: "Good point. But it costs more. Maybe we can pay by installments.",
++      card: { w: "pay by installments", pic: "📅", ex: "Can we pay by installments?" },
++      choices: [
++        { t: "Can we pay in twelve monthly installments?", ok: true,  fb: "Very natural! +10" },
++        { t: "We can paying month twelve?",                ok: false, fb: "Try “Can we pay by installments?”" },
++        { t: "I pay installment before I buy.",            ok: false, fb: "Installments = pay a little each month." } ] }
++  ]
++},
++{
++  name: "Ms. Quyen – Installment Advisor", color: 0x7048e8, place: "electronics", x: -25, z: 30.9,
++  steps: [
++    { say: "Hello! Would you like to buy it with zero percent interest?",
++      card: { w: "How does it work?", pic: "⚙️", ex: "Yes, please. How does it work?" },
++      choices: [
++        { t: "Yes, please. How does it work?", ok: true,  fb: "Curious and polite! +10" },
++        { t: "Yes, I interest.",               ok: false, fb: "Try “Yes, please. How does it work?”" },
++        { t: "No, I am zero.",                 ok: false, fb: "Ha! Ask: “How does it work?”" } ] },
++    { say: "You pay a little every month for six months. It’s easy!",
++      q: { w: "every month", pic: "📆", ex: "I pay every month." },
++      card: { w: "How much is each month?", pic: "💰", ex: "How much is each month?" },
++      choices: [
++        { t: "That sounds good. How much is each month?", ok: true,  fb: "Good question! +10" },
++        { t: "Month is how much?",                        ok: false, fb: "Try “How much is each month?”" },
++        { t: "I am six months.",                          ok: false, fb: "She means six monthly payments." } ] },
++    { say: "Only five hundred thousand dong. Please show your ID card and sign here.",
++      card: { w: "Where do I sign?", pic: "✍️", ex: "Where do I sign?" },
++      choices: [
++        { t: "Here is my ID card. Where do I sign?", ok: true,  fb: "Perfect! +10" },
++        { t: "I sign where?",                        ok: false, fb: "Word order: “Where do I sign?”" },
++        { t: "ID card is sign.",                     ok: false, fb: "Say “Here you are. Where do I sign?”" } ] }
++  ]
++}
++
++/* ===== NPC: cinema – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++
++/* ===== NPC: hotel – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++
+ ];
+diff --git a/places.js b/places.js
+index 76a4a67..9ae6c37 100644
+--- a/places.js
++++ b/places.js
+@@ -103,7 +103,7 @@ const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", le
+    model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5)
+    exterior = ngoại thất vẽ riêng (townhall, hospital, school, cafe, home – xem mục 8c trong index.html); khi có thì bỏ qua model */
+ const CITY = [
+-  { id: "bakery", name: "Banh Mi Bakery", type: "bakery", x: 56, z: -10, w: 10, d: 10, door: "south", exterior: "banhmi",
++  { id: "bakery", name: "Banh Mi Bakery", type: "bakery", x: -32.5, z: 6.5, w: 6, d: 9, door: "east", exterior: "bakeryDoor", layout: "bakery", size: { w: 20, d: 48, h: 7 },   // căn nhà ống vàng sát Cafe Sua Da
+     color: 0xffe8cc, roof: 0xc0392b, awning: 0xe67e22, floor: 0xe9c99a, wall: 0xfff4e0,
+     keeper: { name: "Anna – Baker", color: 0xf08c00, greet: "Good morning! Everything is fresh today. What would you like?", hint: "Can I have a banh mi, please?" },
+     sells: ["banhmi", "donut", "milk"] },
+@@ -115,11 +115,11 @@ const CITY = [
+     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
+     keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to the Clothes Shop. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
+     sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
+-  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -44, w: 32, d: 13, door: "south", exterior: "townhall",
++  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -44, w: 32, d: 13, door: "south", exterior: "townhall", layout: "townhall", size: { w: 36, d: 48, h: 12 },
+     color: 0xf1f3f5, roof: 0x495057, awning: 0x1c7ed6, floor: 0xc9a27e, wall: 0xf8f0e3,
+     keeper: { name: "Mr. Lee – Mayor", color: 0x343a40, greet: "Welcome to Town Hall! The quest board will open soon.", hint: "I'd like to take a quest." },
+     sells: [] },
+-  { id: "hospital", name: "City Hospital", type: "hospital", x: -62, z: -40, w: 20, d: 11, door: "east", exterior: "hospital",
++  { id: "hospital", name: "City Hospital", type: "hospital", x: -62, z: -40, w: 20, d: 11, door: "east", exterior: "hospital", layout: "hospital", size: { w: 60, d: 72, h: 6 },
+     color: 0xffffff, roof: 0xc92a2a, awning: 0xfa5252, floor: 0xe7f5ff, wall: 0xffffff,
+     keeper: { name: "Nurse Mai", color: 0x74c0fc, greet: "Hello! Doctor Pasteur is working in his lab. He will need your help soon.", hint: "I feel sick." },
+     sells: [] },
+@@ -131,7 +131,7 @@ const CITY = [
+      layout = kiểu bày nội thất: shop | tables | shelves | desks | museum | cinema | salon | lab | home
+      goods  = đồ trưng bày (emoji). NPC hội thoại của từng nơi nằm trong lessons.js (place: "id"). */
+   // Hàng phía bắc (cửa nhìn ra North Avenue)
+-  { id: "school", name: "Verse School", type: "school", x: -82, z: -14, w: 24, d: 18, door: "south", exterior: "school", layout: "desks",
++  { id: "school", name: "Verse School", type: "school", x: -82, z: -14, w: 24, d: 18, door: "south", exterior: "school", layout: "campus", size: { w: 60, d: 72, h: 12 },
+     color: 0xfff3bf, roof: 0x1971c2, awning: 0xfab005, floor: 0xd9b38c, wall: 0xfff9db, goods: ["📚", "✏️", "📐", "🌍", "🎒", "🧮"], keeper: null, sells: [] },
+   { id: "museum", name: "City Museum", type: "museum", x: -35, z: 40, w: 26, d: 12, door: "east", exterior: "museum", layout: "museumhall", size: { w: 60, d: 72, h: 14 },
+     color: 0xf1f3f5, roof: 0x5c5f66, awning: 0x868e96, floor: 0xe9ecef, wall: 0xf8f9fa, goods: ["🦖", "🏺", "🗿", "⚱️", "🦴", "👑"], keeper: null, sells: [] },
+@@ -144,7 +144,7 @@ const CITY = [
+   { id: "lab", name: "Science Lab", type: "science lab", x: -75, z: -112, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
+     color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
+   // Hàng giữa (cửa nhìn ra Market Street)
+-  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "showroom",
++  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 56, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "homecozy", size: { w: 60, d: 72, h: 10 },
+     color: 0xf8f0e3, roof: 0x8d5a2b, awning: 0xa0522d, floor: 0xd9b38c, wall: 0xfff8f0, goods: [],
+     keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Welcome to Home & Cozy. Do you need furniture for your home?", hint: "I’d like the sofa, please." },
+     sells: ["d_couch", "d_chair", "d_lamp", "d_cactus", "d_shelf", "d_table", "d_cabinet", "d_rug"] },
+@@ -172,10 +172,14 @@ const CITY = [
+   // Hàng phía nam (cửa nhìn lên Market Street)
+   { id: "home", name: "My Home", type: "home", x: -125, z: -14, w: 12, d: 11, door: "south", exterior: "home", layout: "home",
+     color: 0xfff4e6, roof: 0xd9480f, awning: 0xfd7e14, floor: 0xd9b38c, wall: 0xfff8f0, keeper: null, sells: [] },
+-  { id: "cinema", name: "Star Cinema", type: "cinema", x: 85, z: 18, w: 12, d: 12, door: "north", model: "building_H", scale: 6, layout: "cinema",
++  { id: "cinema", name: "Star Cinema", type: "cinema", x: 86.5, z: 18, w: 20, d: 16, door: "north", exterior: "cinema", layout: "starium", size: { w: 40, d: 56, h: 14 },
+     color: 0x343a40, roof: 0x212529, awning: 0xfab005, floor: 0x5c1a1a, wall: 0x3b2f2a, goods: ["🎬", "🍿", "🎟️", "🥤", "🎥", "⭐"],
+     keeper: { name: "Jack – Ticket Seller", color: 0xfab005, greet: "Hi! The movie starts at seven. Would you like some popcorn?", hint: "Can I have some popcorn, please?" },
+-    sells: ["popcorn", "water"] }
++    sells: ["popcorn", "water"] },
++  { id: "electronics", name: "Verse Electronics", type: "electronics store", x: 63, z: 43, w: 22, d: 16, door: "west", exterior: "electronics", layout: "electronics", size: { w: 60, d: 72, h: 10 },   // siêu thị điện máy, cạnh Verse Plaza
++    color: 0x1c4fa0, roof: 0x1c4fa0, awning: 0xffd43b, floor: 0xf1f3f5, wall: 0xffffff, goods: [], keeper: null, sells: [] },
++  { id: "hotel", name: "Verse Hotel", type: "hotel", x: 33, z: 0, w: 18, d: 16, door: "west", exterior: "hotel", layout: "hotel", size: { w: 40, d: 60, h: 10 },   // ngoại thất theo khách sạn Majestic (Q.1)
++    color: 0xf8f1df, roof: 0x8a6d3b, awning: 0xc9a227, floor: 0xd9c7a4, wall: 0xf8f1df, goods: [], keeper: null, sells: [] }
+ ];
+ 
+ /* ĐỊA ĐIỂM NGOÀI TRỜI (không có nhà, đi thẳng vào): x, z = tâm khu; keys = từ khóa khi hỏi "Where is …?" */
+@@ -224,7 +228,6 @@ const METRO = [
+ 
+ /* Ô ĐẤT CHỜ XÂY: hiện hàng rào + bảng "Coming soon". big = công trình công cộng lớn (có cần cẩu). door = mặt tiền quay hướng nào */
+ const LOTS = [
+-  { name: "Verse Hotel",      x: 33,   z: 0,    w: 18, d: 16, door: "west",  big: true },
+   { name: "Sports Center",    x: 30,   z: -93,  w: 16, d: 14, door: "west",  big: true },
+   { name: "Swimming Pool",    x: 32,   z: -126, w: 14, d: 12, door: "west",  big: true },
+   { name: "Tech Park",        x: -125, z: -112, w: 20, d: 16, door: "south", big: true },
+@@ -238,6 +241,7 @@ const LOTS = [
+   { name: "Clinic",           x: -110, z: 14,   w: 10, d: 10, door: "north" },
+   { name: "Bookshop",         x: 145,  z: -10,  w: 9,  d: 10, door: "south" },
+   { name: "Toy Store",        x: 145,  z: 11,   w: 9,  d: 10, door: "north" },
++  { name: "Pet Shop",         x: 120,  z: -10,  w: 10, d: 10, door: "south" },   // chỗ cũ của Home & Cozy
+   { name: "Orchard",          x: -125, z: 80,   w: 20, d: 18, door: "north", big: true },
+   { name: "Fish Pond",        x: -80,  z: 125,  w: 18, d: 16, door: "north" },
+   { name: "Rice Field",       x: -125, z: 125,  w: 20, d: 18, door: "north" },
+@@ -538,5 +542,97 @@ const VOCAB = {
+     { w: "volcano model", pic: "🌋", pos: "noun", kind: "thing", at: "lab", say: "It's a volcano model.", ex: "The volcano model can erupt!" },
+     { w: "telescope", pic: "🔭", pos: "noun", kind: "machine", at: "lab", say: "It's a telescope.", ex: "I can see stars with a telescope." },
+     { w: "Tesla coil", pic: "⚡", pos: "noun", kind: "machine", at: "lab", say: "It's a Tesla coil.", ex: "A Tesla coil makes big sparks." }
++  ],
++  /* ===== VOCAB.townhall – điền món vào trong mảng dưới đây ===== */
++  townhall: [
++  ],
++  /* ===== VOCAB.hospital – điền món vào trong mảng dưới đây ===== */
++  hospital: [
++  ],
++  /* ===== VOCAB.school – điền món vào trong mảng dưới đây ===== */
++  school: [
++  ],
++  /* ===== VOCAB.bakery – điền món vào trong mảng dưới đây ===== */
++  bakery: [
++  ],
++  /* ===== VOCAB.furniture – điền món vào trong mảng dưới đây ===== */
++  furniture: [
++  ],
++  /* ===== VOCAB.electronics – điền món vào trong mảng dưới đây ===== */
++  electronics: [
++    { w: "smart TV", pic: "📺", pos: "noun", kind: "machine", at: "tv", say: "It's a smart TV.", ex: "This smart TV connects to Wi-Fi." },
++    { w: "TV remote", pic: "🎛️", pos: "noun", kind: "tool", at: "tv", say: "It's a TV remote.", ex: "Where is the TV remote?" },
++    { w: "soundbar", pic: "🔊", pos: "noun", kind: "machine", at: "tv", say: "It's a soundbar.", ex: "A soundbar makes the movie sound better." },
++    { w: "HDMI cable", pic: "🔌", pos: "noun", kind: "thing", at: "tv", say: "It's an HDMI cable.", ex: "You need an HDMI cable to connect the TV." },
++    { w: "wall bracket", pic: "🔩", pos: "noun", kind: "tool", at: "tv", say: "It's a wall bracket.", ex: "The wall bracket holds the TV on the wall." },
++    { w: "smartphone", pic: "📱", pos: "noun", kind: "machine", at: "phones", say: "It's a smartphone.", ex: "My smartphone has a big screen." },
++    { w: "tablet", pic: "📲", pos: "noun", kind: "machine", at: "phones", say: "It's a tablet.", ex: "I watch cartoons on my tablet." },
++    { w: "charging cable", pic: "🔌", pos: "noun", kind: "thing", at: "phones", say: "It's a charging cable.", ex: "I need a new charging cable." },
++    { w: "power bank", pic: "🔋", pos: "noun", kind: "machine", at: "phones", say: "It's a power bank.", ex: "A power bank can charge my phone." },
++    { w: "earbuds", pic: "🎧", pos: "noun", kind: "thing", at: "phones", say: "They're earbuds.", ex: "These earbuds are small and light." },
++    { w: "smartwatch", pic: "⌚", pos: "noun", kind: "machine", at: "phones", say: "It's a smartwatch.", ex: "My smartwatch shows the time and my steps." },
++    { w: "phone case", pic: "📱", pos: "noun", kind: "thing", at: "phones", say: "It's a phone case.", ex: "This phone case is blue and strong." },
++    { w: "selfie stick", pic: "🤳", pos: "noun", kind: "tool", at: "phones", say: "It's a selfie stick.", ex: "I take photos with a selfie stick." },
++    { w: "monitor", pic: "🖥️", pos: "noun", kind: "machine", at: "computers", say: "It's a monitor.", ex: "This monitor is big and clear." },
++    { w: "keyboard", pic: "⌨️", pos: "noun", kind: "tool", at: "computers", say: "It's a keyboard.", ex: "I type with a keyboard." },
++    { w: "mouse", pic: "🖱️", pos: "noun", kind: "tool", at: "computers", say: "It's a computer mouse.", ex: "Click the mouse two times." },
++    { w: "printer", pic: "🖨️", pos: "noun", kind: "machine", at: "computers", say: "It's a printer.", ex: "The printer is out of paper." },
++    { w: "webcam", pic: "📷", pos: "noun", kind: "machine", at: "computers", say: "It's a webcam.", ex: "I use a webcam for online classes." },
++    { w: "flash drive", pic: "💾", pos: "noun", kind: "thing", at: "computers", say: "It's a flash drive.", ex: "Save your homework on a flash drive." },
++    { w: "router", pic: "📶", pos: "noun", kind: "machine", at: "computers", say: "It's a Wi-Fi router.", ex: "The router gives us Wi-Fi at home." },
++    { w: "refrigerator", pic: "🧊", pos: "noun", kind: "machine", at: "fridges", say: "It's a refrigerator.", ex: "The refrigerator keeps food fresh." },
++    { w: "freezer", pic: "❄️", pos: "noun", kind: "machine", at: "fridges", say: "It's a freezer.", ex: "Ice cream is in the freezer." },
++    { w: "energy label", pic: "🏷️", pos: "noun", kind: "thing", at: "fridges", say: "It's an energy label.", ex: "Five stars on the energy label means it saves power." },
++    { w: "mini fridge", pic: "🧃", pos: "noun", kind: "machine", at: "fridges", say: "It's a mini fridge.", ex: "A mini fridge fits in my bedroom." },
++    { w: "washing machine", pic: "🧺", pos: "noun", kind: "machine", at: "laundry", say: "It's a washing machine.", ex: "The washing machine cleans our clothes." },
++    { w: "dryer", pic: "🌀", pos: "noun", kind: "machine", at: "laundry", say: "It's a dryer.", ex: "The dryer makes the clothes warm and dry." },
++    { w: "detergent", pic: "🧴", pos: "noun", kind: "thing", at: "laundry", say: "It's detergent.", ex: "Put some detergent in the washing machine." },
++    { w: "laundry basket", pic: "🧺", pos: "noun", kind: "thing", at: "laundry", say: "It's a laundry basket.", ex: "Put your dirty socks in the laundry basket." },
++    { w: "stand fan", pic: "💨", pos: "noun", kind: "machine", at: "air", say: "It's a stand fan.", ex: "A stand fan is cheap and quiet." },
++    { w: "air purifier", pic: "🌬️", pos: "noun", kind: "machine", at: "air", say: "It's an air purifier.", ex: "The air purifier cleans the air." },
++    { w: "heater", pic: "🔥", pos: "noun", kind: "machine", at: "air", say: "It's a heater.", ex: "Turn on the heater. It's cold." },
++    { w: "humidifier", pic: "💧", pos: "noun", kind: "machine", at: "air", say: "It's a humidifier.", ex: "A humidifier makes the air less dry." },
++    { w: "ceiling fan", pic: "🪭", pos: "noun", kind: "machine", at: "air", say: "It's a ceiling fan.", ex: "The ceiling fan goes round and round." },
++    { w: "rice cooker", pic: "🍚", pos: "noun", kind: "machine", at: "kitchen", say: "It's a rice cooker.", ex: "Mum cooks rice in the rice cooker." },
++    { w: "microwave", pic: "♨️", pos: "noun", kind: "machine", at: "kitchen", say: "It's a microwave.", ex: "Heat the soup in the microwave." },
++    { w: "oven", pic: "🍞", pos: "noun", kind: "machine", at: "kitchen", say: "It's an oven.", ex: "The cake is in the oven." },
++    { w: "blender", pic: "🥤", pos: "noun", kind: "machine", at: "kitchen", say: "It's a blender.", ex: "I make a smoothie with the blender." },
++    { w: "toaster", pic: "🍞", pos: "noun", kind: "machine", at: "kitchen", say: "It's a toaster.", ex: "The toaster makes brown bread." },
++    { w: "air fryer", pic: "🍟", pos: "noun", kind: "machine", at: "kitchen", say: "It's an air fryer.", ex: "The air fryer makes crispy chips." },
++    { w: "pressure cooker", pic: "🍲", pos: "noun", kind: "machine", at: "kitchen", say: "It's a pressure cooker.", ex: "A pressure cooker cooks beans quickly." },
++    { w: "coffee maker", pic: "☕", pos: "noun", kind: "machine", at: "kitchen", say: "It's a coffee maker.", ex: "Dad's coffee maker is very fast." },
++    { w: "juicer", pic: "🍊", pos: "noun", kind: "machine", at: "kitchen", say: "It's a juicer.", ex: "Use a juicer to make orange juice." },
++    { w: "induction cooker", pic: "🍳", pos: "noun", kind: "machine", at: "kitchen", say: "It's an induction cooker.", ex: "An induction cooker heats the pan fast." },
++    { w: "food processor", pic: "🥕", pos: "noun", kind: "machine", at: "kitchen", say: "It's a food processor.", ex: "The food processor cuts carrots in seconds." },
++    { w: "dishwasher", pic: "🍽️", pos: "noun", kind: "machine", at: "kitchen", say: "It's a dishwasher.", ex: "The dishwasher washes the plates." },
++    { w: "hand mixer", pic: "🥣", pos: "noun", kind: "machine", at: "kitchen", say: "It's a hand mixer.", ex: "Use a hand mixer to make a cake." },
++    { w: "vacuum cleaner", pic: "🧹", pos: "noun", kind: "machine", at: "home", say: "It's a vacuum cleaner.", ex: "The vacuum cleaner is loud." },
++    { w: "robot vacuum", pic: "🤖", pos: "noun", kind: "machine", at: "home", say: "It's a robot vacuum.", ex: "The robot vacuum cleans the floor by itself." },
++    { w: "iron", pic: "👔", pos: "noun", kind: "tool", at: "home", say: "It's an iron.", ex: "Be careful! The iron is hot." },
++    { w: "hair dryer", pic: "💇", pos: "noun", kind: "machine", at: "home", say: "It's a hair dryer.", ex: "I dry my hair with a hair dryer." },
++    { w: "electric shaver", pic: "🪒", pos: "noun", kind: "machine", at: "home", say: "It's an electric shaver.", ex: "Dad has an electric shaver." },
++    { w: "power strip", pic: "🔌", pos: "noun", kind: "thing", at: "home", say: "It's a power strip.", ex: "Plug the lamp into the power strip." },
++    { w: "bluetooth speaker", pic: "🔈", pos: "noun", kind: "machine", at: "audio", say: "It's a bluetooth speaker.", ex: "This bluetooth speaker is small but loud." },
++    { w: "microphone", pic: "🎤", pos: "noun", kind: "tool", at: "audio", say: "It's a microphone.", ex: "Sing into the microphone." },
++    { w: "karaoke machine", pic: "🎶", pos: "noun", kind: "machine", at: "audio", say: "It's a karaoke machine.", ex: "We sing songs on the karaoke machine." },
++    { w: "radio", pic: "📻", pos: "noun", kind: "machine", at: "audio", say: "It's a radio.", ex: "Grandpa listens to the radio." },
++    { w: "digital camera", pic: "📷", pos: "noun", kind: "machine", at: "games", say: "It's a digital camera.", ex: "I take photos with a digital camera." },
++    { w: "game console", pic: "🎮", pos: "noun", kind: "machine", at: "games", say: "It's a game console.", ex: "The game console is connected to the TV." },
++    { w: "game controller", pic: "🕹️", pos: "noun", kind: "tool", at: "games", say: "It's a game controller.", ex: "Hold the game controller with two hands." },
++    { w: "drone", pic: "🚁", pos: "noun", kind: "machine", at: "games", say: "It's a drone.", ex: "The drone flies high in the sky." },
++    { w: "tripod", pic: "📸", pos: "noun", kind: "tool", at: "games", say: "It's a tripod.", ex: "Put the camera on the tripod." },
++    { w: "water purifier", pic: "🚰", pos: "noun", kind: "machine", at: "water", say: "It's a water purifier.", ex: "The water purifier makes clean water." },
++    { w: "water filter", pic: "🫗", pos: "noun", kind: "thing", at: "water", say: "It's a water filter.", ex: "Change the water filter every year." },
++    { w: "water heater", pic: "🚿", pos: "noun", kind: "machine", at: "water", say: "It's a water heater.", ex: "The water heater gives us hot water." },
++    { w: "warranty card", pic: "📄", pos: "noun", kind: "thing", at: "service", say: "It's a warranty card.", ex: "Keep your warranty card in a safe place." },
++    { w: "invoice", pic: "🧾", pos: "noun", kind: "thing", at: "service", say: "It's an invoice.", ex: "Please sign the invoice." },
++    { w: "shopping basket", pic: "🧺", pos: "noun", kind: "thing", at: "service", say: "It's a shopping basket.", ex: "Put the cable in the shopping basket." },
++    { w: "discount coupon", pic: "🎟️", pos: "noun", kind: "thing", at: "service", say: "It's a discount coupon.", ex: "I have a discount coupon for this fan." }
++  ],
++  /* ===== VOCAB.cinema – điền món vào trong mảng dưới đây ===== */
++  cinema: [
++  ],
++  /* ===== VOCAB.hotel – điền món vào trong mảng dưới đây ===== */
++  hotel: [
+   ]
+ };

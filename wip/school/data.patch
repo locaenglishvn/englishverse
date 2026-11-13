@@ -1,0 +1,420 @@
+diff --git a/lessons.js b/lessons.js
+index 9f20db5..2835146 100644
+--- a/lessons.js
++++ b/lessons.js
+@@ -55,7 +55,7 @@ const LESSONS = [
+ /* ===== NPC Ở CÁC ĐỊA ĐIỂM MỚI (mỗi nơi một người, dạy mẫu câu dùng ở nơi đó) =====
+    Có place: "id" → đứng trong nhà đó (x, z tính từ giữa phòng). Không có place → đứng ngoài trời tại x, z. */
+ ,{
+-  name: "Ms. Hoa – Teacher", color: 0x1971c2, place: "school", x: 0, z: -3.6,
++  name: "Ms. Hoa – Teacher", color: 0x1971c2, place: "school", x: -27, z: -16.3,
+   steps: [
+     { say: "Good morning, class! Please open your books to page ten.",
+       card: { w: "page", pic: "📖", ex: "Open your book to page ten." },
+@@ -1252,6 +1252,340 @@ const LESSONS = [
+ /* ===== NPC: hospital – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+ 
+ /* ===== NPC: school – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
++,{
++  name: "Mr. Duc – Science Teacher", color: 0x2b8a3e, place: "school", x: -27.6, z: -3,
++  steps: [
++    { say: "Good morning! Welcome to the science lab. Please put on your lab coat.",
++      card: { w: "lab rules", pic: "🥼", ex: "Please follow the lab rules." },
++      q: { w: "May I come in?", pic: "🚪", ex: "May I come in, please?" },
++      choices: [
++        { t: "Lab coat is me wear.", ok: false, fb: "Say “Where is my lab coat?”" },
++        { t: "I like pizza.", ok: false, fb: "Funny! But answer the teacher :)" },
++        { t: "Okay. Where is my lab coat?", ok: true, fb: "Good! Ask when you need help. +10" } ] },
++    { say: "Today we will heat some water. Be careful with the fire.",
++      card: { w: "careful", pic: "⚠️", ex: "Be careful with hot water." },
++      choices: [
++        { t: "Fire is no touch.", ok: false, fb: "Say “I won’t touch it.”" },
++        { t: "I will be careful.", ok: true, fb: "Great safety habit! +10" },
++        { t: "I am careful yesterday.", ok: false, fb: "Try “I will be careful.”" } ] },
++    { say: "Good job! Can you tell me what happens to ice in the sun?",
++      card: { w: "melt", pic: "🧊", ex: "Ice melts in the sun." },
++      choices: [
++        { t: "It melts and becomes water.", ok: true, fb: "Excellent science! +10" },
++        { t: "It is melt water.", ok: false, fb: "Say “It melts and becomes water.”" },
++        { t: "Ice is cold very.", ok: false, fb: "Say “Ice is very cold.” Now tell what happens." } ] }
++  ]
++}
++,{
++  name: "Ms. Mi – Music Teacher", color: 0x7048e8, place: "school", x: -26.5, z: 19.5,
++  steps: [
++    { say: "Hello! Welcome to the music room. What’s your favourite instrument?",
++      card: { w: "favourite instrument", pic: "🎸", ex: "My favourite instrument is the guitar." },
++      q: { w: "What’s your favourite…?", pic: "❓", ex: "What’s your favourite subject?" },
++      choices: [
++        { t: "I favourite piano.", ok: false, fb: "Say “My favourite is the piano.”" },
++        { t: "Yes, I am a piano.", ok: false, fb: "Ha! You play the piano, you are not one." },
++        { t: "My favourite is the piano.", ok: true, fb: "Lovely choice! +10" } ] },
++    { say: "Nice! Can you play it?",
++      card: { w: "play the piano", pic: "🎹", ex: "I can play the piano a little." },
++      choices: [
++        { t: "Yes, I am play.", ok: false, fb: "Say “Yes, I can play it.”" },
++        { t: "A little. I’m still learning.", ok: true, fb: "Honest and brave! +10" },
++        { t: "I play can not.", ok: false, fb: "Say “No, I can’t, but I’d like to learn.”" } ] },
++    { say: "Let’s sing together. We will sing a short song.",
++      card: { w: "sing a song", pic: "🎤", ex: "Let’s sing a song together." },
++      choices: [
++        { t: "Great! I love singing.", ok: true, fb: "Wonderful! +10" },
++        { t: "I am sing no.", ok: false, fb: "Try “Okay, let’s sing!”" },
++        { t: "Song is sing me.", ok: false, fb: "Say “Let’s sing a song!”" } ] }
++  ]
++}
++,{
++  name: "Ms. Lien – Art Teacher", color: 0xe8590c, place: "school", x: -27.8, z: 29.5,
++  steps: [
++    { say: "Hi! Today we will paint. Which colours do you need?",
++      card: { w: "paint", pic: "🎨", ex: "I paint with bright colours." },
++      q: { w: "Can I borrow…?", pic: "🤲", ex: "Can I borrow your brush?" },
++      choices: [
++        { t: "Colour red I need.", ok: false, fb: "Word order: “I need red.”" },
++        { t: "I need a paint pizza.", ok: false, fb: "Funny! Ask for colours :)" },
++        { t: "I need red and yellow, please.", ok: true, fb: "Clear request! +10" } ] },
++    { say: "Here you are. What are you going to draw?",
++      card: { w: "draw", pic: "✏️", ex: "I’m going to draw my family." },
++      choices: [
++        { t: "I am draw yesterday.", ok: false, fb: "Today! Say “I’m going to draw…”" },
++        { t: "I’m going to draw my house.", ok: true, fb: "Nice plan! +10" },
++        { t: "I draw going house.", ok: false, fb: "Say “I’m going to draw my house.”" } ] },
++    { say: "Beautiful! You are a great artist. Please clean the brush.",
++      card: { w: "clean up", pic: "🧽", ex: "Please clean up the table." },
++      choices: [
++        { t: "Thank you! I’ll clean it now.", ok: true, fb: "Polite and helpful! +10" },
++        { t: "Brush is clean me.", ok: false, fb: "Say “I’ll clean it now.”" },
++        { t: "No, brush is tired.", ok: false, fb: "Ha! Try “Okay, I’ll clean it.”" } ] }
++  ]
++}
++,{
++  name: "Mr. Khoa – IT Teacher", color: 0x1c7ed6, place: "school", x: -27.2, z: 12.5,
++  steps: [
++    { say: "Welcome to the computer room. Please sit down and turn on your computer.",
++      card: { w: "turn on", pic: "💻", ex: "Please turn on the computer." },
++      choices: [
++        { t: "Okay. How do I turn it on?", ok: true, fb: "Good question! +10" },
++        { t: "Computer is on me.", ok: false, fb: "Say “How do I turn it on?”" },
++        { t: "I turn off yesterday.", ok: false, fb: "Try “How do I turn it on?”" } ] },
++    { say: "Press the green button. Now open the browser and type your name.",
++      card: { w: "type", pic: "⌨️", ex: "I can type my name." },
++      q: { w: "How do you spell…?", pic: "🔤", ex: "How do you spell your name?" },
++      choices: [
++        { t: "I type name my.", ok: false, fb: "Word order: “I typed my name.”" },
++        { t: "Name is keyboard.", ok: false, fb: "Say “I typed my name.”" },
++        { t: "I’ve typed my name.", ok: true, fb: "Great typing! +10" } ] },
++    { say: "Good! Remember: don’t share your password with anyone.",
++      card: { w: "password", pic: "🔑", ex: "Keep your password secret." },
++      choices: [
++        { t: "My password is 1234!", ok: false, fb: "Oops! Keep it secret :)" },
++        { t: "I won’t share my password.", ok: true, fb: "Smart and safe! +10" },
++        { t: "Password I share.", ok: false, fb: "Say “I won’t share it.”" } ] }
++  ]
++}
++,{
++  name: "Coach Dung – PE Teacher", color: 0xe03131, place: "school", x: -6, z: -27,
++  steps: [
++    { say: "Hello, team! Let’s warm up first. Can you run around the court?",
++      card: { w: "warm-up", pic: "🏃", ex: "We do a warm-up before the game." },
++      choices: [
++        { t: "I am very tired already.", ok: false, fb: "Try “Yes, let’s go!”" },
++        { t: "Yes, I can. Let’s go!", ok: true, fb: "Energetic! +10" },
++        { t: "I am run court.", ok: false, fb: "Say “Yes, I can run.”" } ] },
++    { say: "Great! Now, do you like basketball or volleyball?",
++      card: { w: "basketball or volleyball", pic: "🏀", ex: "I like basketball better than volleyball." },
++      q: { w: "Do you like…?", pic: "❓", ex: "Do you like football?" },
++      choices: [
++        { t: "I like basketball.", ok: true, fb: "Good answer! +10" },
++        { t: "I am basketball.", ok: false, fb: "Say “I like basketball.”" },
++        { t: "Like I volleyball.", ok: false, fb: "Word order: “I like volleyball.”" } ] },
++    { say: "Nice. Drink some water and rest. You did well today!",
++      card: { w: "take a rest", pic: "💧", ex: "Take a rest and drink water." },
++      choices: [
++        { t: "Water I drink now.", ok: false, fb: "Say “I’ll drink some water.”" },
++        { t: "I rest water.", ok: false, fb: "Try “I’ll drink some water.”" },
++        { t: "Thanks, Coach! I’ll drink some water.", ok: true, fb: "Healthy habit! +10" } ] }
++  ]
++}
++,{
++  name: "Mr. Hung – Principal", color: 0xb3d5c, place: "school", x: 25.6, z: 18.5, minLv: 5,
++  steps: [
++    { say: "Good morning. I’m the principal. Which class are you in?",
++      card: { w: "principal", pic: "🎓", ex: "The principal is the head of the school." },
++      q: { w: "Which…are you in?", pic: "❓", ex: "Which class are you in?" },
++      choices: [
++        { t: "I don’t have a class.", ok: false, fb: "Every student has a class :) Try “I’m in class…”" },
++        { t: "I’m in class 6A. It’s my first year here.", ok: true, fb: "Excellent introduction! +10" },
++        { t: "I am class six A in.", ok: false, fb: "Say “I’m in class 6A.”" } ] },
++    { say: "Welcome! Here we have some school rules. Do you know any of them?",
++      card: { w: "school rules", pic: "📜", ex: "Please follow the school rules." },
++      choices: [
++        { t: "Yes. We must be on time and respect teachers.", ok: true, fb: "Great knowledge! +10" },
++        { t: "Rules is no talk.", ok: false, fb: "Say “We must be on time.”" },
++        { t: "Yes, we can run in class.", ok: false, fb: "Hmm, not allowed :) Try “We must be on time.”" } ] },
++    { say: "Very good. What do you want to be when you grow up?",
++      card: { w: "grow up", pic: "🌱", ex: "I want to be a doctor when I grow up." },
++      choices: [
++        { t: "I want be teacher grow.", ok: false, fb: "Say “I want to be a teacher.”" },
++        { t: "I grow up tomorrow.", ok: false, fb: "Ha! Try “I want to be…”" },
++        { t: "I want to be a teacher.", ok: true, fb: "A wonderful dream! +10" } ] }
++  ]
++}
++,{
++  name: "Ms. Ngoc – School Librarian", color: 0x9c36b5, place: "school", x: 20.6, z: -8.4,
++  steps: [
++    { say: "Hello! This is our school library. Do you want to borrow a book?",
++      card: { w: "reading corner", pic: "📚", ex: "Let’s go to the reading corner." },
++      q: { w: "Can I borrow…?", pic: "🤲", ex: "Can I borrow this book?" },
++      choices: [
++        { t: "Yes, please. Can I borrow two books?", ok: true, fb: "Polite request! +10" },
++        { t: "Book I borrow want.", ok: false, fb: "Say “Can I borrow a book?”" },
++        { t: "No, I want to eat it.", ok: false, fb: "Ha! Books are for reading :)" } ] },
++    { say: "Of course. What kind of books do you like?",
++      card: { w: "kind of book", pic: "📖", ex: "What kind of book do you like?" },
++      choices: [
++        { t: "I like book funny.", ok: false, fb: "Say “I like funny books.”" },
++        { t: "Kind is book.", ok: false, fb: "Try “I like funny stories.”" },
++        { t: "I like funny stories.", ok: true, fb: "Great taste! +10" } ] },
++    { say: "Please return them in two weeks. Is that OK?",
++      card: { w: "return", pic: "↩️", ex: "Please return the book on time." },
++      choices: [
++        { t: "Two weeks is book.", ok: false, fb: "Try “Yes, that’s OK.”" },
++        { t: "Yes. I’ll bring them back on time.", ok: true, fb: "Responsible! +10" },
++        { t: "Yes, I return yesterday.", ok: false, fb: "Say “I’ll bring them back.”" } ] }
++  ]
++}
++,{
++  name: "Aunt Ba – Canteen Cook", color: 0xf08c00, place: "school", x: 28.9, z: 6,
++  steps: [
++    { say: "Hello, sweetie! You look hungry. What would you like for lunch?",
++      card: { w: "lunch", pic: "🍱", ex: "I eat lunch at twelve o’clock." },
++      q: { w: "What would you like…?", pic: "❓", ex: "What would you like to drink?" },
++      choices: [
++        { t: "I want rice chicken give me.", ok: false, fb: "Say “I’d like chicken rice, please.”" },
++        { t: "I would like homework.", ok: false, fb: "Ha! Food, please :)" },
++        { t: "I’d like chicken rice, please.", ok: true, fb: "Polite order! +10" } ] },
++    { say: "Sure. And would you like some soup?",
++      card: { w: "some soup", pic: "🍲", ex: "Would you like some soup?" },
++      choices: [
++        { t: "No, soup is hot me.", ok: false, fb: "Try “No, thank you.”" },
++        { t: "Yes, please. It smells good!", ok: true, fb: "Lovely! +10" },
++        { t: "Yes, I am soup.", ok: false, fb: "Say “Yes, please.”" } ] },
++    { say: "Here you go. That’s twenty-five thousand dong.",
++      card: { w: "twenty-five thousand", pic: "💵", ex: "It’s twenty-five thousand dong." },
++      choices: [
++        { t: "Here you are. Thank you!", ok: true, fb: "Great manners! +10" },
++        { t: "I give you money no.", ok: false, fb: "Say “Here you are.”" },
++        { t: "Too much food!", ok: false, fb: "Try “Here you are. Thank you!”" } ] }
++  ]
++}
++,{
++  name: "Uncle Muoi – School Guard", color: 0x495057, place: "school", x: 2.8, z: 33.5,
++  steps: [
++    { say: "Good morning! Please show me your student card.",
++      card: { w: "student card", pic: "🪪", ex: "Please show your student card." },
++      choices: [
++        { t: "Card student I have.", ok: false, fb: "Say “Here it is.”" },
++        { t: "I forgot my name.", ok: false, fb: "Try “Here it is.”" },
++        { t: "Here it is. Good morning!", ok: true, fb: "Polite! +10" } ] },
++    { say: "Thank you. School starts at seven o’clock. Don’t be late.",
++      card: { w: "be late", pic: "⏰", ex: "Don’t be late for school." },
++      q: { w: "What time…?", pic: "❓", ex: "What time does school start?" },
++      choices: [
++        { t: "Seven is school.", ok: false, fb: "Try “I won’t be late.”" },
++        { t: "I won’t be late again.", ok: true, fb: "Good promise! +10" },
++        { t: "I am late no.", ok: false, fb: "Say “I won’t be late.”" } ] },
++    { say: "Good. After school, wait for your parents here. Be safe!",
++      card: { w: "be safe", pic: "🛡️", ex: "Be safe on the way home." },
++      choices: [
++        { t: "Thank you. See you tomorrow!", ok: true, fb: "Friendly! +10" },
++        { t: "Safe I am go home.", ok: false, fb: "Say “See you tomorrow!”" },
++        { t: "I wait you here.", ok: false, fb: "Try “Thank you, bye!”" } ] }
++  ]
++}
++,{
++  name: "Nurse Chi – School Nurse", color: 0xe64980, place: "school", x: 25.5, z: 31.5,
++  steps: [
++    { say: "Hello. You don’t look well. What’s the matter?",
++      card: { w: "What’s the matter?", pic: "🤒", ex: "What’s the matter? I have a headache." },
++      choices: [
++        { t: "I have a headache.", ok: true, fb: "Clear answer! +10" },
++        { t: "My head is pain.", ok: false, fb: "Say “I have a headache.”" },
++        { t: "I am a headache.", ok: false, fb: "Say “I have a headache.”" } ] },
++    { say: "Let me check your temperature. Open your mouth, please.",
++      card: { w: "temperature", pic: "🌡️", ex: "Your temperature is normal." },
++      choices: [
++        { t: "Temperature is me.", ok: false, fb: "Say “Is it high?”" },
++        { t: "No mouth open.", ok: false, fb: "Try “Okay.”" },
++        { t: "Okay. Is it high?", ok: true, fb: "Good question! +10" } ] },
++    { say: "It’s normal. Drink some water and rest for ten minutes.",
++      card: { w: "rest", pic: "🛌", ex: "You should rest for ten minutes." },
++      choices: [
++        { t: "Rest is water.", ok: false, fb: "Try “Thank you, Nurse.”" },
++        { t: "Thank you. I feel better now.", ok: true, fb: "Kind and clear! +10" },
++        { t: "I rest ten minutes yesterday.", ok: false, fb: "Say “I’ll rest now.”" } ] }
++  ]
++}
++,{
++  name: "Minh – Student", color: 0x1971c2, place: "school", x: -5.8, z: 11,
++  steps: [
++    { say: "Hi! I’m Minh. I’m in class 6B. What’s your name?",
++      card: { w: "timetable", pic: "🗓️", ex: "This is our timetable for Monday." },
++      q: { w: "What’s your name?", pic: "❓", ex: "What’s your name?" },
++      choices: [
++        { t: "Name is school.", ok: false, fb: "Say “My name is …”" },
++        { t: "My name is … Nice to meet you!", ok: true, fb: "Friendly start! +10" },
++        { t: "I am name Minh too.", ok: false, fb: "Say “My name is …”" } ] },
++    { say: "What’s your favourite subject at school?",
++      card: { w: "subject", pic: "📘", ex: "My favourite subject is English." },
++      choices: [
++        { t: "My favourite subject is English.", ok: true, fb: "Great! +10" },
++        { t: "Subject I like English.", ok: false, fb: "Say “My favourite subject is English.”" },
++        { t: "I subject English.", ok: false, fb: "Try “My favourite subject is English.”" } ] },
++    { say: "Cool! We have English on Monday and Friday. Let’s study together!",
++      card: { w: "study together", pic: "🤝", ex: "Let’s study together after school." },
++      choices: [
++        { t: "I study you together.", ok: false, fb: "Say “Good idea!”" },
++        { t: "No, I study with the tree.", ok: false, fb: "Ha! Try “Good idea!”" },
++        { t: "Good idea! See you in class.", ok: true, fb: "Team spirit! +10" } ] }
++  ]
++}
++,{
++  name: "Hana – Student", color: 0xf06595, place: "school", x: 5.4, z: 10.5,
++  steps: [
++    { say: "Hi! Do you want to play hopscotch with me? It’s my favourite game.",
++      card: { w: "play hopscotch", pic: "🔢", ex: "Let’s play hopscotch at break time." },
++      choices: [
++        { t: "No, I play with my bed.", ok: false, fb: "Try “Sure! How do you play?”" },
++        { t: "Sure! How do you play it?", ok: true, fb: "Curious and kind! +10" },
++        { t: "Play I want hopscotch.", ok: false, fb: "Say “Sure! How do you play?”" } ] },
++    { say: "You jump on one foot. First, throw the stone to number one.",
++      card: { w: "jump", pic: "🦘", ex: "I can jump on one foot." },
++      choices: [
++        { t: "Okay. Like this?", ok: true, fb: "Nice try! +10" },
++        { t: "Jump I one foot.", ok: false, fb: "Say “Okay. Like this?”" },
++        { t: "Stone is eat.", ok: false, fb: "Try “Okay. Like this?”" } ] },
++    { say: "Perfect! It’s break time now. Let’s play again tomorrow.",
++      card: { w: "break time", pic: "🔔", ex: "We play at break time." },
++      choices: [
++        { t: "Tomorrow I play yesterday.", ok: false, fb: "Say “See you tomorrow!”" },
++        { t: "Break is time no.", ok: false, fb: "Try “Yes, it was fun!”" },
++        { t: "Yes! It was fun. See you!", ok: true, fb: "Friendly! +10" } ] }
++  ]
++}
++,{
++  name: "Peter – Student", color: 0x5c940d, place: "school", x: -26.6, z: -11,
++  steps: [
++    { say: "Hello! I’m Peter. I forgot my pencil. Do you have one?",
++      card: { w: "spare", pic: "✏️", ex: "Do you have a spare pencil?" },
++      q: { w: "Do you have…?", pic: "❓", ex: "Do you have an eraser?" },
++      choices: [
++        { t: "Yes, I do. Here you are.", ok: true, fb: "Kind of you! +10" },
++        { t: "I have no pencil I.", ok: false, fb: "Say “Yes, here you are.”" },
++        { t: "Pencil is you.", ok: false, fb: "Try “Yes, here you are.”" } ] },
++    { say: "Thanks! How do you spell “homework”?",
++      card: { w: "spell", pic: "🔤", ex: "How do you spell “homework”?" },
++      choices: [
++        { t: "Home and work.", ok: false, fb: "Spell the letters: H – O – M – E…" },
++        { t: "Homework is H.", ok: false, fb: "Try spelling all the letters." },
++        { t: "H – O – M – E – W – O – R – K.", ok: true, fb: "Perfect spelling! +10" } ] },
++    { say: "Wow, you’re good! Can I copy your notes? Just kidding. Let’s study!",
++      card: { w: "notes", pic: "📝", ex: "I wrote some notes in class." },
++      choices: [
++        { t: "Notes I no have.", ok: false, fb: "Try “Let’s study together.”" },
++        { t: "No problem. Let’s study together.", ok: true, fb: "Honest and friendly! +10" },
++        { t: "Yes, copy all my homework.", ok: false, fb: "Better: “Let’s study together.”" } ] }
++  ]
++}
++,{
++  name: "Kim – Student", color: 0xd6336c, place: "school", x: 20.5, z: 10.5, minLv: 5,
++  steps: [
++    { say: "Hi! I’m Kim, the class monitor. I’ve been at this school for three years. How long have you been here?",
++      card: { w: "class monitor", pic: "🧑‍🏫", ex: "The class monitor helps the teacher." },
++      q: { w: "How long have you been…?", pic: "❓", ex: "How long have you been here?" },
++      choices: [
++        { t: "I am here two weeks.", ok: false, fb: "Say “I’ve been here for two weeks.”" },
++        { t: "I have been yesterday.", ok: false, fb: "Try “I’ve been here for…”" },
++        { t: "I’ve been here for two weeks.", ok: true, fb: "Excellent grammar! +10" } ] },
++    { say: "I see. If you have a problem, you can ask me. What do you find difficult?",
++      card: { w: "difficult", pic: "😓", ex: "Maths is difficult for me." },
++      choices: [
++        { t: "Nothing, I know all.", ok: false, fb: "Try “… is difficult for me.”" },
++        { t: "Listening is difficult, but I’m improving.", ok: true, fb: "Honest and positive! +10" },
++        { t: "Difficult is me.", ok: false, fb: "Say “Maths is difficult for me.”" } ] },
++    { say: "Practice makes perfect. Would you like to join our English club?",
++      card: { w: "English club", pic: "🗣️", ex: "I’d love to join the English club." },
++      choices: [
++        { t: "I’d love to! When does it meet?", ok: true, fb: "Great interest! +10" },
++        { t: "I join club want.", ok: false, fb: "Say “I’d love to join!”" },
++        { t: "Club is English eat.", ok: false, fb: "Try “I’d love to!”" } ] }
++  ]
++}
+ 
+ /* ===== NPC: bakery – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+ ,{
+diff --git a/places.js b/places.js
+index 7f52198..58baf19 100644
+--- a/places.js
++++ b/places.js
+@@ -551,6 +551,61 @@ const VOCAB = {
+   ],
+   /* ===== VOCAB.school – điền món vào trong mảng dưới đây ===== */
+   school: [
++    { w: "flagpole", pic: "🚩", pos: "noun", kind: "thing", at: "yard", say: "It's a flagpole.", ex: "The flag is on the flagpole." },
++    { w: "school drum", pic: "🥁", pos: "noun", kind: "thing", at: "yard", say: "It's the school drum.", ex: "The school drum rings at seven o'clock." },
++    { w: "notice board", pic: "📌", pos: "noun", kind: "thing", at: "yard", say: "It's a notice board.", ex: "Read the notice board before class." },
++    { w: "school gate", pic: "⛩️", pos: "noun", kind: "thing", at: "yard", say: "It's the school gate.", ex: "Meet me at the school gate." },
++    { w: "phoenix tree", pic: "🌳", pos: "noun", kind: "plant", at: "yard", say: "It's a phoenix tree.", ex: "The phoenix tree has red flowers." },
++    { w: "stone bench", pic: "🪑", pos: "noun", kind: "furniture", at: "yard", say: "It's a stone bench.", ex: "We sit on the stone bench at break time." },
++    { w: "flower bed", pic: "🌷", pos: "noun", kind: "plant", at: "yard", say: "It's a flower bed.", ex: "The flower bed is full of roses." },
++    { w: "hopscotch", pic: "🔢", pos: "noun", kind: "thing", at: "yard", say: "It's hopscotch.", ex: "We play hopscotch in the yard." },
++    { w: "bicycle", pic: "🚲", pos: "noun", kind: "thing", at: "yard", say: "It's a bicycle.", ex: "I ride my bicycle to school." },
++    { w: "blackboard", pic: "🟩", pos: "noun", kind: "furniture", at: "class", say: "It's a blackboard.", ex: "The teacher writes on the blackboard." },
++    { w: "chalk", pic: "🖍️", pos: "noun", kind: "tool", at: "class", say: "It's a piece of chalk.", ex: "The chalk is white." },
++    { w: "board duster", pic: "🧽", pos: "noun", kind: "tool", at: "class", say: "It's a board duster.", ex: "Clean the board with the duster." },
++    { w: "timetable", pic: "🗓️", pos: "noun", kind: "thing", at: "class", say: "It's a timetable.", ex: "Check the timetable for English." },
++    { w: "school chair", pic: "💺", pos: "noun", kind: "furniture", at: "class", say: "It's a school chair.", ex: "Sit on your school chair, please." },
++    { w: "textbook", pic: "📘", pos: "noun", kind: "thing", at: "class", say: "It's a textbook.", ex: "Open your textbook to page ten." },
++    { w: "pencil case", pic: "👝", pos: "noun", kind: "thing", at: "class", say: "It's a pencil case.", ex: "My pencil case is blue." },
++    { w: "pencil sharpener", pic: "✂️", pos: "noun", kind: "tool", at: "class", say: "It's a pencil sharpener.", ex: "I need a pencil sharpener." },
++    { w: "beaker", pic: "🧪", pos: "noun", kind: "tool", at: "lab", say: "It's a beaker.", ex: "Pour the water into the beaker." },
++    { w: "Bunsen burner", pic: "🔥", pos: "noun", kind: "tool", at: "lab", say: "It's a Bunsen burner.", ex: "Be careful with the Bunsen burner." },
++    { w: "lab coat", pic: "🥼", pos: "noun", kind: "thing", at: "lab", say: "It's a lab coat.", ex: "Wear a lab coat in the lab." },
++    { w: "petri dish", pic: "🥣", pos: "noun", kind: "tool", at: "lab", say: "It's a petri dish.", ex: "The petri dish is very small." },
++    { w: "keyboard", pic: "⌨️", pos: "noun", kind: "machine", at: "computer", say: "It's a keyboard.", ex: "I type on the keyboard." },
++    { w: "mouse", pic: "🖱️", pos: "noun", kind: "machine", at: "computer", say: "It's a computer mouse.", ex: "Click the mouse twice." },
++    { w: "monitor", pic: "🖥️", pos: "noun", kind: "machine", at: "computer", say: "It's a monitor.", ex: "The monitor is bright." },
++    { w: "printer", pic: "🖨️", pos: "noun", kind: "machine", at: "computer", say: "It's a printer.", ex: "The printer is out of paper." },
++    { w: "piano", pic: "🎹", pos: "noun", kind: "thing", at: "music", say: "It's a piano.", ex: "She plays the piano well." },
++    { w: "guitar", pic: "🎸", pos: "noun", kind: "thing", at: "music", say: "It's a guitar.", ex: "My brother plays the guitar." },
++    { w: "violin", pic: "🎻", pos: "noun", kind: "thing", at: "music", say: "It's a violin.", ex: "The violin sounds sweet." },
++    { w: "recorder", pic: "🪈", pos: "noun", kind: "thing", at: "music", say: "It's a recorder.", ex: "We learn the recorder at school." },
++    { w: "tambourine", pic: "🪘", pos: "noun", kind: "thing", at: "music", say: "It's a tambourine.", ex: "Shake the tambourine!" },
++    { w: "crayon", pic: "🖍️", pos: "noun", kind: "tool", at: "art", say: "It's a crayon.", ex: "I draw with a red crayon." },
++    { w: "watercolour", pic: "🎨", pos: "noun", kind: "tool", at: "art", say: "They're watercolours.", ex: "We paint with watercolours." },
++    { w: "smock", pic: "👘", pos: "noun", kind: "thing", at: "art", say: "It's a smock.", ex: "Wear a smock when you paint." },
++    { w: "clay", pic: "🏺", pos: "noun", kind: "thing", at: "art", say: "It's clay.", ex: "We make a pot from clay." },
++    { w: "bean bag", pic: "🛋️", pos: "noun", kind: "furniture", at: "library", say: "It's a bean bag.", ex: "I read on the bean bag." },
++    { w: "reading lamp", pic: "💡", pos: "noun", kind: "thing", at: "library", say: "It's a reading lamp.", ex: "Turn on the reading lamp." },
++    { w: "fairy tale", pic: "🧚", pos: "noun", kind: "thing", at: "library", say: "It's a fairy tale book.", ex: "I love reading a fairy tale." },
++    { w: "chopsticks", pic: "🥢", pos: "noun", kind: "tool", at: "canteen", say: "They're chopsticks.", ex: "I eat noodles with chopsticks." },
++    { w: "bowl", pic: "🍜", pos: "noun", kind: "thing", at: "canteen", say: "It's a bowl.", ex: "The soup is in the bowl." },
++    { w: "lunch box", pic: "🍱", pos: "noun", kind: "thing", at: "canteen", say: "It's a lunch box.", ex: "My lunch box is full." },
++    { w: "milk carton", pic: "🥛", pos: "noun", kind: "drink", at: "canteen", say: "It's a milk carton.", ex: "I drink a milk carton at break." },
++    { w: "fork", pic: "🍴", pos: "noun", kind: "thing", at: "canteen", say: "It's a fork.", ex: "I eat with a fork." },
++    { w: "basketball", pic: "🏀", pos: "noun", kind: "thing", at: "gym", say: "It's a basketball.", ex: "Throw the basketball into the hoop." },
++    { w: "basketball hoop", pic: "🏀", pos: "noun", kind: "thing", at: "gym", say: "It's a basketball hoop.", ex: "The basketball hoop is very high." },
++    { w: "football goal", pic: "🥅", pos: "noun", kind: "thing", at: "gym", say: "It's a football goal.", ex: "He scored in the football goal." },
++    { w: "whistle", pic: "📣", pos: "noun", kind: "tool", at: "gym", say: "It's a whistle.", ex: "The coach blows the whistle." },
++    { w: "skipping rope", pic: "➰", pos: "noun", kind: "tool", at: "gym", say: "It's a skipping rope.", ex: "I jump with a skipping rope." },
++    { w: "gym mat", pic: "🟦", pos: "noun", kind: "thing", at: "gym", say: "It's a gym mat.", ex: "Do sit-ups on the gym mat." },
++    { w: "trophy", pic: "🏆", pos: "noun", kind: "thing", at: "office", say: "It's a trophy.", ex: "Our school won a trophy." },
++    { w: "certificate", pic: "📜", pos: "noun", kind: "thing", at: "office", say: "It's a certificate.", ex: "She got a certificate of excellence." },
++    { w: "medal", pic: "🥇", pos: "noun", kind: "thing", at: "office", say: "It's a medal.", ex: "He won a gold medal." },
++    { w: "bandage", pic: "🩹", pos: "noun", kind: "thing", at: "nurse", say: "It's a bandage.", ex: "Put a bandage on your finger." },
++    { w: "thermometer", pic: "🌡️", pos: "noun", kind: "tool", at: "nurse", say: "It's a thermometer.", ex: "The thermometer shows thirty-seven." },
++    { w: "first aid kit", pic: "🧰", pos: "noun", kind: "thing", at: "nurse", say: "It's a first aid kit.", ex: "The first aid kit is on the shelf." },
++    { w: "stretcher", pic: "🛏️", pos: "noun", kind: "thing", at: "nurse", say: "It's a stretcher.", ex: "The nurse has a stretcher." }
+   ],
+   /* ===== VOCAB.bakery – điền món vào trong mảng dưới đây ===== */
+   bakery: [

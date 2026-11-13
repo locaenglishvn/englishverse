@@ -580,7 +580,7 @@ const VOCAB = {
   /* ===== VOCAB.hospital – điền món vào trong mảng dưới đây ===== */
   hospital: [
     { w: "reception desk", pic: "💁", pos: "noun", kind: "furniture", at: "lobby", say: "It's a reception desk.", ex: "Please check in at the reception desk." },
-    { w: "ticket machine", pic: "🎟️", pos: "noun", kind: "machine", at: "lobby", say: "It's a ticket machine.", ex: "Take a ticket from the ticket machine." },
+    { w: "check-in kiosk", pic: "🖥️", pos: "noun", kind: "machine", at: "lobby", say: "It's a check-in kiosk.", ex: "Touch the screen on the check-in kiosk." },
     { w: "number display", pic: "🔢", pos: "noun", kind: "machine", at: "lobby", say: "It's a number display.", ex: "Look at the number display. It's your turn!" },
     { w: "waiting chair", pic: "🪑", pos: "noun", kind: "furniture", at: "lobby", say: "It's a waiting chair.", ex: "Please sit on a waiting chair." },
     { w: "hand sanitizer", pic: "🧴", pos: "noun", kind: "thing", at: "lobby", say: "It's hand sanitizer.", ex: "Use the hand sanitizer, please." },
