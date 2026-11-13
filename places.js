@@ -318,9 +318,9 @@ const VOCAB = {
     { w: "sprinkler",        pic: "🚿", pos: "noun", kind: "machine",   at: "alarm", say: "It's a sprinkler.",          ex: "The sprinkler is on the ceiling." },
     { w: "exit sign",        pic: "🚪", pos: "noun", kind: "thing",     at: "alarm", say: "It's an exit sign.",         ex: "Follow the exit sign to get out." },
     // khu nghỉ và bếp (rest)
-    { w: "dining table",     pic: "🍽️", pos: "noun", kind: "furniture", at: "rest", say: "It's a dining table.",        ex: "We eat lunch at the dining table." },
+    { w: "team photo",       pic: "🖼️", pos: "noun", kind: "thing",     at: "rest", say: "It's a team photo.",          ex: "Our team photo hangs on the wall." },
     { w: "bunk bed",         pic: "🛏️", pos: "noun", kind: "furniture", at: "rest", say: "It's a bunk bed.",            ex: "I sleep on the top bunk bed." },
-    { w: "microwave",        pic: "🍲", pos: "noun", kind: "machine",   at: "rest", say: "It's a microwave.",           ex: "Heat the soup in the microwave." },
+    { w: "water cooler",     pic: "🚰", pos: "noun", kind: "machine",   at: "rest", say: "It's a water cooler.",        ex: "Get cold water from the water cooler." },
     { w: "rice cooker",      pic: "🍚", pos: "noun", kind: "machine",   at: "rest", say: "It's a rice cooker.",         ex: "The rice cooker makes hot rice." },
     { w: "couch",            pic: "🛋️", pos: "noun", kind: "furniture", at: "rest", say: "It's a couch.",               ex: "We watch TV on the couch." },
     // góc tập huấn (training)
