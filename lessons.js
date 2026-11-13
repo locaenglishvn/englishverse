@@ -1246,6 +1246,156 @@ const LESSONS = [
         { t: "Ask my mom.", ok: false, fb: "Try “do an experiment” :)" } ] }
   ]
 },
+/* ----- Verse Plaza (mall) ----- */
+{
+  name: "Mai – Information Staff", color: 0x0b7285, place: "mall", x: -6, z: 14,
+  steps: [
+    { say: "Welcome to Verse Plaza! Where do you want to go?",
+      card: { w: "I’m going to…", pic: "🚶", ex: "I’m going to the toy shop." },
+      q: { w: "Where is the toy shop?", pic: "🧸", ex: "Where is the toy shop, please?" },
+      choices: [
+        { t: "I want to go to the toy shop.", ok: true,  fb: "Great! Clear and polite. +10" },
+        { t: "Go to toy shop I want.",        ok: false, fb: "Word order: “I want to go to the toy shop.”" },
+        { t: "Toy shop is my mother.",        ok: false, fb: "Haha! Mums are not shops :) Try “I want to go to the toy shop.”" } ] },
+    { say: "The food court is at the back, on the right.",
+      card: { w: "at the back", pic: "🔙", ex: "The food court is at the back." },
+      choices: [
+        { t: "Thank you! The food court is at the back.", ok: true,  fb: "Nice! You understood the map. +10" },
+        { t: "Back the food court is at.",                ok: false, fb: "Word order: “The food court is at the back.”" },
+        { t: "Yes, I like pizza and cats!",               ok: false, fb: "Yummy! Now try “Thank you! The food court is at the back.”" } ] },
+    { say: "Would you like a map? It’s free at the desk.",
+      card: { w: "I’d like a map, please.", pic: "🗺️", ex: "I’d like a map, please." },
+      choices: [
+        { t: "Yes, I’d like a map, please.", ok: true,  fb: "Perfect! Maps help you find shops. +10" },
+        { t: "Map, yes, I like to would.",   ok: false, fb: "Word order: “I’d like a map, please.”" },
+        { t: "Maps are for eating.",         ok: false, fb: "Haha! Maps are not food :) Try “I’d like a map, please.”" } ] }
+  ]
+},
+{
+  name: "Tam – Security Guard", color: 0x2f9e44, place: "mall", x: 6, z: 16,
+  steps: [
+    { say: "Hello! Are you lost? Don’t worry. Tell me what happened.",
+      card: { w: "I’m lost.", pic: "😟", ex: "I’m lost. I can’t find my mom." },
+      q: { w: "What happened?", pic: "❓", ex: "What happened? Are you OK?" },
+      choices: [
+        { t: "I’m lost. I can’t find my mom.", ok: true,  fb: "Good! Tell the guard clearly. +10" },
+        { t: "Find lost mom I can’t I.",       ok: false, fb: "Word order: “I’m lost. I can’t find my mom.”" },
+        { t: "Okay, I’ll go with him.",        ok: false, fb: "Careful! Never go with a stranger. Say “I’m lost.” instead." } ] },
+    { say: "Stay here with me. We will find your mom together.",
+      card: { w: "I will wait here.", pic: "⏳", ex: "I will wait here with you." },
+      choices: [
+        { t: "Thank you! I will wait here with you.", ok: true,  fb: "Brave and safe! +10" },
+        { t: "Here wait with you I will thank.",      ok: false, fb: "Word order: “I will wait here with you.”" },
+        { t: "Here I wait, I am the mom.",             ok: false, fb: "Haha! You are not the mom :) Try “Thank you! I will wait here with you.”" } ] },
+    { say: "Where did you last see your mom? Let’s meet at the information desk.",
+      card: { w: "We will meet at…", pic: "📍", ex: "We will meet at the information desk." },
+      q: { w: "Where did you see her?", pic: "👀", ex: "Where did you see her last?" },
+      choices: [
+        { t: "Okay! We will meet at the information desk.", ok: true,  fb: "Great plan! Staff can help. +10" },
+        { t: "Meet desk information at we will.",           ok: false, fb: "Word order: “We will meet at the information desk.”" },
+        { t: "I like the desk, it’s very soft!",            ok: false, fb: "Haha, a soft desk! Now try “We will meet at the information desk.”" } ] }
+  ]
+},
+{
+  name: "Tony – Toy Seller", color: 0xe8590c, place: "mall", x: -12, z: 1,
+  steps: [
+    { say: "Welcome to Toy Island! Are you looking for a birthday gift?",
+      card: { w: "a birthday gift", pic: "🎁", ex: "I’m looking for a birthday gift." },
+      q: { w: "How much is it?", pic: "💲", ex: "How much is this teddy bear?" },
+      choices: [
+        { t: "Yes, I’m looking for a birthday gift.", ok: true,  fb: "Nice! Birthday gifts make friends happy. +10" },
+        { t: "Yes, I am birthday gift.",              ok: false, fb: "Almost! Say “I’m looking for a birthday gift.”" },
+        { t: "Yes, I am a birthday cake!",            ok: false, fb: "Haha! Cakes are yummy, but try “I’m looking for a birthday gift.”" } ] },
+    { say: "This robot costs 150,000 dong. Which color do you like?",
+      card: { w: "I’d like the red one.", pic: "🔴", ex: "I’d like the red one, please." },
+      q: { w: "Which color?", pic: "🎨", ex: "Which color do you like?" },
+      choices: [
+        { t: "I’d like the red one, please.", ok: true,  fb: "Good! Red is bright and happy. +10" },
+        { t: "Red one like I’d please.",      ok: false, fb: "Word order: “I’d like the red one, please.”" },
+        { t: "The red is my teacher.",        ok: false, fb: "Haha! Teachers are not toys :) Try “I’d like the red one, please.”" } ] },
+    { say: "Great! Would you like a gift box? I can wrap it.",
+      card: { w: "Yes, please!", pic: "🎀", ex: "Yes, please! I will give it to my friend." },
+      choices: [
+        { t: "Yes, please! I will give it to my friend.", ok: true,  fb: "Lovely! A happy surprise. +10" },
+        { t: "Yes, please! I giving it friend.",          ok: false, fb: "Word order: “I will give it to my friend.”" },
+        { t: "Box is fish, I think.",                     ok: false, fb: "Haha! Boxes are not fish :) Try “Yes, please!”" } ] }
+  ]
+},
+{
+  name: "Nina – Electronics Seller", color: 0x7048e8, place: "mall", x: 12, z: 1, minLv: 5,
+  steps: [
+    { say: "Hi! This tablet is bigger. That smartphone is cheaper.",
+      card: { w: "is cheaper than", pic: "💰", ex: "The smartphone is cheaper than the tablet." },
+      q: { w: "Which one is cheaper?", pic: "❓", ex: "Which one is cheaper, the tablet or the phone?" },
+      choices: [
+        { t: "The smartphone is cheaper than the tablet.", ok: true,  fb: "Excellent! Comparing is smart. +10" },
+        { t: "Smartphone cheap is than tablet the.",       ok: false, fb: "Word order: “The smartphone is cheaper than the tablet.”" },
+        { t: "The smartphone is more cheap than tablet.",  ok: false, fb: "Almost! Say “cheaper”, not “more cheap”." } ] },
+    { say: "I like the tablet. It is bigger, so it is better for reading.",
+      card: { w: "better because…", pic: "👍", ex: "The tablet is better because it’s bigger." },
+      choices: [
+        { t: "The tablet is better because it’s bigger.", ok: true,  fb: "Great reason! +10" },
+        { t: "Because bigger tablet is better it.",       ok: false, fb: "Word order: “The tablet is better because it’s bigger.”" },
+        { t: "Tablet is better, because bigger is me.",   ok: false, fb: "Haha! Say “The tablet is better because it’s bigger.”" } ] },
+    { say: "Be careful! Do not play games too long. Your eyes need rest.",
+      card: { w: "I’ll stop after twenty minutes.", pic: "⏰", ex: "I’ll stop after twenty minutes." },
+      q: { w: "How long do you play?", pic: "🎮", ex: "How long do you play games?" },
+      choices: [
+        { t: "Okay, I’ll stop after twenty minutes.", ok: true,  fb: "Smart! Rest your eyes. +10" },
+        { t: "Twenty minutes after I’ll stop okay.",  ok: false, fb: "Word order: “I’ll stop after twenty minutes.”" },
+        { t: "No, I play all day and night!",         ok: false, fb: "Oh no! Your eyes need rest. Try “I’ll stop after twenty minutes.”" } ] }
+  ]
+},
+{
+  name: "Sam – Sports Seller", color: 0x862e9c, place: "mall", x: -11, z: -15,
+  steps: [
+    { say: "Welcome to Sport Star! What size shoes do you wear?",
+      card: { w: "I wear size…", pic: "👟", ex: "I wear size thirty-six shoes." },
+      q: { w: "What size do you wear?", pic: "📏", ex: "What size do you wear?" },
+      choices: [
+        { t: "I wear size thirty-six shoes.",    ok: true,  fb: "Great! Clear and correct. +10" },
+        { t: "Shoes wear I size is thirty-six.", ok: false, fb: "Word order: “I wear size thirty-six shoes.”" },
+        { t: "My shoes are very happy!",         ok: false, fb: "Haha! Happy shoes! Now try “I wear size thirty-six shoes.”" } ] },
+    { say: "Which sport do you like? Football, swimming or tennis?",
+      card: { w: "I like swimming.", pic: "🏊", ex: "I like swimming very much." },
+      choices: [
+        { t: "I like swimming very much.",   ok: true,  fb: "Splash! Great choice. +10" },
+        { t: "Swimming like I very much am.", ok: false, fb: "Word order: “I like swimming very much.”" },
+        { t: "I can fly like a bird!",        ok: false, fb: "Wow! Birds are great. Try “I like swimming very much.”" } ] },
+    { say: "Here are some shoes. Would you like to try them on?",
+      card: { w: "Can I try them on?", pic: "🥾", ex: "Can I try them on, please?" },
+      q: { w: "Do they fit?", pic: "🤏", ex: "Do they fit you well?" },
+      choices: [
+        { t: "Yes! Can I try them on, please?", ok: true,  fb: "Good! Always try shoes first. +10" },
+        { t: "Try on me them can I please.",    ok: false, fb: "Word order: “Can I try them on, please?”" },
+        { t: "Yes, I will eat them!",            ok: false, fb: "Haha! Shoes are not food :) Try “Can I try them on?”" } ] }
+  ]
+},
+{
+  name: "Lan – Food Court Cook", color: 0xd9480f, place: "mall", x: 10, z: -15,
+  steps: [
+    { say: "Hi! What would you like to eat today?",
+      card: { w: "a pizza, please", pic: "🍕", ex: "I’d like a pizza, please." },
+      choices: [
+        { t: "I’d like a pizza, please.", ok: true,  fb: "Yummy! Good order. +10" },
+        { t: "Pizza like I’d a please.",  ok: false, fb: "Word order: “I’d like a pizza, please.”" },
+        { t: "Pizza is my teacher.",      ok: false, fb: "Haha! Pizza cannot teach :) Try “I’d like a pizza, please.”" } ] },
+    { say: "Would you like to eat here, or take away?",
+      card: { w: "eat here", pic: "🍽️", ex: "I’ll eat here, please." },
+      q: { w: "Eat here or take away?", pic: "🥡", ex: "Would you like to eat here or take away?" },
+      choices: [
+        { t: "I’ll eat here, please.",     ok: true,  fb: "Great! Enjoy your meal. +10" },
+        { t: "Eat I’ll here please, yes.", ok: false, fb: "Word order: “I’ll eat here, please.”" },
+        { t: "Yes, I am a hungry dragon!", ok: false, fb: "Roar! Try “I’ll eat here, please.”" } ] },
+    { say: "Your number is 24. Your food will be ready soon.",
+      card: { w: "How long will it take?", pic: "⏱️", ex: "How long will it take, please?" },
+      q: { w: "What number is your order?", pic: "🔢", ex: "What number is your order?" },
+      choices: [
+        { t: "How long will it take, please?", ok: true,  fb: "Polite question! +10" },
+        { t: "Take long how will it, please.", ok: false, fb: "Word order: “How long will it take, please?”" },
+        { t: "I take long, I am a turtle!",    ok: false, fb: "Haha, turtles are slow! Try “How long will it take?”" } ] }
+  ]
+},
 /* ----- Town Hall (townhall) ----- */
 {
   name: "Ana – Receptionist", color: 0x9c36b5, place: "townhall", x: -6, z: 12,

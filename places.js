@@ -267,6 +267,41 @@ const AMBIENT = [
    kind = nhóm đồ: từ Lv.20 người chơi hỏi rõ hơn "What is this drink / food / tool / machine / plant / furniture / thing?"
    at = đồ bày ở khu nào trong nơi đó (đúng ngữ cảnh) – xem anchors trong index.html */
 const VOCAB = {
+  mall: [
+    // sảnh giữa (atrium)
+    { w: "escalator",     pic: "🪜", pos: "noun", kind: "machine", at: "atrium", say: "It's an escalator.",       ex: "We take the escalator to the second floor." },
+    { w: "fountain",      pic: "⛲", pos: "noun", kind: "thing",   at: "atrium", say: "It's a fountain.",         ex: "Children play near the fountain." },
+    { w: "trash bin",     pic: "🗑️", pos: "noun", kind: "thing",   at: "atrium", say: "It's a trash bin.",        ex: "Please put the paper in the trash bin." },
+    { w: "shopping cart", pic: "🛒", pos: "noun", kind: "thing",   at: "atrium", say: "It's a shopping cart.",    ex: "Mom pushes the shopping cart." },
+    { w: "elevator",      pic: "🛗", pos: "noun", kind: "machine", at: "atrium", say: "It's an elevator.",        ex: "The elevator goes up to floor three." },
+    // Toy Island (toys)
+    { w: "toy robot",     pic: "🤖", pos: "noun", kind: "thing",   at: "toys", say: "It's a toy robot.",          ex: "My brother has a toy robot." },
+    { w: "doll",          pic: "🪆", pos: "noun", kind: "thing",   at: "toys", say: "It's a doll.",               ex: "She hugs her doll every night." },
+    { w: "toy car",       pic: "🚗", pos: "noun", kind: "thing",   at: "toys", say: "It's a toy car.",            ex: "The toy car is red and fast." },
+    { w: "building blocks", pic: "🧱", pos: "noun", kind: "thing", at: "toys", say: "They're building blocks.",   ex: "I build a castle with building blocks." },
+    { w: "kite",          pic: "🪁", pos: "noun", kind: "thing",   at: "toys", say: "It's a kite.",               ex: "We fly a kite at the park." },
+    // Tech Zone (electronics)
+    { w: "tablet",        pic: "📱", pos: "noun", kind: "machine", at: "electronics", say: "It's a tablet.",      ex: "I read stories on my tablet." },
+    { w: "smartphone",    pic: "📲", pos: "noun", kind: "machine", at: "electronics", say: "It's a smartphone.",  ex: "My smartphone has a big screen." },
+    { w: "speaker",       pic: "🔊", pos: "noun", kind: "machine", at: "electronics", say: "It's a speaker.",     ex: "The speaker plays loud music." },
+    { w: "camera",        pic: "📷", pos: "noun", kind: "machine", at: "electronics", say: "It's a camera.",      ex: "I take photos with a camera." },
+    { w: "game console",  pic: "🎮", pos: "noun", kind: "machine", at: "electronics", say: "It's a game console.", ex: "Turn off the game console after one hour." },
+    // Sport Star (sports)
+    { w: "basketball",    pic: "🏀", pos: "noun", kind: "thing",   at: "sports", say: "It's a basketball.",      ex: "I bounce the basketball on the floor." },
+    { w: "running shoes", pic: "👟", pos: "noun", kind: "thing",   at: "sports", say: "They're running shoes.",  ex: "These running shoes are light." },
+    { w: "tennis racket", pic: "🎾", pos: "noun", kind: "tool",    at: "sports", say: "It's a tennis racket.",   ex: "She hits the ball with a tennis racket." },
+    { w: "jump rope",     pic: "🪢", pos: "noun", kind: "tool",    at: "sports", say: "It's a jump rope.",       ex: "I skip with a jump rope every day." },
+    { w: "skateboard",    pic: "🛹", pos: "noun", kind: "thing",   at: "sports", say: "It's a skateboard.",      ex: "He rides his skateboard to school." },
+    // Food Court (foodcourt)
+    { w: "pizza",         pic: "🍕", pos: "noun", kind: "food", at: "foodcourt", say: "It's a pizza.",            ex: "Let’s share a big pizza." },
+    { w: "hamburger",     pic: "🍔", pos: "noun", kind: "food", at: "foodcourt", say: "It's a hamburger.",        ex: "The hamburger is hot and tasty." },
+    { w: "sushi",         pic: "🍣", pos: "noun", kind: "food", at: "foodcourt", say: "It's sushi.",              ex: "I like sushi with soy sauce." },
+    { w: "fried chicken", pic: "🍗", pos: "noun", kind: "food", at: "foodcourt", say: "It's fried chicken.",      ex: "Fried chicken is my favorite." },
+    { w: "ice cream",     pic: "🍦", pos: "noun", kind: "food", at: "foodcourt", say: "It's ice cream.",          ex: "I’d like ice cream, please." },
+    { w: "french fries",  pic: "🍟", pos: "noun", kind: "food", at: "foodcourt", say: "They're french fries.",    ex: "French fries are crispy and hot." },
+    // trần (ceiling)
+    { w: "chandelier",    pic: "💡", pos: "noun", kind: "thing", at: "ceiling", say: "It's a chandelier.",      ex: "The chandelier is very bright." },
+  ],
   cafe: [
     // quầy pha chế
     { w: "espresso machine", pic: "☕", pos: "noun", kind: "machine", at: "bar", say: "It's an espresso machine.", ex: "The espresso machine makes coffee." },
