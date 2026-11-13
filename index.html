@@ -230,6 +230,7 @@ button{font:inherit;cursor:pointer}
 <script src="parts/combat/weapons3d.js"></script>
 <script src="deck.js"></script>
 <script src="parts/combat/engine.js"></script>
+<script src="parts/social/safechat.js"></script>
 <script src="parts/exteriors/furniturebig.js"></script>
 <script src="parts/exteriors/electronics.js"></script>
 <script src="parts/interiors/cafe.js"></script>
@@ -873,6 +874,7 @@ function goOnline() {
     if (maze && m.v) maze.voice[m.id] = Math.max((maze.voice[m.id] || 0) + 1, m.k || 0);   // câu tự nói; m.k = tổng của người nói (bù tin bị rơi)
     const o = others[m.id]; if (!o) return;
     const t = cleanChat(m.t); if (!t) return;
+    if (typeof safeChat === "function" && !safeChat(t)) return;   // trẻ em (mặc định): không hiện câu tự do của người khác
     showBubble(o.g, t);
     if (maze && m.id === maze.mate) { $("guide").textContent = (maze.role === "walker" ? "🗺️ " : "🚶 ") + String(o.n || "") + ": " + t; $("guide").style.display = "block"; speak(t); return; }
     if (!talking && o.g.position.distanceTo(player.position) < 12) speak(t);   // người ở gần thì nghe được giọng đọc
@@ -1167,7 +1169,8 @@ $("talkBtn").addEventListener("contextmenu", e => e.preventDefault());   // gi�
 
 /* ===== 4f. CHÀO HỎI NHANH: chỉ câu tiếng Anh có sẵn, hoặc câu nói tiếng Anh máy nghe được (không có ô gõ tự do) ===== */
 const QUICK = ["Hi!", "Hello! I’m {name}.", "How are you?", "I’m fine, thanks!", "Nice to meet you!", "Follow me!",
-  "Wait for me!", "Where is Mia?", "Let’s go to the park!", "Good job!", "Thank you!", "Bye!"];
+  "Wait for me!", "Where is Mia?", "Let’s go to the park!", "Good job!", "Thank you!", "Bye!",
+  "Let’s team up!", "Do you want to join my team?", "Sure!", "Can you help me?", "Watch out!", "Ready… go!", "Good luck!", "This is for you!"];
 const BAD = /\b(fuck\w*|shit\w*|bitch\w*|damn|stupid|idiot|sex\w*|kill)\b/gi;   // lọc từ xấu cơ bản cho trẻ em
 function cleanChat(t) { return String(t || "").replace(/[^A-Za-z0-9 ,.!?’'-]/g, "").slice(0, 60).replace(BAD, "***").trim(); }
 function showBubble(g, text) {   // bong bóng lời nói trên đầu nhân vật, tự tắt sau 4 giây
@@ -1199,9 +1202,10 @@ $("sayBtn").onclick = () => {
   $("chatList").innerHTML = ""; $("chatHeard").textContent = "";
   (maze ? (maze.role === "guide" ? MAZE_GUIDE : MAZE_WALK) : QUICK).forEach(q => {
     const b = document.createElement("button"); b.textContent = q.replace("{name}", myName || "new");
-    b.onclick = () => sendChat(b.textContent);
+    b.onclick = () => { sendChat(b.textContent); if (typeof addHeart === "function") addHeart(1); };
     $("chatList").appendChild(b);
   });
+  if (typeof parentGate === "function") { const pb = document.createElement("button"); pb.textContent = "👪"; pb.title = "Phụ huynh"; pb.onclick = parentGate; $("chatList").appendChild(pb); }
   $("chatMic").style.display = SR ? "inline-block" : "none";
   $("chatp").style.display = "block";
 };
@@ -1211,8 +1215,10 @@ holdMic($("chatMic"), t => $("chatHeard").textContent = "🎙️ " + t, (alts, c
   if (!alts.length) { $("chatHeard").textContent = "Không nghe thấy – giữ nút và nói to hơn nhé!"; return; }
   const t = alts[0].trim();
   if (conf < 0.5) { $("chatHeard").textContent = "Heard: “" + t + "” – chưa rõ, thử nói lại nhé!"; return; }
-  score += 2; $("score").textContent = score; spokeOk();
-  sendChat(t.charAt(0).toUpperCase() + t.slice(1), true);
+  const ok = typeof safeChat === "function" ? safeChat(t) : t;   // chat an toàn: chỉ câu có sẵn / khung câu (parts/social/safechat.js)
+  if (!ok) { $("chatHeard").innerHTML = "🔒 “" + cleanChat(t) + "” – chỉ nói được câu có sẵn hoặc khung câu an toàn, vd: “Where is the bakery?”, “Let’s team up!”, “I need some water.”"; return; }
+  score += 2; $("score").textContent = score; spokeOk(); if (typeof addHeart === "function") addHeart(2);
+  sendChat(ok.charAt(0).toUpperCase() + ok.slice(1), true);
 });
 
 addEventListener("pagehide", () => { if (online) chan.send({ type: "broadcast", event: "bye", payload: { id: myId } }); });
