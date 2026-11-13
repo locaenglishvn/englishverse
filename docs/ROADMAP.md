@@ -271,6 +271,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 26. **Nội thất City Museum** 4 khu (khủng long, điêu khắc & cổ vật, tranh nổi tiếng, khoa học & vũ trụ), 17 NPC, 68 từ vựng
 27. **Tối ưu hiệu năng**: gộp khối tĩnh, bóng đổ thông minh, ẩn NPC phòng khác → lần vẽ mỗi khung giảm từ ~1.270 xuống ~210
 28. **Vận hành đội AI**: tách nội thất ra `parts/`, cổng QA `tools/qa/run.js`, `docs/TEAM.md`; sửa kẹt cửa Trường học / Đồn công an
+29. **Đợt 1 (đội AI)**: nội thất Town Hall, City Hospital, Verse School; 15 NPC mới + 92 từ vựng (Haiku viết, CTO soát); QA thêm `--data`
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |
@@ -280,12 +281,15 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 | Verse Library | ✅ phòng đọc bầu dục | 5 | 32 |
 | Verse Bank | ✅ sảnh giao dịch, giếng trời kính | 5 | 34 |
 | City Museum | ✅ 60 × 72 m: sảnh + 4 khu | 17 | 68 |
+| Town Hall | ✅ 32 × 40 m: sảnh thảm đỏ, quầy dịch vụ, bảng nhiệm vụ, phòng họp, văn phòng | 5 + Thị trưởng | 30 |
+| City Hospital | ✅ 30 × 44 m: tiếp nhận, khu chờ, quầy thuốc, phòng khám, phòng bệnh, xét nghiệm | 6 + y tá Mai | 32 |
+| Verse School | ✅ 30 × 36 m: bảng, 16 bàn đôi, góc khoa học, mỹ thuật & âm nhạc, tủ đồ, căng tin | 5 | 30 |
 | Các nơi còn lại | ⏳ phòng mẫu 16 × 12 (bày đồ theo `layout` cũ) | 1 (hoặc người bán) | chưa có |
 
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
-1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Town Hall, City Hospital, Verse School, các cửa hàng Market Street, Verse Plaza.
+1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: các cửa hàng Market Street, Verse Plaza, Police Station, Fire Station.
 2. **Ngoại thất** các nơi còn dùng mẫu nhà phố (Science Lab, Fix-It Workshop, Pho Corner, Star Cinema…) và các ô 🚧 khi người dùng gửi ảnh.
 3. **Trò chơi đồng đội ở Verse Arena** (Quiz Tower, Word Race, Treasure Hunt, Team Battle) – đều bắt buộc giao tiếp tiếng Anh.
 4. **Vùng hoang dã có quái** quanh thành phố (rừng, đồi, đầm lầy, hang, phế tích), càng xa càng mạnh; thêm quái Riddle Bug, Scramble Worm; vũ khí nhạc cụ.
