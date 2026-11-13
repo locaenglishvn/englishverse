@@ -1288,6 +1288,7 @@ function drawSlots(el, store, size, onPick, sel) {
 function useItem(id) {
   const it = ITEMS[id]; if (!it || !save.items[id]) return;
   if (it.slot) { wear(id); return; }
+  if (it.weapon && typeof equipWeapon === "function") { equipWeapon(id); return; }   // vũ khí (parts/combat/engine.js)
   if (it.energy && save.energy >= 100 && !it.cure) { flash("You are full! / Bạn đang no rồi."); return; }
   takeItem(save.items, id);
   if (it.energy) save.energy = Math.min(100, save.energy + it.energy);
@@ -1492,7 +1493,7 @@ function playerLevel() { return save.level || 1; }
 let lvBlockedShown = false;
 function checkLevel() {
   if (!save.level) save.level = 1;
-  const target = 1 + Math.floor(score / 60);
+  const target = typeof levelForXp === "function" ? levelForXp(score) : 1 + Math.floor(score / 60);   // đường cong mới tới Lv.100 (parts/combat/engine.js)
   while (save.level < target) {
     if (save.level >= 5 && masteryRatio() < 0.7) {   // chưa thuộc bài → chưa cho lên cấp
       if (!lvBlockedShown) { lvBlockedShown = true; flash("🔒 Practice your cards to reach Lv." + (save.level + 1) + "!<div style='font-size:13px;font-weight:400'>Cần ≥ 70% thẻ đạt ⭐⭐ (hiện " + Math.round(masteryRatio() * 100) + "%). Đánh Echo Ghost để luyện!</div>"); }
@@ -3027,6 +3028,7 @@ holdMic($("vocabMic"), t => $("vocabFb").textContent = "🎙️ " + t, (alts, co
    Bản đồ nhỏ xoay theo camera: phía trên bản đồ = phía trước mặt mình. Bản đồ lớn: phía bắc ở trên, có tên địa điểm. */
 function mapRect(P) { const sw = P.door === "east" || P.door === "west"; return { x: P.x, z: P.z, w: sw ? P.d : P.w, d: sw ? P.w : P.d }; }
 function drawCity(x) {   // vẽ thành phố trong hệ tọa độ thế giới (x, z)
+  if (typeof WILDS !== "undefined" && WILDS.drawMap) WILDS.drawMap(x);   // vùng hoang dã quanh thành phố
   x.fillStyle = "#8fd17a"; x.fillRect(-365, -155, 520, 310);
   x.fillStyle = "#4dabf7"; x.fillRect(RIVER.x0, RIVER.z0, RIVER.x1 - RIVER.x0, RIVER.z1 - RIVER.z0);   // sông
   x.fillStyle = "#e9dcc0"; x.fillRect(ISLAND.x0, ISLAND.z0, ISLAND.x1 - ISLAND.x0, ISLAND.z1 - ISLAND.z0);   // đảo
