@@ -101,7 +101,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
   [-6, 6].forEach(x => [[-36, -21], [-15, 15], [21, 36]].forEach(([a, b]) => sol(cx + x, cz + (a + b) / 2, 0.25, (b - a) / 2)));
   [-1, 1].forEach(s => [[6, 15.5], [20.5, 30]].forEach(([a, b]) => sol(cx + s * (a + b) / 2, cz, (b - a) / 2, 0.25)));
   // bảng tên trên cửa (phía sảnh)
-  [["DINOSAUR HALL · KHỦNG LONG", -5.7, 18, Math.PI / 2], ["SCULPTURE & ANTIQUES · CỔ VẬT", -5.7, -18, Math.PI / 2], ["PAINTINGS · TRANH NỔI TIẾNG", 5.7, -18, -Math.PI / 2], ["SCIENCE & SPACE · KHOA HỌC", 5.7, 18, -Math.PI / 2]]
+  [["DINOSAUR HALL · KHUNG LONG", -5.7, 18, Math.PI / 2], ["SCULPTURE & ANTIQUES · CO VAT", -5.7, -18, Math.PI / 2], ["PAINTINGS · TRANH NOI TIENG", 5.7, -18, -Math.PI / 2], ["SCIENCE & SPACE · KHOA HOC", 5.7, 18, -Math.PI / 2]]
     .forEach(([t, x, z, ry]) => sign(t, 5.6, cx + x, 7.6, cz + z, ry, "#2b2b2b", "#ffd43b"));
   /* ---------- SÀN ---------- */
   const marble = skin(2, 2, 40, x => { x.fillStyle = "#e8e1d3"; x.fillRect(0, 0, 2, 2); x.fillStyle = "#ddd3c0"; x.fillRect(0, 0, 1, 1); x.fillRect(1, 1, 1, 1); x.fillStyle = "#c9bea8"; x.fillRect(0, 0, 2, 0.02); x.fillRect(0, 0, 0.02, 2); });
@@ -136,7 +136,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(16.6, 36), flatM(tx(sk, 1, 9), true)); m.rotation.x = Math.PI / 2; m.position.set(cx + 18, 11.5, cz - 18); g.add(m); }
   /* ===================== SẢNH CHÍNH ===================== */
   { const q = grp(cx - 4, cz + 28, Math.PI / 2); lb(q, 3, 1.05, 0.8, 0x6b4a2b, 0, 0.53, 0); lb(q, 3.1, 0.06, 0.95, 0xe9e1d0, 0, 1.08, 0); sol(cx - 4, cz + 28, 0.4, 1.5); }
-  sign("TICKETS · VÉ VÀO CỬA", 2.6, cx - 5.9, 2.6, cz + 28, Math.PI / 2, "#7a2e24", "#ffe9a8");
+  sign("TICKETS · VE VAO CUA", 2.6, cx - 5.9, 2.6, cz + 28, Math.PI / 2, "#7a2e24", "#ffe9a8");
   const mapT = skin(3, 2.2, 60, x => { x.fillStyle = "#f8f1df"; x.fillRect(0, 0, 3, 2.2); signText(x, "MUSEUM MAP", 1.5, 0.2, 2.6, 0.2, "#3b2f2a");
     [["#e8c547", "DINOSAURS", 0.15, 1.3], ["#a5d8ff", "SCIENCE", 1.95, 1.3], ["#dccdae", "SCULPTURE", 0.15, 0.4], ["#c0504a", "PAINTINGS", 1.95, 0.4]].forEach(([c, t, a, b]) => { x.fillStyle = c; x.fillRect(a, b, 0.9, 0.8); signText(x, t, a + 0.45, b + 0.4, 0.85, 0.12, "#222"); });
     x.fillStyle = "#e9ecef"; x.fillRect(1.15, 0.4, 0.7, 1.7); signText(x, "LOBBY", 1.5, 1.2, 0.6, 0.12, "#222"); x.fillStyle = "#e03131"; x.beginPath(); x.arc(1.5, 1.9, 0.07, 0, 7); x.fill(); signText(x, "You are here", 1.5, 2.05, 0.8, 0.08, "#e03131"); });
@@ -148,7 +148,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
   [["DINOSAURS", 0], ["SCIENCE", Math.PI], ["SCULPTURE", Math.PI / 2], ["PAINTINGS", -Math.PI / 2]].forEach(([t, ry]) => { const p = sign(t, 1.4, cx, 3.2 - (ry ? 0.25 * (Math.abs(ry) > 2 ? 1 : 2) : 0), cz, ry, "#ffd43b", "#2b2b2b"); p.position.x += Math.sin(ry) * 0.47; p.position.z += Math.cos(ry) * 0.47; });
   // cửa hàng lưu niệm cuối sảnh
   [-1, 1].forEach(s => { lb(g, 0.7, 2.2, 6, 0x8d5a2b, cx + s * 5.4, 1.1, cz - 31); for (let k = 0; k < 3; k++) lb(g, 0.75, 0.05, 6, 0xf1e3c6, cx + s * 5.4, 0.5 + k * 0.7, cz - 31); sol(cx + s * 5.4, cz - 31, 0.35, 3); });
-  lb(g, 3, 1, 0.8, 0x7a2e24, cx, 0.5, cz - 34.5); sol(cx, cz - 34.5, 1.5, 0.4); sign("GIFT SHOP · QUÀ LƯU NIỆM", 4, cx, 3.6, cz - 35.9, 0, "#7a2e24", "#ffe9a8");
+  lb(g, 3, 1, 0.8, 0x7a2e24, cx, 0.5, cz - 34.5); sol(cx, cz - 34.5, 1.5, 0.4); sign("GIFT SHOP · QUA LUU NIEM", 4, cx, 3.6, cz - 35.9, 0, "#7a2e24", "#ffe9a8");
   ["🦖", "🧸", "🖼️", "🚀", "📚", "🏺"].forEach((e, i) => { const sp = emojiSprite(e, 0.45); sp.position.set(cx + (i < 3 ? -5.3 : 5.3), 0.85 + (i % 3) * 0.7, cz - 33.5); g.add(sp); });
   /* ===================== 🦖 DINOSAUR HALL (x −30…−6, z 0…36) ===================== */
   { const X = cx - 18, Z = cz + 18;
@@ -157,7 +157,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
     lb(g, 8, 2.4, 1.6, 0xcdbb98, X, 1.2, Z + 17.2);
     [-1, 1].forEach(s => { lb(g, 0.35, 3, 6, 0xb9a37c, X + s * 4.15, 1.5, Z + 15); for (let k = 0; k < 6; k++) { const h = 2.4 + 0.3 * (k + 1); lb(g, 0.8, h, 1.6, 0xcdbb98, X + s * (4.7 + k * 0.8), h / 2, Z + 17.2); } });
     sol(X, Z + 15, 4.3, 3); [-1, 1].forEach(s => sol(X + s * 6.7, Z + 17.2, 2.5, 0.8));
-    sign("DINOSAUR HALL · BẢO TÀNG KHỦNG LONG", 7, X, 6.5, Z + 17.95, Math.PI, "#3b2f2a", "#ffe9a8");
+    sign("DINOSAUR HALL · BAO TANG KHUNG LONG", 7, X, 6.5, Z + 17.95, Math.PI, "#3b2f2a", "#ffe9a8");
     // T. REX (quay mặt về cửa sảnh, hướng +x)
     plinth(X, Z - 9, 11, 0.6, 3.6, 0x6e6458); { const t = grp(X, Z - 9, 0, 0.6);
       const sp = new THREE.CatmullRomCurve3([[-5.2, 1.4], [-3.5, 2.4], [-1.5, 3.3], [0.5, 3.4], [1.8, 3.6], [2.6, 4.2], [3.2, 4.5]].map(([a, b]) => new THREE.Vector3(a, b, 0)));
@@ -213,7 +213,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
     lb(g, 24, 1.4, 7, 0xd4c5a5, X, 0.7, Z - 14.5); for (let k = 0; k < 4; k++) lb(g, 8, 0.35 * (k + 1), 0.4, 0xe6dcc6, X, 0.175 * (k + 1), Z - 9.4 - k * 0.4); sol(X, Z - 14.5, 12, 3.5); sol(X, Z - 10, 4, 0.8);
     [-1, 1].forEach(s => { lb(g, 7.6, 0.8, 0.3, 0xcdbc98, X + s * 7.9, 1.8, Z - 11.15); for (let xx = 4.3; xx < 11.8; xx += 0.5) lc(g, 0.08, 0.1, 0.6, 0xdccdae, X + s * xx, 1.7, Z - 11.15, 6); });
     [-6, 6].forEach(dx => { plinth(X + dx, Z - 14, 2.6, 1.4 + 0.9, 1.6, 0xdccdae); horse(X + dx, Z - 14, dx < 0 ? 0 : Math.PI, 2.3); });
-    sign("SCULPTURE & ANTIQUES · ĐIÊU KHẮC – CỔ VẬT", 7.5, X, 7.6, Z - 17.95, 0, "#3b2f2a", "#ffe9a8");
+    sign("SCULPTURE & ANTIQUES · DIEU KHAC – CO VAT", 7.5, X, 7.6, Z - 17.95, 0, "#3b2f2a", "#ffe9a8");
     // tượng trên bệ
     [[-8, -5, "raise"], [-8, 4, "think"], [8, -7, "down"], [-3, -1, "throw"]].forEach(([dx, dz, p]) => { const h = plinth(X + dx, Z + dz, 1.1, 1, 1.1); figure(X + dx, Z + dz, p, MARBLE, 0, h); });
     { const t = grp(X + 8, Z + 8, -Math.PI / 2, 1); plinth(X + 8, Z + 8, 2.2, 1, 1.2); bone(t, [-0.6, 0.6, 0], [0.5, 0.6, 0], 0.3, MARBLE); ball(t, 0.42, MARBLE, 0.65, 0.95, 0); ball(t, 0.26, MARBLE, 0.85, 0.95, 0);
@@ -224,7 +224,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
     [-8, -3, 2, 7, 12].forEach(z => showcase(X - 11.3, Z + z, 2.2, 1.1, Math.PI / 2));
     plinth(X + 6, Z + 12, 2, 0.6, 2); { const dr = skin(2, 2, 64, x => { x.fillStyle = "#8c6a3a"; x.fillRect(0, 0, 2, 2); x.strokeStyle = "#5c4422"; x.lineWidth = 0.03; [0.95, 0.8, 0.62, 0.45].forEach(r => { x.beginPath(); x.arc(1, 1, r, 0, 7); x.stroke(); }); x.fillStyle = "#d9b76a"; x.beginPath(); for (let i = 0; i < 28; i++) { const r = i % 2 ? 0.08 : 0.3, a = i * Math.PI / 14; x.lineTo(1 + Math.cos(a) * r, 1 + Math.sin(a) * r); } x.fill(); for (let i = 0; i < 6; i++) { const a = i * 1.047; x.beginPath(); x.ellipse(1 + Math.cos(a) * 0.71, 1 + Math.sin(a) * 0.71, 0.08, 0.03, a + 1.57, 0, 7); x.fill(); } });
       const d = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.8, 0.8, 24), [mat(0x8c6a3a), new THREE.MeshLambertMaterial({ map: dr }), mat(0x6b4f2a)]); d.position.set(X + 6, 1, Z + 12); g.add(d); }
-    sign("DONG SON BRONZE DRUM · TRỐNG ĐỒNG ĐÔNG SƠN", 3.6, X + 6, 0.35, Z + 13.02, 0, "#3b2f2a", "#ffe9a8");
+    sign("DONG SON BRONZE DRUM · TRONG DONG DONG SON", 3.6, X + 6, 0.35, Z + 13.02, 0, "#3b2f2a", "#ffe9a8");
     plinth(X - 10.8, Z + 15.8, 1, 0.4, 1, 0x495057); figure(X - 10.8, Z + 15.8, "knight", 0x9aa3ab, Math.PI / 2, 0.4);
     plinth(X + 8, Z - 1, 0.9, 1, 0.9); { const pts = [[0, 0], [0.18, 0.02], [0.28, 0.25], [0.3, 0.55], [0.18, 0.8], [0.1, 0.95], [0.16, 1.05]].map(([a, b]) => new THREE.Vector2(a, b)); const v = new THREE.Mesh(new THREE.LatheGeometry(pts, 16), mat(0xb5651d, { side: THREE.DoubleSide })); v.position.set(X + 8, 1, Z - 1); g.add(v); }
     Object.assign(P.anchors, {
@@ -243,7 +243,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
     hang("river", X - 7, Z + 17.85, Math.PI, 1, "Mountain River · Verse City Artist"); hang("fruit", X + 7, Z + 17.85, Math.PI, 0.9, "Fruit Bowl · Verse City Artist");
     hang("mona", X, Z - 17.85, 0, 0.75, "Mona Lisa · Leonardo da Vinci, c.1503"); lb(g, 3, 2.6, 0.5, glassM, X, 3.6, Z - 17.4);
     for (let x = -3; x <= 3.01; x += 1.5) { lc(g, 0.05, 0.05, 1, GOLD, X + x, 0.5, Z - 15.5, 8); sol(X + x, Z - 15.5, 0.1, 0.1); } lb(g, 6, 0.06, 0.06, 0x8b1e1e, X, 0.85, Z - 15.5);
-    sign("PAINTING GALLERY · TRANH NỔI TIẾNG", 6.5, X, 10, Z + 17.95, Math.PI, "#3b2f2a", "#ffe9a8");
+    sign("PAINTING GALLERY · TRANH NOI TIENG", 6.5, X, 10, Z + 17.95, Math.PI, "#3b2f2a", "#ffe9a8");
     [-6, 2, 10].forEach(z => { lb(g, 0.8, 0.45, 3, 0x8b1e1e, X, 0.35, Z + z); lb(g, 0.9, 0.12, 3.1, 0x4a2a1c, X, 0.08, Z + z); sol(X, Z + z, 0.45, 1.5); });
     // góc vẽ tranh: giá vẽ, bàn màu, tranh dựng tường
     { const q = grp(X - 6, Z + 9, Math.PI / 2 + 0.3); bone(q, [-0.4, 0, 0.2], [0, 2.1, 0], 0.03, 0x8d5a2b); bone(q, [0.4, 0, 0.2], [0, 2.1, 0], 0.03, 0x8d5a2b); bone(q, [0, 0, -0.5], [0, 2, 0], 0.03, 0x8d5a2b);
@@ -256,7 +256,7 @@ function furnishMuseum(P, g, cx, cz, W, D, fur) {
     }); }
   /* ===================== 🚀 SCIENCE & SPACE (x 6…30, z 0…36) ===================== */
   { const X = cx + 18, Z = cz + 18;
-    sign("SCIENCE & SPACE · KHOA HỌC – VŨ TRỤ", 7, X, 7.3, Z + 17.95, Math.PI, "#0b1d4a", "#a5d8ff");
+    sign("SCIENCE & SPACE · KHOA HOC – VU TRU", 7, X, 7.3, Z + 17.95, Math.PI, "#0b1d4a", "#a5d8ff");
     // quả địa cầu khổng lồ + vòng sàn
     const earth = skin(4, 2, 80, x => { x.fillStyle = "#2f7fd1"; x.fillRect(0, 0, 4, 2); x.fillStyle = "#5bb04a"; [[0.9, 0.55, 0.45, 0.3], [1.15, 0.85, 0.15, 0.12], [1.25, 1.3, 0.2, 0.35], [2.05, 0.5, 0.17, 0.12], [2.15, 1.05, 0.28, 0.38], [2.85, 0.55, 0.6, 0.28], [2.65, 0.85, 0.1, 0.13], [3.05, 0.9, 0.06, 0.15], [3.45, 1.35, 0.25, 0.15]].forEach(([a, b, c, d]) => { x.beginPath(); x.ellipse(a, b, c, d, 0, 0, 7); x.fill(); });
       x.fillStyle = "#f1f3f5"; x.fillRect(0, 1.85, 4, 0.15); x.fillRect(0, 0, 4, 0.08); x.fillStyle = "#e03131"; x.beginPath(); x.arc(3.05, 0.85, 0.04, 0, 7); x.fill(); });

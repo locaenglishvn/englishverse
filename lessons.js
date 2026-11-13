@@ -426,7 +426,7 @@ const LESSONS = [
 /* ===== CAFE SUA DA: thêm nhân viên và khách trong quán (quán rộng 20 × 48 m, z âm = quầy pha chế phía sau)
    minLv = cấp tối thiểu để NPC này chịu nói chuyện (nội dung khó hơn) ===== */
 ,{
-  name: "Bao – Waiter", color: 0x2b8a3e, place: "cafe", x: 0, z: 1,
+  name: "Liam – Waiter", color: 0x2b8a3e, place: "cafe", x: 0, z: 1,
   steps: [
     { say: "Good afternoon! Table for how many?",
       q: { w: "Table for how many?", pic: "🍽️", ex: "Good afternoon! Table for how many?" },
@@ -450,7 +450,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Vy – Cashier", color: 0xe64980, place: "cafe", x: 5, z: -16.7,
+  name: "Chloe – Cashier", color: 0xe64980, place: "cafe", x: 5, z: -16.7,
   steps: [
     { say: "That’s 45,000 dong. Cash or card?",
       q: { w: "Cash or card?", pic: "💵", ex: "Would you like to pay by cash or card?" },
@@ -549,7 +549,7 @@ const LESSONS = [
 }
 /* ===== POST OFFICE (sảnh lớn 24 × 48 m, quầy giao dịch 2 bên, quầy lưu niệm giữa sảnh) ===== */
 ,{
-  name: "Ms. Thu – Counter Clerk", color: 0x2b8a3e, place: "post", x: 10.9, z: -10,
+  name: "Ms. Laura – Counter Clerk", color: 0x2b8a3e, place: "post", x: 10.9, z: -10,
   steps: [
     { say: "Good morning! What’s inside the parcel?",
       q: { w: "What’s inside…?", pic: "📦", ex: "What’s inside the parcel?" },
@@ -599,7 +599,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Lan – Souvenir Seller", color: 0xc92a2a, place: "post", x: 2.8, z: -2,
+  name: "Mrs. Molly – Souvenir Seller", color: 0xc92a2a, place: "post", x: 2.8, z: -2,
   steps: [
     { say: "Hello dear! Postcards, magnets, keychains! What are you looking for?",
       q: { w: "What are you looking for?", pic: "🔍", ex: "What are you looking for?" },
@@ -649,7 +649,7 @@ const LESSONS = [
 }
 /* ===== VERSE LIBRARY (phòng đọc bầu dục 28 × 40 m, quầy thủ thư ở tâm, bàn đọc tỏa nan quạt) ===== */
 ,{
-  name: "Tom – Student", color: 0x1c7ed6, place: "library", x: 8.7, z: 2.3,
+  name: "Oliver – Student", color: 0x1c7ed6, place: "library", x: 8.7, z: 2.3,
   steps: [
     { say: "Hi! Are you looking for a seat?",
       q: { w: "Is this seat free?", pic: "🪑", ex: "Excuse me, is this seat free?" },
@@ -674,7 +674,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Hoa – Book Shelver", color: 0x9c36b5, place: "library", x: 9.2, z: -9.2,
+  name: "Mrs. Helen – Book Shelver", color: 0x9c36b5, place: "library", x: 9.2, z: -9.2,
   steps: [
     { say: "Hello! I’m putting books back on the shelves. Can I help you?",
       q: { w: "Can I help you?", pic: "🙋", ex: "Hello! Can I help you?" },
@@ -698,7 +698,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Lily – Little Reader", color: 0xf06595, place: "library", x: -8.7, z: 2.3,
+  name: "Mila – Little Reader", color: 0xf06595, place: "library", x: -8.7, z: 2.3,
   steps: [
     { say: "Hi! Do you like reading?",
       q: { w: "Do you like…?", pic: "❤️", ex: "Do you like reading?" },
@@ -749,7 +749,7 @@ const LESSONS = [
 }
 /* ===== VERSE BANK (sảnh lớn 28 × 44 m: cột đá granite, giếng trời kính cam, quầy giao dịch chữ U, phòng két) ===== */
 ,{
-  name: "Mr. Hai – Security Guard", color: 0x343a40, place: "bank", x: 3.5, z: 15,
+  name: "Mr. Frank – Security Guard", color: 0x343a40, place: "bank", x: 3.5, z: 15,
   steps: [
     { say: "Good morning! Welcome to Verse Bank. What do you need today?",
       q: { w: "What do you need?", pic: "🙋", ex: "What do you need today?" },
@@ -773,7 +773,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Mai – Currency Exchange", color: 0x1b5e3b, place: "bank", x: 7.2, z: -5,
+  name: "Ms. Julia – Currency Exchange", color: 0x1b5e3b, place: "bank", x: 7.2, z: -5,
   steps: [
     { say: "Hello! This is the currency exchange counter. How can I help?",
       card: { w: "change money", pic: "💱", ex: "I’d like to change some money." },
@@ -871,7 +871,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ben – Kid Explorer", color: 0x1c7ed6, place: "museum", x: -24, z: 19,
+  name: "Max – Kid Explorer", color: 0x1c7ed6, place: "museum", x: -24, z: 19,
   steps: [
     { say: "Look at that long neck! How tall do you think it is?",
       q: { w: "How tall…?", pic: "📏", ex: "How tall is it?" },
@@ -920,7 +920,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Dr. Kim – Fossil Scientist", color: 0x5f3dc4, place: "museum", x: -26.5, z: 15.5, minLv: 5,
+  name: "Dr. Alan – Fossil Scientist", color: 0x5f3dc4, place: "museum", x: -26.5, z: 15.5, minLv: 5,
   steps: [
     { say: "Do you know why the dinosaurs disappeared?",
       q: { w: "Do you know why…?", pic: "❓", ex: "Do you know why the dinosaurs disappeared?" },
@@ -970,7 +970,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Anna – Art Student", color: 0xe64980, place: "museum", x: -16, z: -15,
+  name: "Bella – Art Student", color: 0xe64980, place: "museum", x: -16, z: -15,
   steps: [
     { say: "Hi! I’m drawing the statues for my art class.",
       q: { w: "What are you drawing?", pic: "✏️", ex: "What are you drawing?" },
@@ -995,7 +995,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Uncle Tuan – Security Guard", color: 0x343a40, place: "museum", x: -8.5, z: -14,
+  name: "Uncle Peter – Security Guard", color: 0x343a40, place: "museum", x: -8.5, z: -14,
   steps: [
     { say: "Hello! Please don’t touch the statues. They are very old.",
       card: { w: "Don’t touch.", pic: "🚫", ex: "Please don’t touch the statues." },
@@ -1069,7 +1069,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Nam – Young Painter", color: 0xf08c00, place: "museum", x: 13, z: -7.5,
+  name: "Noah – Young Painter", color: 0xf08c00, place: "museum", x: 13, z: -7.5,
   steps: [
     { say: "Hi! I’m copying a painting to practise. Can you guess which one?",
       q: { w: "Can you guess…?", pic: "🤔", ex: "Can you guess which one?" },
@@ -1146,7 +1146,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Captain Sky – Astronaut", color: 0xf1f3f5, place: "museum", x: 14.5, z: 11,
+  name: "Captain Orion – Astronaut", color: 0xf1f3f5, place: "museum", x: 14.5, z: 11,
   steps: [
     { say: "Hello, future astronaut! Which planet is the biggest?",
       q: { w: "Which…is the biggest?", pic: "🪐", ex: "Which planet is the biggest?" },
@@ -1171,7 +1171,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Nova – Science Teacher", color: 0x7048e8, place: "museum", x: 25.5, z: 25.5,
+  name: "Ms. Stella – Science Teacher", color: 0x7048e8, place: "museum", x: 25.5, z: 25.5,
   steps: [
     { say: "Welcome to the lab corner! What happens if you put a magnet near a nail?",
       q: { w: "What happens if…?", pic: "❓", ex: "What happens if you heat ice?" },
@@ -1248,7 +1248,7 @@ const LESSONS = [
 },
 /* ----- Verse Plaza (mall) ----- */
 {
-  name: "Mai – Information Staff", color: 0x0b7285, place: "mall", x: -6, z: 14,
+  name: "Amy – Information Staff", color: 0x0b7285, place: "mall", x: -6, z: 14,
   steps: [
     { say: "Welcome to Verse Plaza! Where do you want to go?",
       card: { w: "I’m going to…", pic: "🚶", ex: "I’m going to the food court." },
@@ -1272,7 +1272,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tam – Security Guard", color: 0x2f9e44, place: "mall", x: 6, z: 16,
+  name: "George – Security Guard", color: 0x2f9e44, place: "mall", x: 6, z: 16,
   steps: [
     { say: "Hello! Are you lost? Don’t worry. Tell me what happened.",
       card: { w: "I’m lost.", pic: "😟", ex: "I’m lost. I can’t find my mom." },
@@ -1347,7 +1347,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Duy – Sports Seller", color: 0x862e9c, place: "mall", x: -11, z: -15,
+  name: "Jake – Sports Seller", color: 0x862e9c, place: "mall", x: -11, z: -15,
   steps: [
     { say: "Welcome to Sport Star! What size shoes do you wear?",
       card: { w: "I wear size…", pic: "👟", ex: "I wear size thirty-six shoes." },
@@ -1372,7 +1372,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Lan – Food Court Cook", color: 0xd9480f, place: "mall", x: 10, z: -15,
+  name: "Rita – Food Court Cook", color: 0xd9480f, place: "mall", x: 10, z: -15,
   steps: [
     { say: "Hi! What would you like to eat today?",
       card: { w: "a pizza, please", pic: "🍕", ex: "I’d like a pizza, please." },
@@ -1397,7 +1397,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Phong – Desk Officer", color: 0x1971c2, place: "police", x: -5, z: 8,
+  name: "Paul – Desk Officer", color: 0x1971c2, place: "police", x: -5, z: 8,
   steps: [
     { say: "Hello! How can we help you today?",
       card: { w: "report", pic: "📝", ex: "I want to report a lost bag." },
@@ -1422,7 +1422,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Thi – Dispatcher", color: 0x0b7285, place: "police", x: -7, z: -6,
+  name: "Kate – Dispatcher", color: 0x0b7285, place: "police", x: -7, z: -6,
   steps: [
     { say: "Hi! Where do you want to go?",
       card: { w: "directions", pic: "🧭", ex: "Can you tell me the way, please?" },
@@ -1446,7 +1446,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Hieu – Traffic Officer", color: 0xe8590c, place: "police", x: 7, z: -9,
+  name: "Mike – Traffic Officer", color: 0xe8590c, place: "police", x: 7, z: -9,
   steps: [
     { say: "Hello! Wear a helmet when you ride. Do you ride a bike?",
       card: { w: "wear a helmet", pic: "⛑️", ex: "Always wear a helmet on your bike." },
@@ -1470,7 +1470,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Vu – Detective", color: 0x495057, place: "police", x: -2, z: -11, minLv: 5,
+  name: "Owen – Detective", color: 0x495057, place: "police", x: -2, z: -11, minLv: 5,
   steps: [
     { say: "Hello! I’m looking for a lost cat. Have you seen it?",
       card: { w: "missing", pic: "🐱", ex: "My cat is missing since morning." },
@@ -1494,7 +1494,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Khang – Firefighter", color: 0xc92a2a, place: "fire", x: -1, z: -4,
+  name: "Adam – Firefighter", color: 0xc92a2a, place: "fire", x: -1, z: -4,
   steps: [
     { say: "Hi! This is our big red fire truck. Do you like it?",
       card: { w: "fire truck", pic: "🚒", ex: "The fire truck is big and red." },
@@ -1519,7 +1519,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Bach – Firefighter", color: 0xe03131, place: "fire", x: 8, z: -6,
+  name: "Lucas – Firefighter", color: 0xe03131, place: "fire", x: 8, z: -6,
   steps: [
     { say: "Hi! I wear special clothes at work. Do you like my helmet?",
       card: { w: "protective gear", pic: "🧥", ex: "Firefighters wear protective gear." },
@@ -1543,7 +1543,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Hoang – Fire Cook", color: 0xe8590c, place: "fire", x: 8, z: 8,
+  name: "Harry – Fire Cook", color: 0xe8590c, place: "fire", x: 8, z: 8,
   steps: [
     { say: "Hi! I cook lunch for the team. Are you hungry?",
       card: { w: "hungry", pic: "🍜", ex: "I’m hungry. What’s for lunch?" },
@@ -1567,7 +1567,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Nga – Safety Instructor", color: 0x2f9e44, place: "fire", x: -6, z: 10, minLv: 5,
+  name: "Olivia – Safety Instructor", color: 0x2f9e44, place: "fire", x: -6, z: 10, minLv: 5,
   steps: [
     { say: "Hello! Today we practise a fire escape plan. Are you ready?",
       card: { w: "escape plan", pic: "🗺️", ex: "Every family needs an escape plan." },
@@ -1617,7 +1617,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Hung – Records Clerk", color: 0x0b7285, place: "townhall", x: -10, z: 0,
+  name: "Victor – Records Clerk", color: 0x0b7285, place: "townhall", x: -10, z: 0,
   steps: [
     { say: "Hi! Do you want to register your new address?",
       card: { w: "register", pic: "✍️", ex: "I want to register my address." },
@@ -1641,7 +1641,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tuan – Quest Board Officer", color: 0xe64980, place: "townhall", x: 11, z: 2,
+  name: "Dylan – Quest Board Officer", color: 0xe64980, place: "townhall", x: 11, z: 2,
   steps: [
     { say: "Hi! Our city needs help. Do you want a quest today?",
       card: { w: "quest", pic: "📜", ex: "I want to do a quest." },
@@ -1666,7 +1666,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grace – Council Member", color: 0x364fc7, place: "townhall", x: -8, z: -12,
+  name: "Mrs. Clara – Council Member", color: 0x364fc7, place: "townhall", x: -8, z: -12,
   steps: [
     { say: "Welcome to the meeting! What do you think about our city park?",
       card: { w: "I think…", pic: "💭", ex: "I think the park is nice." },
@@ -1789,7 +1789,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Bao – Young Patient", color: 0xf59f00, place: "hospital", x: -8, z: -15,
+  name: "Toby – Young Patient", color: 0xf59f00, place: "hospital", x: -8, z: -15,
   steps: [
     { say: "Hi! I broke my arm. But I feel better now!",
       card: { w: "feel better", pic: "😊", ex: "I feel better today." },
@@ -1863,7 +1863,7 @@ const LESSONS = [
 },
 /* ----- Verse School (school) ----- */
 {
-  name: "Mr. Kim – Science Teacher", color: 0x0ca678, place: "school", x: -11, z: -7,
+  name: "Mr. Carter – Science Teacher", color: 0x0ca678, place: "school", x: -11, z: -7,
   steps: [
     { say: "Hello, class! Today we will learn about magnets. Are you ready?",
       card: { w: "magnet", pic: "🧲", ex: "This magnet picks up nails." },
@@ -1913,7 +1913,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Nam – Student", color: 0x3b5bdb, place: "school", x: -11, z: 9,
+  name: "Ethan – Student", color: 0x3b5bdb, place: "school", x: -11, z: 9,
   steps: [
     { say: "Oh no! I forgot my homework. What should I do?",
       card: { w: "I forgot…", pic: "😵", ex: "I forgot my homework today." },
@@ -1963,7 +1963,7 @@ const LESSONS = [
 },
 /* ----- Banh Mi Bakery (bakery) ----- */
 {
-  name: "Minh – Baker Helper", color: 0xe8590c, place: "bakery", x: -5, z: -2,
+  name: "Finn – Baker Helper", color: 0xe8590c, place: "bakery", x: -6.5, z: -16,
   steps: [
     { say: "Hi! I make the bread here. Would you like a warm roll?",
       card: { w: "I’d like a roll.", pic: "🥖", ex: "I’d like a warm roll, please." },
@@ -1988,7 +1988,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grandma Tam – Customer", color: 0x9c36b5, place: "bakery", x: 5, z: -2,
+  name: "Grandma Tam – Customer", color: 0x9c36b5, place: "bakery", x: 6.5, z: -2,
   steps: [
     { say: "Excuse me, how much is the cake? It looks lovely!",
       card: { w: "twenty thousand dong", pic: "💰", ex: "It’s twenty thousand dong." },
@@ -2012,7 +2012,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Lucy – Tourist", color: 0x5f3dc4, place: "bakery", x: -5, z: 4,
+  name: "Lucy – Tourist", color: 0x5f3dc4, place: "bakery", x: -6.5, z: 1,
   steps: [
     { say: "Hi! Do you know what this bread is called?",
       card: { w: "It’s called banh mi.", pic: "🥖", ex: "It’s called banh mi. It’s tasty!" },
@@ -2036,7 +2036,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Thao – Shopper", color: 0xd6336c, place: "bakery", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Wendy – Shopper", color: 0xd6336c, place: "bakery", x: 5, z: 10, minLv: 5,
   steps: [
     { say: "Hi! My son wants cake. Should I buy bread instead?",
       card: { w: "I think you should…", pic: "🤔", ex: "I think you should buy bread." },
@@ -2085,31 +2085,7 @@ const LESSONS = [
         { t: "Bowl is my friend, yes.",              ok: false, fb: "Ha! A bowl is not a friend :) Try “It smells good!”" } ] }
   ]
 },
-{
-  name: "Khoa – Kid Diner", color: 0x1098ad, place: "restaurant", x: 5, z: -2,
-  steps: [
-    { say: "I’m very hungry! What is your favourite food?",
-      card: { w: "My favourite food is…", pic: "⭐", ex: "My favourite food is pho." },
-      q: { w: "What’s your favourite food?", pic: "❓", ex: "What is your favourite food?" },
-      choices: [
-        { t: "My favourite food is pho. It’s delicious!", ok: true,  fb: "Yum! Good answer. +10" },
-        { t: "Food favourite is my pho, yes.",            ok: false, fb: "Word order: “My favourite food is pho.”" },
-        { t: "I am a favourite spoon.",                   ok: false, fb: "Ha! You are not a spoon :) Try “My favourite food is…”" } ] },
-    { say: "Can you pass me the salt, please? Thank you!",
-      card: { w: "Here you are.", pic: "🧂", ex: "Here you are. Take the salt." },
-      choices: [
-        { t: "Here you are!",         ok: true,  fb: "Thank you! Very kind. +10" },
-        { t: "Salt is you here are.", ok: false, fb: "Word order: “Here you are.”" },
-        { t: "No, salt is a fish.",   ok: false, fb: "Ha! Salt is not a fish :) Try “Here you are.”" } ] },
-    { say: "Yesterday I ate pho with my dad. What did you eat yesterday?",
-      card: { w: "I ate…", pic: "🍜", ex: "I ate rice and fish yesterday." },
-      q: { w: "What did you eat?", pic: "🕒", ex: "What did you eat yesterday?" },
-      choices: [
-        { t: "I ate rice and fish yesterday.", ok: true,  fb: "Great! Past tense: ate. +10" },
-        { t: "Yesterday eat I rice and fish.", ok: false, fb: "Word order: “I ate rice and fish yesterday.”" },
-        { t: "Yesterday I am a red bicycle.",  ok: false, fb: "Haha! Bicycles don’t eat rice :) Try “I ate…”" } ] }
-  ]
-},
+
 {
   name: "Emma – Tourist", color: 0xf08c00, place: "restaurant", x: -5, z: 4,
   steps: [
@@ -2161,7 +2137,7 @@ const LESSONS = [
 },
 /* ----- Shop 24h (supermarket) ----- */
 {
-  name: "Tuyet – Shop Assistant", color: 0x2f9e44, place: "supermarket", x: -5, z: -2,
+  name: "Hannah – Shop Assistant", color: 0x2f9e44, place: "supermarket", x: 3.5, z: -9.5,
   steps: [
     { say: "Hello! Can I help you? We have fresh fruit today.",
       card: { w: "Can I have an apple?", pic: "🍎", ex: "Can I have an apple, please?" },
@@ -2185,7 +2161,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Bin – Kid Shopper", color: 0xf59f00, place: "supermarket", x: 5, z: -2,
+  name: "Billy – Kid Shopper", color: 0xf59f00, place: "supermarket", x: -3.5, z: -4.5,
   steps: [
     { say: "Hi! I love snacks! What is your favourite snack?",
       card: { w: "My favourite snack is…", pic: "🍿", ex: "My favourite snack is popcorn." },
@@ -2209,7 +2185,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Jack – Tourist", color: 0x1c7ed6, place: "supermarket", x: -5, z: 4,
+  name: "Ryan – Tourist", color: 0x1c7ed6, place: "supermarket", x: -7.5, z: 7,
   steps: [
     { say: "Excuse me! Where are the cold drinks?",
       card: { w: "in the fridge", pic: "🧊", ex: "The cold drinks are in the fridge." },
@@ -2233,7 +2209,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Long – Dad Shopper", color: 0x099268, place: "supermarket", x: 5, z: 4, minLv: 5,
+  name: "Mr. Mark – Dad Shopper", color: 0x099268, place: "supermarket", x: 7, z: 10, minLv: 5,
   steps: [
     { say: "My daughter wants snacks. Which is healthier: crisps or fruit?",
       card: { w: "is healthier than", pic: "🥗", ex: "Fruit is healthier than crisps." },
@@ -2258,22 +2234,22 @@ const LESSONS = [
 },
 /* ----- Green Cross Pharmacy (pharmacy) ----- */
 {
-  name: "Pim – Pharmacy Helper", color: 0x0b7285, place: "pharmacy", x: -5, z: -2,
+  name: "Penny – Pharmacy Helper", color: 0x0b7285, place: "pharmacy", x: 0, z: -2.4,
   steps: [
-    { say: "Hello! How can I help you today?",
+    { say: "Hello! I work inside this round counter. How can I help you?",
       card: { w: "I have a sore throat.", pic: "🤒", ex: "I have a sore throat today." },
       q: { w: "How can I help?", pic: "🙋", ex: "How can I help you today?" },
       choices: [
         { t: "I have a sore throat today.", ok: true,  fb: "Great! Clear and short. +10" },
         { t: "Throat sore I have a today.", ok: false, fb: "Word order: “I have a sore throat today.”" },
         { t: "I am a sore pharmacist.",     ok: false, fb: "Haha! You are not a pharmacist :) Try “I have a sore throat.”" } ] },
-    { say: "Please ask a grown-up before you take any medicine. OK?",
+    { say: "Ask a grown-up or the pharmacist before you take medicine. OK?",
       card: { w: "I will tell my mum.", pic: "👩", ex: "Yes, I will tell my mum first." },
       choices: [
         { t: "Yes, I will tell my mum first.", ok: true,  fb: "Very wise! Safety first. +10" },
         { t: "Mum first tell I will yes.",     ok: false, fb: "Word order: “Yes, I will tell my mum first.”" },
         { t: "Medicine is a big blue cloud.",  ok: false, fb: "Ha! Medicine is not a cloud :) Try “I will tell my mum.”" } ] },
-    { say: "We have bandages and plasters. What do you need?",
+    { say: "We have plasters and gauze on the shelf. What do you need?",
       card: { w: "I need a plaster.", pic: "🩹", ex: "I need a plaster for my knee." },
       choices: [
         { t: "I need a plaster for my knee, please.", ok: true,  fb: "Great! Short and clear. +10" },
@@ -2282,7 +2258,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tin – Little Patient", color: 0xe03131, place: "pharmacy", x: 5, z: -2,
+  name: "Timmy – Little Patient", color: 0xe03131, place: "pharmacy", x: -6, z: 6,
   steps: [
     { say: "Ouch! I fell down. My knee hurts!",
       card: { w: "Don’t worry.", pic: "😊", ex: "Don’t worry. Let’s clean it first." },
@@ -2306,7 +2282,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grandpa Thanh – Customer", color: 0x868e96, place: "pharmacy", x: -5, z: 4,
+  name: "Grandpa Thanh – Customer", color: 0x868e96, place: "pharmacy", x: 6, z: -12,
   steps: [
     { say: "Good morning! I feel tired. What should I do?",
       card: { w: "You should rest.", pic: "😴", ex: "You should drink water and rest." },
@@ -2330,7 +2306,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Yen – Mum Shopper", color: 0xae3ec9, place: "pharmacy", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Susan – Mum Shopper", color: 0xae3ec9, place: "pharmacy", x: 6, z: 6, minLv: 5,
   steps: [
     { say: "My son has a cold. Should I ask the pharmacist first?",
       card: { w: "You should ask the pharmacist.", pic: "💬", ex: "You should ask the pharmacist first, because children need care." },
@@ -2356,7 +2332,7 @@ const LESSONS = [
 },
 /* ----- Clothes Shop (clothes) ----- */
 {
-  name: "Quynh – Shop Assistant", color: 0xf783ac, place: "clothes", x: -5, z: -2,
+  name: "Zara – Shop Assistant", color: 0xf783ac, place: "clothes", x: -6, z: -10,
   steps: [
     { say: "Hello! Are you looking for a T-shirt or a jacket?",
       card: { w: "I’m looking for a jacket.", pic: "🧥", ex: "I’m looking for a jacket for winter." },
@@ -2380,7 +2356,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Chi – Teen Shopper", color: 0xf06595, place: "clothes", x: 5, z: -2,
+  name: "Megan – Teen Shopper", color: 0xf06595, place: "clothes", x: 6, z: -10,
   steps: [
     { say: "This shirt is too big for me. What should I do?",
       card: { w: "Try a smaller size.", pic: "🔎", ex: "Try a smaller size, it might fit better." },
@@ -2405,7 +2381,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Phat – Dad Shopper", color: 0x5c940d, place: "clothes", x: -5, z: 4,
+  name: "Mr. Steve – Dad Shopper", color: 0x5c940d, place: "clothes", x: 10, z: 4,
   steps: [
     { say: "Excuse me! Where are the sandals? I need size five.",
       card: { w: "They’re on the shoe shelf.", pic: "👟", ex: "They’re on the shoe shelf, over there." },
@@ -2429,7 +2405,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Dung – Fashion Shopper", color: 0xd6336c, place: "clothes", x: 5, z: 4, minLv: 5,
+  name: "Ms. Vivian – Fashion Shopper", color: 0xd6336c, place: "clothes", x: -10, z: 6, minLv: 5,
   steps: [
     { say: "Should I buy the red dress or the yellow one?",
       card: { w: "You should buy the red dress.", pic: "👗", ex: "You should buy the red dress, because it’s pretty." },
@@ -2454,7 +2430,7 @@ const LESSONS = [
 },
 /* ----- Saigon Barber (salon) ----- */
 {
-  name: "Lam – Junior Barber", color: 0x5c7cfa, place: "salon", x: -5, z: -2,
+  name: "Jason – Junior Barber", color: 0x5c7cfa, place: "salon", x: -5, z: -2,
   steps: [
     { say: "Hi! Do you want short hair or long hair today?",
       card: { w: "I’d like short hair.", pic: "✂️", ex: "I’d like short hair, please." },
@@ -2478,7 +2454,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ti – Young Customer", color: 0xe8590c, place: "salon", x: 5, z: -2,
+  name: "Danny – Young Customer", color: 0xe8590c, place: "salon", x: 5, z: -2,
   steps: [
     { say: "My hair is wet. Can I have a towel, please?",
       card: { w: "Sure, here is a towel.", pic: "🧻", ex: "Sure, here is a towel for you." },
@@ -2501,74 +2477,27 @@ const LESSONS = [
         { t: "Twenty is my tall tree.",        ok: false, fb: "Ha! Twenty is a number, not a tree :) Try “It takes…”" } ] }
   ]
 },
-{
-  name: "Mr. Viet – Dad Customer", color: 0x1971c2, place: "salon", x: -5, z: 4,
-  steps: [
-    { say: "Excuse me! Is it my turn now? I waited a long time.",
-      card: { w: "Please wait a little more.", pic: "⏳", ex: "Please wait a little more, it’s almost ready." },
-      choices: [
-        { t: "Please wait a little more. It’s almost ready.", ok: true,  fb: "Kind and clear! +10" },
-        { t: "Turn my is it, now wait.",                       ok: false, fb: "Word order: “Please wait a little more.”" },
-        { t: "Turns are my shiny spaceship.",                  ok: false, fb: "Ha! Turns are not spaceships :) Try “Please wait a little more.”" } ] },
-    { say: "Okay. My son wants a new hairstyle. Should he have short hair?",
-      card: { w: "Yes, short hair is cool.", pic: "😎", ex: "Yes, short hair is cool for kids." },
-      q: { w: "What do you think?", pic: "🤔", ex: "What do you think about short hair?" },
-      choices: [
-        { t: "Yes, short hair is cool for kids.", ok: true,  fb: "Good advice! +10" },
-        { t: "Hair cool short is kids, yes for.", ok: false, fb: "Word order: “Yes, short hair is cool for kids.”" },
-        { t: "Son is my big blue stool.",         ok: false, fb: "Ha! A son is not a stool :) Try “Yes, short hair is cool.”" } ] },
-    { say: "Thanks! I’ll buy some hair gel from the shelf too.",
-      card: { w: "The hair gel is on the shelf.", pic: "🧴", ex: "The hair gel is on the shelf over there." },
-      choices: [
-        { t: "The hair gel is on the shelf over there.", ok: true,  fb: "Thank you! Very helpful. +10" },
-        { t: "Shelf the on is gel hair, there.",         ok: false, fb: "Word order: “The hair gel is on the shelf.”" },
-        { t: "Hair gel is my big yellow dog.",           ok: false, fb: "Ha! Hair gel is not a dog :) Try “The hair gel is on the shelf.”" } ] }
-  ]
-},
-{
-  name: "Mrs. Hanh – Mum Customer", color: 0xae3ec9, place: "salon", x: 5, z: 4, minLv: 5,
-  steps: [
-    { say: "My daughter has long hair. Should she cut it short?",
-      card: { w: "Yes, she should cut it short.", pic: "✂️", ex: "Yes, she should cut it short, I think." },
-      q: { w: "Should she cut it?", pic: "❓", ex: "Should she cut it short, or keep it long?" },
-      choices: [
-        { t: "Yes, she should, because short hair is easier to wash.", ok: true,  fb: "Excellent! A clear reason with “because”. +10" },
-        { t: "Short should she hair cut, because yes.",                 ok: false, fb: "Word order: “Yes, she should cut it short.”" },
-        { t: "Daughter is my big green bus.",                           ok: false, fb: "Ha! A daughter is not a bus :) Try “Yes, she should…”" } ] },
-    { say: "Which is easier to wash, short hair or long hair?",
-      card: { w: "Short hair is easier to wash.", pic: "🚿", ex: "Short hair is easier to wash than long hair." },
-      q: { w: "Which is easier?", pic: "🚿", ex: "Which is easier to wash, short or long hair?" },
-      choices: [
-        { t: "Short hair is easier to wash than long hair.", ok: true,  fb: "Great comparison! +10" },
-        { t: "Easier wash to hair is short than long.",       ok: false, fb: "Word order: “Short hair is easier to wash than long hair.”" },
-        { t: "Long hair is my tall, happy whale.",            ok: false, fb: "Ha! Hair is not a whale :) Try “Short hair is easier…”" } ] },
-    { say: "Okay! Where should I wait while she gets her haircut?",
-      card: { w: "You can wait by the door.", pic: "🚪", ex: "You can wait by the door, on the chair." },
-      choices: [
-        { t: "You can wait by the door, on the chair.", ok: true,  fb: "Yes! The waiting chairs are near the door. +10" },
-        { t: "Door the by can wait you, chair.",        ok: false, fb: "Word order: “You can wait by the door.”" },
-        { t: "Haircut is a big purple mouse.",          ok: false, fb: "Ha! A haircut is not a mouse :) Try “You can wait by the door.”" } ] }
-  ]
-},
+
+
 /* ----- Home & Cozy (furniture) ----- */
 {
-  name: "Ngan – Delivery Helper", color: 0x2f9e44, place: "furniture", x: -5, z: -2,
+  name: "Eric – Delivery Helper", color: 0x2f9e44, place: "furniture", x: -5, z: 16,
   steps: [
-    { say: "Hi! Do you need furniture for your living room or bedroom?",
-      card: { w: "I need it for my living room.", pic: "🛋️", ex: "I need a sofa for my living room." },
-      q: { w: "Living room or bedroom?", pic: "🏠", ex: "Do you need it for the living room or the bedroom?" },
+    { say: "Hi! Which room are you decorating? Living room, bedroom or kitchen?",
+      card: { w: "I am decorating the living room.", pic: "🛋️", ex: "I am decorating the living room with a big rug." },
+      q: { w: "Which room are you decorating?", pic: "🏠", ex: "Which room are you decorating, the bedroom or the kitchen?" },
       choices: [
-        { t: "I need it for my living room, please.", ok: true,  fb: "Great! Let’s find a sofa for you. +10" },
-        { t: "Room living my for it need I.",          ok: false, fb: "Word order: “I need it for my living room.”" },
-        { t: "Bedroom is my blue elephant.",           ok: false, fb: "Ha! A bedroom is not an elephant :) Try “I need it…”" } ] },
-    { say: "Here’s a soft sofa. Do you like brown or blue?",
+        { t: "I’m decorating the living room, please.", ok: true,  fb: "Great! Let’s look at the living room first. +10" },
+        { t: "Room living the decorating am I.",         ok: false, fb: "Word order: “I am decorating the living room.”" },
+        { t: "Kitchen is my big green whale.",           ok: false, fb: "Ha! A kitchen is not a whale :) Try “I am decorating…”" } ] },
+    { say: "Here’s a rug. Brown or grey, which do you like?",
       card: { w: "I like the brown one.", pic: "🟫", ex: "I like the brown one, because it’s warm." },
-      q: { w: "Which colour do you like?", pic: "🎨", ex: "Which colour do you like, brown or blue?" },
+      q: { w: "Which colour do you like?", pic: "🎨", ex: "Which colour do you like, brown or grey?" },
       choices: [
         { t: "I like the brown one, because it’s warm.", ok: true,  fb: "Lovely choice with a reason! +10" },
         { t: "One brown the like I, warm because it’s.", ok: false, fb: "Word order: “I like the brown one, because it’s warm.”" },
-        { t: "Sofa is my big green fish.",               ok: false, fb: "Ha! A sofa is not a fish :) Try “I like the brown one.”" } ] },
-    { say: "Good choice! Would you like it delivered to your home?",
+        { t: "Rug is my big green fish.",                ok: false, fb: "Ha! A rug is not a fish :) Try “I like the brown one.”" } ] },
+    { say: "Good choice! Shall I deliver it to your home?",
       card: { w: "Yes, please deliver it to my home.", pic: "🚚", ex: "Yes, please deliver it to my home on Friday." },
       choices: [
         { t: "Yes, please deliver it to my home.", ok: true,  fb: "Perfect! We will bring it home. +10" },
@@ -2577,63 +2506,63 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grandma Hien – Customer", color: 0x845ef7, place: "furniture", x: 5, z: -2,
+  name: "Grandma Hien – Customer", color: 0x845ef7, place: "furniture", x: 9, z: 6,
   steps: [
-    { say: "This table is too small for my room. What can I do?",
+    { say: "This dining room is small. What should I do first?",
       card: { w: "Measure the room first.", pic: "📏", ex: "Measure the room first, then choose a bigger table." },
       choices: [
         { t: "Measure the room first, then choose a bigger one.", ok: true,  fb: "Wise idea! Measure before you buy. +10" },
         { t: "Room the measure first, bigger choose.",            ok: false, fb: "Word order: “Measure the room first.”" },
         { t: "Tables are my tall green trees.",                   ok: false, fb: "Ha! Tables are not trees :) Try “Measure the room first.”" } ] },
-    { say: "Thanks! Which rug is better, the small or the big one?",
-      card: { w: "The big one is better.", pic: "🟫", ex: "The big one is better for my living room." },
-      q: { w: "Which rug is better?", pic: "❓", ex: "Which rug is better for my room?" },
+    { say: "Thanks! Now I need a towel rack for my bathroom.",
+      card: { w: "A wall rack saves space.", pic: "🧻", ex: "A wall rack saves space in a small bathroom." },
+      q: { w: "Which rack fits a small room?", pic: "❓", ex: "Which rack fits a small bathroom, the wall one or the floor one?" },
       choices: [
-        { t: "The big one is better, because it fits the room.", ok: true,  fb: "Excellent! A clear reason. +10" },
-        { t: "Better big one is, because fits it room.",         ok: false, fb: "Word order: “The big one is better, because it fits the room.”" },
-        { t: "Rugs are my blue clouds.",                         ok: false, fb: "Ha! Rugs are not clouds :) Try “The big one is better…”" } ] },
-    { say: "Okay! Will you deliver it on Sunday morning?",
-      card: { w: "Yes, we will deliver it.", pic: "🗓️", ex: "Yes, we will deliver it on Sunday morning." },
+        { t: "A wall rack saves space in a small bathroom.", ok: true,  fb: "Smart! Small rooms need smart choices. +10" },
+        { t: "Space a saves rack wall in small.",            ok: false, fb: "Word order: “A wall rack saves space in a small bathroom.”" },
+        { t: "Racks are my blue bananas.",                   ok: false, fb: "Ha! Racks are not bananas :) Try “A wall rack saves space…”" } ] },
+    { say: "Okay! Can you deliver them on Sunday morning?",
+      card: { w: "Yes, we can deliver them.", pic: "🗓️", ex: "Yes, we can deliver them on Sunday morning." },
       choices: [
-        { t: "Yes, we will deliver it on Sunday morning.", ok: true,  fb: "Great! Sunday morning, thank you. +10" },
-        { t: "Sunday on deliver it will we, yes.",         ok: false, fb: "Word order: “Yes, we will deliver it on Sunday morning.”" },
-        { t: "Carpets are my orange dragon.",              ok: false, fb: "Ha! Carpets are not dragons :) Try “Yes, we will deliver it.”" } ] }
+        { t: "Yes, we can deliver them on Sunday morning.", ok: true,  fb: "Great! Sunday morning, thank you. +10" },
+        { t: "Sunday on deliver them can we, yes.",         ok: false, fb: "Word order: “Yes, we can deliver them on Sunday morning.”" },
+        { t: "Dishes are my orange dragon.",                ok: false, fb: "Ha! Dishes are not dragons :) Try “Yes, we can deliver them…”" } ] }
   ]
 },
 {
-  name: "Khanh – Kid Shopper", color: 0x12b886, place: "furniture", x: -5, z: 4,
+  name: "Ellie – Kid Shopper", color: 0x12b886, place: "furniture", x: -9, z: -8,
   steps: [
-    { say: "Wow! I want a big bed! Can I try this one?",
+    { say: "Wow! Can I try this bed? It looks so soft!",
       card: { w: "Yes, you can try it.", pic: "🛏️", ex: "Yes, you can try it, it’s very soft." },
       choices: [
         { t: "Yes, you can try it. It’s very soft!", ok: true,  fb: "Yay! Lie down and relax. +10" },
         { t: "Try you can it, very soft yes.",       ok: false, fb: "Word order: “Yes, you can try it.”" },
         { t: "Bed is my blue monkey.",               ok: false, fb: "Ha! A bed is not a monkey :) Try “Yes, you can try it.”" } ] },
-    { say: "Thanks! Is there a bedside table for my clock?",
-      card: { w: "Yes, it’s next to the bed.", pic: "📍", ex: "Yes, it’s next to the bed, by the wall." },
-      q: { w: "Where is the bedside table?", pic: "❓", ex: "Where is the bedside table, please?" },
+    { say: "Thanks! Is there a lamp for my bedside table?",
+      card: { w: "Yes, it’s next to the bed.", pic: "📍", ex: "Yes, the table lamp is next to the bed." },
+      q: { w: "Where is the lamp?", pic: "❓", ex: "Where is the lamp, please?" },
       choices: [
-        { t: "Yes, it’s next to the bed.",       ok: true,  fb: "Great! Now my clock has a home. +10" },
+        { t: "Yes, it’s next to the bed.",     ok: true,  fb: "Great! Now my room is bright. +10" },
         { t: "Next bed the to it’s, yes table.", ok: false, fb: "Word order: “Yes, it’s next to the bed.”" },
-        { t: "Clock is my tall giant hippo.",    ok: false, fb: "Ha! A clock is not a hippo :) Try “Yes, it’s next to the bed.”" } ] },
-    { say: "Thanks! I want the blue blanket too. Can I have it?",
-      card: { w: "Yes, you can have it.", pic: "✅", ex: "Yes, you can have it for your bed." },
+        { t: "Lamp is my tall giant hippo.",   ok: false, fb: "Ha! A lamp is not a hippo :) Try “Yes, it’s next to the bed.”" } ] },
+    { say: "Thanks! I also want a bright night light. Can I have it?",
+      card: { w: "Yes, you can have it for your room.", pic: "✅", ex: "Yes, you can have it for your room at night." },
       choices: [
-        { t: "Yes, you can have it for your bed.", ok: true,  fb: "Lovely! Sweet dreams. +10" },
-        { t: "Have it can you bed for yes, your.", ok: false, fb: "Word order: “Yes, you can have it for your bed.”" },
-        { t: "Blanket is my fast red car.",        ok: false, fb: "Ha! A blanket is not a car :) Try “Yes, you can have it…”" } ] }
+        { t: "Yes, you can have it for your room.", ok: true,  fb: "Lovely! Sweet dreams. +10" },
+        { t: "Have it can you room for yes, your.", ok: false, fb: "Word order: “Yes, you can have it for your room.”" },
+        { t: "Night light is my fast red car.",     ok: false, fb: "Ha! A night light is not a car :) Try “Yes, you can have it…”" } ] }
   ]
 },
 {
-  name: "Mrs. Dao – Home Shopper", color: 0xc2255c, place: "furniture", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Fiona – Home Shopper", color: 0xc2255c, place: "furniture", x: 8, z: -14, minLv: 5,
   steps: [
-    { say: "Should I buy a round table or a square one?",
-      card: { w: "You should buy a round table.", pic: "⭕", ex: "You should buy a round table, because it’s safe." },
-      q: { w: "Round or square?", pic: "⭕", ex: "Should I buy a round table or a square one?" },
+    { say: "Should I buy a desk with drawers or a plain one?",
+      card: { w: "You should buy a desk with drawers.", pic: "🗄️", ex: "You should buy a desk with drawers, because it’s tidy." },
+      q: { w: "Desk with drawers or plain?", pic: "🗄️", ex: "Should I buy a desk with drawers or a plain one?" },
       choices: [
-        { t: "You should buy a round table, because it’s safe for kids.", ok: true,  fb: "Excellent! Safety first, with a reason. +10" },
-        { t: "Table round a buy should you, because.",                    ok: false, fb: "Word order: “You should buy a round table.”" },
-        { t: "Square is my blue elephant.",                               ok: false, fb: "Ha! Square is a shape, not an elephant :) Try “You should buy…”" } ] },
+        { t: "You should buy a desk with drawers, because it’s tidy.", ok: true,  fb: "Excellent! A tidy desk helps you study. +10" },
+        { t: "Desk drawers with a should buy you, because.",           ok: false, fb: "Word order: “You should buy a desk with drawers.”" },
+        { t: "Plain is my blue elephant.",                             ok: false, fb: "Ha! Plain is a word, not an elephant :) Try “You should buy…”" } ] },
     { say: "Thanks! Is a wooden chair better than a plastic one?",
       card: { w: "Yes, it’s stronger and nicer.", pic: "🪵", ex: "Yes, it’s stronger and nicer than plastic." },
       q: { w: "Which chair is better?", pic: "🪑", ex: "Which chair is better, wooden or plastic?" },
@@ -2641,13 +2570,114 @@ const LESSONS = [
         { t: "Yes, a wooden chair is stronger than plastic.", ok: true,  fb: "Good comparison! Strong and nice. +10" },
         { t: "Stronger chair wooden a is than yes plastic.",  ok: false, fb: "Word order: “Yes, a wooden chair is stronger than plastic.”" },
         { t: "Plastic is my big blue cloud.",                 ok: false, fb: "Ha! Plastic is not a cloud :) Try “Yes, a wooden chair…”" } ] },
-    { say: "Okay! The table will come on Monday. Will you be home?",
+    { say: "Okay! The desk will come on Monday. Will you be home?",
       card: { w: "Yes, I will be home on Monday.", pic: "🏠", ex: "Yes, I will be home on Monday." },
       choices: [
         { t: "Yes, I will be home on Monday.", ok: true,  fb: "Perfect! See you then. +10" },
-        { t: "Monday home be will I yes, on.",         ok: false, fb: "Word order: “Yes, I will be home on Monday.”" },
-        { t: "Monday is my big purple whale.",         ok: false, fb: "Ha! Monday is a day, not a whale :) Try “Yes, I will be home…”" } ] }
+        { t: "Monday home be will I yes, on.", ok: false, fb: "Word order: “Yes, I will be home on Monday.”" },
+        { t: "Monday is my big purple whale.", ok: false, fb: "Ha! Monday is a day, not a whale :) Try “Yes, I will be home…”" } ] }
+  ]
+},
+
+/* ----- Verse Electronics (electronics) ----- */
+{
+  name: "Brian – Sales Assistant", color: 0x1c7ed6, place: "electronics", x: -8, z: 14,
+  steps: [
+    { say: "Hi! Are you looking for a new TV today?",
+      card: { w: "Yes, I want a bigger one.", pic: "📺", ex: "Yes, I want a bigger one, but not too expensive." },
+      q: { w: "Do you want a bigger one?", pic: "❓", ex: "Do you want a bigger one, or a smaller one?" },
+      choices: [
+        { t: "Yes, I want a bigger one, please.", ok: true,  fb: "Great! Big screens are fun to watch. +10" },
+        { t: "One bigger want I yes, please.",    ok: false, fb: "Word order: “Yes, I want a bigger one, please.”" },
+        { t: "TV is my tall green banana.",       ok: false, fb: "Ha! A TV is not a banana :) Try “Yes, I want a bigger one.”" } ] },
+    { say: "Good! This smart TV is cheaper than that one.",
+      card: { w: "This one is cheaper and clearer.", pic: "💰", ex: "This one is cheaper and clearer than the old TV." },
+      q: { w: "Which TV is better for you?", pic: "🤔", ex: "Which TV is better for you, the cheap one or the big one?" },
+      choices: [
+        { t: "This one is cheaper and clearer, so I’ll buy it.", ok: true,  fb: "Smart choice! Compare the price and the picture. +10" },
+        { t: "Cheaper is one this and clearer.",                 ok: false, fb: "Word order: “This one is cheaper and clearer.”" },
+        { t: "Picture is my big orange hippo.",                  ok: false, fb: "Ha! A picture is not a hippo :) Try “This one is cheaper…”" } ] },
+    { say: "Okay! Would you like the two-year warranty?",
+      card: { w: "Yes, I want the two-year warranty.", pic: "📄", ex: "Yes, I want the two-year warranty, please." },
+      choices: [
+        { t: "Yes, I want the two-year warranty, please.", ok: true,  fb: "Good! Two years of safety for your TV. +10" },
+        { t: "Warranty two-year the want I yes, please.",  ok: false, fb: "Word order: “Yes, I want the two-year warranty, please.”" },
+        { t: "Warranty is my tiny purple cat.",            ok: false, fb: "Ha! A warranty is not a cat :) Try “Yes, I want the two-year warranty…”" } ] }
+  ]
+},
+{
+  name: "Cindy – Phone Expert", color: 0xe64980, place: "electronics", x: 10, z: 2,
+  steps: [
+    { say: "Hi! My phone battery is always low. What should I do?",
+      card: { w: "Lower the screen brightness.", pic: "🔆", ex: "Lower the screen brightness to save battery." },
+      q: { w: "What should I do?", pic: "❓", ex: "What should I do when my battery is low?" },
+      choices: [
+        { t: "You should lower the screen brightness to save battery.", ok: true,  fb: "Good tip! A dim screen saves power. +10" },
+        { t: "Brightness the lower should you screen.",                 ok: false, fb: "Word order: “You should lower the screen brightness.”" },
+        { t: "Battery is my big red frog.",                             ok: false, fb: "Ha! A battery is not a frog :) Try “You should lower…”" } ] },
+    { say: "Thanks! Can I use any charger for my phone?",
+      card: { w: "Use the charger from the box.", pic: "🔌", ex: "Use the charger from the box, it’s safer." },
+      q: { w: "Which charger is safe?", pic: "🔌", ex: "Which charger is safe for my phone?" },
+      choices: [
+        { t: "Use the charger from the box, it’s safer.", ok: true,  fb: "Safe choice! Wrong chargers can get very hot. +10" },
+        { t: "Box the from charger use the.",             ok: false, fb: "Word order: “Use the charger from the box.”" },
+        { t: "Chargers are my fast purple turtle.",       ok: false, fb: "Ha! Chargers are not turtles :) Try “Use the charger from the box…”" } ] },
+    { say: "Good! How long do you watch videos each day?",
+      card: { w: "About one hour is enough.", pic: "⏰", ex: "About one hour is enough, then I read a book." },
+      choices: [
+        { t: "About one hour is enough, then I read a book.", ok: true,  fb: "Great! Balance is healthy. +10" },
+        { t: "Hour one enough is about, read.",               ok: false, fb: "Word order: “About one hour is enough.”" },
+        { t: "Phone is my tall yellow bear.",                 ok: false, fb: "Ha! A phone is not a bear :) Try “About one hour is enough…”" } ] }
+  ]
+},
+{
+  name: "Quan – Delivery Driver", color: 0x495057, place: "electronics", x: -10, z: -10,
+  steps: [
+    { say: "Hi! I have your fridge. Where should I put it?",
+      card: { w: "Put it in the kitchen, please.", pic: "🍳", ex: "Please put it in the kitchen, next to the wall." },
+      q: { w: "Where should I put the fridge?", pic: "🧊", ex: "Where should I put the fridge, in the kitchen?" },
+      choices: [
+        { t: "Please put it in the kitchen, next to the wall.", ok: true,  fb: "Thanks! Now it has a good place. +10" },
+        { t: "Kitchen the in it put, please.",                  ok: false, fb: "Word order: “Please put it in the kitchen.”" },
+        { t: "Fridge is my big blue bird.",                     ok: false, fb: "Ha! A fridge is not a bird :) Try “Please put it in the kitchen…”" } ] },
+    { say: "Thanks! Your washing machine comes at two o’clock. Is that okay?",
+      card: { w: "Yes, two o’clock is fine.", pic: "⏰", ex: "Yes, two o’clock is fine for me." },
+      q: { w: "What time is good for you?", pic: "⏰", ex: "What time is good for you, two or four o’clock?" },
+      choices: [
+        { t: "Yes, two o’clock is fine for me.", ok: true,  fb: "Great! I will bring it at two o’clock. +10" },
+        { t: "Fine two o’clock for is yes, me.", ok: false, fb: "Word order: “Yes, two o’clock is fine for me.”" },
+        { t: "Machine is my tall pink giraffe.", ok: false, fb: "Ha! A machine is not a giraffe :) Try “Yes, two o’clock…”" } ] },
+    { say: "Okay! Please sign here. Shall I take the box away?",
+      card: { w: "Yes, please take the box away.", pic: "📦", ex: "Yes, please take the box away, thank you." },
+      choices: [
+        { t: "Yes, please take the box away, thank you.", ok: true,  fb: "Thanks! Have a nice day. +10" },
+        { t: "Away the box take, please yes.",            ok: false, fb: "Word order: “Yes, please take the box away.”" },
+        { t: "Box is my tiny orange kite.",               ok: false, fb: "Ha! A box is not a kite :) Try “Yes, please take the box away.”" } ] }
+  ]
+},
+{
+  name: "Derek – Technician", color: 0x868e96, place: "electronics", x: 8, z: -16, minLv: 5,
+  steps: [
+    { say: "Hi! Your TV is on all day. What should you do?",
+      card: { w: "Turn off the TV when you leave.", pic: "💡", ex: "Turn off the TV when you leave the room." },
+      q: { w: "What should you do with the TV?", pic: "📺", ex: "What should you do when the TV is on all day?" },
+      choices: [
+        { t: "You should turn off the TV, because it saves power.", ok: true,  fb: "Excellent! Turning off saves electricity. +10" },
+        { t: "TV off should you turn the, because.",                ok: false, fb: "Word order: “You should turn off the TV, because it saves power.”" },
+        { t: "Power is my soft blue cloud.",                        ok: false, fb: "Ha! Power is not a cloud :) Try “You should turn off the TV…”" } ] },
+    { say: "Good! Safety first. Can you touch a plug with wet hands?",
+      card: { w: "Never touch a plug with wet hands.", pic: "⚠️", ex: "Never touch a plug with wet hands, it is dangerous." },
+      q: { w: "Is it safe with wet hands?", pic: "⚠️", ex: "Is it safe to touch a plug with wet hands?" },
+      choices: [
+        { t: "No, never touch a plug with wet hands.", ok: true,  fb: "Correct! Water and electricity are dangerous. +10" },
+        { t: "Hands wet with plug a touch, yes.",      ok: false, fb: "Word order: “No, never touch a plug with wet hands.”" },
+        { t: "Plug is my big green turtle.",           ok: false, fb: "Ha! A plug is not a turtle :) Try “No, never touch…”" } ] },
+    { say: "Thanks! My fan does not spin. What should you do first?",
+      card: { w: "Unplug the fan and check it.", pic: "🔧", ex: "Unplug the fan first, then check the blades." },
+      choices: [
+        { t: "Unplug the fan first, then check the blades.", ok: true,  fb: "Smart! Always unplug before you fix. +10" },
+        { t: "Blades the check first fan, unplug.",          ok: false, fb: "Word order: “Unplug the fan first, then check the blades.”" },
+        { t: "Fan is my tall orange dinosaur.",              ok: false, fb: "Ha! A fan is not a dinosaur :) Try “Unplug the fan first…”" } ] }
   ]
 }
-
 ];

@@ -27,7 +27,7 @@ function bankWall(len, h, kind) {   // tường: chân đá granite, tầng lử
     } else {
       for (let X = 2; X < W - 2; X += 5) { x.fillStyle = "#4a3526"; x.fillRect(X, H - 8.6, 1.4, 2.6); x.fillStyle = "#d8d4c8"; x.fillRect(X - 0.1, H - 8.7, 1.6, 0.12); }   // cửa phòng tầng lửng
       for (let X = 4.3; X < W - 2; X += 5) { x.fillStyle = BANK_GREEN; x.fillRect(X, H - 9.3, 0.9, 2.9); x.fillStyle = "#f2c94c"; x.fillRect(X, H - 6.5, 0.9, 0.08); bankLogo(x, X + 0.45, H - 8.6, 0.32); }   // băng rôn thương hiệu
-      if (kind === "back") { x.fillStyle = "#ffffff"; x.fillRect(W / 2 - 4.5, 2.9, 9, 3.3); bankLogo(x, W / 2 - 3, 4.55, 1.3); signText(x, "VERSE BANK", W / 2 + 1.3, 4.1, 5, 0.9, BANK_GREEN); signText(x, "NGÂN HÀNG · SINCE 1891", W / 2 + 1.3, 5.2, 5, 0.45, "#6b6b6b"); }
+      if (kind === "back") { x.fillStyle = "#ffffff"; x.fillRect(W / 2 - 4.5, 2.9, 9, 3.3); bankLogo(x, W / 2 - 3, 4.55, 1.3); signText(x, "VERSE BANK", W / 2 + 1.3, 4.1, 5, 0.9, BANK_GREEN); signText(x, "NGAN HANG · SINCE 1891", W / 2 + 1.3, 5.2, 5, 0.45, "#6b6b6b"); }
     }
   });
   return BKW[k] = new THREE.MeshLambertMaterial({ map: t });

@@ -90,7 +90,7 @@ function furnishHospital(P, g, cx, cz, W, D, fur) {
 
   // ==== RECEPTION: quầy dài 5 m tại x = −6, z = 11.5, mặt quầy hướng cửa (+z) ====
   B(5, 1.0, 0.5, 0xffffff, -6, 0.5, 11.7); B(5.3, 0.07, 0.85, HW_WOOD, -6, 1.035, 11.75); B(5.02, 0.62, 0.04, HW_TEAL, -6, 0.5, 11.97);
-  { const p = textPlate("RECEPTION · TIẾP NHẬN", 2.6, 0.32, "#0e7f77", "#ffffff"); p.position.set(cx - 6, 0.55, cz + 12.0); g.add(p); }
+  { const p = textPlate("RECEPTION · TIEP NHAN", 2.6, 0.32, "#0e7f77", "#ffffff"); p.position.set(cx - 6, 0.55, cz + 12.0); g.add(p); }
   sol(-6, 11.7, 2.5, 0.25);
   [-7.5, -4.5].forEach(x => { B(0.5, 0.32, 0.04, 0x1b1f23, x, 1.3, 11.8); B(0.44, 0.26, 0.02, 0x3b8fd6, x, 1.3, 11.775); B(0.08, 0.16, 0.08, 0x333a40, x, 1.16, 11.8); B(0.4, 0.02, 0.14, 0x222831, x, 1.09, 11.55); });   // máy tính
   C(0.1, 0.03, 0xc9a227, -3.95, 1.085, 12.0); lc(g, 0.03, 0.09, 0.07, 0xc9a227, cx - 3.95, 1.13, cz + 12.0, 12);   // chuông gọi

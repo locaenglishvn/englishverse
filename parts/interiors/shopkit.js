@@ -1,5 +1,5 @@
 /* EnglishVerse – bộ khung chung cho cửa hàng nhỏ ở Market Street (phòng 16 × 18 m, trần 4,5 m). Nạp TRƯỚC các file cửa hàng.
-   shopKit(P, g, cx, cz, W, D, o) dựng: sàn gạch, 4 tường (2 màu + cửa sổ kính mặt tiền), trần + đèn, quầy trước chỗ người bán (0, -6.6).
+   shopKit(P, g, cx, cz, W, D, o) dựng: sàn gạch, 4 tường (2 màu + cửa sổ kính mặt tiền), trần + đèn (lưới theo kích thước phòng), quầy trước chỗ người bán (giữa, cách tường sau 3,8 m; o.noCounter: không dựng quầy).
    o = { floor:[màu1, màu2], wall:[trên, dưới], trim, counter, counterTop, glassCounter, sign:"…", signBg, signFg }
    Trả về các hàm tiện dùng: B (khối, chất liệu dùng chung), sol (vật cản), plate (bảng chữ), pic (tranh/ảnh phẳng), A (chỗ bày từ vựng, toạ độ tương đối).
    Quy ước chung 4 tiệm: chừa trống lối vào x -1.5..1.5, z 3..9; chỗ NPC (-5,-2) (5,-2) (-5,4) (5,4); người bán (0,-6.6) sau quầy z -5.2. */
@@ -23,11 +23,13 @@ function shopKit(P, g, cx, cz, W, D, o) {
   // trần + đèn
   { const m = new THREE.Mesh(new THREE.PlaneGeometry(W, D), mat(0xfaf8f2, { side: THREE.DoubleSide })); m.rotation.x = Math.PI / 2; m.position.set(cx, H, cz); g.add(m); }
   const lamp = new THREE.MeshBasicMaterial({ color: 0xfff9db });
-  [-5, 0, 5].forEach(dz => [-4, 4].forEach(dx => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.06, 14), lamp); m.position.set(cx + dx, H - 0.04, cz + dz); g.add(m); }));
-  // quầy trước người bán
-  if (o.glassCounter) { B(5, 0.5, 0.9, o.counter, cx, 0.25, cz - 5.2); const gl = new THREE.Mesh(new THREE.BoxGeometry(4.9, 0.6, 0.8), mat(0xd0ebff, { transparent: true, opacity: 0.35 })); gl.position.set(cx, 0.8, cz - 5.2); g.add(gl); B(5.05, 0.06, 0.95, o.counterTop, cx, 1.13, cz - 5.2); }
-  else { B(5, 1.05, 0.9, o.counter, cx, 0.53, cz - 5.2); B(5.2, 0.08, 1.05, o.counterTop, cx, 1.09, cz - 5.2); }
-  sol(cx, cz - 5.2, 2.55, 0.5);
-  if (o.sign) plate(o.sign, 4.6, o.glassCounter ? 0.4 : 0.55, o.signBg, o.signFg, cx, o.glassCounter ? 0.25 : 0.75, cz - 4.73, 0);
+  for (let dz = -D / 2 + 4; dz < D / 2 - 1; dz += 5) [-W / 4, W / 4].forEach(dx => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.06, 14), lamp); m.position.set(cx + dx, H - 0.04, cz + dz); g.add(m); });
+  // quầy trước người bán (mặc định giữa, cách tường sau 3,8 m; o.noCounter = tự dựng quầy riêng)
+  const qz = back + 3.8;
+  if (o.noCounter) {}
+  else if (o.glassCounter) { B(5, 0.5, 0.9, o.counter, cx, 0.25, qz); const gl = new THREE.Mesh(new THREE.BoxGeometry(4.9, 0.6, 0.8), mat(0xd0ebff, { transparent: true, opacity: 0.35 })); gl.position.set(cx, 0.8, qz); g.add(gl); B(5.05, 0.06, 0.95, o.counterTop, cx, 1.13, qz); }
+  else { B(5, 1.05, 0.9, o.counter, cx, 0.53, qz); B(5.2, 0.08, 1.05, o.counterTop, cx, 1.09, qz); }
+  if (!o.noCounter) sol(cx, qz, 2.55, 0.5);
+  if (o.sign && !o.noCounter) plate(o.sign, 4.6, o.glassCounter ? 0.4 : 0.55, o.signBg, o.signFg, cx, o.glassCounter ? 0.25 : 0.75, qz + 0.47, 0);
   return { back, front, H, B, sol, plate, pic, A };
 }
