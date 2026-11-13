@@ -240,7 +240,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Captain Linh – Firefighter", color: 0xc92a2a, place: "fire", x: 3, z: 6,
+  name: "Captain Son – Firefighter", color: 0xc92a2a, place: "fire", x: 3, z: 6,
   steps: [
     { say: "Hi! Do you know the fire number in Vietnam?",
       card: { w: "emergency", pic: "🚨", ex: "In an emergency, call 114." },
@@ -1545,7 +1545,7 @@ const LESSONS = [
 {
   name: "Hoang – Fire Cook", color: 0xe8590c, place: "fire", x: 8, z: 8,
   steps: [
-    { say: "Hi! I cook lunch for the team today.",
+    { say: "Hi! I cook lunch for the team. Are you hungry?",
       card: { w: "hungry", pic: "🍜", ex: "I’m hungry. What’s for lunch?" },
       q: { w: "Are you hungry?", pic: "🍽️", ex: "Are you hungry?" },
       choices: [
@@ -1575,7 +1575,7 @@ const LESSONS = [
         { t: "Yes, I am ready. Show me!", ok: true,  fb: "Great! Let’s practise. +10" },
         { t: "I ready am, yes is.",       ok: false, fb: "Word order: “Yes, I am ready. Show me!”" },
         { t: "Plan is my escape, I run.", ok: false, fb: "Try “Yes, I am ready. Show me!”" } ] },
-    { say: "Oh no, your clothes are on fire! Remember this rule.",
+    { say: "If your clothes catch fire, what should you do?",
       card: { w: "stop, drop and roll", pic: "🔥", ex: "Stop, drop and roll on the floor." },
       q: { w: "What do you do first?", pic: "❓", ex: "What do you do first?" },
       choices: [
