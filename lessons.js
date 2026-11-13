@@ -2454,7 +2454,7 @@ const LESSONS = [
 },
 /* ----- Saigon Barber (salon) ----- */
 {
-  name: "Hieu – Junior Barber", color: 0x5c7cfa, place: "salon", x: -5, z: -2,
+  name: "Lam – Junior Barber", color: 0x5c7cfa, place: "salon", x: -5, z: -2,
   steps: [
     { say: "Hi! Do you want short hair or long hair today?",
       card: { w: "I’d like short hair.", pic: "✂️", ex: "I’d like short hair, please." },
@@ -2526,7 +2526,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Nga – Mum Customer", color: 0xae3ec9, place: "salon", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Hanh – Mum Customer", color: 0xae3ec9, place: "salon", x: 5, z: 4, minLv: 5,
   steps: [
     { say: "My daughter has long hair. Should she cut it short?",
       card: { w: "Yes, she should cut it short.", pic: "✂️", ex: "Yes, she should cut it short, I think." },
@@ -2642,9 +2642,9 @@ const LESSONS = [
         { t: "Stronger chair wooden a is than yes plastic.",  ok: false, fb: "Word order: “Yes, a wooden chair is stronger than plastic.”" },
         { t: "Plastic is my big blue cloud.",                 ok: false, fb: "Ha! Plastic is not a cloud :) Try “Yes, a wooden chair…”" } ] },
     { say: "Okay! The table will come on Monday. Will you be home?",
-      card: { w: "Yes, I will be home on Monday.", pic: "🏠", ex: "Yes, I will be home on Monday, please." },
+      card: { w: "Yes, I will be home on Monday.", pic: "🏠", ex: "Yes, I will be home on Monday." },
       choices: [
-        { t: "Yes, I will be home on Monday, please.", ok: true,  fb: "Perfect! See you then. +10" },
+        { t: "Yes, I will be home on Monday.", ok: true,  fb: "Perfect! See you then. +10" },
         { t: "Monday home be will I yes, on.",         ok: false, fb: "Word order: “Yes, I will be home on Monday.”" },
         { t: "Monday is my big purple whale.",         ok: false, fb: "Ha! Monday is a day, not a whale :) Try “Yes, I will be home…”" } ] }
   ]
