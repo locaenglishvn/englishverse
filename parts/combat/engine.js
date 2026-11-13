@@ -401,6 +401,7 @@ function resolveCast(alts, err) {
   if (acc === 0) { CB.mp += c.S.mana / 2; popText("Miss", player.position, "#868e96"); CB.cd[c.id] = 1; return; }
   popText(acc === 1 ? "Perfect!" : acc >= 0.7 ? "Good!" : "Weak", player.position, acc === 1 ? "#f08c00" : acc >= 0.7 ? "#2f9e44" : "#868e96");
   if (acc >= 0.7) { spokeOk(); if (c.task.card) practice(c.task.card); gainXp(4); harmonyStep(c.task.type); }
+  c.duet = typeof teamOnCast === "function" ? teamOnCast() : 1;
   CB.cd[c.id] = c.S.cd * (1 - 0.04 * pr("quick_tongue")) * (performance.now() < CB.buff.hasteUntil ? 0.5 : 1); castSkill(c, acc);
   if (c.S.branch === "rhythm" && Math.random() < 0.03 * pr("encore")) setTimeout(() => { popText("Encore!", player.position, "#e8590c"); castSkill(c, acc); }, 600);
   if (acc === 1 && pr("kind_words")) setHp(hpNow() + hpMax() * 0.02 * pr("kind_words"));
@@ -419,6 +420,7 @@ function skillDamage(c, acc, M) {
   if (performance.now() < CB.buff.dmgUntil) d *= 1 + CB.buff.dmg;
   if (S.branch === "power" && Math.random() < 0.05 * pr("critical_tone")) { d *= 2; c.crit = true; }
   if (performance.now() < CB.harmonyUntil) d *= 2;
+  if (c.duet > 1) d *= c.duet;   // Duet với đồng đội
   if (isPoisoned()) d *= 0.5;
   if (M && M.lv > (save.level || 1) + 8) d *= 0.3;   // quái mạnh hơn nhiều: nên lên cấp trước
   return Math.round(d);
@@ -469,7 +471,7 @@ function dealDamage(M, dmg, bySkill) {
 }
 
 /* ---------- 10. HẠ QUÁI: kinh nghiệm theo phần sát thương do CHIÊU NÓI + rơi đồ ---------- */
-function gainXp(n) { if (save.combat.daySec > DAY_LIMIT) return 0; const L0 = save.level || 1; score += n; $("score").textContent = score; checkLevel();
+function gainXp(n) { if (save.combat.daySec > DAY_LIMIT) return 0; if (typeof teamXpMul === "function") n = Math.round(n * teamXpMul()); const L0 = save.level || 1; score += n; $("score").textContent = score; checkLevel();
   if ((save.level || 1) > L0) setTimeout(() => flash("🌟 +" + (spTotal() - L0 - Math.floor(L0 / 10)) + " skill point! / Có điểm kỹ năng mới<div style='font-size:13px;font-weight:400'>Bấm 🌟 Skills để học hoặc nâng chiêu.</div>"), 2500);
   return n; }
 function killMon(M) {

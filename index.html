@@ -231,6 +231,7 @@ button{font:inherit;cursor:pointer}
 <script src="deck.js"></script>
 <script src="parts/combat/engine.js"></script>
 <script src="parts/social/safechat.js"></script>
+<script src="parts/social/team.js"></script>
 <script src="parts/exteriors/furniturebig.js"></script>
 <script src="parts/exteriors/electronics.js"></script>
 <script src="parts/interiors/cafe.js"></script>
@@ -870,6 +871,7 @@ function goOnline() {
     const lk = safeLook(m.a); if (!sameLook(lk, o.g.userData.model)) setAvatar(o.g, lk);   // người kia vừa thay đồ
   });
   chan.on("broadcast", { event: "bye" }, ({ payload: m }) => removeOther(m.id));
+  if (typeof teamWire === "function") teamWire(chan);   // lập đội + Duet (parts/social/team.js)
   chan.on("broadcast", { event: "chat" }, ({ payload: m }) => {
     if (maze && m.v) maze.voice[m.id] = Math.max((maze.voice[m.id] || 0) + 1, m.k || 0);   // câu tự nói; m.k = tổng của người nói (bù tin bị rơi)
     const o = others[m.id]; if (!o) return;
@@ -1192,7 +1194,7 @@ function sendChat(text, voice) {   // voice = true: câu tự nói qua micro
   const t = cleanChat(text); if (!t) return;
   if (performance.now() - lastChat < 1500) return;   // chống spam: tối đa 1 câu / 1,5 giây
   lastChat = performance.now();
-  showBubble(player, t);
+  showBubble(player, t); if (typeof onSocialSend === "function") onSocialSend(t);
   if (maze && voice) maze.voice[myId] = (maze.voice[myId] || 0) + 1;
   if (online) chan.send({ type: "broadcast", event: "chat", payload: { id: myId, t, v: voice ? 1 : 0, k: maze && voice ? maze.voice[myId] : 0 } });
   $("chatp").style.display = "none";
