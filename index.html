@@ -140,6 +140,11 @@ button{font:inherit;cursor:pointer}
   <div id="cards"></div>
 </div></div>
 <div id="toast"></div>
+<div id="restp" class="over" style="z-index:60;text-align:center"><div class="box" style="margin-top:12vh">
+  <div style="font-size:64px">🌙</div><div style="font-size:22px;font-weight:800">Time to rest! · Nghỉ ngơi thôi!</div>
+  <div style="margin-top:8px">You played <b>120 minutes</b> today. Great job! Your brain needs rest to remember new words. See you tomorrow!</div>
+  <div style="margin-top:6px;font-size:14px;opacity:.85">Hôm nay bạn đã chơi đủ 120 phút. Não cần nghỉ để "ngấm" từ mới – hẹn gặp lại ngày mai nhé!</div>
+  <div id="restWhen" style="margin-top:12px;font-weight:700"></div></div></div>
 <div id="online">⚪ connecting…</div>
 <canvas id="mini" width="240" height="240"></canvas>
 <button id="zoomBtn">🔭 Wide</button>
@@ -555,6 +560,24 @@ if (!save.equip) {   // người chơi cũ (trước khi có trang phục) hoặ
 save.chest = save.chest || {}; save.decor = save.decor || []; save.spoken = save.spoken || 0; save.legends = save.legends || [];
 if (!FACES[save.head]) save.head = Object.keys(FACES)[Math.floor(Math.random() * 4)];
 function myLook() { return Object.assign({ head: save.head }, save.equip); }
+/* GIỚI HẠN CHƠI LÀNH MẠNH: tối đa 120 phút mỗi ngày (theo khuyến nghị cho trẻ + học ngôn ngữ cần thời gian nghỉ để ghi nhớ).
+   Chỉ tính lúc màn hình đang mở; nhắc lúc còn 20 và 5 phút; hết giờ thì khoá đến 0h hôm sau (giờ trên máy). */
+const PLAY_LIMIT = 120 * 60;
+function todayKey() { const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+let playSaveT = 0;
+function updatePlayTime(dt) {
+  if (!save.play || save.play.day !== todayKey()) save.play = { day: todayKey(), sec: 0, warned: 0 };
+  if (document.hidden || creating) return;
+  save.play.sec += dt;
+  const left = PLAY_LIMIT - save.play.sec;
+  if (left <= 20 * 60 && save.play.warned < 1) { save.play.warned = 1; flash("⏰ 20 minutes left today · Còn 20 phút chơi hôm nay"); }
+  if (left <= 5 * 60 && save.play.warned < 2) { save.play.warned = 2; flash("⏰ 5 minutes left – finish your talk! · Còn 5 phút"); }
+  if (left <= 0) { const t = new Date(); t.setHours(24, 0, 0, 0); const m = Math.ceil((t - new Date()) / 60000);
+    $("restWhen").textContent = "⏳ Opens again in " + Math.floor(m / 60) + " h " + (m % 60) + " min · Mở lại sau " + Math.floor(m / 60) + " giờ " + (m % 60) + " phút";
+    if ($("restp").style.display !== "block") { $("restp").style.display = "block"; saveNow(); } }
+  else if ($("restp").style.display === "block") $("restp").style.display = "none";   // sang ngày mới thì mở lại
+  if ((playSaveT += dt) > 15) { playSaveT = 0; saveNow(); }   // lưu thời gian chơi mỗi 15 giây
+}
 const player = makeChar(0x3b82f6, myLook());
 player.position.set(0, 0, 34);   // xuất hiện trên quảng trường, nhìn về Town Hall
 LESSONS.forEach(L => {
@@ -3132,6 +3155,7 @@ function loop() {
   updateGhosts(dt, t);
   updateEconomy(dt);
   updateCity(dt);
+  updatePlayTime(dt);
   updateMini(dt); updateZone(); updateAmbient(dt);
   $("zoomBtn").style.display = maze || room || creating ? "none" : "block";
   sun.position.set(player.position.x + 12, 22, player.position.z + 9); sun.target.position.copy(player.position);   // vùng bóng đổ đi theo người chơi
