@@ -13,7 +13,8 @@ const SAFE_TEMPLATES = [
   /^(this is|these are) for you$/, /^i like (your |the |my )?(.+)$/, /^what is your favou?rite (.+)$/, /^my favou?rite (.+) is (.+)$/,
   /^can i (swap|trade) my (.+) for your (.+)$/, /^(can i have|would you like) (a |an |some |the |your )?(.+?)( please)?$/,
   /^(it is|it s|its) (next to|near|behind|in front of|at|in|on) (the )?(.+)$/, /^(go straight|turn left|turn right)( and (go straight|turn left|turn right))?$/,
-  /^(a|the) (.+) is (here|there|over there|behind you|near you)$/
+  /^(a|the) (.+) is (here|there|over there|behind you|near you)$/,
+  /^what is your (name|level|team)$/, /^what level are you$/, /^i am level (one|two|three|four|five|six|seven|eight|nine|ten|\w+)$/, /^(my name is|i am) (\w+)$/
 ];
 let SAFE_WORDS = null;
 function safeWords() {   // mọi từ "có trong game" được phép điền vào chỗ trống
@@ -36,7 +37,7 @@ function safeChat(text) {   // → câu được phép (đã chuẩn hoá) hoặ
   if (freeChatOn()) return t;
   const n = t.toLowerCase().replace(/[’']/g, " ").replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
   for (const q of QUICK) { const qn = q.replace("{name}", "").toLowerCase().replace(/[’']/g, " ").replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim(); if (qn && match(qn, n) >= 0.85 && match(n, qn) >= 0.85) return q.replace("{name}", myName || ""); }
-  const W = safeWords();
+  const W = new Set(safeWords()); try { Object.values(others).forEach(o => o.n && W.add(String(o.n).toLowerCase())); if (myName) W.add(myName.toLowerCase()); } catch (e) {}   // tên người chơi trong game
   for (const re of SAFE_TEMPLATES) { const m = n.match(re); if (!m) continue;
     const slots = m.slice(1).filter(Boolean).join(" ").split(" ").filter(Boolean);
     if (slots.every(w => W.has(w) || /^(hi|hello|hey|yes|no|okay|sure|sorry|wow|cool|too|course|fight|run|careful|wait|need|is|are|and|or|of|to|with|for|in|on|at|near|behind|next|front|go|turn|straight|please|very|so|much|lot|thanks|thank|you|can|i|swap|trade|have|like|would|team|up|join|play|come|follow|be|friends|let|s|lets|want|do|will|help|me|it|its|there|over|here|ready|good|morning|afternoon|evening|job|luck|nice|meet|see|later|soon|bye|goodbye|fine|great|ok|happy|tired|hungry|lost|favourite|favorite|what|your|my|the|a|an|some|this|these)$/.test(w)))
