@@ -12,6 +12,7 @@ function teamWire(ch) {
   });
   ch.on("broadcast", { event: "cast" }, ({ payload: m }) => { if (TEAM.mates.has(m.id)) TEAM.mateCastAt = performance.now(); });
   tradeWire(ch);
+  if (typeof combatWire === "function") combatWire(ch);   // quái chung nhiều người (parts/combat/engine.js)
 }
 function nameOf(id) { return (others[id] && others[id].n) || "Friend"; }
 function onSocialSend(t) {   // câu mình vừa nói/gửi
