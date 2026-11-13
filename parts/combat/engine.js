@@ -306,7 +306,7 @@ function normalAttack() {
   const M = nearestMon(3.2); CB.atkCd = 0.7; charAct(player, "1H_Melee_Attack_Chop");
   if (!M) return; player.rotation.y = Math.atan2(M.g.position.x - player.position.x, M.g.position.z - player.position.z);
   CB.mp = Math.min(100, CB.mp + 3);
-  if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.hit(M.g.position.clone(), 0xffffff);
+  if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.hit(M.g.position.clone(), "#ffffff");
   dealDamage(M, Math.round(4 + (save.level || 1) * 0.6), false);
 }
 function skillButton(btn, i) {   // bấm 1 lần: hiện đề; GIỮ nút để nói, thả tay là chấm
