@@ -2,7 +2,7 @@
    PHO CORNER – quán phở Việt: tường vàng nhạt, chân tường gỗ, bếp mở sau người bán (nồi nước dùng lớn, rổ bánh phở, kệ gia vị),
    4 bàn gỗ thấp + ghế đẩu nhựa đỏ, tủ mát đồ uống tường trái, đèn lồng đỏ + thực đơn + lịch trên tường. Khu: kitchen, table, drinks, wall. */
 function furnishPho(P, g, cx, cz, W, D, fur) {
-  const K = shopKit(P, g, cx, cz, W, D, { floor: ["#e9e2d0", "#d6cdb6"], wall: ["#fff3c4", "#8d5a2b"], trim: "#c92a2a", counter: 0xc92a2a, counterTop: 0xe9ecef, sign: "PHO BO · PHO GA", signBg: "#c92a2a", signFg: "#ffe066" });
+  const K = shopKit(P, g, cx, cz, W, D, { floor: ["#9c6b4e", "#8a5c42"], wall: ["#fff3c4", "#8d5a2b"], trim: "#c92a2a", counter: 0xc92a2a, counterTop: 0xe9ecef, sign: "PHO BO · PHO GA", signBg: "#c92a2a", signFg: "#ffe066" });
   const { back, B, sol, plate, pic, A } = K;
   // BẾP MỞ (kitchen): kệ bếp inox 2 bên người bán, nồi nước dùng, rổ bánh phở, thớt, kệ gia vị trên tường
   [-1, 1].forEach(s => { B(5, 0.95, 0.8, 0xadb5bd, cx + s * 4.1, 0.48, back + 0.4); B(5.05, 0.05, 0.85, 0xdee2e6, cx + s * 4.1, 0.97, back + 0.4); sol(cx + s * 4.1, back + 0.4, 2.55, 0.45); });
