@@ -224,6 +224,10 @@ button{font:inherit;cursor:pointer}
 <script src="lessons.js"></script>
 <script src="places.js"></script>
 <script src="parts/registry.js"></script>
+<script src="parts/world/wilds.js"></script>
+<script src="parts/combat/models.js"></script>
+<script src="deck.js"></script>
+<script src="parts/combat/engine.js"></script>
 <script src="parts/exteriors/furniturebig.js"></script>
 <script src="parts/exteriors/electronics.js"></script>
 <script src="parts/interiors/cafe.js"></script>
@@ -284,7 +288,7 @@ function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
 function blocked(x, z) {
   if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
   if (room) return Math.abs(x - room.cx) > room.w / 2 - 0.6 || Math.abs(z - room.cz) > room.d / 2 - 0.6 || room.solids.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);   // đang ở trong nhà
-  if (x < -360 || x > 150 || Math.abs(z) > 150) return true;   // ranh giới thế giới (thành phố + đảo đấu trường bên trái)
+  if ((x < -360 || x > 150 || Math.abs(z) > 150) && !(typeof WILDS !== "undefined" && WILDS.walkable(x, z))) return true;   // ranh giới thế giới (thành phố + đảo đấu trường bên trái + vùng hoang dã parts/world/wilds.js)
   if (inRiver(x, z)) return true;   // sông quanh đảo: chỉ đi qua cầu
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
@@ -3104,6 +3108,7 @@ let tagZone = null, tagRoom = undefined;
 function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  if (typeof updateCombat === "function") updateCombat(dt, t);   // parts/combat/engine.js
   let mx = input.x, mz = input.z;
   if (keys["a"] || keys["arrowleft"]) mx -= 1;
   if (keys["d"] || keys["arrowright"]) mx += 1;
@@ -3263,6 +3268,8 @@ function bakeWorld() {
   for (let i = 0; i < camBlockers.length; i++) if (BAKED.has(camBlockers[i])) camBlockers[i] = BAKED.get(camBlockers[i]);
   const seen = new Set(); for (let i = camBlockers.length - 1; i >= 0; i--) { if (seen.has(camBlockers[i])) camBlockers.splice(i, 1); else seen.add(camBlockers[i]); }
 }
+if (typeof buildWilds === "function") buildWilds();   // vùng hoang dã (parts/world/wilds.js)
+if (typeof initCombat === "function") initCombat();   // chiến đấu thời gian thực (parts/combat/engine.js)
 shade(scene); bakeWorld(); renderHud();
 loop();
 addEventListener("resize", () => {
