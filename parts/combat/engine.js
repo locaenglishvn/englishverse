@@ -387,7 +387,9 @@ function dealDamage(M, dmg, bySkill) {
 }
 
 /* ---------- 10. HẠ QUÁI: kinh nghiệm theo phần sát thương do CHIÊU NÓI + rơi đồ ---------- */
-function gainXp(n) { if (save.combat.daySec > DAY_LIMIT) return 0; score += n; $("score").textContent = score; checkLevel(); return n; }
+function gainXp(n) { if (save.combat.daySec > DAY_LIMIT) return 0; const L0 = save.level || 1; score += n; $("score").textContent = score; checkLevel();
+  if ((save.level || 1) > L0) setTimeout(() => flash("🌟 +" + (spTotal() - L0 - Math.floor(L0 / 10)) + " skill point! / Có điểm kỹ năng mới<div style='font-size:13px;font-weight:400'>Bấm 🌟 Skills để học hoặc nâng chiêu.</div>"), 2500);
+  return n; }
 function killMon(M) {
   M.dead = true; M.deadT = 0; if (M.tele) { scene.remove(M.tele.ring); M.tele = null; }
   const share = M.dmgAll ? M.dmgSkill / M.dmgAll : 0, xp = gainXp(Math.round((6 + M.lv * 1.5) * share));
