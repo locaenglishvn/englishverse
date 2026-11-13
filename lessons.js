@@ -1364,10 +1364,10 @@ const LESSONS = [
         { t: "Cars is too many, because road small.",                 ok: false, fb: "Almost! Say “There are too many cars because…”" },
         { t: "Cars are red and I like them.",                         ok: false, fb: "Nice colours! But tell a problem and a reason." } ] },
     { say: "Thank you! What should we do first to fix it?",
-      card: { w: "We should build…", pic: "🏗️", ex: "We should build a new bridge." },
+      card: { w: "We should build…", pic: "🏗️", ex: "We should build more bike lanes." },
       choices: [
-        { t: "We should build a new bridge, because it is safer.", ok: true,  fb: "Excellent reasoning! +10" },
-        { t: "Bridge new should we build.",                        ok: false, fb: "Word order: “We should build a new bridge.”" },
+        { t: "We should build bike lanes, because bikes are clean.", ok: true,  fb: "Excellent reasoning! +10" },
+        { t: "Bridge new should we build.",                        ok: false, fb: "Word order: “We should build bike lanes.”" },
         { t: "Fish like the bridge a lot.",                        ok: false, fb: "Fish would love it! Now say what WE should do." } ] }
   ]
 },
@@ -1376,7 +1376,7 @@ const LESSONS = [
   name: "Jenny – Receptionist", color: 0x1098ad, place: "hospital", x: -6, z: 10,
   steps: [
     { say: "Hello! What’s your name, please?",
-      card: { w: "I feel sick.", pic: "🤒", ex: "I feel sick today." },
+      card: { w: "first name", pic: "📛", ex: "My first name is Nam." },
       choices: [
         { t: "My name is Nam.",  ok: true,  fb: "Great! Short and clear. +10" },
         { t: "I am name Nam.",   ok: false, fb: "Word order: “My name is Nam.”" },
@@ -1445,7 +1445,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ben – Young Patient", color: 0xf59f00, place: "hospital", x: -8, z: -15,
+  name: "Bao – Young Patient", color: 0xf59f00, place: "hospital", x: -8, z: -15,
   steps: [
     { say: "Hi! I broke my arm. But I feel better now!",
       card: { w: "feel better", pic: "😊", ex: "I feel better today." },
@@ -1497,16 +1497,16 @@ const LESSONS = [
   name: "Hana – Visitor", color: 0xc2255c, place: "hospital", x: 6, z: 12,
   steps: [
     { say: "Excuse me! Where is the children’s ward?",
-      card: { w: "ward", pic: "🛏️", ex: "The ward is on the second floor." },
+      card: { w: "ward", pic: "🛏️", ex: "The ward is at the back, on the left." },
       q: { w: "Where is the ward?", pic: "🛏️", ex: "Where is the ward, please?" },
       choices: [
-        { t: "It’s on the second floor.", ok: true,  fb: "Clear directions! +10" },
-        { t: "Floor second is up, yes.",  ok: false, fb: "Word order: “It’s on the second floor.”" },
-        { t: "I am a nurse!",             ok: false, fb: "Haha! You are a visitor :) Try “It’s on the second floor.”" } ] },
+        { t: "It’s at the back, on the left.", ok: true,  fb: "Clear directions! +10" },
+        { t: "Back left it at is.",  ok: false, fb: "Word order: “It’s at the back, on the left.”" },
+        { t: "I am a nurse!",             ok: false, fb: "Haha! You are a visitor :) Try “It’s at the back, on the left.”" } ] },
     { say: "Thank you! Is it far from here?",
       card: { w: "not far", pic: "🚶", ex: "It’s not far from here." },
       choices: [
-        { t: "No, it’s not far. Just go upstairs.", ok: true,  fb: "Helpful! +10" },
+        { t: "No, it’s not far. Just go straight.", ok: true,  fb: "Helpful! +10" },
         { t: "Far, far, I like stairs.",            ok: false, fb: "Ha! Try “No, it’s not far.”" },
         { t: "Yes, the stairs are my friend.",      ok: false, fb: "Friendly stairs! But they asked how far. Try “It’s not far.”" } ] },
     { say: "Thank you! We are waiting for our turn.",
@@ -1535,11 +1535,11 @@ const LESSONS = [
         { t: "Yes, magnet can paper pull.",    ok: false, fb: "Word order: “Yes, it can pull a paper clip.”" },
         { t: "Paper clip is very red.",        ok: false, fb: "Red is nice! But the question is: can the magnet pull it?" } ] },
     { say: "Excellent! Now tell me, what did the magnet do?",
-      card: { w: "stuck to", pic: "📎", ex: "The nail is stuck to the magnet." },
+      card: { w: "stuck to", pic: "📎", ex: "The paper clip is stuck to the magnet." },
       q: { w: "What did it do?", pic: "🔍", ex: "What did the magnet do?" },
       choices: [
-        { t: "The nail stuck to the magnet.",   ok: true,  fb: "Perfect past tense! +10" },
-        { t: "Nail magnet to stuck.",           ok: false, fb: "Word order: “The nail stuck to the magnet.”" },
+        { t: "The paper clip stuck to the magnet.",   ok: true,  fb: "Perfect past tense! +10" },
+        { t: "Clip magnet to stuck.",           ok: false, fb: "Word order: “The paper clip stuck to the magnet.”" },
         { t: "The magnet is a nail, I think.",  ok: false, fb: "Ha! A magnet is not a nail. Try “stuck to”." } ] }
   ]
 },

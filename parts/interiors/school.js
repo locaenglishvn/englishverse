@@ -24,7 +24,7 @@ function furnishSchool(P, g, cx, cz, W, D, fur) {
   const plate = (t, w, h, bg, fg, x, y, z, ry) => { const p = textPlate(t, w, h, bg, fg); p.position.set(x, y, z); p.rotation.y = ry || 0; g.add(p); return p; };
   const pic = (tex, w, h, x, y, z, ry) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshLambertMaterial({ map: tex })); m.position.set(x, y, z); m.rotation.y = ry || 0; g.add(m); return m; };
   // sàn gạch hoa + tường + trần trắng có đèn tuýp
-  const fl = skin(1, 1, 48, x => { x.fillStyle = "#e9ddc8"; x.fillRect(0, 0, 1, 1); x.fillStyle = "#c98f6b"; x.beginPath(); x.moveTo(0.5, 0.2); x.lineTo(0.8, 0.5); x.lineTo(0.5, 0.8); x.lineTo(0.2, 0.5); x.fill(); x.fillStyle = "#d8c8ab"; x.fillRect(0, 0, 1, 0.03); x.fillRect(0, 0, 0.03, 1); });
+  const fl = skin(1, 1, 48, x => { x.fillStyle = "#e9ddc8"; x.fillRect(0, 0, 1, 1); x.fillStyle = "#dcc3a3"; x.beginPath(); x.moveTo(0.5, 0.3); x.lineTo(0.7, 0.5); x.lineTo(0.5, 0.7); x.lineTo(0.3, 0.5); x.fill(); x.fillStyle = "#d8c8ab"; x.fillRect(0, 0, 1, 0.03); x.fillRect(0, 0, 0.03, 1); });
   fl.wrapS = fl.wrapT = THREE.RepeatWrapping; fl.repeat.set(W, D); g.children[0].material = new THREE.MeshLambertMaterial({ map: fl });
   ["back", "front", "side", "side"].forEach((k, i) => g.children[1 + i].material = schoolWall(i < 2 ? W : D, H, k));
   { const m = new THREE.Mesh(new THREE.PlaneGeometry(W, D), mat(0xfaf6ee, { side: THREE.DoubleSide })); m.rotation.x = Math.PI / 2; m.position.set(cx, H, cz); g.add(m); }
@@ -35,10 +35,10 @@ function furnishSchool(P, g, cx, cz, W, D, fur) {
     lc(f, 0.16, 0.16, 0.14, 0x495057, 0, 0, 0, 10); for (let i = 0; i < 3; i++) { const bl = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.02, 0.2), mat(0xf1f3f5)); bl.position.set(Math.cos(i * 2.09) * 0.65, 0, Math.sin(i * 2.09) * 0.65); bl.rotation.y = -i * 2.09; f.add(bl); } });
   // ===== BẢNG + BÀN GIÁO VIÊN (board) =====
   B(10.4, 2.4, 0.12, 0x868e96, cx, 2.3, back + 0.08); B(10, 2.1, 0.04, 0xfdfdfd, cx, 2.3, back + 0.15); B(10, 0.08, 0.25, 0x868e96, cx, 1.15, back + 0.2);
-  const wb = skin(10, 2.1, 30, x => { x.clearRect(0, 0, 10, 2.1); x.fillStyle = "#1c7ed6"; x.font = "bold 0.32px system-ui"; x.fillText("Thursday, 14 November", 0.3, 0.45); x.fillStyle = "#e03131"; x.fillText("Unit 5: My School", 3.6, 1.0);
+  const wb = skin(10, 2.1, 30, x => { x.clearRect(0, 0, 10, 2.1); x.fillStyle = "#1c7ed6"; x.font = "bold 0.32px system-ui"; x.fillText("Good morning, class!", 0.3, 0.45); x.fillStyle = "#e03131"; x.fillText("Unit 5: My School", 3.6, 1.0);
     x.fillStyle = "#2b8a3e"; x.font = "0.26px system-ui"; ["• classroom", "• library", "• playground"].forEach((t, i) => x.fillText(t, 0.6, 1.35 + i * 0.3)); x.fillStyle = "#343a40"; x.fillText("I go to school by bike.", 5.5, 1.6); });
   { const m = pic(wb, 10, 2.1, cx, 2.3, back + 0.18); m.material.transparent = true; }
-  plate("VERSE SCHOOL", 4, 0.55, "#1971c2", "#ffffff", cx, 4.1, back + 0.05, 0); sol(cx, back + 0.15, 5.2, 0.25);
+  sol(cx, back + 0.15, 5.2, 0.25);
   B(2.4, 0.08, 1, 0x8d5a2b, cx + 2.5, 0.8, cz - 14.5); B(2.3, 0.76, 0.08, 0x6f4e37, cx + 2.5, 0.38, cz - 14.05); [-1.1, 1.1].forEach(d => B(0.08, 0.76, 0.9, 0x6f4e37, cx + 2.5 + d, 0.38, cz - 14.5)); sol(cx + 2.5, cz - 14.5, 1.25, 0.55);
   B(0.5, 0.08, 0.5, 0x3b5bdb, cx + 2.5, 0.5, cz - 15.5); B(0.5, 0.6, 0.08, 0x3b5bdb, cx + 2.5, 0.8, cz - 15.78); sol(cx + 2.5, cz - 15.5, 0.3, 0.3);
   // ===== BÀN HỌC (classroom): 2 dãy × 2 cột × 4 hàng bàn đôi, ghế băng =====
@@ -83,6 +83,9 @@ function furnishSchool(P, g, cx, cz, W, D, fur) {
   [[5.5, 6], [5.5, 10.5]].forEach(([dx, dz]) => { const x = cx + dx, z = cz + dz; lc(g, 0.6, 0.6, 0.06, 0xfff4e6, x, 0.75, z, 16); lc(g, 0.06, 0.06, 0.72, 0x868e96, x, 0.36, z, 6); sol(x, z, 0.6, 0.6);
     [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([a, b]) => { lc(g, 0.2, 0.2, 0.45, 0xf08c00, x + a * 0.95, 0.23, z + b * 0.95, 10); sol(x + a * 0.95, z + b * 0.95, 0.2, 0.2); }); });
   plate("CANTEEN", 1.8, 0.45, "#f08c00", "#ffffff", cx + 9.6, 2.3, cz + 13.1, 0); B(0.06, 1.1, 0.06, 0x868e96, cx + 9.6, 1.6, cz + 12.9);
+  { const rug = skin(6, 4, 20, x => { ["#ffa8a8", "#ffd43b", "#8ce99a", "#74c0fc", "#b197fc", "#ffa94d"].forEach((c, i) => { x.fillStyle = c; x.fillRect(i, 0, 1, 4); }); });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(6, 4), new THREE.MeshLambertMaterial({ map: rug })); m.rotation.x = -Math.PI / 2; m.position.set(cx - 5.5, 0.02, cz + 5); m.userData.flat = true; g.add(m);
+    [[-7.5, 4], [-3.5, 4], [-5.5, 6.3]].forEach(([dx, dz], i) => { const b = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 8), mat([0xe64980, 0x1c7ed6, 0x40c057][i])); b.scale.y = 0.6; b.position.set(cx + dx, 0.3, cz + dz); g.add(b); sol(cx + dx, cz + dz, 0.45, 0.45); }); }   // thảm đọc sách + ghế lười
   // lối vào: chậu cây, máy nước uống, bảng tin
   [[-4.5, 16.8], [4.5, 16.8]].forEach(([dx, dz]) => { pot(g, cx + dx, cz + dz, 1.4); sol(cx + dx, cz + dz, 0.5, 0.5); });
   B(0.5, 1, 0.5, 0xdee2e6, cx - 8, 0.5, front - 0.4); lc(g, 0.18, 0.18, 0.45, 0x74c0fc, cx - 8, 1.25, front - 0.4, 10); sol(cx - 8, front - 0.4, 0.3, 0.3);
