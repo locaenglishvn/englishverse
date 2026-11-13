@@ -6,3 +6,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | Ngày | Mã commit (main) | Nội dung bản này | QA |
 |---|---|---|---|
 | 2026-11-13 | `8936100` | Bảo tàng 4 khu, Thư viện, Ngân hàng, Bưu điện mới, tối ưu hiệu năng (~210 lần vẽ) | ✅ |
+| 2026-11-13 | `c068e0d` | Vận hành đội AI: parts/, cổng QA, TEAM.md (trước đợt 1) | ✅ |
