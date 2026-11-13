@@ -89,22 +89,23 @@ function initCombat() {
 }
 function buildCombatUi() {
   const css = document.createElement("style"); css.textContent = `
-#cbHud{position:fixed;left:12px;top:calc(92px + env(safe-area-inset-top,0px));display:none;flex-direction:column;gap:4px;z-index:5;pointer-events:none}
+#cbHud{position:fixed;left:12px;top:calc(134px + env(safe-area-inset-top,0px));display:none;flex-direction:column;gap:4px;z-index:5;pointer-events:none}
 .cbBar{width:170px;height:12px;border-radius:6px;background:rgba(0,0,0,.35);overflow:hidden;position:relative}.cbBar div{height:100%}.cbBar span{position:absolute;left:6px;top:-2px;font:700 10px system-ui;color:#fff}
 #cbBtns{position:fixed;right:14px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:190px;height:190px;display:none;z-index:6}
 #cbBtns button{position:absolute;border:0;border-radius:50%;color:#fff;font-size:22px;box-shadow:0 3px 10px rgba(0,0,0,.35);touch-action:none;-webkit-user-select:none;user-select:none}
 #cbAtk{right:8px;bottom:8px;width:76px;height:76px;background:#f8f9fa!important;color:#1b2340!important;font-size:30px!important}
 .cbSk{width:54px;height:54px}.cbSk .cd{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);font:700 13px system-ui;display:flex;align-items:center;justify-content:center}
 .cbSk.rec{transform:scale(1.15);box-shadow:0 0 0 5px #35c9c4}
-#cbCard{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(214px + env(safe-area-inset-bottom,0px));width:min(92vw,420px);background:#fff;color:#1b2340;border-radius:16px;padding:10px 14px;display:none;z-index:7;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#cbCard{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(272px + env(safe-area-inset-bottom,0px));width:min(92vw,420px);background:#fff;color:#1b2340;border-radius:16px;padding:10px 14px;display:none;z-index:7;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 #cbCard .t{font:600 11px ui-monospace,monospace;color:#5b6482;display:flex;justify-content:space-between;gap:6px}#cbCard .q{font:700 18px system-ui;margin:4px 0}#cbCard .h{font-size:12px;color:#0f9a9a}
 #cbCard .bar{height:4px;background:#e9ecef;border-radius:2px;margin-top:6px}#cbCard .bar div{height:100%;background:#0f9a9a;border-radius:2px}
 #cbCard button{border:0;background:#e9ecef;border-radius:99px;padding:2px 10px;font-size:12px}
 #cbKo{position:fixed;inset:0;background:rgba(80,80,80,.7);display:none;align-items:center;justify-content:center;color:#fff;font:800 24px system-ui;z-index:20;text-align:center}
-#cbFood{position:fixed;right:12px;top:calc(140px + env(safe-area-inset-top,0px));display:none;flex-direction:column;gap:6px;z-index:5}
+#cbFood{position:fixed;right:14px;bottom:calc(214px + env(safe-area-inset-bottom,0px));display:none;flex-direction:row;gap:6px;z-index:5}
 #cbFood button,#cbWpn{width:46px;height:46px;border-radius:12px;border:0;background:rgba(255,255,255,.85);font-size:22px;position:relative}
 #cbFood b,#cbWpn b{position:absolute;right:2px;bottom:0;font:700 10px system-ui;color:#1b2340}
-#skBtn{position:fixed;left:12px;top:calc(132px + env(safe-area-inset-top,0px));border:0;border-radius:99px;padding:6px 12px;font-weight:700;background:var(--panel);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:5}
+#skBtn{position:fixed;left:12px;top:calc(196px + env(safe-area-inset-top,0px));border:0;border-radius:99px;padding:6px 12px;font-weight:700;background:var(--panel);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:5}
+body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important;right:14px!important}
 #skPanel .brh{display:flex;align-items:center;gap:6px;font-weight:800;margin-top:12px}#skPanel .sk{display:flex;gap:8px;align-items:center;border:1px solid rgba(128,128,128,.3);border-radius:12px;padding:8px;margin-top:6px}
 #skPanel .sk .ic{font-size:26px;width:36px;text-align:center}#skPanel .sk .tx{flex:1;font-size:13px}#skPanel .sk button{border:0;border-radius:10px;padding:6px 10px;font-weight:700}`;
   document.head.appendChild(css);
@@ -137,7 +138,7 @@ function drawCombatHud() {
 
 /* ---------- 6. VÀO / RA VÙNG HOANG DÃ ---------- */
 function setCombatOn(on, sec) {
-  CB.on = on; CB.sec = sec;
+  CB.on = on; CB.sec = sec; document.body.classList.toggle("cbOn", on);
   ["cbHud", "cbFood"].forEach(id => $(id).style.display = on ? "flex" : "none"); $("cbBtns").style.display = on ? "block" : "none";
   if (on) { CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
     flash("🌿 " + sec.name + "<div style='font-size:13px;font-weight:400'>Monster zone! Tap ⚔️ to hit, tap a skill and SPEAK to cast. / Vùng quái: bấm ⚔️ đánh thường, bấm chiêu rồi NÓI để tung chiêu.</div>"); }
@@ -326,7 +327,8 @@ function makeTask(type, band) {
 function grade(task, alts) {   // → 1 (Perfect) · 0.7 (Good) · 0.3 (Weak) · 0 (Miss)
   if (!alts.length) return 0;
   if (task.keys) {
-    const ok = alts.some(h => { const W = " " + norm(h).join(" ") + " "; return task.keys.every(k => k.split("|").some(o => W.indexOf(" " + norm(o).join(" ") + " ") >= 0)); });
+    const has = (T, o) => { const O = norm(o); if (O.length > 1) return (" " + T.join(" ") + " ").indexOf(" " + O.join(" ") + " ") >= 0; return T.some(t => t === O[0] || (O[0].length >= 3 && t.indexOf(O[0]) === 0)); };   // slow → slowly, apple → apples
+    const ok = alts.some(h => { const T = norm(h); return task.keys.every(k => k.split("|").some(o => has(T, o))); });
     const full = alts.some(h => match(task.target, h) >= 0.6);
     if (ok && (full || task.type === "name" && (skillRank(CB.cast.id) < 3))) return 1;
     if (ok) return 0.7; return full ? 0.3 : (alts.some(h => match(task.target, h) >= 0.3) ? 0.3 : 0);
@@ -403,7 +405,7 @@ function killMon(M) {
 }
 const RCOL = { common: 0xdee2e6, uncommon: 0x40c057, rare: 0x339af0, epic: 0x9775fa, legendary: 0xfab005 };
 function dropAt(x, z, id, n) {
-  const it = id === "coins" ? { icon: "🪙", rarity: "common" } : ITEMS[id]; if (!it) return;
+  const it0 = id === "coins" ? { icon: "🪙", rarity: "common" } : ITEMS[id]; if (!it0) return; const it = Object.assign({ rarity: "common" }, it0);
   const g = new THREE.Group(), s = emojiSprite(it.icon, 0.7); s.position.y = 0.6; g.add(s);
   if (id !== "coins" && it.rarity !== "common") { const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 3, 8, 1, true), new THREE.MeshBasicMaterial({ color: RCOL[it.rarity], transparent: true, opacity: 0.45, depthWrite: false })); beam.position.y = 1.5; g.add(beam); }
   g.position.set(x + (Math.random() - 0.5), 0, z + (Math.random() - 0.5)); scene.add(g);
@@ -416,7 +418,7 @@ function dropTick(dt, t) {
     const mine = D.owner === cbOwnerId() || D.t > 20;   // 20 giây đầu chỉ người hạ quái nhặt được
     if (mine && !CB.ko && D.g.position.distanceTo(player.position) < 1.4) {
       if (D.id === "coins") { addCoins(D.n); popText("+" + D.n + " 🪙", D.g.position, "#e67700"); D.done = true; }
-      else if (addItem(save.items, BAG_SIZE, D.id)) { const it = ITEMS[D.id]; popText(it.icon + " " + it.name, D.g.position, "#" + RCOL[it.rarity].toString(16).padStart(6, "0")); D.done = true; saveNow(); drawCombatHud(); }
+      else if (addItem(save.items, BAG_SIZE, D.id)) { const it = ITEMS[D.id]; popText(it.icon + " " + it.name, D.g.position, "#" + (RCOL[it.rarity || "common"]).toString(16).padStart(6, "0")); D.done = true; saveNow(); drawCombatHud(); }
       else if (!D.full) { D.full = true; flash("🎒 Bag full! / Túi đầy rồi"); }
     }
     if (D.t > 90) D.done = true;
