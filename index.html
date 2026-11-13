@@ -2934,7 +2934,7 @@ function drawShop(first) {
   $("shopWho").textContent = P.keeper.name;
   if (first) { $("shopSay").textContent = P.keeper.greet; speak(P.keeper.greet); $("shopFb").textContent = ""; }
   $("shopHint").innerHTML = P.sells.length ? "💡 Try: “" + P.keeper.hint + "” <span style='opacity:.7'>(nói = giảm 10%)</span>" : "";
-  $("shopMic").style.display = P.sells.length && SR ? "block" : "none";
+  $("shopMic").style.display = SR ? "block" : "none";
   $("shopList").innerHTML = "";
   P.sells.forEach(id => {
     const it = ITEMS[id], b = document.createElement("button"), lock = it.lv > playerLevel();
@@ -2944,7 +2944,19 @@ function drawShop(first) {
     b.onclick = () => buy(id, false);
     $("shopList").appendChild(b);
   });
+  const sellable = Object.keys(save.items).filter(k => ITEMS[k] && ITEMS[k].price > 0 && !ITEMS[k].decor);   // BÁN ĐỒ: phải nói "I'd like to sell the …"
+  if (sellable.length) { const h = document.createElement("div"); h.style.cssText = "grid-column:1/-1;font-weight:700;margin-top:8px"; h.innerHTML = "💰 Sell / Bán đồ <span style='font-weight:400;font-size:13px;opacity:.8'>– giữ 🎤 và nói: “I’d like to sell the …, please.”</span>"; $("shopList").appendChild(h);
+    sellable.forEach(id => { const it = ITEMS[id], b = document.createElement("button"); b.className = "item"; b.style.opacity = 0.85;
+      b.innerHTML = '<div class="pic">' + it.icon + '</div><div class="n">' + it.name + " ×" + save.items[id] + '</div><div style="margin-top:4px;font-weight:700">+' + sellPrice(id) + " 🪙</div>";
+      b.onclick = () => { $("shopFb").textContent = "🎤 Say: “I’d like to sell the " + it.name.toLowerCase() + ", please.”"; $("shopFb").style.color = "var(--ink)"; }; $("shopList").appendChild(b); }); }
   $("shopCoins").textContent = "🪙 " + save.coins;
+}
+function sellPrice(id) { return Math.max(1, Math.floor(ITEMS[id].price * 0.4)); }
+function sellItem(id, polite) {
+  const it = ITEMS[id], c = sellPrice(id) + (polite ? 1 : 0); takeItem(save.items, id); addCoins(c);
+  if (save.combat && save.combat.weapons) save.combat.weapons = save.combat.weapons.map(w => w === id && !save.items[id] ? null : w);
+  $("shopFb").innerHTML = "💰 Sold " + it.icon + " " + it.name + " +" + c + " 🪙" + (polite ? " (polite +1)" : ""); $("shopFb").style.color = "var(--ok)";
+  speak("Thank you! Here is " + c + " coins."); drawShop(false);
 }
 function heardItem(heard, list) {   // món nào khớp nhiều từ nhất với câu người chơi nói
   const h = " " + heard.toLowerCase().replace(/-/g, " ") + " ";
@@ -2963,8 +2975,10 @@ function shopStart(e) {
   r.onresult = ev => { heard = ""; for (const res of ev.results) heard += res[0].transcript; $("shopFb").textContent = "🎙️ " + heard; $("shopFb").style.color = "var(--ink)"; };
   r.onend = () => {
     shopRec = null; $("shopMic").classList.remove("rec");
-    const id = heardItem(heard, room.P.sells);
-    if (id) { spokeOk(); buy(id, true, /please/i.test(heard)); }
+    const sellId = /\bsell\b/i.test(heard) && heardItem(heard, Object.keys(save.items).filter(k => ITEMS[k] && ITEMS[k].price > 0 && !ITEMS[k].decor));
+    const id = !sellId && heardItem(heard, room.P.sells);
+    if (sellId) { spokeOk(); sellItem(sellId, /please/i.test(heard)); }
+    else if (id) { spokeOk(); buy(id, true, /please/i.test(heard)); }
     else { $("shopFb").textContent = heard ? "😕 “" + heard + "” – Sorry, what would you like?" : "Giữ nút và nói to hơn nhé!"; $("shopFb").style.color = "var(--bad)"; if (heard) speak("Sorry, what would you like?"); }
   };
   shopRec = r; $("shopMic").classList.add("rec");
