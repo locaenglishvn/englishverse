@@ -1963,7 +1963,7 @@ const LESSONS = [
 },
 /* ----- Banh Mi Bakery (bakery) ----- */
 {
-  name: "Finn – Baker Helper", color: 0xe8590c, place: "bakery", x: -5, z: -2,
+  name: "Finn – Baker Helper", color: 0xe8590c, place: "bakery", x: -6.5, z: -16,
   steps: [
     { say: "Hi! I make the bread here. Would you like a warm roll?",
       card: { w: "I’d like a roll.", pic: "🥖", ex: "I’d like a warm roll, please." },
@@ -1988,7 +1988,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grandma Tam – Customer", color: 0x9c36b5, place: "bakery", x: 5, z: -2,
+  name: "Grandma Tam – Customer", color: 0x9c36b5, place: "bakery", x: 6.5, z: -2,
   steps: [
     { say: "Excuse me, how much is the cake? It looks lovely!",
       card: { w: "twenty thousand dong", pic: "💰", ex: "It’s twenty thousand dong." },
@@ -2012,7 +2012,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Lucy – Tourist", color: 0x5f3dc4, place: "bakery", x: -5, z: 4,
+  name: "Lucy – Tourist", color: 0x5f3dc4, place: "bakery", x: -6.5, z: 1,
   steps: [
     { say: "Hi! Do you know what this bread is called?",
       card: { w: "It’s called banh mi.", pic: "🥖", ex: "It’s called banh mi. It’s tasty!" },
@@ -2036,7 +2036,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Wendy – Shopper", color: 0xd6336c, place: "bakery", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Wendy – Shopper", color: 0xd6336c, place: "bakery", x: 5, z: 10, minLv: 5,
   steps: [
     { say: "Hi! My son wants cake. Should I buy bread instead?",
       card: { w: "I think you should…", pic: "🤔", ex: "I think you should buy bread." },
@@ -2137,7 +2137,7 @@ const LESSONS = [
 },
 /* ----- Shop 24h (supermarket) ----- */
 {
-  name: "Hannah – Shop Assistant", color: 0x2f9e44, place: "supermarket", x: -5, z: -2,
+  name: "Hannah – Shop Assistant", color: 0x2f9e44, place: "supermarket", x: 3.5, z: -9.5,
   steps: [
     { say: "Hello! Can I help you? We have fresh fruit today.",
       card: { w: "Can I have an apple?", pic: "🍎", ex: "Can I have an apple, please?" },
@@ -2161,7 +2161,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Billy – Kid Shopper", color: 0xf59f00, place: "supermarket", x: 5, z: -2,
+  name: "Billy – Kid Shopper", color: 0xf59f00, place: "supermarket", x: -3.5, z: -4.5,
   steps: [
     { say: "Hi! I love snacks! What is your favourite snack?",
       card: { w: "My favourite snack is…", pic: "🍿", ex: "My favourite snack is popcorn." },
@@ -2185,7 +2185,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ryan – Tourist", color: 0x1c7ed6, place: "supermarket", x: -5, z: 4,
+  name: "Ryan – Tourist", color: 0x1c7ed6, place: "supermarket", x: -7.5, z: 7,
   steps: [
     { say: "Excuse me! Where are the cold drinks?",
       card: { w: "in the fridge", pic: "🧊", ex: "The cold drinks are in the fridge." },
@@ -2209,7 +2209,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Mark – Dad Shopper", color: 0x099268, place: "supermarket", x: 5, z: 4, minLv: 5,
+  name: "Mr. Mark – Dad Shopper", color: 0x099268, place: "supermarket", x: 7, z: 10, minLv: 5,
   steps: [
     { say: "My daughter wants snacks. Which is healthier: crisps or fruit?",
       card: { w: "is healthier than", pic: "🥗", ex: "Fruit is healthier than crisps." },
@@ -2234,22 +2234,22 @@ const LESSONS = [
 },
 /* ----- Green Cross Pharmacy (pharmacy) ----- */
 {
-  name: "Penny – Pharmacy Helper", color: 0x0b7285, place: "pharmacy", x: -5, z: -2,
+  name: "Penny – Pharmacy Helper", color: 0x0b7285, place: "pharmacy", x: 0, z: -2.4,
   steps: [
-    { say: "Hello! How can I help you today?",
+    { say: "Hello! I work inside this round counter. How can I help you?",
       card: { w: "I have a sore throat.", pic: "🤒", ex: "I have a sore throat today." },
       q: { w: "How can I help?", pic: "🙋", ex: "How can I help you today?" },
       choices: [
         { t: "I have a sore throat today.", ok: true,  fb: "Great! Clear and short. +10" },
         { t: "Throat sore I have a today.", ok: false, fb: "Word order: “I have a sore throat today.”" },
         { t: "I am a sore pharmacist.",     ok: false, fb: "Haha! You are not a pharmacist :) Try “I have a sore throat.”" } ] },
-    { say: "Please ask a grown-up before you take any medicine. OK?",
+    { say: "Ask a grown-up or the pharmacist before you take medicine. OK?",
       card: { w: "I will tell my mum.", pic: "👩", ex: "Yes, I will tell my mum first." },
       choices: [
         { t: "Yes, I will tell my mum first.", ok: true,  fb: "Very wise! Safety first. +10" },
         { t: "Mum first tell I will yes.",     ok: false, fb: "Word order: “Yes, I will tell my mum first.”" },
         { t: "Medicine is a big blue cloud.",  ok: false, fb: "Ha! Medicine is not a cloud :) Try “I will tell my mum.”" } ] },
-    { say: "We have bandages and plasters. What do you need?",
+    { say: "We have plasters and gauze on the shelf. What do you need?",
       card: { w: "I need a plaster.", pic: "🩹", ex: "I need a plaster for my knee." },
       choices: [
         { t: "I need a plaster for my knee, please.", ok: true,  fb: "Great! Short and clear. +10" },
@@ -2258,7 +2258,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Timmy – Little Patient", color: 0xe03131, place: "pharmacy", x: 5, z: -2,
+  name: "Timmy – Little Patient", color: 0xe03131, place: "pharmacy", x: -6, z: 6,
   steps: [
     { say: "Ouch! I fell down. My knee hurts!",
       card: { w: "Don’t worry.", pic: "😊", ex: "Don’t worry. Let’s clean it first." },
@@ -2282,7 +2282,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grandpa Thanh – Customer", color: 0x868e96, place: "pharmacy", x: -5, z: 4,
+  name: "Grandpa Thanh – Customer", color: 0x868e96, place: "pharmacy", x: 6, z: -12,
   steps: [
     { say: "Good morning! I feel tired. What should I do?",
       card: { w: "You should rest.", pic: "😴", ex: "You should drink water and rest." },
@@ -2306,7 +2306,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mrs. Susan – Mum Shopper", color: 0xae3ec9, place: "pharmacy", x: 5, z: 4, minLv: 5,
+  name: "Mrs. Susan – Mum Shopper", color: 0xae3ec9, place: "pharmacy", x: 6, z: 6, minLv: 5,
   steps: [
     { say: "My son has a cold. Should I ask the pharmacist first?",
       card: { w: "You should ask the pharmacist.", pic: "💬", ex: "You should ask the pharmacist first, because children need care." },
@@ -2332,7 +2332,7 @@ const LESSONS = [
 },
 /* ----- Clothes Shop (clothes) ----- */
 {
-  name: "Zara – Shop Assistant", color: 0xf783ac, place: "clothes", x: -5, z: -2,
+  name: "Zara – Shop Assistant", color: 0xf783ac, place: "clothes", x: -6, z: -10,
   steps: [
     { say: "Hello! Are you looking for a T-shirt or a jacket?",
       card: { w: "I’m looking for a jacket.", pic: "🧥", ex: "I’m looking for a jacket for winter." },
@@ -2356,7 +2356,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Megan – Teen Shopper", color: 0xf06595, place: "clothes", x: 5, z: -2,
+  name: "Megan – Teen Shopper", color: 0xf06595, place: "clothes", x: 6, z: -10,
   steps: [
     { say: "This shirt is too big for me. What should I do?",
       card: { w: "Try a smaller size.", pic: "🔎", ex: "Try a smaller size, it might fit better." },
@@ -2381,7 +2381,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Mr. Steve – Dad Shopper", color: 0x5c940d, place: "clothes", x: -5, z: 4,
+  name: "Mr. Steve – Dad Shopper", color: 0x5c940d, place: "clothes", x: 10, z: 4,
   steps: [
     { say: "Excuse me! Where are the sandals? I need size five.",
       card: { w: "They’re on the shoe shelf.", pic: "👟", ex: "They’re on the shoe shelf, over there." },
@@ -2405,7 +2405,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Ms. Vivian – Fashion Shopper", color: 0xd6336c, place: "clothes", x: 5, z: 4, minLv: 5,
+  name: "Ms. Vivian – Fashion Shopper", color: 0xd6336c, place: "clothes", x: -10, z: 6, minLv: 5,
   steps: [
     { say: "Should I buy the red dress or the yellow one?",
       card: { w: "You should buy the red dress.", pic: "👗", ex: "You should buy the red dress, because it’s pretty." },
