@@ -69,7 +69,7 @@ function furnishPolice(P, g, cx, cz, W, D, fur) {
   const B = (w, h, d, c, x, y, z) => lb(g, w, h, d, c, cx + x, y, cz + z);
   const C = (r, h, c, x, y, z, seg) => lc(g, r, r, h, c, cx + x, y, cz + z, seg || 12);
   const flat = (m) => { m.userData.flat = true; return m; };
-  const plane = (tex, w, h, x, y, z, ry, basic) => flat((() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), basic ? new THREE.MeshBasicMaterial({ map: tex }) : new THREE.MeshLambertMaterial({ map: tex })); m.position.set(cx + x, y, cz + z); m.rotation.y = ry || 0; g.add(m); return m; })());
+  const plane = (tex, w, h, x, y, z, ry, basic) => flat((() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), basic ? new THREE.MeshBasicMaterial({ map: tex, transparent: true }) : new THREE.MeshLambertMaterial({ map: tex })); m.position.set(cx + x, y, cz + z); m.rotation.y = ry || 0; g.add(m); return m; })());
   const plate = (t, w, h, bg, fg, x, y, z, ry) => { const p = textPlate(t, w, h, bg, fg); p.position.set(cx + x, y, cz + z); p.rotation.y = ry || 0; g.add(p); return p; };
   const loc = (x, z, ry) => { const c = Math.round(Math.cos(ry)), s = Math.round(Math.sin(ry)); return (w, h, d, col, lx, y, lz) => B(s ? d : w, h, s ? w : d, col, x + lx * c + lz * s, y, z - lx * s + lz * c); };   // khối theo hệ toạ độ vật (ry bội 90°)
   // ---- sàn + trần ----
