@@ -1248,6 +1248,522 @@ const LESSONS = [
 }
 
 /* ===== NPC: townhall – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+,{
+  name: "Ms. Hanh – Service Clerk", color: 0x1971c2, place: "townhall", x: -16.6, z: 10.5,
+  steps: [
+    {
+      "say": "Good morning! How can I help you?",
+      "q": {
+        "w": "How can I help you?",
+        "pic": "🙋",
+        "ex": "How can I help you?"
+      },
+      "card": {
+        "w": "I'd like to…",
+        "pic": "🪪",
+        "ex": "I'd like to get an ID card."
+      },
+      "choices": [
+        {
+          "t": "I'd like to get an ID card.",
+          "ok": true,
+          "fb": "Clear! +10"
+        },
+        {
+          "t": "I like ID card get.",
+          "ok": false,
+          "fb": "Say “I'd like to…”"
+        },
+        {
+          "t": "Good morning, I am fine.",
+          "ok": false,
+          "fb": "She asks how she can help :)"
+        }
+      ]
+    },
+    {
+      "say": "Sure. Please fill in this form. Write your name and address.",
+      "card": {
+        "w": "fill in",
+        "pic": "📝",
+        "ex": "Please fill in this form."
+      },
+      "choices": [
+        {
+          "t": "I fill in the pen.",
+          "ok": false,
+          "fb": "Say “I'll fill in the form.”"
+        },
+        {
+          "t": "OK. Can I borrow a pen, please?",
+          "ok": true,
+          "fb": "Polite! +10"
+        },
+        {
+          "t": "I'll eat the form.",
+          "ok": false,
+          "fb": "Please don't eat it :)"
+        }
+      ]
+    },
+    {
+      "say": "Thank you. Your ID card will be ready in two days.",
+      "card": {
+        "w": "ready in two days",
+        "pic": "📅",
+        "ex": "It will be ready in two days."
+      },
+      "choices": [
+        {
+          "t": "Great. I'll come back in two days.",
+          "ok": true,
+          "fb": "Good listening! +10"
+        },
+        {
+          "t": "Two days ready it.",
+          "ok": false,
+          "fb": "Say “I'll come back in two days.”"
+        },
+        {
+          "t": "No, I am ready today.",
+          "ok": false,
+          "fb": "The card will be ready, not you :)"
+        }
+      ]
+    }
+  ]
+}
+,{
+  name: "Mr. Dung – Visitor Guide", color: 0x2b8a3e, place: "townhall", x: 13.6, z: -11.6,
+  steps: [
+    {
+      "say": "Do you know when this building was built?",
+      "q": {
+        "w": "Do you know…?",
+        "pic": "🤔",
+        "ex": "Do you know when it was built?"
+      },
+      "card": {
+        "w": "was built in",
+        "pic": "🏗️",
+        "ex": "It was built in 1908."
+      },
+      "choices": [
+        {
+          "t": "It built in 1908.",
+          "ok": false,
+          "fb": "Say “It was built in 1908.”"
+        },
+        {
+          "t": "It was built in 1908.",
+          "ok": true,
+          "fb": "Correct! +10"
+        },
+        {
+          "t": "It was built tomorrow.",
+          "ok": false,
+          "fb": "Look at the plaque :)"
+        }
+      ]
+    },
+    {
+      "say": "Yes! French architects designed it. It has tall windows and big stairs.",
+      "card": {
+        "w": "architect",
+        "pic": "📐",
+        "ex": "An architect designs buildings."
+      },
+      "choices": [
+        {
+          "t": "Windows is tall many.",
+          "ok": false,
+          "fb": "Say “The windows are tall.”"
+        },
+        {
+          "t": "I love the big stairs and the chandeliers!",
+          "ok": true,
+          "fb": "Lovely! +10"
+        },
+        {
+          "t": "Architect are big stairs.",
+          "ok": false,
+          "fb": "An architect is a person :)"
+        }
+      ]
+    },
+    {
+      "say": "People visit from all over the world. Would you like to take a photo?",
+      "card": {
+        "w": "Would you like to…?",
+        "pic": "📷",
+        "ex": "Would you like to take a photo?"
+      },
+      "choices": [
+        {
+          "t": "Yes, please. Could you take it for me?",
+          "ok": true,
+          "fb": "Polite! +10"
+        },
+        {
+          "t": "Yes, I photo you.",
+          "ok": false,
+          "fb": "Say “Yes, please.”"
+        },
+        {
+          "t": "No, I'm a window.",
+          "ok": false,
+          "fb": "Funny! But answer the question :)"
+        }
+      ]
+    }
+  ]
+}
+,{
+  name: "Ms. Thao – Receptionist", color: 0x862e9c, place: "townhall", x: 9.6, z: -4.8,
+  steps: [
+    {
+      "say": "Hello! Are you here for the meeting?",
+      "q": {
+        "w": "Are you here for…?",
+        "pic": "🙋",
+        "ex": "Are you here for the meeting?"
+      },
+      "card": {
+        "w": "I'm here to…",
+        "pic": "🏛️",
+        "ex": "I'm here to see the mayor."
+      },
+      "choices": [
+        {
+          "t": "No, I'm here to see the mayor.",
+          "ok": true,
+          "fb": "Clear! +10"
+        },
+        {
+          "t": "I'm here see mayor.",
+          "ok": false,
+          "fb": "Say “I'm here to see the mayor.”"
+        },
+        {
+          "t": "Yes, I am a table.",
+          "ok": false,
+          "fb": "Try “No, I'm here to…”"
+        }
+      ]
+    },
+    {
+      "say": "The mayor is busy now. Please wait in the Reception Hall.",
+      "card": {
+        "w": "Please wait",
+        "pic": "⏳",
+        "ex": "Please wait here for ten minutes."
+      },
+      "choices": [
+        {
+          "t": "How long wait I?",
+          "ok": false,
+          "fb": "Say “How long do I have to wait?”"
+        },
+        {
+          "t": "I want to eat.",
+          "ok": false,
+          "fb": "Ask about the waiting time :)"
+        },
+        {
+          "t": "OK. How long do I have to wait?",
+          "ok": true,
+          "fb": "Good question! +10"
+        }
+      ]
+    },
+    {
+      "say": "About ten minutes. Would you like some water?",
+      "card": {
+        "w": "Would you like some…?",
+        "pic": "💧",
+        "ex": "Would you like some water?"
+      },
+      "choices": [
+        {
+          "t": "Yes, please. Thank you.",
+          "ok": true,
+          "fb": "Polite! +10"
+        },
+        {
+          "t": "Water is thank you.",
+          "ok": false,
+          "fb": "Say “Yes, please.”"
+        },
+        {
+          "t": "Yes, I am water.",
+          "ok": false,
+          "fb": "Say “Yes, please.” :)"
+        }
+      ]
+    }
+  ]
+}
+,{
+  name: "Duy – Quest Hunter", color: 0xe8590c, place: "townhall", x: 14.2, z: 12.6,
+  steps: [
+    {
+      "say": "Look! This is the Quest Board. New quests are coming soon!",
+      "card": {
+        "w": "coming soon",
+        "pic": "✨",
+        "ex": "New quests are coming soon."
+      },
+      "choices": [
+        {
+          "t": "Coming soon is yesterday.",
+          "ok": false,
+          "fb": "“Soon” means in a short time :)"
+        },
+        {
+          "t": "Wow! I can't wait!",
+          "ok": true,
+          "fb": "Excited! +10"
+        },
+        {
+          "t": "Quest is a dinner.",
+          "ok": false,
+          "fb": "A quest is a mission :)"
+        }
+      ]
+    },
+    {
+      "say": "I want a quest with a big reward. What kind of quest do you like?",
+      "q": {
+        "w": "What kind of…?",
+        "pic": "🎯",
+        "ex": "What kind of quest do you like?"
+      },
+      "card": {
+        "w": "reward",
+        "pic": "🎁",
+        "ex": "I want a big reward."
+      },
+      "choices": [
+        {
+          "t": "I like quests with treasure.",
+          "ok": true,
+          "fb": "Great! +10"
+        },
+        {
+          "t": "Like quest treasure I.",
+          "ok": false,
+          "fb": "Say “I like quests with treasure.”"
+        },
+        {
+          "t": "I like to sleep.",
+          "ok": false,
+          "fb": "Talk about quests :)"
+        }
+      ]
+    },
+    {
+      "say": "Great! Please check the board again tomorrow.",
+      "card": {
+        "w": "check again",
+        "pic": "🔄",
+        "ex": "Please check the board again."
+      },
+      "choices": [
+        {
+          "t": "Tomorrow I come back will.",
+          "ok": false,
+          "fb": "Say “I'll come back tomorrow.”"
+        },
+        {
+          "t": "I checked the board yesterday.",
+          "ok": false,
+          "fb": "He said TOMORROW :)"
+        },
+        {
+          "t": "OK. I'll come back tomorrow.",
+          "ok": true,
+          "fb": "Good listener! +10"
+        }
+      ]
+    }
+  ]
+}
+,{
+  name: "Mrs. Nga – Lost Visitor", color: 0xd6336c, place: "townhall", x: -3.8, z: 11.5,
+  steps: [
+    {
+      "say": "Excuse me! Where is the post office?",
+      "q": {
+        "w": "Where is…?",
+        "pic": "🗺️",
+        "ex": "Where is the post office?"
+      },
+      "card": {
+        "w": "Go straight",
+        "pic": "⬆️",
+        "ex": "Go straight and turn left."
+      },
+      "choices": [
+        {
+          "t": "Go out and go straight. It's on your right.",
+          "ok": true,
+          "fb": "Clear directions! +10"
+        },
+        {
+          "t": "Post office is go there.",
+          "ok": false,
+          "fb": "Say “Go straight. It's on your right.”"
+        },
+        {
+          "t": "I am a visitor, too.",
+          "ok": false,
+          "fb": "Try to help her :)"
+        }
+      ]
+    },
+    {
+      "say": "Is it far from here?",
+      "card": {
+        "w": "on foot",
+        "pic": "🚶",
+        "ex": "It's five minutes on foot."
+      },
+      "choices": [
+        {
+          "t": "Far it is not.",
+          "ok": false,
+          "fb": "Say “No, it's not far.”"
+        },
+        {
+          "t": "Yes, it's on the moon.",
+          "ok": false,
+          "fb": "Funny! But it is near :)"
+        },
+        {
+          "t": "No, it's not far. It's five minutes on foot.",
+          "ok": true,
+          "fb": "Perfect! +10"
+        }
+      ]
+    },
+    {
+      "say": "Thank you so much! You are very kind.",
+      "card": {
+        "w": "You're welcome",
+        "pic": "😊",
+        "ex": "You're welcome! Have a nice trip."
+      },
+      "choices": [
+        {
+          "t": "You're welcome. Have a nice trip!",
+          "ok": true,
+          "fb": "Friendly! +10"
+        },
+        {
+          "t": "No welcome.",
+          "ok": false,
+          "fb": "Say “You're welcome.”"
+        },
+        {
+          "t": "You are kind, too thank.",
+          "ok": false,
+          "fb": "Say “You're welcome!”"
+        }
+      ]
+    }
+  ]
+}
+,{
+  name: "Mr. Phong – City Planner", color: 0x0b7285, place: "townhall", x: -14, z: -11, minLv: 5,
+  steps: [
+    {
+      "say": "I design streets and parks. Could you tell me what our city needs?",
+      "q": {
+        "w": "Could you tell me…?",
+        "pic": "🙋",
+        "ex": "Could you tell me the way to the library?"
+      },
+      "card": {
+        "w": "I think we need…",
+        "pic": "💭",
+        "ex": "I think we need more parks."
+      },
+      "choices": [
+        {
+          "t": "Need more parks I think.",
+          "ok": false,
+          "fb": "Say “I think we need more parks.”"
+        },
+        {
+          "t": "I think we need more parks for children.",
+          "ok": true,
+          "fb": "Good idea! +10"
+        },
+        {
+          "t": "We need no city.",
+          "ok": false,
+          "fb": "Give an idea :)"
+        }
+      ]
+    },
+    {
+      "say": "Good idea! Parks make people happy. How should people travel in the city?",
+      "q": {
+        "w": "How should…?",
+        "pic": "🚦",
+        "ex": "How should people travel?"
+      },
+      "card": {
+        "w": "instead of",
+        "pic": "🚌",
+        "ex": "Take the bus instead of a car."
+      },
+      "choices": [
+        {
+          "t": "They should to take bus.",
+          "ok": false,
+          "fb": "Say “They should take the bus.”"
+        },
+        {
+          "t": "They should fly with eggs.",
+          "ok": false,
+          "fb": "Be realistic :)"
+        },
+        {
+          "t": "They should take the bus instead of cars.",
+          "ok": true,
+          "fb": "Great thinking! +10"
+        }
+      ]
+    },
+    {
+      "say": "Great! If you have an idea, please tell me. Would you like to write it down?",
+      "card": {
+        "w": "If you have an idea…",
+        "pic": "💡",
+        "ex": "If you have an idea, tell me."
+      },
+      "choices": [
+        {
+          "t": "Yes. If I have an idea, I'll tell you.",
+          "ok": true,
+          "fb": "Excellent! +10"
+        },
+        {
+          "t": "If I will have idea tell.",
+          "ok": false,
+          "fb": "Say “If I have an idea, I'll tell you.”"
+        },
+        {
+          "t": "No, ideas are heavy.",
+          "ok": false,
+          "fb": "Ideas are light :)"
+        }
+      ]
+    }
+  ]
+}
+
 
 /* ===== NPC: hospital – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
 
