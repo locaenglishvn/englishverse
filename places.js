@@ -538,5 +538,121 @@ const VOCAB = {
     { w: "volcano model", pic: "🌋", pos: "noun", kind: "thing", at: "lab", say: "It's a volcano model.", ex: "The volcano model can erupt!" },
     { w: "telescope", pic: "🔭", pos: "noun", kind: "machine", at: "lab", say: "It's a telescope.", ex: "I can see stars with a telescope." },
     { w: "Tesla coil", pic: "⚡", pos: "noun", kind: "machine", at: "lab", say: "It's a Tesla coil.", ex: "A Tesla coil makes big sparks." }
+  ],
+  townhall: [
+    // sảnh (lobby)
+    { w: "reception desk",   pic: "🛎️", pos: "noun", kind: "furniture", at: "lobby", say: "It's a reception desk.",   ex: "Ask at the reception desk." },
+    { w: "flag",             pic: "🚩", pos: "noun", kind: "thing",     at: "lobby", say: "It's a flag.",             ex: "The flag is red and yellow." },
+    { w: "city map",         pic: "🗺️", pos: "noun", kind: "thing",     at: "lobby", say: "It's a city map.",         ex: "Look at the city map to find the park." },
+    { w: "city model",       pic: "🏙️", pos: "noun", kind: "thing",     at: "lobby", say: "It's a city model.",       ex: "The city model shows every building." },
+    { w: "welcome sign",     pic: "🪧", pos: "noun", kind: "thing",     at: "lobby", say: "It's a welcome sign.",     ex: "The welcome sign is near the door." },
+    { w: "visitor badge",    pic: "🪪", pos: "noun", kind: "thing",     at: "lobby", say: "It's a visitor badge.",    ex: "Wear your visitor badge, please." },
+    // quầy dịch vụ (counter)
+    { w: "ticket dispenser", pic: "🎫", pos: "noun", kind: "machine",   at: "counter", say: "It's a ticket dispenser.", ex: "Take a number from the ticket dispenser." },
+    { w: "ID card",          pic: "🪪", pos: "noun", kind: "thing",     at: "counter", say: "It's an ID card.",         ex: "Show your ID card, please." },
+    { w: "application form", pic: "📄", pos: "noun", kind: "thing",     at: "counter", say: "It's an application form.", ex: "Fill in the application form." },
+    { w: "paper clip",       pic: "📎", pos: "noun", kind: "tool",      at: "counter", say: "It's a paper clip.",       ex: "Use a paper clip to hold the papers." },
+    { w: "folder",           pic: "📁", pos: "noun", kind: "thing",     at: "counter", say: "It's a folder.",           ex: "The papers are in a blue folder." },
+    { w: "printer",          pic: "🖨️", pos: "noun", kind: "machine",   at: "counter", say: "It's a printer.",          ex: "The printer makes copies fast." },
+    // bảng nhiệm vụ, thông báo (board)
+    { w: "notice board",     pic: "📋", pos: "noun", kind: "furniture", at: "board", say: "It's a notice board.",     ex: "Read the news on the notice board." },
+    { w: "notice",           pic: "📢", pos: "noun", kind: "thing",     at: "board", say: "It's a notice.",           ex: "There is a notice about the park." },
+    { w: "pushpin",          pic: "📌", pos: "noun", kind: "tool",      at: "board", say: "It's a pushpin.",          ex: "Put the poster up with a pushpin." },
+    { w: "recycling bin",    pic: "♻️", pos: "noun", kind: "thing",     at: "board", say: "It's a recycling bin.",    ex: "Put the bottles in the recycling bin." },
+    { w: "broom",            pic: "🧹", pos: "noun", kind: "tool",      at: "board", say: "It's a broom.",            ex: "Use a broom to clean the street." },
+    { w: "shovel",           pic: "🪏", pos: "noun", kind: "tool",      at: "board", say: "It's a shovel.",           ex: "Dig a hole with a shovel to plant a tree." },
+    // phòng họp (meeting)
+    { w: "microphone",       pic: "🎤", pos: "noun", kind: "machine",   at: "meeting", say: "It's a microphone.",     ex: "Speak into the microphone, please." },
+    { w: "gavel",            pic: "🔨", pos: "noun", kind: "tool",      at: "meeting", say: "It's a gavel.",          ex: "The leader uses a gavel." },
+    { w: "long table",       pic: "🪑", pos: "noun", kind: "furniture", at: "meeting", say: "It's a long table.",     ex: "We sit at the long table." },
+    { w: "ballot box",       pic: "🗳️", pos: "noun", kind: "thing",     at: "meeting", say: "It's a ballot box.",     ex: "Put your vote in the ballot box." },
+    { w: "name card",        pic: "📇", pos: "noun", kind: "thing",     at: "meeting", say: "It's a name card.",      ex: "Put your name card on the table." },
+    { w: "projector",        pic: "📽️", pos: "noun", kind: "machine",   at: "meeting", say: "It's a projector.",      ex: "The projector shows the new park plan." },
+    // văn phòng (office)
+    { w: "file cabinet",     pic: "🗄️", pos: "noun", kind: "furniture", at: "office", say: "It's a file cabinet.",    ex: "The files are in the file cabinet." },
+    { w: "office chair",     pic: "💺", pos: "noun", kind: "furniture", at: "office", say: "It's an office chair.",   ex: "Sit on the office chair." },
+    { w: "keyboard",         pic: "⌨️", pos: "noun", kind: "machine",   at: "office", say: "It's a keyboard.",        ex: "Type on the keyboard, please." },
+    { w: "computer mouse",   pic: "🖱️", pos: "noun", kind: "machine",   at: "office", say: "It's a computer mouse.",  ex: "Click the computer mouse twice." },
+    { w: "stapler",          pic: "🖇️", pos: "noun", kind: "tool",      at: "office", say: "It's a stapler.",         ex: "Use the stapler to join the papers." },
+    { w: "office phone",     pic: "📞", pos: "noun", kind: "machine",   at: "office", say: "It's an office phone.",   ex: "The office phone is ringing." }
+  ],
+  hospital: [
+    // quầy tiếp nhận (reception)
+    { w: "clipboard",        pic: "📋", pos: "noun", kind: "thing",     at: "reception", say: "It's a clipboard.",         ex: "Write your name on the clipboard." },
+    { w: "wristband",        pic: "🎗️", pos: "noun", kind: "thing",     at: "reception", say: "It's a wristband.",         ex: "The nurse gives me a wristband." },
+    { w: "health card",      pic: "🪪", pos: "noun", kind: "thing",     at: "reception", say: "It's a health card.",       ex: "Show your health card, please." },
+    { w: "information desk", pic: "ℹ️", pos: "noun", kind: "furniture", at: "reception", say: "It's an information desk.", ex: "Ask at the information desk." },
+    { w: "name tag",         pic: "🏷️", pos: "noun", kind: "thing",     at: "reception", say: "It's a name tag.",          ex: "Wear your name tag, please." },
+    // khu chờ (waiting)
+    { w: "chair",            pic: "🪑", pos: "noun", kind: "furniture", at: "waiting", say: "It's a chair.",          ex: "Please sit on the chair and wait." },
+    { w: "wheelchair",       pic: "♿", pos: "noun", kind: "furniture", at: "waiting", say: "It's a wheelchair.",     ex: "Grandma uses a wheelchair." },
+    { w: "tissues",          pic: "🧻", pos: "noun", kind: "thing",     at: "waiting", say: "They're tissues.",       ex: "Can I have some tissues, please?" },
+    { w: "teddy bear",       pic: "🧸", pos: "noun", kind: "thing",     at: "waiting", say: "It's a teddy bear.",     ex: "The child hugs a teddy bear." },
+    { w: "hand gel",         pic: "🧴", pos: "noun", kind: "thing",     at: "waiting", say: "It's hand gel.",         ex: "Use hand gel before you eat." },
+    // quầy thuốc (pharmacy)
+    { w: "medicine",         pic: "💊", pos: "noun", kind: "thing",     at: "pharmacy", say: "It's medicine.",        ex: "Take your medicine after meals." },
+    { w: "cough syrup",      pic: "🧴", pos: "noun", kind: "thing",     at: "pharmacy", say: "It's cough syrup.",     ex: "Cough syrup helps a sore throat." },
+    { w: "eye drops",        pic: "👁️", pos: "noun", kind: "thing",     at: "pharmacy", say: "They're eye drops.",    ex: "Use eye drops when your eyes are dry." },
+    { w: "vitamins",         pic: "🍊", pos: "noun", kind: "food",      at: "pharmacy", say: "They're vitamins.",     ex: "Vitamins are good for your body." },
+    { w: "syringe",          pic: "💉", pos: "noun", kind: "tool",      at: "pharmacy", say: "It's a syringe.",       ex: "The nurse uses a syringe for the vaccine." },
+    // phòng khám (clinic)
+    { w: "stethoscope",      pic: "🩺", pos: "noun", kind: "tool",      at: "clinic", say: "It's a stethoscope.",       ex: "The doctor uses a stethoscope." },
+    { w: "thermometer",      pic: "🌡️", pos: "noun", kind: "tool",      at: "clinic", say: "It's a thermometer.",       ex: "Check your temperature with a thermometer." },
+    { w: "bandage",          pic: "🩹", pos: "noun", kind: "thing",     at: "clinic", say: "It's a bandage.",           ex: "I put a bandage on my knee." },
+    { w: "exam table",       pic: "🛏️", pos: "noun", kind: "furniture", at: "clinic", say: "It's an exam table.",       ex: "Sit on the exam table, please." },
+    { w: "eye chart",        pic: "👀", pos: "noun", kind: "thing",     at: "clinic", say: "It's an eye chart.",        ex: "Read the letters on the eye chart." },
+    { w: "X-ray",            pic: "🩻", pos: "noun", kind: "thing",     at: "clinic", say: "It's an X-ray.",            ex: "The X-ray shows the bones in my arm." },
+    // phòng bệnh (ward)
+    { w: "hospital bed",     pic: "🛏️", pos: "noun", kind: "furniture", at: "ward", say: "It's a hospital bed.",     ex: "The patient rests in a hospital bed." },
+    { w: "plaster cast",     pic: "🦴", pos: "noun", kind: "thing",     at: "ward", say: "It's a plaster cast.",     ex: "My arm is in a plaster cast." },
+    { w: "crutches",         pic: "🩼", pos: "noun", kind: "thing",     at: "ward", say: "They're crutches.",        ex: "I use crutches to walk." },
+    { w: "drip",             pic: "💧", pos: "noun", kind: "machine",   at: "ward", say: "It's a drip.",             ex: "The nurse checks the drip." },
+    { w: "blanket",          pic: "🛌", pos: "noun", kind: "thing",     at: "ward", say: "It's a blanket.",          ex: "Keep warm under a blanket." },
+    // phòng xét nghiệm (lab)
+    { w: "germ",             pic: "🦠", pos: "noun", kind: "thing",     at: "lab", say: "It's a germ.",              ex: "Germs can make you sick." },
+    { w: "petri dish",       pic: "🧫", pos: "noun", kind: "tool",      at: "lab", say: "It's a petri dish.",        ex: "The bacteria grow in a petri dish." },
+    { w: "gloves",           pic: "🧤", pos: "noun", kind: "thing",     at: "lab", say: "They're gloves.",           ex: "Wear gloves when you clean." },
+    { w: "mask",             pic: "😷", pos: "noun", kind: "thing",     at: "lab", say: "It's a mask.",              ex: "Wear a mask to stop germs." },
+    { w: "lab coat",         pic: "🥼", pos: "noun", kind: "thing",     at: "lab", say: "It's a lab coat.",          ex: "The scientist wears a white lab coat." },
+    // trần (ceiling)
+    { w: "ceiling light",    pic: "💡", pos: "noun", kind: "thing",     at: "ceiling", say: "It's a ceiling light.",  ex: "The ceiling light is very bright." }
+  ],
+  school: [
+    // bảng (board)
+    { w: "whiteboard",       pic: "🪧", pos: "noun", kind: "furniture", at: "board", say: "It's a whiteboard.",        ex: "Write the word on the whiteboard." },
+    { w: "marker",           pic: "🖊️", pos: "noun", kind: "tool",      at: "board", say: "It's a marker.",            ex: "Use a red marker to write." },
+    { w: "chalk",            pic: "🖍️", pos: "noun", kind: "tool",      at: "board", say: "It's chalk.",               ex: "Chalk writes on the board." },
+    { w: "class schedule",   pic: "🗓️", pos: "noun", kind: "thing",     at: "board", say: "It's a class schedule.",    ex: "Look at the class schedule for Monday." },
+    { w: "pointer",          pic: "👉", pos: "noun", kind: "tool",      at: "board", say: "It's a pointer.",           ex: "Use the pointer to show the word." },
+    // lớp học (classroom)
+    { w: "student desk",     pic: "🪑", pos: "noun", kind: "furniture", at: "classroom", say: "It's a student desk.",   ex: "Sit at your student desk, please." },
+    { w: "teacher’s desk",   pic: "🗄️", pos: "noun", kind: "furniture", at: "classroom", say: "It's a teacher’s desk.", ex: "The books are on the teacher’s desk." },
+    { w: "pencil case",      pic: "✏️", pos: "noun", kind: "thing",     at: "classroom", say: "It's a pencil case.",    ex: "My pencils are in my pencil case." },
+    { w: "textbook",         pic: "📘", pos: "noun", kind: "thing",     at: "classroom", say: "It's a textbook.",       ex: "Open your textbook to page ten." },
+    { w: "alphabet chart",   pic: "🔤", pos: "noun", kind: "thing",     at: "classroom", say: "It's an alphabet chart.", ex: "The alphabet chart has 26 letters." },
+    { w: "worksheet",        pic: "📄", pos: "noun", kind: "thing",     at: "classroom", say: "It's a worksheet.",      ex: "Do the worksheet with your partner." },
+    // phòng khoa học (science)
+    { w: "beaker",           pic: "🧪", pos: "noun", kind: "tool",      at: "science", say: "It's a beaker.",              ex: "Pour the water into the beaker." },
+    { w: "safety goggles",   pic: "🥽", pos: "noun", kind: "thing",     at: "science", say: "They're safety goggles.",     ex: "Wear safety goggles in the lab." },
+    { w: "stopwatch",        pic: "⏱️", pos: "noun", kind: "tool",      at: "science", say: "It's a stopwatch.",           ex: "Start the stopwatch when I say go." },
+    { w: "prism",            pic: "🔺", pos: "noun", kind: "thing",     at: "science", say: "It's a prism.",               ex: "Light goes through a prism." },
+    { w: "measuring cup",    pic: "🥛", pos: "noun", kind: "tool",      at: "science", say: "It's a measuring cup.",       ex: "Use a measuring cup for the water." },
+    // góc nghệ thuật (art)
+    { w: "paint",            pic: "🎨", pos: "noun", kind: "thing",     at: "art", say: "It's paint.",                     ex: "Blue paint is on the table." },
+    { w: "crayon",           pic: "🖍️", pos: "noun", kind: "tool",      at: "art", say: "It's a crayon.",                  ex: "I draw a sun with a yellow crayon." },
+    { w: "guitar",           pic: "🎸", pos: "noun", kind: "thing",     at: "art", say: "It's a guitar.",                  ex: "I can play the guitar." },
+    { w: "piano",            pic: "🎹", pos: "noun", kind: "thing",     at: "art", say: "It's a piano.",                   ex: "She plays the piano every day." },
+    { w: "clay",             pic: "🟫", pos: "noun", kind: "thing",     at: "art", say: "It's clay.",                      ex: "Make a little dog with clay." },
+    // tủ đồ (lockers)
+    { w: "lunch box",        pic: "🍱", pos: "noun", kind: "thing",     at: "lockers", say: "It's a lunch box.",         ex: "My lunch box has rice and fish." },
+    { w: "sports bag",       pic: "👜", pos: "noun", kind: "thing",     at: "lockers", say: "It's a sports bag.",        ex: "Put your shoes in the sports bag." },
+    { w: "gym shoes",        pic: "👟", pos: "noun", kind: "thing",     at: "lockers", say: "They're gym shoes.",        ex: "My gym shoes are white." },
+    { w: "school uniform",   pic: "👔", pos: "noun", kind: "thing",     at: "lockers", say: "It's a school uniform.",    ex: "Wear your school uniform on Monday." },
+    { w: "jacket",           pic: "🧥", pos: "noun", kind: "thing",     at: "lockers", say: "It's a jacket.",            ex: "Hang your jacket in the locker." },
+    // căng tin (canteen)
+    { w: "bowl",             pic: "🥣", pos: "noun", kind: "thing",     at: "canteen", say: "It's a bowl.",              ex: "Eat your soup from a bowl." },
+    { w: "chopsticks",       pic: "🥢", pos: "noun", kind: "tool",      at: "canteen", say: "They're chopsticks.",       ex: "I can use chopsticks well." },
+    { w: "rice",             pic: "🍚", pos: "noun", kind: "food",      at: "canteen", say: "It's rice.",                ex: "I eat rice for lunch." },
+    { w: "soup",             pic: "🍲", pos: "noun", kind: "food",      at: "canteen", say: "It's soup.",                ex: "The soup is hot, be careful." }
   ]
 };
