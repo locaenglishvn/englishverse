@@ -274,6 +274,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 29. **Đợt 1 (đội AI)**: nội thất Town Hall, City Hospital, Verse School; 15 NPC mới + 92 từ vựng (Haiku viết, CTO soát); QA thêm `--data`
 30. **Đợt 2 (đội AI)**: nội thất Verse Plaza + 4 cửa hàng Market Street (Banh Mi Bakery, Pho Corner, Shop 24h, Green Cross Pharmacy; khung chung `parts/interiors/shopkit.js`); 22 NPC mới + 107 từ vựng
 31. **Đợt 3 (đội AI)**: nội thất Clothes Shop, Saigon Barber, Home & Cozy (shopKit; Home & Cozy trưng đúng đồ đang bán), Police Station, Fire Station; 20 NPC mới + 107 từ vựng, nội dung an toàn trẻ em (113/114/115, an toàn giao thông, cháy nổ)
+33. **Chiến đấu bằng giọng nói – giai đoạn A**: 5 vùng hoang dã vòng 1 quanh thành phố (Frost Peaks, Maple Highlands, Sunset Canyon, Coral Coast, Blossom Valley; `parts/world/wilds.js`), 5 loại quái theo mùa (`parts/combat/models.js`), chiến đấu thời gian thực (`parts/combat/engine.js`): máu/mana, ⚔️ đánh thường, 6 chiêu Power + Rhythm, Voice Deck 4 loại bài (`deck.js`, 320 đề), khiên −70%, rơi đồ để nhặt, vũ khí 4 dòng × 8 bậc + Maestro, cấp tối đa Lv.100 (~360 giờ), quá 2 giờ/ngày không còn kinh nghiệm
 32. **Đợt 4 (theo góp ý chủ dự án)**: Home & Cozy dời cạnh Verse Plaza, nội thất 40 × 54 m tông tối có gu + ngoại thất to; **Verse Electronics** mới (siêu thị điện máy, 40 × 54 m); Bakery / Shop 24h / Pharmacy to bằng Cafe (20 × 48), Pharmacy có quầy thuốc vòng tròn; Clothes Shop 32 × 36; Pho 3 NPC, Barber 2 NPC; **tên NPC 80% tiếng Anh**, tên hiển thị không dấu; phòng trong nhà xếp theo bề rộng thật, người bán đặt được vị trí (`P.keeperAt`)
 
 ### Tình trạng nội thất
@@ -301,6 +302,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
+0. **Hệ thống chiến đấu bằng giọng nói (đang chốt thiết kế, bản 2):** xem `docs/design/voice-combat.html` (bản xem trên điện thoại: https://claude.ai/artifact/HouMFg33PkkFkRYcmoK6Vu). Đã chốt: khiên −70% khi nói; hết máu → xám 2 giây, về cổng vùng; mô hình 3 lớp (kỹ năng = hiệu ứng, Voice Deck = bài nói, vũ khí = sức mạnh + cộng hưởng); Voice Deck sàn 15%, loại yếu tới 35%, được đổi đề; 4 nhánh Power / Control / Harmony / Rhythm. Chờ chốt bản 2: bản đồ vòng cấp, vũ khí 6 bậc + dòng Maestro, đồ rơi riêng 30 giây, Lv.50 ≈ 360 giờ, an toàn chat.
 1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Science Lab, Star Cinema, Fix-It Workshop, My Home (nâng cấp); các ô 🚧.
 2. **Ngoại thất** các nơi còn dùng mẫu nhà phố (Science Lab, Fix-It Workshop, Pho Corner, Star Cinema…) và các ô 🚧 khi người dùng gửi ảnh.
 3. **Trò chơi đồng đội ở Verse Arena** (Quiz Tower, Word Race, Treasure Hunt, Team Battle) – đều bắt buộc giao tiếp tiếng Anh.

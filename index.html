@@ -32,7 +32,7 @@ button{font:inherit;cursor:pointer}
 #guide{position:fixed;top:calc(140px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 #bagBtn,#statusChip{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #bagBtn{left:100px}#statusChip{left:12px;top:calc(94px + env(safe-area-inset-top,0px));font-size:14px}
-#energyBar{display:inline-block;width:60px;height:8px;border-radius:4px;background:rgba(128,128,128,.3);vertical-align:middle;overflow:hidden}#energyBar div{height:100%;background:#fab005}
+#energyBar{display:inline-block;width:60px;height:8px;border-radius:4px;background:rgba(128,128,128,.3);vertical-align:middle;overflow:hidden}#energyBar div{height:100%;background:#e5484d}
 .over{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 .over .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
 .x{border:0;background:transparent;color:var(--ink);font-size:20px}
@@ -109,7 +109,7 @@ button{font:inherit;cursor:pointer}
 <body>
 <div class="chip"><span id="lvl">Lv.1</span> · ⭐ <span id="score">0</span> · 🪙 <span id="coins">0</span></div>
 <button id="bagBtn">🎒</button>
-<div id="statusChip">⚡ <span id="energyBar"><div style="width:100%"></div></span> <span id="statusIcons"></span></div>
+<div id="statusChip">❤️ <span id="energyBar"><div style="width:100%"></div></span> <span id="statusIcons"></span></div>
 <div id="bag" class="over"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center"><b>🎒 My Bag</b><button id="bagClose" class="x">✕</button></div>
   <div id="bagInfo" style="font-size:14px;margin-top:4px"></div>
@@ -224,6 +224,10 @@ button{font:inherit;cursor:pointer}
 <script src="lessons.js"></script>
 <script src="places.js"></script>
 <script src="parts/registry.js"></script>
+<script src="parts/world/wilds.js"></script>
+<script src="parts/combat/models.js"></script>
+<script src="deck.js"></script>
+<script src="parts/combat/engine.js"></script>
 <script src="parts/exteriors/furniturebig.js"></script>
 <script src="parts/exteriors/electronics.js"></script>
 <script src="parts/interiors/cafe.js"></script>
@@ -284,7 +288,7 @@ function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
 function blocked(x, z) {
   if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
   if (room) return Math.abs(x - room.cx) > room.w / 2 - 0.6 || Math.abs(z - room.cz) > room.d / 2 - 0.6 || room.solids.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);   // đang ở trong nhà
-  if (x < -360 || x > 150 || Math.abs(z) > 150) return true;   // ranh giới thế giới (thành phố + đảo đấu trường bên trái)
+  if ((x < -360 || x > 150 || Math.abs(z) > 150) && !(typeof WILDS !== "undefined" && WILDS.walkable(x, z))) return true;   // ranh giới thế giới (thành phố + đảo đấu trường bên trái + vùng hoang dã parts/world/wilds.js)
   if (inRiver(x, z)) return true;   // sông quanh đảo: chỉ đi qua cầu
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
 }
@@ -1284,6 +1288,7 @@ function drawSlots(el, store, size, onPick, sel) {
 function useItem(id) {
   const it = ITEMS[id]; if (!it || !save.items[id]) return;
   if (it.slot) { wear(id); return; }
+  if (it.weapon && typeof equipWeapon === "function") { equipWeapon(id); return; }   // vũ khí (parts/combat/engine.js)
   if (it.energy && save.energy >= 100 && !it.cure) { flash("You are full! / Bạn đang no rồi."); return; }
   takeItem(save.items, id);
   if (it.energy) save.energy = Math.min(100, save.energy + it.energy);
@@ -1488,7 +1493,7 @@ function playerLevel() { return save.level || 1; }
 let lvBlockedShown = false;
 function checkLevel() {
   if (!save.level) save.level = 1;
-  const target = 1 + Math.floor(score / 60);
+  const target = typeof levelForXp === "function" ? levelForXp(score) : 1 + Math.floor(score / 60);   // đường cong mới tới Lv.100 (parts/combat/engine.js)
   while (save.level < target) {
     if (save.level >= 5 && masteryRatio() < 0.7) {   // chưa thuộc bài → chưa cho lên cấp
       if (!lvBlockedShown) { lvBlockedShown = true; flash("🔒 Practice your cards to reach Lv." + (save.level + 1) + "!<div style='font-size:13px;font-weight:400'>Cần ≥ 70% thẻ đạt ⭐⭐ (hiện " + Math.round(masteryRatio() * 100) + "%). Đánh Echo Ghost để luyện!</div>"); }
@@ -3023,6 +3028,7 @@ holdMic($("vocabMic"), t => $("vocabFb").textContent = "🎙️ " + t, (alts, co
    Bản đồ nhỏ xoay theo camera: phía trên bản đồ = phía trước mặt mình. Bản đồ lớn: phía bắc ở trên, có tên địa điểm. */
 function mapRect(P) { const sw = P.door === "east" || P.door === "west"; return { x: P.x, z: P.z, w: sw ? P.d : P.w, d: sw ? P.w : P.d }; }
 function drawCity(x) {   // vẽ thành phố trong hệ tọa độ thế giới (x, z)
+  if (typeof WILDS !== "undefined" && WILDS.drawMap) WILDS.drawMap(x);   // vùng hoang dã quanh thành phố
   x.fillStyle = "#8fd17a"; x.fillRect(-365, -155, 520, 310);
   x.fillStyle = "#4dabf7"; x.fillRect(RIVER.x0, RIVER.z0, RIVER.x1 - RIVER.x0, RIVER.z1 - RIVER.z0);   // sông
   x.fillStyle = "#e9dcc0"; x.fillRect(ISLAND.x0, ISLAND.z0, ISLAND.x1 - ISLAND.x0, ISLAND.z1 - ISLAND.z0);   // đảo
@@ -3104,6 +3110,7 @@ let tagZone = null, tagRoom = undefined;
 function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  if (typeof updateCombat === "function") updateCombat(dt, t);   // parts/combat/engine.js
   let mx = input.x, mz = input.z;
   if (keys["a"] || keys["arrowleft"]) mx -= 1;
   if (keys["d"] || keys["arrowright"]) mx += 1;
@@ -3263,6 +3270,8 @@ function bakeWorld() {
   for (let i = 0; i < camBlockers.length; i++) if (BAKED.has(camBlockers[i])) camBlockers[i] = BAKED.get(camBlockers[i]);
   const seen = new Set(); for (let i = camBlockers.length - 1; i >= 0; i--) { if (seen.has(camBlockers[i])) camBlockers.splice(i, 1); else seen.add(camBlockers[i]); }
 }
+if (typeof buildWilds === "function") buildWilds();   // vùng hoang dã (parts/world/wilds.js)
+if (typeof initCombat === "function") initCombat();   // chiến đấu thời gian thực (parts/combat/engine.js)
 shade(scene); bakeWorld(); renderHud();
 loop();
 addEventListener("resize", () => {

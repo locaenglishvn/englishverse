@@ -1,6 +1,6 @@
 Dự án EnglishVerse: web game 3D học tiếng Anh cho học sinh Việt Nam, chơi chủ yếu trên điện thoại.
 Công nghệ: HTML + Three.js (CDN), không có bước build.
-index.html = lõi game. parts/ = nội thất / ngoại thất tách file từng nơi. lessons.js = chỉ chứa bài học (mảng LESSONS). places.js = dữ liệu thành phố: vật phẩm, cửa hàng, địa điểm (sửa nội dung ở đây, không đụng code).
+index.html = lõi game. parts/ = nội thất / ngoại thất tách file từng nơi. lessons.js = chỉ chứa bài học (mảng LESSONS). places.js = dữ liệu thành phố: vật phẩm, cửa hàng, địa điểm (sửa nội dung ở đây, không đụng code). deck.js = ngân hàng đề nói cho chiến đấu (Voice Deck). Chiến đấu: parts/combat/, vùng hoang dã: parts/world/ (thiết kế: docs/design/voice-combat.html).
 Tầm nhìn: EnglishVerse là một metaverse. Người chơi là nhân vật tự do đi lại trong thế giới 3D, có xã hội và tương tác. Mọi mini-game (mê cung, sưu tầm thẻ, ...) chỉ là một "trạm" trong thế giới, không phải game riêng. Chơi xong thì quay lại thế giới.
 Đọc docs/TEAM.md (vận hành đội AI, phân quyền, quy tắc, cổng QA: node tools/qa/run.js) và docs/ROADMAP.md trước khi làm: cốt truyện, thiết kế hệ thống, kỹ thuật, việc đã làm và việc tiếp theo. Cập nhật file này sau mỗi chặng lớn.
 Quy tắc: thêm NPC mới chỉ sửa lessons.js. Sửa nhỏ, từng việc một. Không viết lại cả file.

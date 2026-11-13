@@ -10,3 +10,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-13 | `a678afd` | Đợt 1: Town Hall, City Hospital, Verse School | ✅ |
 | 2026-11-13 | `a8fceaa` | Đợt 2: Verse Plaza + 4 cửa hàng Market Street | ✅ |
 | 2026-11-13 | `45caf01` | Đợt 3: Police, Fire, Clothes, Barber, Home & Cozy (bản nhỏ) | ✅ |
+| 2026-11-13 | `1f2e25a` | Đợt 4: Home & Cozy, Verse Electronics, 4 tiệm to, tên NPC | ✅ |
