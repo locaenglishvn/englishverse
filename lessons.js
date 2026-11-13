@@ -1347,7 +1347,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Sam – Sports Seller", color: 0x862e9c, place: "mall", x: -11, z: -15,
+  name: "Duy – Sports Seller", color: 0x862e9c, place: "mall", x: -11, z: -15,
   steps: [
     { say: "Welcome to Sport Star! What size shoes do you wear?",
       card: { w: "I wear size…", pic: "👟", ex: "I wear size thirty-six shoes." },
