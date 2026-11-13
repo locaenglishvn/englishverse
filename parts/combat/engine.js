@@ -184,7 +184,7 @@ function spawnTick() {
   const s = CB.sec, here = CB.mons.filter(M => M.dir === s.dir && !M.dead).length;
   if (here >= 9 || Math.random() > 0.05) return;
   const pts = WILDS.spawnPoints(s.dir, s.ring) || []; if (!pts.length) return;
-  const far = pts.filter(p => Math.hypot(p.x - player.position.x, p.z - player.position.z) > 14 && Math.hypot(p.x - player.position.x, p.z - player.position.z) < 70);
+  const far = pts.filter(p => Math.hypot(p.x - player.position.x, p.z - player.position.z) > 14 && Math.hypot(p.x - player.position.x, p.z - player.position.z) < 45);
   const p = (far.length ? far : pts)[Math.floor(Math.random() * (far.length ? far.length : pts.length))];
   const list = SEASON_MON[s.season] || SEASON_MON.spring; makeMon(list[Math.floor(Math.random() * list.length)], s, p.x, p.z);
 }
