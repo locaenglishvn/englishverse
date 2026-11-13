@@ -916,32 +916,118 @@ const VOCAB = {
     { w: "photo album",      pic: "📒", pos: "noun", kind: "thing",     at: "waiting", say: "It's a photo album.",     ex: "The photo album has many hairstyles." },
     { w: "ceiling fan",      pic: "🌀", pos: "noun", kind: "machine",   at: "waiting", say: "It's a ceiling fan.",     ex: "The ceiling fan is cool on a hot day." }
   ],
-  // Home & Cozy – cửa hàng nội thất (furniture)
+  // Home & Cozy – cua hang noi that (furniture): 48 mon
   furniture: [
-    // góc phòng khách (living)
-    { w: "armchair",         pic: "🛋️", pos: "noun", kind: "furniture", at: "living", say: "It's an armchair.",        ex: "Grandpa reads a book in the armchair." },
+    // phong khach (living) – 8
+    { w: "corner sofa",      pic: "🛋️", pos: "noun", kind: "furniture", at: "living", say: "It's a corner sofa.",      ex: "Our corner sofa is big enough for four." },
+    { w: "armchair",         pic: "💺", pos: "noun", kind: "furniture", at: "living", say: "It's an armchair.",        ex: "Grandpa reads a book in the armchair." },
     { w: "coffee table",     pic: "🪵", pos: "noun", kind: "furniture", at: "living", say: "It's a coffee table.",     ex: "Put your cup on the coffee table." },
     { w: "rug",              pic: "🟫", pos: "noun", kind: "thing",     at: "living", say: "It's a rug.",              ex: "The rug is soft under my feet." },
-    { w: "TV",               pic: "📺", pos: "noun", kind: "machine",   at: "living", say: "It's a TV.",               ex: "We watch a film on TV after dinner." },
+    { w: "TV stand",         pic: "📺", pos: "noun", kind: "furniture", at: "living", say: "It's a TV stand.",         ex: "The TV stand is under the big screen." },
     { w: "beanbag",          pic: "🔴", pos: "noun", kind: "thing",     at: "living", say: "It's a beanbag.",          ex: "Sit on the beanbag and read." },
-    { w: "floor lamp",       pic: "💡", pos: "noun", kind: "thing",     at: "living", say: "It's a floor lamp.",       ex: "Turn on the floor lamp, please." },
-    // góc phòng ngủ (bedroom)
+    { w: "side table",       pic: "🪑", pos: "noun", kind: "furniture", at: "living", say: "It's a side table.",       ex: "Put your glass on the side table." },
+    { w: "throw pillow",     pic: "🟠", pos: "noun", kind: "thing",     at: "living", say: "It's a throw pillow.",     ex: "The orange throw pillow is very soft." },
+    // phong ngu (bedroom) – 7
     { w: "double bed",       pic: "🛏️", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a double bed.",      ex: "We have a big double bed." },
+    { w: "single bed",       pic: "🛏️", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a single bed.",      ex: "My brother sleeps in the single bed." },
     { w: "bedside table",    pic: "🪑", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a bedside table.",   ex: "Put the clock on the bedside table." },
     { w: "wardrobe",         pic: "🚪", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a wardrobe.",        ex: "My clothes are in the wardrobe." },
+    { w: "dresser",          pic: "🗄️", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a dresser.",         ex: "The socks are in the top drawer of the dresser." },
     { w: "pillow",           pic: "🛌", pos: "noun", kind: "thing",     at: "bedroom", say: "It's a pillow.",          ex: "Rest your head on the soft pillow." },
-    { w: "duvet",            pic: "🛏️", pos: "noun", kind: "thing",     at: "bedroom", say: "It's a duvet.",           ex: "The duvet is warm and soft at night." },
-    // góc bếp và bàn ăn (kitchen)
-    { w: "dining table",     pic: "🍽️", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a dining table.",    ex: "We eat dinner at the dining table." },
-    { w: "dining chair",     pic: "🪑", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a dining chair.",    ex: "Sit on the dining chair, please." },
+    { w: "duvet",            pic: "🪶", pos: "noun", kind: "thing",     at: "bedroom", say: "It's a duvet.",           ex: "The duvet is warm and soft at night." },
+    // phong an (dining) – 6
+    { w: "dining table",     pic: "🍽️", pos: "noun", kind: "furniture", at: "dining", say: "It's a dining table.",     ex: "We eat dinner at the dining table." },
+    { w: "dining chair",     pic: "🪑", pos: "noun", kind: "furniture", at: "dining", say: "It's a dining chair.",     ex: "Sit on the dining chair, please." },
+    { w: "sideboard",        pic: "🗃️", pos: "noun", kind: "furniture", at: "dining", say: "It's a sideboard.",        ex: "The plates are on the sideboard." },
+    { w: "bar stool",        pic: "🪑", pos: "noun", kind: "furniture", at: "dining", say: "It's a bar stool.",        ex: "Sit on the bar stool by the counter." },
+    { w: "tablecloth",       pic: "🧺", pos: "noun", kind: "thing",     at: "dining", say: "It's a tablecloth.",       ex: "The tablecloth is blue with white flowers." },
+    { w: "place mat",        pic: "🍴", pos: "noun", kind: "thing",     at: "dining", say: "It's a place mat.",        ex: "Put your plate on the place mat." },
+    // bep (kitchen) – 6
     { w: "kitchen cabinet",  pic: "🗄️", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a kitchen cabinet.", ex: "The cups are in the kitchen cabinet." },
-    { w: "microwave",        pic: "🍱", pos: "noun", kind: "machine",   at: "kitchen", say: "It's a microwave.",       ex: "Heat the soup in the microwave." },
-    { w: "teapot",           pic: "🫖", pos: "noun", kind: "thing",     at: "kitchen", say: "It's a teapot.",          ex: "The teapot keeps the tea hot." },
-    // đồ trang trí (decor)
-    { w: "picture",          pic: "🖼️", pos: "noun", kind: "thing",     at: "decor", say: "It's a picture.",           ex: "This picture is of the beach." },
-    { w: "flower pot",       pic: "🪴", pos: "noun", kind: "plant",     at: "decor", say: "It's a flower pot.",        ex: "The flower pot sits by the window." },
-    { w: "cactus",           pic: "🌵", pos: "noun", kind: "plant",     at: "decor", say: "It's a cactus.",            ex: "A cactus needs very little water." },
-    { w: "table lamp",       pic: "🪔", pos: "noun", kind: "thing",     at: "decor", say: "It's a table lamp.",        ex: "Turn on the table lamp at night." }
-  ]
+    { w: "kitchen island",   pic: "🍳", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a kitchen island.",  ex: "We cut the bread on the kitchen island." },
+    { w: "spice rack",       pic: "🧂", pos: "noun", kind: "thing",     at: "kitchen", say: "It's a spice rack.",      ex: "The salt is on the spice rack." },
+    { w: "dish rack",        pic: "🧽", pos: "noun", kind: "thing",     at: "kitchen", say: "It's a dish rack.",       ex: "Put the wet plates on the dish rack." },
+    { w: "kitchen sink",     pic: "🚰", pos: "noun", kind: "thing",     at: "kitchen", say: "It's a kitchen sink.",    ex: "Wash your hands in the kitchen sink." },
+    { w: "kitchen shelf",    pic: "🥫", pos: "noun", kind: "thing",     at: "kitchen", say: "It's a kitchen shelf.",   ex: "The cans are on the kitchen shelf." },
+    // phong tam (bathroom) – 6
+    { w: "bathtub",          pic: "🛁", pos: "noun", kind: "furniture", at: "bathroom", say: "It's a bathtub.",         ex: "I take a bath in the bathtub." },
+    { w: "shower curtain",   pic: "🚿", pos: "noun", kind: "thing",     at: "bathroom", say: "It's a shower curtain.",  ex: "Close the shower curtain after you shower." },
+    { w: "bath mat",         pic: "🟩", pos: "noun", kind: "thing",     at: "bathroom", say: "It's a bath mat.",        ex: "Stand on the bath mat when you get out." },
+    { w: "towel rack",       pic: "🧻", pos: "noun", kind: "furniture", at: "bathroom", say: "It's a towel rack.",      ex: "Hang the towel on the towel rack." },
+    { w: "bathroom cabinet", pic: "🧴", pos: "noun", kind: "furniture", at: "bathroom", say: "It's a bathroom cabinet.", ex: "The soap is in the bathroom cabinet." },
+    { w: "toilet",           pic: "🚽", pos: "noun", kind: "furniture", at: "bathroom", say: "It's a toilet.",          ex: "Please flush the toilet after you use it." },
+    // goc hoc tap (study) – 5
+    { w: "study desk",       pic: "📝", pos: "noun", kind: "furniture", at: "study", say: "It's a study desk.",       ex: "I do my homework at the study desk." },
+    { w: "desk chair",       pic: "💺", pos: "noun", kind: "furniture", at: "study", say: "It's a desk chair.",       ex: "Sit up straight in the desk chair." },
+    { w: "bookcase",         pic: "📚", pos: "noun", kind: "furniture", at: "study", say: "It's a bookcase.",         ex: "The bookcase is full of storybooks." },
+    { w: "computer desk",    pic: "📐", pos: "noun", kind: "furniture", at: "study", say: "It's a computer desk.",    ex: "The computer desk is next to the window." },
+    { w: "pencil holder",    pic: "✏️", pos: "noun", kind: "thing",     at: "study", say: "It's a pencil holder.",    ex: "My pens are in the pencil holder." },
+    // do san vuon (outdoor) – 6
+    { w: "hammock",          pic: "🌿", pos: "noun", kind: "furniture", at: "outdoor", say: "It's a hammock.",        ex: "I read a book in the hammock." },
+    { w: "patio table",      pic: "🏡", pos: "noun", kind: "furniture", at: "outdoor", say: "It's a patio table.",    ex: "We have lemonade at the patio table." },
+    { w: "patio chair",      pic: "🪑", pos: "noun", kind: "furniture", at: "outdoor", say: "It's a patio chair.",    ex: "Sit on the patio chair and enjoy the sun." },
+    { w: "parasol",          pic: "⛱️", pos: "noun", kind: "thing",     at: "outdoor", say: "It's a parasol.",        ex: "The parasol keeps us cool in the sun." },
+    { w: "sun lounger",      pic: "🏖️", pos: "noun", kind: "furniture", at: "outdoor", say: "It's a sun lounger.",    ex: "Lie on the sun lounger and relax." },
+    { w: "garden hose",      pic: "🌱", pos: "noun", kind: "thing",     at: "outdoor", say: "It's a garden hose.",    ex: "Water the flowers with the garden hose." },
+    // khu den (lighting) – 4
+    { w: "floor lamp",       pic: "💡", pos: "noun", kind: "thing",     at: "lighting", say: "It's a floor lamp.",     ex: "Turn on the floor lamp, please." },
+    { w: "table lamp",       pic: "🪔", pos: "noun", kind: "thing",     at: "lighting", say: "It's a table lamp.",     ex: "Turn on the table lamp at night." },
+    { w: "wall lamp",        pic: "🔆", pos: "noun", kind: "thing",     at: "lighting", say: "It's a wall lamp.",      ex: "The wall lamp makes the hall bright." },
+    { w: "pendant lamp",     pic: "✨", pos: "noun", kind: "thing",     at: "lighting", say: "It's a pendant lamp.",   ex: "The pendant lamp hangs over the dining table." }
+  ],
 
+  // Verse Electronics – sieu thi dien may (electronics): 44 mon
+  electronics: [
+    // TV (tv) – 7
+    { w: "smart TV",         pic: "📺", pos: "noun", kind: "machine", at: "tv", say: "It's a smart TV.",          ex: "This smart TV shows movies from the internet." },
+    { w: "flat-screen TV",   pic: "📺", pos: "noun", kind: "machine", at: "tv", say: "It's a flat-screen TV.",    ex: "A flat-screen TV is thin and light." },
+    { w: "TV remote",        pic: "🎛️", pos: "noun", kind: "thing",   at: "tv", say: "It's a TV remote.",         ex: "Where is the TV remote?" },
+    { w: "streaming box",    pic: "📦", pos: "noun", kind: "machine", at: "tv", say: "It's a streaming box.",     ex: "The streaming box plays films from the internet." },
+    { w: "TV antenna",       pic: "📡", pos: "noun", kind: "thing",   at: "tv", say: "It's a TV antenna.",        ex: "The TV antenna gets clear pictures." },
+    { w: "satellite dish",   pic: "🛰️", pos: "noun", kind: "thing",   at: "tv", say: "It's a satellite dish.",    ex: "The satellite dish is on the roof." },
+    { w: "TV wall mount",    pic: "🔩", pos: "noun", kind: "thing",   at: "tv", say: "It's a TV wall mount.",     ex: "The TV wall mount holds the TV on the wall." },
+    // dien thoai (phones) – 7
+    { w: "power bank",       pic: "🔋", pos: "noun", kind: "thing",   at: "phones", say: "It's a power bank.",        ex: "Charge your phone with the power bank." },
+    { w: "charging cable",   pic: "🔌", pos: "noun", kind: "thing",   at: "phones", say: "It's a charging cable.",    ex: "Use the charging cable to charge your phone." },
+    { w: "phone case",       pic: "🛡️", pos: "noun", kind: "thing",   at: "phones", say: "It's a phone case.",        ex: "My phone case is pink and very strong." },
+    { w: "screen protector", pic: "🪟", pos: "noun", kind: "thing",   at: "phones", say: "It's a screen protector.",  ex: "A screen protector stops scratches." },
+    { w: "selfie stick",     pic: "🤳", pos: "noun", kind: "thing",   at: "phones", say: "It's a selfie stick.",      ex: "We take a photo with the selfie stick." },
+    { w: "phone stand",      pic: "📱", pos: "noun", kind: "thing",   at: "phones", say: "It's a phone stand.",       ex: "Put your phone on the phone stand to watch." },
+    { w: "cordless phone",   pic: "☎️", pos: "noun", kind: "machine", at: "phones", say: "It's a cordless phone.",    ex: "Grandma talks on the cordless phone." },
+    // may tinh (computers) – 7
+    { w: "gaming PC",        pic: "🖥️", pos: "noun", kind: "machine", at: "computers", say: "It's a gaming PC.",         ex: "My brother plays games on a gaming PC." },
+    { w: "monitor",          pic: "🖵", pos: "noun", kind: "machine", at: "computers", say: "It's a monitor.",           ex: "The monitor shows the picture very clearly." },
+    { w: "wireless mouse",   pic: "🖱️", pos: "noun", kind: "machine", at: "computers", say: "It's a wireless mouse.",    ex: "This wireless mouse has no cable." },
+    { w: "USB drive",        pic: "💾", pos: "noun", kind: "thing",   at: "computers", say: "It's a USB drive.",         ex: "Save your homework on the USB drive." },
+    { w: "webcam",           pic: "📹", pos: "noun", kind: "machine", at: "computers", say: "It's a webcam.",            ex: "The webcam lets me see my friend." },
+    { w: "router",           pic: "📶", pos: "noun", kind: "machine", at: "computers", say: "It's a router.",            ex: "The router gives us Wi-Fi at home." },
+    { w: "hard drive",       pic: "💽", pos: "noun", kind: "thing",   at: "computers", say: "It's a hard drive.",        ex: "All my photos are on the hard drive." },
+    // bep (kitchen) – 8
+    { w: "electric rice cooker", pic: "🍚", pos: "noun", kind: "machine", at: "kitchen", say: "It's an electric rice cooker.", ex: "The electric rice cooker makes hot rice." },
+    { w: "microwave",        pic: "🍱", pos: "noun", kind: "machine", at: "kitchen", say: "It's a microwave.",         ex: "Heat the soup in the microwave." },
+    { w: "blender",          pic: "🍹", pos: "noun", kind: "machine", at: "kitchen", say: "It's a blender.",           ex: "Make a mango smoothie in the blender." },
+    { w: "electric kettle",  pic: "🫖", pos: "noun", kind: "machine", at: "kitchen", say: "It's an electric kettle.",  ex: "Boil water quickly in the electric kettle." },
+    { w: "air fryer",        pic: "🍟", pos: "noun", kind: "machine", at: "kitchen", say: "It's an air fryer.",        ex: "Cook the chips in the air fryer." },
+    { w: "toaster",          pic: "🍞", pos: "noun", kind: "machine", at: "kitchen", say: "It's a toaster.",           ex: "Put the bread in the toaster." },
+    { w: "coffee maker",     pic: "☕", pos: "noun", kind: "machine", at: "kitchen", say: "It's a coffee maker.",      ex: "Mum makes coffee with the coffee maker." },
+    { w: "electric oven",    pic: "♨️", pos: "noun", kind: "machine", at: "kitchen", say: "It's an electric oven.",    ex: "The cake bakes in the electric oven." },
+    // do gia dung (appliances) – 7
+    { w: "refrigerator",     pic: "🧊", pos: "noun", kind: "machine", at: "appliances", say: "It's a refrigerator.",         ex: "The milk is cold in the refrigerator." },
+    { w: "washing machine",  pic: "🫧", pos: "noun", kind: "machine", at: "appliances", say: "It's a washing machine.",      ex: "The washing machine cleans our clothes." },
+    { w: "split air conditioner", pic: "❄️", pos: "noun", kind: "machine", at: "appliances", say: "It's a split air conditioner.", ex: "The split air conditioner keeps us cool." },
+    { w: "electric fan",     pic: "🌀", pos: "noun", kind: "machine", at: "appliances", say: "It's an electric fan.",        ex: "The electric fan is cool on hot days." },
+    { w: "vacuum cleaner",   pic: "🧹", pos: "noun", kind: "machine", at: "appliances", say: "It's a vacuum cleaner.",       ex: "The vacuum cleaner picks up the dust." },
+    { w: "water purifier",   pic: "💧", pos: "noun", kind: "machine", at: "appliances", say: "It's a water purifier.",       ex: "The water purifier makes the water clean." },
+    { w: "water heater",     pic: "🔥", pos: "noun", kind: "machine", at: "appliances", say: "It's a water heater.",         ex: "The water heater makes hot water for showers." },
+    // am thanh (audio) – 5
+    { w: "earphones",        pic: "🎧", pos: "noun", kind: "thing",   at: "audio", say: "They're earphones.",         ex: "I listen to songs with my earphones." },
+    { w: "soundbar",         pic: "🔈", pos: "noun", kind: "machine", at: "audio", say: "It's a soundbar.",           ex: "The soundbar makes the film sound great." },
+    { w: "karaoke microphone", pic: "🎤", pos: "noun", kind: "thing", at: "audio", say: "It's a karaoke microphone.", ex: "Sing a song into the karaoke microphone." },
+    { w: "radio",            pic: "📻", pos: "noun", kind: "machine", at: "audio", say: "It's a radio.",              ex: "Grandpa listens to the news on the radio." },
+    { w: "amplifier",        pic: "🎚️", pos: "noun", kind: "machine", at: "audio", say: "It's an amplifier.",         ex: "The amplifier makes the music louder." },
+    // quay thu ngan (cashier) – 3
+    { w: "PIN pad",          pic: "💳", pos: "noun", kind: "machine", at: "cashier", say: "It's a PIN pad.",          ex: "Type your PIN on the PIN pad." },
+    { w: "receipt printer",  pic: "🧾", pos: "noun", kind: "machine", at: "cashier", say: "It's a receipt printer.",  ex: "The receipt printer gives you a bill." },
+    { w: "warranty card",    pic: "📄", pos: "noun", kind: "thing",   at: "cashier", say: "It's a warranty card.",    ex: "Keep the warranty card for two years." }
+  ]
 };
