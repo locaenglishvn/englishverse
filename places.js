@@ -267,6 +267,67 @@ const AMBIENT = [
    kind = nhóm đồ: từ Lv.20 người chơi hỏi rõ hơn "What is this drink / food / tool / machine / plant / furniture / thing?"
    at = đồ bày ở khu nào trong nơi đó (đúng ngữ cảnh) – xem anchors trong index.html */
 const VOCAB = {
+  police: [
+    // quầy tiếp dân (desk)
+    { w: "service counter",  pic: "🛎️", pos: "noun", kind: "furniture", at: "desk", say: "It's a service counter.",     ex: "Ask for help at the service counter." },
+    { w: "claim form",       pic: "📝", pos: "noun", kind: "thing",     at: "desk", say: "It's a claim form.",          ex: "Fill in the claim form, please." },
+    { w: "ballpoint pen",    pic: "🖊️", pos: "noun", kind: "tool",      at: "desk", say: "It's a ballpoint pen.",       ex: "Write your name with a ballpoint pen." },
+    { w: "bulletin board",   pic: "📌", pos: "noun", kind: "thing",     at: "desk", say: "It's a bulletin board.",      ex: "Read the notices on the bulletin board." },
+    { w: "queue number",     pic: "🔢", pos: "noun", kind: "thing",     at: "desk", say: "It's a queue number.",        ex: "Take a queue number and wait, please." },
+    // văn phòng (office)
+    { w: "desktop computer", pic: "🖥️", pos: "noun", kind: "machine",   at: "office", say: "It's a desktop computer.",   ex: "The officer types on the desktop computer." },
+    { w: "photocopier",      pic: "🖨️", pos: "noun", kind: "machine",   at: "office", say: "It's a photocopier.",        ex: "The photocopier makes two copies." },
+    { w: "filing cabinet",   pic: "🗄️", pos: "noun", kind: "furniture", at: "office", say: "It's a filing cabinet.",     ex: "The papers are in the filing cabinet." },
+    { w: "file folder",      pic: "📁", pos: "noun", kind: "thing",     at: "office", say: "It's a file folder.",        ex: "Put the report in the file folder." },
+    { w: "desk phone",       pic: "☎️", pos: "noun", kind: "machine",   at: "office", say: "It's a desk phone.",         ex: "Call me on the desk phone." },
+    // phòng điều phối (dispatch)
+    { w: "big map",          pic: "🗺️", pos: "noun", kind: "thing",     at: "dispatch", say: "It's a big map.",          ex: "The big map shows every street." },
+    { w: "walkie-talkie",    pic: "📻", pos: "noun", kind: "machine",   at: "dispatch", say: "It's a walkie-talkie.",    ex: "The officer talks on a walkie-talkie." },
+    { w: "radar screen",     pic: "📡", pos: "noun", kind: "machine",   at: "dispatch", say: "It's a radar screen.",     ex: "The radar screen shows the cars." },
+    { w: "traffic light",    pic: "🚦", pos: "noun", kind: "machine",   at: "dispatch", say: "It's a traffic light.",    ex: "Stop when the traffic light is red." },
+    { w: "headset",          pic: "🎧", pos: "noun", kind: "thing",     at: "dispatch", say: "It's a headset.",          ex: "The officer wears a headset." },
+    // trang bị (gear)
+    { w: "helmet",           pic: "⛑️", pos: "noun", kind: "thing",     at: "gear", say: "It's a helmet.",               ex: "Always wear a helmet when you ride a bike." },
+    { w: "reflective vest",  pic: "🦺", pos: "noun", kind: "thing",     at: "gear", say: "It's a reflective vest.",      ex: "The vest helps drivers see you." },
+    { w: "bicycle",          pic: "🚲", pos: "noun", kind: "thing",     at: "gear", say: "It's a bicycle.",              ex: "The police ride a bicycle on the street." },
+    { w: "traffic cone",     pic: "🚧", pos: "noun", kind: "thing",     at: "gear", say: "It's a traffic cone.",         ex: "Walk around the traffic cone." },
+    { w: "stop sign",        pic: "🛑", pos: "noun", kind: "thing",     at: "gear", say: "It's a stop sign.",            ex: "Stop at the stop sign." },
+    // kệ đồ thất lạc (lost and found)
+    { w: "keys",             pic: "🔑", pos: "noun", kind: "thing",     at: "lostfound", say: "They're keys.",           ex: "I lost my keys at school." },
+    { w: "scarf",            pic: "🧣", pos: "noun", kind: "thing",     at: "lostfound", say: "It's a scarf.",           ex: "My scarf is warm and blue." },
+    { w: "water bottle",     pic: "💧", pos: "noun", kind: "thing",     at: "lostfound", say: "It's a water bottle.",    ex: "Is this your water bottle?" },
+    { w: "raincoat",         pic: "🧥", pos: "noun", kind: "thing",     at: "lostfound", say: "It's a raincoat.",        ex: "Wear a raincoat when it rains." }
+  ],
+  fire: [
+    // nhà xe (garage)
+    { w: "fire truck",       pic: "🚒", pos: "noun", kind: "machine",   at: "garage", say: "It's a fire truck.",          ex: "The fire truck is big and red." },
+    { w: "fire hose",        pic: "💦", pos: "noun", kind: "tool",      at: "garage", say: "It's a fire hose.",           ex: "The fire hose is long and heavy." },
+    { w: "siren",            pic: "🚨", pos: "noun", kind: "machine",   at: "garage", say: "It's a siren.",               ex: "We hear the siren from far away." },
+    { w: "water tank",       pic: "🛢️", pos: "noun", kind: "thing",     at: "garage", say: "It's a water tank.",          ex: "The truck carries a big water tank." },
+    { w: "flashlight",       pic: "🔦", pos: "noun", kind: "tool",      at: "garage", say: "It's a flashlight.",          ex: "Use a flashlight in the dark." },
+    { w: "toolbox",          pic: "🧰", pos: "noun", kind: "tool",      at: "garage", say: "It's a toolbox.",             ex: "The toolbox has many tools inside." },
+    // giá đồ bảo hộ (gear)
+    { w: "fire helmet",      pic: "⛑️", pos: "noun", kind: "thing",     at: "gear", say: "It's a fire helmet.",         ex: "A fire helmet keeps your head safe." },
+    { w: "fire extinguisher", pic: "🧯", pos: "noun", kind: "tool",     at: "gear", say: "It's a fire extinguisher.",   ex: "The fire extinguisher is red." },
+    { w: "fire boots",       pic: "🥾", pos: "noun", kind: "thing",     at: "gear", say: "They're fire boots.",         ex: "The fire boots keep my feet safe." },
+    { w: "fire gloves",      pic: "🧤", pos: "noun", kind: "thing",     at: "gear", say: "They're fire gloves.",        ex: "Fire gloves protect your hands." },
+    { w: "fire jacket",      pic: "🧥", pos: "noun", kind: "thing",     at: "gear", say: "It's a fire jacket.",         ex: "The fire jacket is thick and strong." },
+    // góc báo động (alarm)
+    { w: "fire alarm",       pic: "🚨", pos: "noun", kind: "machine",   at: "alarm", say: "It's a fire alarm.",         ex: "Leave the building when you hear the fire alarm." },
+    { w: "smoke detector",   pic: "📟", pos: "noun", kind: "machine",   at: "alarm", say: "It's a smoke detector.",     ex: "The smoke detector beeps when there is smoke." },
+    { w: "sprinkler",        pic: "🚿", pos: "noun", kind: "machine",   at: "alarm", say: "It's a sprinkler.",          ex: "The sprinkler is on the ceiling." },
+    { w: "exit sign",        pic: "🚪", pos: "noun", kind: "thing",     at: "alarm", say: "It's an exit sign.",         ex: "Follow the exit sign to get out." },
+    // khu nghỉ và bếp (rest)
+    { w: "dining table",     pic: "🍽️", pos: "noun", kind: "furniture", at: "rest", say: "It's a dining table.",        ex: "We eat lunch at the dining table." },
+    { w: "bunk bed",         pic: "🛏️", pos: "noun", kind: "furniture", at: "rest", say: "It's a bunk bed.",            ex: "I sleep on the top bunk bed." },
+    { w: "microwave",        pic: "🍲", pos: "noun", kind: "machine",   at: "rest", say: "It's a microwave.",           ex: "Heat the soup in the microwave." },
+    { w: "rice cooker",      pic: "🍚", pos: "noun", kind: "machine",   at: "rest", say: "It's a rice cooker.",         ex: "The rice cooker makes hot rice." },
+    { w: "couch",            pic: "🛋️", pos: "noun", kind: "furniture", at: "rest", say: "It's a couch.",               ex: "We watch TV on the couch." },
+    // góc tập huấn (training)
+    { w: "whistle",          pic: "📯", pos: "noun", kind: "thing",     at: "training", say: "It's a whistle.",         ex: "The coach blows a whistle to start." },
+    { w: "training mat",     pic: "🧘", pos: "noun", kind: "thing",     at: "training", say: "It's a training mat.",    ex: "We practise on the training mat." },
+    { w: "rope",             pic: "🪢", pos: "noun", kind: "thing",     at: "training", say: "It's a rope.",            ex: "Hold the rope tight and walk slowly." }
+  ],
   mall: [
     // sảnh giữa (atrium)
     { w: "escalator",     pic: "🪜", pos: "noun", kind: "machine", at: "atrium", say: "It's an escalator.",       ex: "We take the escalator to the second floor." },
