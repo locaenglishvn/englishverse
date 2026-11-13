@@ -43,7 +43,7 @@ Quyền của agent phụ không bao giờ vượt quyền CTO. Mọi thứ vào
 2. **Làm (agent):** mỗi agent 1 việc, trên bản sao repo riêng (git worktree, nhánh riêng). Mỗi nơi 1 file riêng → không đè nhau.
 3. **Cổng QA:** agent phải chạy `node tools/qa/run.js <id>` và đạt ✅ trước khi nộp. Trượt → tự sửa.
 4. **Rà soát (CTO):** xem ảnh `tools/qa/out/<id>.png` so với ảnh gốc, đọc hội thoại (tự nhiên? đúng trình độ? an toàn cho trẻ?), chỉnh lần cuối.
-5. **Phát hành (CTO):** gắn mốc `stable-…` cho bản đang chạy → merge qua PR → chạy lại QA toàn bộ → báo cáo kèm ảnh.
+5. **Phát hành (CTO):** ghi mốc bản đang chạy vào `docs/RELEASES.md` → merge qua PR → chạy lại QA toàn bộ → báo cáo kèm ảnh.
 
 ## 5. Mẫu đề bài (CTO → agent)
 
@@ -94,7 +94,7 @@ KHÔNG ĐƯỢC: sửa index.html (trừ khi đề bài cho phép), đổi dữ 
 |---|---|---|
 | Lịch sử git | Mọi thay đổi là commit | Lấy lại từng file / dòng |
 | PR | Không sửa thẳng `main`; mỗi đợt 1 PR | Revert cả PR bằng 1 lệnh |
-| Mốc `stable-YYYY-MM-DD` | CTO gắn trước mỗi lần merge | Quay về mốc trong vài phút |
+| Mốc ổn định | CTO ghi mã commit của bản đang chạy tốt vào `docs/RELEASES.md` trước mỗi lần merge (môi trường hiện tại không cho đẩy git tag) | Quay về mốc trong vài phút |
 | Dữ liệu người chơi | Lưu ở máy người chơi + Supabase, không nằm trong code | Không đổi cấu trúc lưu khi chưa hỏi (🔴) |
 
 Từ 30/11 (khi có ~100 người): thêm bản thử nghiệm (staging) để duyệt trước khi lên `main`.
