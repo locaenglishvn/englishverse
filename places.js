@@ -103,15 +103,15 @@ const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", le
    model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5)
    exterior = ngoại thất vẽ riêng (townhall, hospital, school, cafe, home – xem mục 8c trong index.html); khi có thì bỏ qua model */
 const CITY = [
-  { id: "bakery", name: "Banh Mi Bakery", type: "bakery", x: 56, z: -10, w: 10, d: 10, door: "south", exterior: "banhmi", layout: "bakeryshop", size: { w: 16, d: 18, h: 4.5 },
+  { id: "bakery", name: "Banh Mi Bakery", type: "bakery", x: 56, z: -10, w: 10, d: 10, door: "south", exterior: "banhmi", layout: "bakeryshop", size: { w: 20, d: 48, h: 8 },
     color: 0xffe8cc, roof: 0xc0392b, awning: 0xe67e22, floor: 0xe9c99a, wall: 0xfff4e0,
     keeper: { name: "Anna – Baker", color: 0xf08c00, greet: "Good morning! Everything is fresh today. What would you like?", hint: "Can I have a banh mi, please?" },
     sells: ["banhmi", "donut", "milk"] },
-  { id: "pharmacy", name: "Green Cross Pharmacy", type: "pharmacy", x: 68, z: -10, w: 10, d: 10, door: "south", exterior: "pharmacy", layout: "pharmacyshop", size: { w: 16, d: 18, h: 4.5 },
+  { id: "pharmacy", name: "Green Cross Pharmacy", type: "pharmacy", x: 68, z: -10, w: 10, d: 10, door: "south", exterior: "pharmacy", layout: "pharmacyshop", size: { w: 20, d: 48, h: 8 },
     color: 0xe6fcf5, roof: 0x2b8a3e, awning: 0x37b24d, floor: 0xdee2e6, wall: 0xf8f9fa,
     keeper: { name: "Sam – Pharmacist", color: 0x1c7ed6, greet: "Hello! How are you feeling today?", hint: "I have a sore throat. Can I have some throat syrup?" },
     sells: ["syrup", "vaccine"] },
-  { id: "clothes", name: "Clothes Shop", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", exterior: "clothes", layout: "clothesshop", size: { w: 16, d: 18, h: 4.5 },
+  { id: "clothes", name: "Clothes Shop", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", exterior: "clothes", layout: "clothesshop", size: { w: 32, d: 36, h: 6 },
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
     keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to the Clothes Shop. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
     sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
@@ -156,7 +156,7 @@ const CITY = [
     color: 0xf3f0ff, roof: 0x7048e8, awning: 0x9775fa, floor: 0xf1f3f5, wall: 0xf8f0fc, goods: ["✂️", "💈", "🪮", "🧴", "💇", "🪞"],
     keeper: { name: "Lily – Hairdresser", color: 0x9775fa, greet: "Hi! Welcome to Saigon Barber. What hairstyle would you like today?", hint: "I’d like short hair, please." },
     sells: ["hair_Rogue", "hair_Knight", "hair_Mage", "hair_Barbarian"] },
-  { id: "supermarket", name: "Shop 24h", type: "convenience store", x: 134, z: -11, w: 12, d: 12, door: "south", exterior: "shop24", layout: "martshop", size: { w: 16, d: 18, h: 4.5 },
+  { id: "supermarket", name: "Shop 24h", type: "convenience store", x: 134, z: -11, w: 12, d: 12, door: "south", exterior: "shop24", layout: "martshop", size: { w: 20, d: 48, h: 8 },
     color: 0xebfbee, roof: 0x2f9e44, awning: 0x40c057, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🍎", "🍌", "🥛", "🍙", "💧", "🥕"],
     keeper: { name: "Nam – Cashier", color: 0x40c057, greet: "Hi! Shop 24h is open all day and all night. Can I help you?", hint: "Can I have an apple and some water, please?" },
     sells: ["apple", "banana", "water", "riceball", "milk"] },
