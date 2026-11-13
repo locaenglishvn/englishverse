@@ -3,7 +3,7 @@
    10 dãy kệ hàng ở giữa (trái: snack, phải: đồ gia dụng) chia 2 bên lối đi chính, tủ đông kem dọc tường sau, sạp trái cây + thùng rau gần cửa bên trái.
    Khu: fridge, snacks, household, fruit, frozen, counter. Chừa trống: lối vào x -1.5..1.5, z 15..24; NPC (3.5,-9.5) (-3.5,-4.5) (-7.5,7) (7,10). */
 function furnishMart(P, g, cx, cz, W, D, fur) {
-  const K = shopKit(P, g, cx, cz, W, D, { floor: ["#dfe3e6", "#d3d8dc"], wall: ["#f8f9fa", "#2f9e44"], trim: "#40c057", noCounter: true });
+  const K = shopKit(P, g, cx, cz, W, D, { floor: ["#c4cbcf", "#b8c0c5"], wall: ["#eef1ee", "#2f9e44"], trim: "#40c057", noCounter: true });
   const { back, front, B, sol, plate, A } = K;
   const goods = [0xe03131, 0xfab005, 0x1c7ed6, 0x40c057, 0xf08c00, 0x7048e8, 0xe64980, 0x15aabf];
   const row = (x, y, z, len, alongZ, seed, w, d) => { const n = Math.floor(len / 0.32); for (let i = 0; i < n; i++) { const t = -len / 2 + 0.16 + i * 0.32, h = 0.2 + ((i * 7 + seed) % 3) * 0.06;
