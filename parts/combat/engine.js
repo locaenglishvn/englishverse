@@ -97,6 +97,8 @@ const W_LINES = {
   rhythm:  { icon: "🥢", names: ["Bamboo Sticks", "Twin Batons", "Fire Tambourine", "Storm Gloves", "Thunder Drums", "Lava Sticks", "Comet Drums", "Phoenix Drums"] }
 };
 const RESO = ["repeat", "answer", "build", "name"];
+const ASK_LV = 40;   // loại bài Ask (đặt câu hỏi) mở từ Lv.40
+function deckTypes() { return (save.level || 1) >= ASK_LV && (VOICE_DECK.ask || []).length ? RESO.concat(["ask"]) : RESO; }
 function registerWeapons() {
   Object.keys(W_LINES).forEach((line, li) => W_LINES[line].names.forEach((nm, t) => {
     const T = W_TIER[t], id = "w_" + line + (t + 1), reso = RESO[(li + t) % 4];
@@ -125,7 +127,7 @@ function initCombat() {
   C.skills = C.skills || { echo_blast: 1, drum_roll: 1 };   // 2 chiêu khởi đầu (miễn phí)
   C.slots = C.slots || ["echo_blast", "drum_roll", null, null];
   C.weapons = C.weapons || [null, null]; C.wIdx = C.wIdx || 0;
-  C.deck = C.deck || {}; RESO.forEach(t => C.deck[t] = C.deck[t] || { n: 0, good: 0 });
+  C.deck = C.deck || {}; RESO.concat(["ask"]).forEach(t => C.deck[t] = C.deck[t] || { n: 0, good: 0 });
   registerWeapons();
   if (!C.starter) { C.starter = true; addItem(save.items, BAG_SIZE, "w_power1"); addItem(save.items, BAG_SIZE, "w_rhythm1"); C.weapons = ["w_power1", "w_rhythm1"]; }   // quà tân thủ
   buildCombatUi();
@@ -348,9 +350,9 @@ function resoOn(type) { const w = curWeapon(); return !!(w && w.weapon.reso === 
 
 /* Voice Deck: chọn loại bài (sàn 15%, loại yếu tới 35%) rồi lấy nội dung (ưu tiên thẻ của người chơi) */
 function drawTask(band, avoid) {
-  const st = save.combat.deck, rate = t => (st[t].good + 1) / (st[t].n + 2), avg = RESO.reduce((a, t) => a + rate(t), 0) / 4;
-  let w = RESO.map(t => Math.max(0.15, Math.min(0.35, 0.25 + (avg - rate(t)) * 0.6)) * (t === avoid ? 0.3 : 1)), sum = w.reduce((a, b) => a + b, 0), r = Math.random() * sum, type = RESO[0];
-  for (let i = 0; i < 4; i++) { r -= w[i]; if (r <= 0) { type = RESO[i]; break; } }
+  const T = deckTypes(), st = save.combat.deck, rate = t => (st[t].good + 1) / (st[t].n + 2), avg = T.reduce((a, t) => a + rate(t), 0) / T.length, base = 1 / T.length;
+  let w = T.map(t => Math.max(0.15, Math.min(0.35, base + (avg - rate(t)) * 0.6)) * (t === avoid ? 0.3 : 1)), sum = w.reduce((a, b) => a + b, 0), r = Math.random() * sum, type = T[0];
+  for (let i = 0; i < T.length; i++) { r -= w[i]; if (r <= 0) { type = T[i]; break; } }
   return makeTask(type, band) || makeTask("repeat", band);
 }
 function cbPick(a) { return a[Math.floor(Math.random() * a.length)]; }
@@ -373,6 +375,10 @@ function makeTask(type, band) {
   if (type === "answer") {
     const pool = (VOICE_DECK.answer || []).filter(a => a.band <= band && a.band >= band - 1 && (a.topic === season || a.topic === "city" || Math.random() < 0.3)); const a = cbPick(pool.length ? pool : (VOICE_DECK.answer || [])); if (!a) return null;
     return { type, show: (a.pic || "") + " " + a.q, speak: a.q, keys: a.keys, target: a.full, hint: "trả lời đủ câu được thưởng" };
+  }
+  if (type === "ask") {
+    const pool = (VOICE_DECK.ask || []).filter(a => a.band <= Math.max(3, band) && (a.topic === season || a.topic === "city" || Math.random() < 0.3)); const a = cbPick(pool.length ? pool : (VOICE_DECK.ask || [])); if (!a) return null;
+    return { type, show: (a.pic || "") + " “" + a.say + "”", speak: a.say, keys: a.keys, target: a.full, hint: "hỏi lại 1 câu hỏi" };
   }
   if (type === "name") {
     const all = Object.values(VOCAB).flat(), mine = all.filter(v => hasCard("v:" + v.w)), v = cbPick(mine.length && Math.random() < 0.7 ? mine : all); if (!v) return null;
