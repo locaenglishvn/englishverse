@@ -55,7 +55,7 @@ const LESSONS = [
 /* ===== NPC Ở CÁC ĐỊA ĐIỂM MỚI (mỗi nơi một người, dạy mẫu câu dùng ở nơi đó) =====
    Có place: "id" → đứng trong nhà đó (x, z tính từ giữa phòng). Không có place → đứng ngoài trời tại x, z. */
 ,{
-  name: "Ms. Hoa – Teacher", color: 0x1971c2, place: "school", x: 0, z: -3.6,
+  name: "Ms. Hoa – Teacher", color: 0x1971c2, place: "school", x: -3, z: -13,
   steps: [
     { say: "Good morning, class! Please open your books to page ten.",
       card: { w: "page", pic: "📖", ex: "Open your book to page ten." },
@@ -1244,6 +1244,377 @@ const LESSONS = [
         { t: "We can do an experiment.", ok: true, fb: "Spoken like a scientist! +10" },
         { t: "Idea test how.", ok: false, fb: "Say “We can do an experiment.”" },
         { t: "Ask my mom.", ok: false, fb: "Try “do an experiment” :)" } ] }
+  ]
+},
+/* ----- Town Hall (townhall) ----- */
+{
+  name: "Ana – Receptionist", color: 0x9c36b5, place: "townhall", x: -6, z: 12,
+  steps: [
+    { say: "Welcome to Town Hall! How can I help you today?",
+      card: { w: "I have an appointment.", pic: "📅", ex: "I have an appointment at ten." },
+      q: { w: "How can I help you?", pic: "🙋", ex: "How can I help you today?" },
+      choices: [
+        { t: "I have an appointment at ten.",  ok: true,  fb: "Great! Clear and polite. +10" },
+        { t: "Appointment I have at ten is.",  ok: false, fb: "Almost! Try “I have an appointment at ten.”" },
+        { t: "I am an appointment.",           ok: false, fb: "Funny! But you are a visitor :) Try “I have an appointment.”" } ] },
+    { say: "Please take a number and sit down. Which office do you need?",
+      card: { w: "take a number", pic: "🎫", ex: "I’ll take a number, please." },
+      q: { w: "Which office…?", pic: "🏢", ex: "Which office do you need?" },
+      choices: [
+        { t: "I need the office for ID cards.", ok: true,  fb: "Perfect! Now the clerk can help. +10" },
+        { t: "Office I need is.",               ok: false, fb: "Word order: “I need the office for ID cards.”" },
+        { t: "Yes, the office is green.",       ok: false, fb: "Green is nice, but she asked which office." } ] },
+    { say: "Thank you! Your number is twelve. Please wait a moment.",
+      card: { w: "in a moment", pic: "⏳", ex: "Your turn is coming in a moment." },
+      choices: [
+        { t: "Thank you! I’ll wait a moment.", ok: true,  fb: "Lovely! +10" },
+        { t: "Thank you! I am wait.",          ok: false, fb: "Try “I’ll wait a moment.”" },
+        { t: "Twelve is my favourite number.", ok: false, fb: "Fun fact! Now try “I’ll wait a moment.”" } ] }
+  ]
+},
+{
+  name: "Hung – Records Clerk", color: 0x0b7285, place: "townhall", x: -10, z: 0,
+  steps: [
+    { say: "Hi! Do you want to register your new address?",
+      card: { w: "register", pic: "✍️", ex: "I want to register my address." },
+      choices: [
+        { t: "I want to register my address.", ok: true,  fb: "Excellent! Clear and correct. +10" },
+        { t: "Address register me want.",      ok: false, fb: "Word order: “I want to register my address.”" },
+        { t: "I am a register.",               ok: false, fb: "Ha! A register is a machine. Try “I want to register.”" } ] },
+    { say: "Please fill in this form. What is your address?",
+      card: { w: "fill in", pic: "🖊️", ex: "Please fill in the form." },
+      q: { w: "What is your address?", pic: "🏠", ex: "What is your address?" },
+      choices: [
+        { t: "Number 5, Maple Street.",    ok: true,  fb: "Clear and complete! +10" },
+        { t: "Street is my address five.", ok: false, fb: "Word order: “Number 5, Maple Street.”" },
+        { t: "I live in a big pizza.",     ok: false, fb: "Yummy! But please give your street address." } ] },
+    { say: "Thank you. Sign here, please. Your card will be ready tomorrow.",
+      card: { w: "tomorrow", pic: "📆", ex: "It will be ready tomorrow." },
+      choices: [
+        { t: "Thank you! I’ll come back tomorrow.", ok: true,  fb: "Perfect! +10" },
+        { t: "Tomorrow I back come.",               ok: false, fb: "Word order: “I’ll come back tomorrow.”" },
+        { t: "Yesterday, thank you.",               ok: false, fb: "Yesterday is the past. The clerk said tomorrow." } ] }
+  ]
+},
+{
+  name: "Tuan – Quest Board Officer", color: 0xe64980, place: "townhall", x: 11, z: 2,
+  steps: [
+    { say: "Hi! Our city needs help. Do you want a quest today?",
+      card: { w: "quest", pic: "📜", ex: "I want to do a quest." },
+      q: { w: "What can I do?", pic: "🤔", ex: "What can I do to help?" },
+      choices: [
+        { t: "Yes! I want to help the city.", ok: true,  fb: "Wonderful! +10" },
+        { t: "Help is I want.",               ok: false, fb: "Word order: “I want to help.”" },
+        { t: "I am a city!",                  ok: false, fb: "Haha, a city is big! Try “I want to help the city.”" } ] },
+    { say: "Great! Today we need to pick up rubbish in the park.",
+      card: { w: "pick up rubbish", pic: "🗑️", ex: "We pick up rubbish every Sunday." },
+      choices: [
+        { t: "I can pick up rubbish.", ok: true,  fb: "Thank you! Helping keeps the park clean. +10" },
+        { t: "Rubbish pick up can I.", ok: false, fb: "Word order: “I can pick up rubbish.”" },
+        { t: "I can eat the park.",    ok: false, fb: "Oops! Try “I can pick up rubbish.”" } ] },
+    { say: "Thank you! Can you plant a tree too? Trees make the city cool.",
+      card: { w: "plant a tree", pic: "🌳", ex: "We can plant a tree today." },
+      q: { w: "Why are trees good?", pic: "🌿", ex: "Why are trees good for the city?" },
+      choices: [
+        { t: "Yes! Trees make the air clean.", ok: true,  fb: "Excellent! +10" },
+        { t: "Tree is clean the air.",         ok: false, fb: "Word order: “Trees make the air clean.”" },
+        { t: "Yes, I am a tree.",              ok: false, fb: "Haha! You are a student, not a tree :)" } ] }
+  ]
+},
+{
+  name: "Grace – Council Member", color: 0x364fc7, place: "townhall", x: -8, z: -12,
+  steps: [
+    { say: "Welcome to the meeting! What do you think about our city park?",
+      card: { w: "I think…", pic: "💭", ex: "I think the park is nice." },
+      q: { w: "What do you think of…?", pic: "💭", ex: "What do you think of our park?" },
+      choices: [
+        { t: "I think the park needs more trees.", ok: true,  fb: "Great opinion! Clear and polite. +10" },
+        { t: "Park think I is more.",              ok: false, fb: "Word order: “I think the park needs more trees.”" },
+        { t: "Yes, park is big park.",             ok: false, fb: "True! Now give your idea: “I think…”" } ] },
+    { say: "Good idea! And what about the buses? They are often late.",
+      card: { w: "We should…", pic: "🚌", ex: "We should have more buses." },
+      choices: [
+        { t: "We should have more buses.", ok: true,  fb: "Yes! “We should…” is perfect for ideas. +10" },
+        { t: "Buses should more have we.", ok: false, fb: "Word order: “We should have more buses.”" },
+        { t: "Bus is yellow and blue.",    ok: false, fb: "Colourful! But give an idea: “We should…”" } ] },
+    { say: "Thank you! Your ideas are very helpful. We will think about them.",
+      card: { w: "helpful", pic: "👍", ex: "Your ideas are very helpful." },
+      q: { w: "Can you help us next time?", pic: "🙋", ex: "Can you help us next time?" },
+      choices: [
+        { t: "Thank you! I hope they help the city.", ok: true,  fb: "Lovely! Kind words for the city. +10" },
+        { t: "Thank you! I am helpful.",              ok: false, fb: "Kind, but say “I hope they help the city.”" },
+        { t: "Thank you! I want some pizza.",         ok: false, fb: "Yummy! Now try: “I hope they help the city.”" } ] }
+  ]
+},
+{
+  name: "Mr. Daniel – Vice Mayor", color: 0x7048e8, place: "townhall", x: 8, z: -12, minLv: 5,
+  steps: [
+    { say: "Hello! Would you like to help make our city better?",
+      card: { w: "I would like to help.", pic: "🙋", ex: "I would like to help my city." },
+      q: { w: "Why would you help?", pic: "❓", ex: "Why would you like to help?" },
+      choices: [
+        { t: "Yes, I would like to help my city.", ok: true,  fb: "Excellent! Polite and strong. +10" },
+        { t: "Yes, city is I help would.",         ok: false, fb: "Word order: “I would like to help my city.”" },
+        { t: "I would like a big pizza.",          ok: false, fb: "Pizza sounds fun! But try: “I would like to help.”" } ] },
+    { say: "Good! Tell me one problem in our city, and why it is a problem.",
+      card: { w: "too many cars", pic: "🚗", ex: "There are too many cars in the city." },
+      q: { w: "What is one problem?", pic: "🤔", ex: "What is one problem in our city?" },
+      choices: [
+        { t: "There are too many cars because the roads are narrow.", ok: true,  fb: "Clear and smart! A good reason. +10" },
+        { t: "Cars is too many, because road small.",                 ok: false, fb: "Almost! Say “There are too many cars because…”" },
+        { t: "Cars are red and I like them.",                         ok: false, fb: "Nice colours! But tell a problem and a reason." } ] },
+    { say: "Thank you! What should we do first to fix it?",
+      card: { w: "We should build…", pic: "🏗️", ex: "We should build a new bridge." },
+      choices: [
+        { t: "We should build a new bridge, because it is safer.", ok: true,  fb: "Excellent reasoning! +10" },
+        { t: "Bridge new should we build.",                        ok: false, fb: "Word order: “We should build a new bridge.”" },
+        { t: "Fish like the bridge a lot.",                        ok: false, fb: "Fish would love it! Now say what WE should do." } ] }
+  ]
+},
+/* ----- City Hospital (hospital) ----- */
+{
+  name: "Jenny – Receptionist", color: 0x1098ad, place: "hospital", x: -6, z: 10,
+  steps: [
+    { say: "Hello! What’s your name, please?",
+      card: { w: "I feel sick.", pic: "🤒", ex: "I feel sick today." },
+      choices: [
+        { t: "My name is Nam.",  ok: true,  fb: "Great! Short and clear. +10" },
+        { t: "I am name Nam.",   ok: false, fb: "Word order: “My name is Nam.”" },
+        { t: "Yes, I am ten.",   ok: false, fb: "Good to know, but first say your name." } ] },
+    { say: "How old are you? And what’s the matter?",
+      card: { w: "I have a headache.", pic: "🤕", ex: "I have a headache." },
+      q: { w: "What’s the matter?", pic: "❓", ex: "What’s the matter?" },
+      choices: [
+        { t: "I’m ten. I have a headache.", ok: true,  fb: "Clear and complete! +10" },
+        { t: "I have ten old headache.",    ok: false, fb: "Word order: “I’m ten. I have a headache.”" },
+        { t: "I am headache.",              ok: false, fb: "Almost! Say “I have a headache.”" } ] },
+    { say: "Please sit down. The doctor will see you soon.",
+      card: { w: "I’ll sit down here.", pic: "🪑", ex: "I’ll sit down here." },
+      choices: [
+        { t: "Thank you. I’ll sit down here.", ok: true,  fb: "Polite and clear! +10" },
+        { t: "Sit down is I here.",            ok: false, fb: "Word order: “I’ll sit down here.”" },
+        { t: "Yes, I am the chair.",           ok: false, fb: "Haha! You are not a chair :) Try “I’ll sit down here.”" } ] }
+  ]
+},
+{
+  name: "Dr. Ngoc – Doctor", color: 0x228be6, place: "hospital", x: -9, z: -2,
+  steps: [
+    { say: "Hello! Where does it hurt?",
+      card: { w: "My head hurts.", pic: "🤕", ex: "My head hurts a lot." },
+      q: { w: "Where does it hurt?", pic: "🤔", ex: "Where does it hurt?" },
+      choices: [
+        { t: "My head hurts a lot.",        ok: true,  fb: "Clear! Doctors need to know where. +10" },
+        { t: "I am head pain.",             ok: false, fb: "Almost! Say “My head hurts.”" },
+        { t: "I like my doctor a lot.",     ok: false, fb: "Kind! But first tell me where it hurts." } ] },
+    { say: "Let me check. Open your mouth, please.",
+      card: { w: "Open your mouth.", pic: "😮", ex: "Open your mouth, please." },
+      choices: [
+        { t: "Okay. Ah!",                 ok: true,  fb: "Good job! That helps the doctor. +10" },
+        { t: "Mouth open you.",           ok: false, fb: "Try “Okay. Ah!” Easy!" },
+        { t: "No, I don’t like mouth.",   ok: false, fb: "It’s OK to feel a little shy. Try “Okay. Ah!”" } ] },
+    { say: "You have a fever. Rest and drink lots of water.",
+      card: { w: "drink lots of water", pic: "💧", ex: "I’ll drink lots of water." },
+      choices: [
+        { t: "Thank you, Doctor. I’ll rest and drink water.", ok: true,  fb: "Great! Following advice is smart. +10" },
+        { t: "Water is drink me.",                            ok: false, fb: "Word order: “I’ll drink lots of water.”" },
+        { t: "Doctor, I like pizza!",                         ok: false, fb: "Pizza is yummy later! Try “Thank you, Doctor.”" } ] }
+  ]
+},
+{
+  name: "Rosa – Pharmacist", color: 0x66a80f, place: "hospital", x: 13.5, z: 2,
+  steps: [
+    { say: "Hello! Here is your medicine. Do you know how to take it?",
+      card: { w: "after meals", pic: "🍽️", ex: "Take the pills after meals." },
+      q: { w: "How do I take it?", pic: "💊", ex: "How do I take it?" },
+      choices: [
+        { t: "I’ll take it after meals.", ok: true,  fb: "Perfect! +10" },
+        { t: "After meals is I take.",    ok: false, fb: "Word order: “I’ll take it after meals.”" },
+        { t: "I’ll take it on the bus.",  ok: false, fb: "Ha! Not on the bus :) Try “after meals.”" } ] },
+    { say: "Take one pill three times a day. Got it?",
+      card: { w: "three times a day", pic: "3️⃣", ex: "I take it three times a day." },
+      choices: [
+        { t: "Got it! Three times a day, after meals.", ok: true,  fb: "Great! You repeated it clearly. +10" },
+        { t: "Three day times, I am.",                  ok: false, fb: "Word order: “three times a day.”" },
+        { t: "Medicine is a blue box.",                 ok: false, fb: "Nice box! But say when: “three times a day.”" } ] },
+    { say: "Good! Drink lots of water and rest. Get well soon!",
+      card: { w: "get well soon", pic: "🌈", ex: "I hope you get well soon." },
+      choices: [
+        { t: "Thank you! I hope I get well soon.", ok: true,  fb: "Lovely wish! +10" },
+        { t: "Thank you! I am soon well.",         ok: false, fb: "Almost! Say “I hope I get well soon.”" },
+        { t: "Thank you! I like pills very much.", ok: false, fb: "Pills are not candy! Say “Thank you!”" } ] }
+  ]
+},
+{
+  name: "Ben – Young Patient", color: 0xf59f00, place: "hospital", x: -8, z: -15,
+  steps: [
+    { say: "Hi! I broke my arm. But I feel better now!",
+      card: { w: "feel better", pic: "😊", ex: "I feel better today." },
+      choices: [
+        { t: "I’m glad you feel better!", ok: true,  fb: "Kind and happy! +10" },
+        { t: "You are a broken arm!",     ok: false, fb: "Oops! Try “I’m glad you feel better.”" },
+        { t: "Yes, I broke a pizza.",     ok: false, fb: "Pizza is yummy! But say “I’m glad you feel better.”" } ] },
+    { say: "Thank you! My arm is in a plaster cast. Can you sign it?",
+      card: { w: "plaster cast", pic: "🦴", ex: "My arm is in a plaster cast." },
+      q: { w: "Can you sign it?", pic: "✍️", ex: "Can you sign my plaster cast?" },
+      choices: [
+        { t: "Sure! I’ll sign it.",   ok: true,  fb: "Great! Nice and friendly. +10" },
+        { t: "Sign I am it.",         ok: false, fb: "Word order: “I’ll sign it.”" },
+        { t: "Plaster is very cold!", ok: false, fb: "It is a bit cold! Say “Sure! I’ll sign it.”" } ] },
+    { say: "I can play football again soon!",
+      card: { w: "again", pic: "🔁", ex: "I can play again soon." },
+      choices: [
+        { t: "That’s great! You can play again soon.", ok: true,  fb: "Lovely news! +10" },
+        { t: "I am football again.",                   ok: false, fb: "Almost! Say “You can play again soon.”" },
+        { t: "Yes, I like cake and cats.",             ok: false, fb: "Cake and cats are nice! Now say: “You can play again soon.”" } ] }
+  ]
+},
+{
+  name: "Ada – Lab Scientist", color: 0x5c7cfa, place: "hospital", x: 8, z: -15, minLv: 5,
+  steps: [
+    { say: "Hello! Look through the microscope. What can you see?",
+      card: { w: "bacteria", pic: "🦠", ex: "Bacteria are very tiny." },
+      q: { w: "What can you see?", pic: "🔬", ex: "What can you see?" },
+      choices: [
+        { t: "I can see some tiny bacteria.", ok: true,  fb: "Great observation! +10" },
+        { t: "Microscope is see I.",          ok: false, fb: "Word order: “I can see some tiny bacteria.”" },
+        { t: "Bacteria is a big cat.",        ok: false, fb: "Haha! Bacteria are tiny, not big cats :)" } ] },
+    { say: "Bacteria can make you sick. How can we stop them?",
+      card: { w: "wash your hands", pic: "🧼", ex: "Wash your hands with soap." },
+      q: { w: "How can we stop germs?", pic: "🧼", ex: "How can we stop germs?" },
+      choices: [
+        { t: "We should wash our hands with soap.", ok: true,  fb: "Correct! Soap helps remove germs. +10" },
+        { t: "We should play with bacteria.",       ok: false, fb: "Careful! Bacteria can make us sick. Try “wash our hands.”" },
+        { t: "Hands are very big.",                 ok: false, fb: "They are! But how do we stop germs?" } ] },
+    { say: "Good! Scientists also make vaccines. A vaccine helps your body fight germs.",
+      card: { w: "vaccine", pic: "💉", ex: "A vaccine helps you stay healthy." },
+      choices: [
+        { t: "A vaccine helps my body fight germs.", ok: true,  fb: "Excellent science! +10" },
+        { t: "Vaccine is my body fight.",            ok: false, fb: "Word order: “A vaccine helps my body fight germs.”" },
+        { t: "A vaccine is a cold pizza.",           ok: false, fb: "Haha! Vaccines are medicine, not pizza." } ] }
+  ]
+},
+{
+  name: "Hana – Visitor", color: 0xc2255c, place: "hospital", x: 6, z: 12,
+  steps: [
+    { say: "Excuse me! Where is the children’s ward?",
+      card: { w: "ward", pic: "🛏️", ex: "The ward is on the second floor." },
+      q: { w: "Where is the ward?", pic: "🛏️", ex: "Where is the ward, please?" },
+      choices: [
+        { t: "It’s on the second floor.", ok: true,  fb: "Clear directions! +10" },
+        { t: "Floor second is up, yes.",  ok: false, fb: "Word order: “It’s on the second floor.”" },
+        { t: "I am a nurse!",             ok: false, fb: "Haha! You are a visitor :) Try “It’s on the second floor.”" } ] },
+    { say: "Thank you! Is it far from here?",
+      card: { w: "not far", pic: "🚶", ex: "It’s not far from here." },
+      choices: [
+        { t: "No, it’s not far. Just go upstairs.", ok: true,  fb: "Helpful! +10" },
+        { t: "Far, far, I like stairs.",            ok: false, fb: "Ha! Try “No, it’s not far.”" },
+        { t: "Yes, the stairs are my friend.",      ok: false, fb: "Friendly stairs! But they asked how far. Try “It’s not far.”" } ] },
+    { say: "Thank you! We are waiting for our turn.",
+      card: { w: "our turn", pic: "🙋", ex: "It’s our turn now!" },
+      choices: [
+        { t: "Sure! I hope it’s your turn soon.", ok: true,  fb: "Kind words! +10" },
+        { t: "Our turn I am.",                    ok: false, fb: "Word order: “It’s our turn now!”" },
+        { t: "Yes, I like turns on the bus.",     ok: false, fb: "Buses are fun! Try “I hope it’s your turn soon.”" } ] }
+  ]
+},
+/* ----- Verse School (school) ----- */
+{
+  name: "Mr. Kim – Science Teacher", color: 0x0ca678, place: "school", x: -11, z: -7,
+  steps: [
+    { say: "Hello, class! Today we will learn about magnets. Are you ready?",
+      card: { w: "magnet", pic: "🧲", ex: "This magnet picks up nails." },
+      q: { w: "Are you ready?", pic: "🙋", ex: "Are you ready for science?" },
+      choices: [
+        { t: "Yes, I’m ready!",        ok: true,  fb: "Great energy! +10" },
+        { t: "I ready am.",            ok: false, fb: "Word order: “I’m ready!” is easy." },
+        { t: "Magnets are my pets!",   ok: false, fb: "Haha, pets! Try: “Yes, I’m ready!”" } ] },
+    { say: "A magnet pulls metal. Can it pull a paper clip?",
+      card: { w: "pull", pic: "🧲", ex: "A magnet can pull metal." },
+      choices: [
+        { t: "Yes, it can pull a paper clip.", ok: true,  fb: "Correct! Metal sticks to magnets. +10" },
+        { t: "Yes, magnet can paper pull.",    ok: false, fb: "Word order: “Yes, it can pull a paper clip.”" },
+        { t: "Paper clip is very red.",        ok: false, fb: "Red is nice! But the question is: can the magnet pull it?" } ] },
+    { say: "Excellent! Now tell me, what did the magnet do?",
+      card: { w: "stuck to", pic: "📎", ex: "The nail is stuck to the magnet." },
+      q: { w: "What did it do?", pic: "🔍", ex: "What did the magnet do?" },
+      choices: [
+        { t: "The nail stuck to the magnet.",   ok: true,  fb: "Perfect past tense! +10" },
+        { t: "Nail magnet to stuck.",           ok: false, fb: "Word order: “The nail stuck to the magnet.”" },
+        { t: "The magnet is a nail, I think.",  ok: false, fb: "Ha! A magnet is not a nail. Try “stuck to”." } ] }
+  ]
+},
+{
+  name: "Ruby – Art Teacher", color: 0xd6336c, place: "school", x: 11, z: -7,
+  steps: [
+    { say: "Hi! Do you like painting or music?",
+      card: { w: "I like to paint.", pic: "🎨", ex: "I like to paint pictures." },
+      q: { w: "Painting or music?", pic: "🎵", ex: "Do you like painting or music?" },
+      choices: [
+        { t: "I like to paint pictures.", ok: true,  fb: "Lovely! +10" },
+        { t: "Paint is like I.",          ok: false, fb: "Word order: “I like to paint pictures.”" },
+        { t: "Yes, music is my brother.", ok: false, fb: "Fun idea! But tell me: “I like to paint pictures.”" } ] },
+    { say: "Good! Let’s mix colours. What do you want to make?",
+      card: { w: "mix colours", pic: "🎨", ex: "Let’s mix colours together." },
+      choices: [
+        { t: "I want to make green.", ok: true,  fb: "Nice! Blue and yellow make green. +10" },
+        { t: "Colour is mix me.",     ok: false, fb: "Word order: “I want to make green.”" },
+        { t: "Paint is my dog!",      ok: false, fb: "Ha! Dogs and paint... Try “I want to make green.”" } ] },
+    { say: "Wonderful! Can you play the guitar?",
+      card: { w: "guitar", pic: "🎸", ex: "I can play the guitar." },
+      q: { w: "Can you play…?", pic: "🎸", ex: "Can you play the guitar?" },
+      choices: [
+        { t: "No, I can’t. But I can sing a song!", ok: true,  fb: "Great! Singing counts too. +10" },
+        { t: "Yes, I can guitar play.",             ok: false, fb: "Word order: “I can play the guitar.”" },
+        { t: "Guitar is a big cake.",               ok: false, fb: "Haha! Guitars make music, not cake :)" } ] }
+  ]
+},
+{
+  name: "Nam – Student", color: 0x3b5bdb, place: "school", x: -11, z: 9,
+  steps: [
+    { say: "Oh no! I forgot my homework. What should I do?",
+      card: { w: "I forgot…", pic: "😵", ex: "I forgot my homework today." },
+      q: { w: "What should I do?", pic: "🤔", ex: "What should I do?" },
+      choices: [
+        { t: "Don’t worry. Ask the teacher.", ok: true,  fb: "Kind advice! +10" },
+        { t: "Homework is you forgot I.",     ok: false, fb: "Word order: “I forgot my homework.”" },
+        { t: "Homework is a big cake.",       ok: false, fb: "Ha! Homework is not cake. Try: “Don’t worry.”" } ] },
+    { say: "Thank you! Do you want to play tag at break time?",
+      card: { w: "play tag", pic: "🏃", ex: "Let’s play tag at break time." },
+      choices: [
+        { t: "Yes, let’s play tag at break time!", ok: true,  fb: "Fun! +10" },
+        { t: "Tag is play, yes, I.",               ok: false, fb: "Word order: “Yes, let’s play tag!”" },
+        { t: "No, I am a tag.",                    ok: false, fb: "Ha! You are a student :) Try “Yes, let’s play tag!”" } ] },
+    { say: "Great! See you at break. Bring your ball!",
+      card: { w: "See you at break", pic: "⏰", ex: "See you at break!" },
+      choices: [
+        { t: "OK! See you at break time.", ok: true,  fb: "Perfect! +10" },
+        { t: "See break you at time.",     ok: false, fb: "Word order: “See you at break time.”" },
+        { t: "Ball is my bag, bye.",       ok: false, fb: "Ha! Try: “OK! See you at break time.”" } ] }
+  ]
+},
+{
+  name: "Mrs. Bich – Canteen Lady", color: 0xf08c00, place: "school", x: 11, z: 9, minLv: 5,
+  steps: [
+    { say: "Hello! Would you like soup or rice today?",
+      card: { w: "I’d prefer…", pic: "🍲", ex: "I’d prefer the soup, please." },
+      q: { w: "Soup or rice?", pic: "🍚", ex: "Would you prefer soup or rice?" },
+      choices: [
+        { t: "I’d prefer the soup, please.", ok: true,  fb: "Excellent! Polite and clear. +10" },
+        { t: "Soup is my prefer.",           ok: false, fb: "Word order: “I’d prefer the soup.”" },
+        { t: "I am soup hot.",               ok: false, fb: "Almost! Say “I’d prefer the soup.”" } ] },
+    { say: "Good choice! That’s five thousand dong. Would you like a drink too?",
+      card: { w: "I’ll have…", pic: "🥤", ex: "I’ll have a juice, please." },
+      choices: [
+        { t: "I’ll have a juice, please.", ok: true,  fb: "Great! +10" },
+        { t: "Juice have I please will.",  ok: false, fb: "Word order: “I’ll have a juice, please.”" },
+        { t: "No, juice is for my shoes.", ok: false, fb: "Haha! Shoes don’t drink juice. Try “I’ll have a juice, please.”" } ] },
+    { say: "Here you are. Be careful, the soup is hot!",
+      card: { w: "be careful", pic: "⚠️", ex: "Be careful, it’s hot!" },
+      q: { w: "Is it hot?", pic: "🌡️", ex: "Is the soup hot?" },
+      choices: [
+        { t: "Thank you! I’ll be careful.", ok: true,  fb: "Sensible! Hot soup needs care. +10" },
+        { t: "Careful is me be.",           ok: false, fb: "Word order: “I’ll be careful.”" },
+        { t: "Hot soup is my friend, yes.", ok: false, fb: "Soup is not a friend! Try “I’ll be careful.”" } ] }
   ]
 }
 ];
