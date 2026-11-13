@@ -25,8 +25,13 @@ const MON = {
   bug:   { name: "Riddle Bug", icon: "🐞", weak: "answer", hp: 0.9, dmg: 0.9, speed: 1.1, range: 2.0 },
   worm:  { name: "Scramble Worm", icon: "🪱", weak: "build", hp: 1.2, dmg: 1.1, speed: 0.8, range: 2.4 },
   crab:  { name: "Question Crab", icon: "🦀", weak: "answer", hp: 1.3, dmg: 1.0, speed: 0.9, range: 2.2 },
-  bat:   { name: "Blank Bat", icon: "🦇", weak: "name", hp: 0.8, dmg: 1.2, speed: 1.3, range: 2.0 }
+  bat:   { name: "Blank Bat", icon: "🦇", weak: "name", hp: 0.8, dmg: 1.2, speed: 1.3, range: 2.0 },
+  turtle: { name: "Tense Turtle", icon: "🐢", weak: "build", hp: 1.6, dmg: 0.9, speed: 0.6, range: 2.0 },   // vòng 2
+  slime: { name: "Shy Slime", icon: "🫧", weak: "ask", hp: 1.0, dmg: 1.0, speed: 1.0, range: 2.0 },
+  parrot: { name: "Mimic Parrot", icon: "🦜", weak: "repeat", hp: 0.9, dmg: 1.2, speed: 1.4, range: 2.2 },
+  owl:   { name: "Story Owl", icon: "🦉", weak: "answer", hp: 1.2, dmg: 1.1, speed: 1.0, range: 2.4 }
 };
+const SEASON_MON2 = { spring: ["owl", "slime", "bug"], tropic: ["parrot", "crab", "turtle"], desert: ["turtle", "bat", "owl"], autumn: ["owl", "parrot", "slime"], winter: ["turtle", "slime", "ghost"] };
 const SEASON_MON = { spring: ["ghost", "bug", "bug"], tropic: ["crab", "worm", "bug"], desert: ["bat", "worm", "crab"], autumn: ["bug", "bat", "ghost"], winter: ["ghost", "bat", "crab"] };
 const TASK_ICON = { repeat: "📢", answer: "🎺", build: "🎸", name: "🥁", ask: "💬" };
 const TASK_NAME = { repeat: "REPEAT · nói lại", answer: "ANSWER · trả lời", build: "BUILD · xếp câu", name: "NAME · gọi tên", ask: "ASK · đặt câu hỏi" };
@@ -191,9 +196,9 @@ function showWeaponInHand() {   // vũ khí hiện trên tay khi ở vùng hoang
 }
 /* ---------- 6. VÀO / RA VÙNG HOANG DÃ ---------- */
 function setCombatOn(on, sec) {
-  CB.on = on; CB.sec = sec; document.body.classList.toggle("cbOn", on);
+  const wasOn = CB.on; CB.on = on; CB.sec = sec; document.body.classList.toggle("cbOn", on);
   ["cbHud", "cbFood"].forEach(id => $(id).style.display = on ? "flex" : "none"); $("cbBtns").style.display = on ? "block" : "none";
-  if (on) { CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
+  if (on) { if (!wasOn) CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
     flash("🌿 " + sec.name + "<div style='font-size:13px;font-weight:400'>Monster zone! Tap ⚔️ to hit, tap a skill and SPEAK to cast. / Vùng quái: bấm ⚔️ đánh thường, bấm chiêu rồi NÓI để tung chiêu.</div>"); }
   else { if (!CB.wideBefore && camWide) setWide(false); endCast(true); }
   showWeaponInHand();
@@ -204,17 +209,47 @@ function updateCombat(dt, t) {
   if (!save || !save.combat || typeof WILDS === "undefined") return;
   dayTick(dt);
   const sec = (!room && !maze) ? WILDS.sectorAt(player.position.x, player.position.z) : null;
-  if (!!sec !== CB.on || (sec && CB.sec && sec.dir !== CB.sec.dir)) setCombatOn(!!sec, sec);
+  if (!!sec !== CB.on || (sec && CB.sec && (sec.dir !== CB.sec.dir || sec.ring !== CB.sec.ring))) setCombatOn(!!sec, sec);
   CB.mp = Math.min(100, CB.mp + dt * 12.5);
   for (const k in CB.cd) CB.cd[k] = Math.max(0, CB.cd[k] - dt);
   CB.atkCd = Math.max(0, CB.atkCd - dt);
   if (CB.on && !CB.ko && performance.now() - CB.lastHurt > 6000 && save.energy < 100) save.energy = Math.min(100, save.energy + dt * 1.2);   // ngoài trận: hồi máu chậm
-  if (CB.on) { spawnTick(); }
+  if (CB.on) { spawnTick(); netTick(dt); }
   CB.mons.forEach(M => monTick(M, dt, t));
   CB.mons = CB.mons.filter(M => !M.gone);
   dropTick(dt, t);
   if (CB.cast) { CB.cast.left -= dt; $("cbCbar").style.width = Math.max(0, CB.cast.left / CB.cast.limit * 100) + "%"; if (CB.cast.left <= 0 && !CB.cast.rec) resolveCast([], "timeout"); }
   if (CB.on) hudTick();
+}
+let netT = 0;
+function netSend(ev, payload) { try { if (online && typeof chan !== "undefined" && chan) chan.send({ type: "broadcast", event: ev, payload: Object.assign({ id: myId }, payload) }); } catch (e) {} }
+function netTick(dt) {   // chủ phòng gửi trạng thái quái ~3 lần/giây
+  if (!CB.on || !online || !sectorPlayers(CB.sec).length || !amHost(CB.sec)) return;
+  if ((netT += dt) < 0.33) return; netT = 0;
+  const list = CB.mons.filter(M => !M.remote && !M.dead && M.dir === CB.sec.dir).map(M => [M.key, M.type, M.lv, +M.g.position.x.toFixed(1), +M.g.position.z.toFixed(1), Math.round(M.hp), M.hpMax, M.tele ? [+M.tele.x.toFixed(1), +M.tele.z.toFixed(1)] : 0, M.stun > 0 ? "hit" : "walk"]);
+  netSend("mons", { dir: CB.sec.dir, ring: CB.sec.ring, l: list });
+}
+function combatWire(ch) {
+  ch.on("broadcast", { event: "mons" }, ({ payload: m }) => {
+    if (!CB.on || m.dir !== CB.sec.dir || m.ring !== CB.sec.ring || m.id > myId && amHost(CB.sec)) return;
+    CB.mons.filter(M => !M.remote && M.dir === m.dir && !M.dead).forEach(M => { scene.remove(M.g); M.gone = true; });   // không phải chủ phòng: bỏ quái của mình
+    m.l.forEach(([k, type, lv, x, z, hp, hpMax, tele, st]) => {
+      let M = CB.mons.find(o => o.key === k);
+      if (!M) { if (!MON[type]) return; M = makeMon(type, CB.sec, x, z); M.key = k; M.remote = true; M.lv = lv; M.hpMax = hpMax; }
+      M.nx = x; M.nz = z; M.hp = Math.min(M.hp, hp); if (hp > M.hp + 5) M.hp = hp; M.seen = performance.now(); M.nst = st; if (tele && !M.tele) M.ntele = tele; });
+  });
+  ch.on("broadcast", { event: "mdmg" }, ({ payload: m }) => {   // mình là chủ phòng: nhận sát thương của người khác
+    const M = CB.mons.find(o => o.key === m.k && !o.remote); if (!M || M.dead) return;
+    if (m.fx) { if (m.fx.st) M.stun = Math.max(M.stun, m.fx.st); if (m.fx.ro) M.root = m.fx.ro; if (m.fx.si) M.silence = m.fx.si; if (m.fx.sl) { M.slow = m.fx.sl; M.slowT = m.fx.slT; } }
+    dealDamage(M, m.d, !!m.s, m.id); popText("-" + m.d, M.g.position, "#868e96");
+  });
+  ch.on("broadcast", { event: "mdie" }, ({ payload: m }) => {
+    const M = CB.mons.find(o => o.key === m.k); if (!M || M.dead) return; M.dead = true; M.deadT = 0; if (M.tele) { scene.remove(M.tele.ring); M.tele = null; }
+    const me = m.sh && m.sh[myId]; if (me) rewardKill(M, me[0], me[1]);
+  });
+  ch.on("broadcast", { event: "mhit" }, ({ payload: m }) => {   // quái của chủ phòng đánh trúng mình
+    if (m.to !== myId || CB.ko) return; if (Math.hypot(player.position.x - m.x, player.position.z - m.z) < m.r + 0.3) hurtPlayer({ lv: m.lv, T: { dmg: m.d } });
+  });
 }
 let cbHudT = 0;
 function hudTick() {
@@ -235,13 +270,15 @@ function dayTick(dt) {
 /* ---------- 8. SINH QUÁI + HÀNH VI ---------- */
 function ringLevel(x, z) { const d = Math.max(Math.abs(x), Math.abs(z)); return Math.max(1, Math.min(100, Math.round(1 + (d - 150) / 90 * 24))); }
 function spawnTick() {
+  if (!amHost(CB.sec)) return;
   const s = CB.sec, here = CB.mons.filter(M => M.dir === s.dir && !M.dead).length;
   if (here >= 9 || Math.random() > 0.05) return;
   const pts = WILDS.spawnPoints(s.dir, s.ring) || []; if (!pts.length) return;
   const far = pts.filter(p => Math.hypot(p.x - player.position.x, p.z - player.position.z) > 14 && Math.hypot(p.x - player.position.x, p.z - player.position.z) < 45);
   const p = (far.length ? far : pts)[Math.floor(Math.random() * (far.length ? far.length : pts.length))];
-  const list = SEASON_MON[s.season] || SEASON_MON.spring; makeMon(list[Math.floor(Math.random() * list.length)], s, p.x, p.z);
+  const list = (s.ring >= 2 ? SEASON_MON2 : SEASON_MON)[s.season] || SEASON_MON.spring; makeMon(list[Math.floor(Math.random() * list.length)], s, p.x, p.z);
 }
+let monSeq = 0;
 function makeMon(type, sec, x, z) {
   const T = MON[type], lv = ringLevel(x, z);
   let model = null; try { if (MONSTER_MODELS.make) model = MONSTER_MODELS.make(type, sec.season, lv); } catch (e) {}
@@ -249,27 +286,35 @@ function makeMon(type, sec, x, z) {
   const g = model.g; g.position.set(x, 0, z); scene.add(g);
   const tag = nameTag(T.icon + " " + T.name + " Lv." + lv, "sợ " + TASK_ICON[T.weak]); tag.position.y = 2.3; g.add(tag);
   const hpm = Math.round((40 + lv * 15) * T.hp);
-  const M = { type, T, lv, dir: sec.dir, g, model, tag, hp: hpm, hpMax: hpm, home: { x, z }, tx: x, tz: z, state: "idle", atkT: 0, tele: null, stun: 0, dmgSkill: 0, dmgAll: 0, dead: false, gone: false, hurtT: 0 };
+  const M = { key: myId + "-" + (++monSeq), ring: sec.ring, type, T, lv, dir: sec.dir, contrib: {}, g, model, tag, hp: hpm, hpMax: hpm, home: { x, z }, tx: x, tz: z, state: "idle", atkT: 0, tele: null, stun: 0, dmgSkill: 0, dmgAll: 0, dead: false, gone: false, hurtT: 0 };
   CB.mons.push(M); return M;
 }
 function monTick(M, dt, t) {
   const p = M.g.position, P = player.position, dist = Math.hypot(P.x - p.x, P.z - p.z);
   if (M.dead) { M.deadT += dt; M.model.update(dt, t, "die"); M.g.scale.setScalar(Math.max(0.01, 1 - M.deadT)); if (M.deadT > 1) { scene.remove(M.g); M.gone = true; } return; }
-  if (!CB.on || CB.sec.dir !== M.dir) { if (dist > 120) { scene.remove(M.g); M.gone = true; } return; }
+  if (!CB.on || CB.sec.dir !== M.dir) { if (dist > 120 || M.remote) { scene.remove(M.g); M.gone = true; } return; }
+  if (M.remote) {   // quái của "chủ phòng": chỉ nội suy vị trí nhận qua mạng
+    if (performance.now() - M.seen > 2500) { scene.remove(M.g); M.gone = true; return; }
+    const dx = M.nx - p.x, dz = M.nz - p.z, d = Math.hypot(dx, dz); if (d > 0.05) { p.x += dx * Math.min(1, dt * 6); p.z += dz * Math.min(1, dt * 6); M.g.rotation.y = Math.atan2(dx, dz); }
+    if (M.ntele && !M.tele) { const ring = teleRing(M); ring.position.set(M.ntele[0], 0.06, M.ntele[1]); M.tele = { t: 0, ring, x: M.ntele[0], z: M.ntele[1], remote: true }; }
+    if (M.tele) { M.tele.t += dt; M.tele.ring.scale.setScalar(0.4 + Math.min(1, M.tele.t / 0.8) * 0.6); if (M.tele.t >= 0.8) { scene.remove(M.tele.ring); M.tele = null; M.ntele = null; } }
+    M.model.update(dt, t, M.hurtT > 0 ? (M.hurtT -= dt, "hit") : M.nst || "idle"); return;
+  }
   if (M.stun > 0) { M.stun -= dt; M.model.update(dt, t, "hit"); return; }
   M.root = Math.max(0, (M.root || 0) - dt); M.silence = Math.max(0, (M.silence || 0) - dt); M.slowT = Math.max(0, (M.slowT || 0) - dt);
   const spd = M.slowT > 0 ? 1 - (M.slow || 0) : 1;
-  const fromHome = Math.hypot(p.x - M.home.x, p.z - M.home.z), aggro = !CB.ko && dist < 9 && fromHome < 25;
+  const tg = monTarget(M), P2 = tg.pos, dist2 = Math.hypot(P2.x - p.x, P2.z - p.z);
+  const fromHome = Math.hypot(p.x - M.home.x, p.z - M.home.z), aggro = !(tg.me && CB.ko) && dist2 < 9 && fromHome < 25;
   let state = "idle";
   if (M.tele) {   // đang ra đòn: vòng đỏ báo trước, hết 0,8 s thì trúng nếu người chơi còn trong vòng
     M.tele.t += dt; M.tele.ring.scale.setScalar(0.4 + M.tele.t / 0.8 * 0.6); state = "attack";
-    if (M.tele.t >= 0.8) { if (Math.hypot(P.x - M.tele.x, P.z - M.tele.z) < M.T.range + 0.3) hurtPlayer(M); scene.remove(M.tele.ring); M.tele = null; M.atkT = 2.2; }
+    if (M.tele.t >= 0.8) { if (M.tele.who === myId) { if (Math.hypot(P.x - M.tele.x, P.z - M.tele.z) < M.T.range + 0.3) hurtPlayer(M); }
+      else netSend("mhit", { to: M.tele.who, x: M.tele.x, z: M.tele.z, r: M.T.range, lv: M.lv, d: M.T.dmg }); scene.remove(M.tele.ring); M.tele = null; M.atkT = 2.2; }
   } else if (aggro) {
-    M.g.rotation.y = Math.atan2(P.x - p.x, P.z - p.z);
-    if (dist > M.T.range * 0.8 && !M.root) { const s = 2.3 * M.T.speed * spd * dt; movMon(M, (P.x - p.x) / dist * s, (P.z - p.z) / dist * s); state = "walk"; }
+    M.g.rotation.y = Math.atan2(P2.x - p.x, P2.z - p.z);
+    if (dist2 > M.T.range * 0.8 && !M.root) { const s = 2.3 * M.T.speed * spd * dt; movMon(M, (P2.x - p.x) / dist2 * s, (P2.z - p.z) / dist2 * s); state = "walk"; }
     M.atkT -= dt;
-    if (dist < M.T.range + 0.6 && M.atkT <= 0 && !M.silence) { const ring = new THREE.Mesh(new THREE.RingGeometry(M.T.range * 0.85, M.T.range, 28), new THREE.MeshBasicMaterial({ color: 0xe5484d, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));
-      ring.rotation.x = -Math.PI / 2; ring.position.set(P.x, 0.06, P.z); scene.add(ring); M.tele = { t: 0, ring, x: P.x, z: P.z }; }
+    if (dist2 < M.T.range + 0.6 && M.atkT <= 0 && !M.silence) { const ring = teleRing(M); ring.position.set(P2.x, 0.06, P2.z); M.tele = { t: 0, ring, x: P2.x, z: P2.z, who: tg.id }; }
   } else {   // đi tuần quanh nhà
     if (Math.hypot(M.tx - p.x, M.tz - p.z) < 0.5 || fromHome > 25) { M.tx = M.home.x + (Math.random() - 0.5) * 16; M.tz = M.home.z + (Math.random() - 0.5) * 16; }
     const dx = M.tx - p.x, dz = M.tz - p.z, d = Math.hypot(dx, dz) || 1; if (!M.root) movMon(M, dx / d * 0.9 * spd * dt, dz / d * 0.9 * spd * dt); M.g.rotation.y = Math.atan2(dx, dz); state = "walk";
@@ -277,6 +322,17 @@ function monTick(M, dt, t) {
   }
   if (M.hurtT > 0) { M.hurtT -= dt; state = "hit"; }
   M.model.update(dt, t, state);
+}
+function teleRing(M) { const ring = new THREE.Mesh(new THREE.RingGeometry(M.T.range * 0.85, M.T.range, 28), new THREE.MeshBasicMaterial({ color: 0xe5484d, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false })); ring.rotation.x = -Math.PI / 2; scene.add(ring); return ring; }
+function sectorPlayers(sec) {   // người chơi khác đang ở cùng vùng (cùng hướng, cùng vòng)
+  if (!sec || typeof others === "undefined") return [];
+  return Object.keys(others).filter(id => { const o = others[id]; if (performance.now() - (o.last || 0) > 20000) return false; const s2 = WILDS.sectorAt(o.g.position.x, o.g.position.z); return s2 && s2.dir === sec.dir && s2.ring === sec.ring; });
+}
+function amHost(sec) { const ids = sectorPlayers(sec); return !ids.some(id => id < myId); }   // người có mã nhỏ nhất trong vùng làm "chủ phòng" điều khiển quái
+function monTarget(M) {   // quái đuổi người gần nhất trong vùng
+  let best = { id: myId, pos: player.position, me: true }, bd = CB.ko ? 1e9 : M.g.position.distanceTo(player.position);
+  sectorPlayers(CB.sec).forEach(id => { const d = M.g.position.distanceTo(others[id].g.position); if (d < bd) { bd = d; best = { id, pos: others[id].g.position, me: false }; } });
+  return best;
 }
 function movMon(M, dx, dz) { const p = M.g.position; if (!blocked(p.x + dx, p.z)) p.x += dx; if (!blocked(p.x, p.z + dz)) p.z += dz; }
 function hurtPlayer(M) {
@@ -292,7 +348,7 @@ function hurtPlayer(M) {
 function knockOut() {   // hết máu: xám 2 giây rồi về cổng vùng
   CB.ko = true; endCast(true); $("cbKo").style.display = "flex"; talking = true;
   setTimeout(() => {
-    const g = (WILDS.gates || []).find(G => CB.sec && G.dir === CB.sec.dir) || WILDS.gates[0];
+    const G2 = CB.sec && CB.sec.ring >= 2 && WILDS.gates2 ? WILDS.gates2 : WILDS.gates, g = (G2 || []).find(G => CB.sec && G.dir === CB.sec.dir) || WILDS.gates[0];
     if (g) { player.position.set(g.x, 0, g.z); camSnap = true; }
     setHp(hpMax() * 0.5); CB.ko = false; talking = false; $("cbKo").style.display = "none"; saveNow(); renderHud();
   }, 2000);
@@ -437,7 +493,7 @@ function castSkill(c, acc) {   // hiệu ứng chiêu theo kind + fx (stun, root
   if (alive) player.rotation.y = Math.atan2(alive.g.position.x - P.x, alive.g.position.z - P.z);
   const look = (to, radius) => { if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.play(c.id, { rank: S.type === "ult" ? 5 : rank, from: P.clone(), to: to ? to.clone() : null, radius, perfect: acc === 1 });
     else vfx(to || P, BRANCH[S.branch].color, radius || 1.2, rank); if (S.type === "ult" || rank >= 5) window.CAM_SHAKE = 0.35; };
-  const cc = M => { let n = 0; if (S.stun) { M.stun = Math.max(M.stun, S.stun * ccMul); n++; } if (S.root) { M.root = S.root * ccMul; n++; } if (S.silence) { M.silence = S.silence * ccMul; n++; } if (S.slow) { M.slow = S.slow; M.slowT = S.slowT * ccMul; n++; }
+  const cc = M => { if (M.remote) { M.pendFx = { st: S.stun ? S.stun * ccMul : 0, ro: S.root ? S.root * ccMul : 0, si: S.silence ? S.silence * ccMul : 0, sl: S.slow || 0, slT: S.slow ? S.slowT * ccMul : 0 }; } let n = 0; if (S.stun) { M.stun = Math.max(M.stun, S.stun * ccMul); n++; } if (S.root) { M.root = S.root * ccMul; n++; } if (S.silence) { M.silence = S.silence * ccMul; n++; } if (S.slow) { M.slow = S.slow; M.slowT = S.slowT * ccMul; n++; }
     if (n && pr("calm_mind")) CB.mp = Math.min(100, CB.mp + 3 * pr("calm_mind")); return n; };
   const hit = M => { if (M.dead) return; dealDamage(M, skillDamage(c, acc, M), true); if (cc(M) && S.stun && pr("echo_chain") && S.branch === "control") {
       CB.mons.filter(o => !o.dead && o !== M && o.g.position.distanceTo(M.g.position) < 5).slice(0, pr("echo_chain") >= 4 ? 2 : 1).forEach(o => o.stun = Math.max(o.stun, S.stun * 0.5)); }
@@ -470,9 +526,12 @@ function vfx(pos, color, size, rank) {   // hiệu ứng chiêu: bậc càng cao
   if (rank >= 3) for (let i = 0; i < 4 + rank * 2; i++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.08, 6, 4), new THREE.MeshBasicMaterial({ color: 0xffd43b, transparent: true })); s.position.copy(pos).setY(1); s.userData.v = new THREE.Vector3((Math.random() - 0.5) * 6, 2 + Math.random() * 3, (Math.random() - 0.5) * 6); scene.add(s); VFX.push({ m: s, t: 0, spark: true }); }
 }
 function vfxTick(dt) { VFX.forEach(f => { f.t += dt; if (f.t < 0) return; const k = f.t / 0.5; if (f.spark) { f.m.position.addScaledVector(f.m.userData.v, dt); f.m.userData.v.y -= 9 * dt; } else f.m.scale.setScalar(1 + k * f.size); f.m.material.opacity = Math.max(0, 1 - k); if (k >= 1) { scene.remove(f.m); f.m.geometry.dispose(); f.m.material.dispose(); f.done = true; } }); for (let i = VFX.length - 1; i >= 0; i--) if (VFX[i].done) VFX.splice(i, 1); }
-function dealDamage(M, dmg, bySkill) {
-  if (M.dead) return; M.hp -= dmg; M.dmgAll += dmg; if (bySkill) M.dmgSkill += dmg; M.hurtT = 0.25;
-  popText("-" + dmg, M.g.position, bySkill ? "#7048e8" : "#495057");
+function dealDamage(M, dmg, bySkill, who) {
+  if (M.dead) return; who = who || myId; M.hurtT = 0.25;
+  if (who === myId) popText("-" + dmg, M.g.position, bySkill ? "#7048e8" : "#495057");
+  if (M.remote) { netSend("mdmg", { k: M.key, d: dmg, s: bySkill ? 1 : 0, fx: M.pendFx || null }); M.pendFx = null; M.hp = Math.max(1, M.hp - dmg); return; }   // gửi về chủ phòng
+  const c = M.contrib[who] = M.contrib[who] || { s: 0, a: 0 }; c.a += dmg; if (bySkill) c.s += dmg;
+  M.hp -= dmg; M.dmgAll += dmg; if (bySkill) M.dmgSkill += dmg;
   if (M.hp <= 0) killMon(M);
 }
 
@@ -480,9 +539,15 @@ function dealDamage(M, dmg, bySkill) {
 function gainXp(n) { if (save.combat.daySec > DAY_LIMIT) return 0; if (typeof teamXpMul === "function") n = Math.round(n * teamXpMul()); const L0 = save.level || 1; score += n; $("score").textContent = score; checkLevel();
   if ((save.level || 1) > L0) setTimeout(() => flash("🌟 +" + (spTotal() - L0 - Math.floor(L0 / 10)) + " skill point! / Có điểm kỹ năng mới<div style='font-size:13px;font-weight:400'>Bấm 🌟 Skills để học hoặc nâng chiêu.</div>"), 2500);
   return n; }
-function killMon(M) {
+function killMon(M) {   // chủ phòng: quái chết → báo mọi người phần đóng góp, ai góp ≥ 10% nhận thưởng riêng
   M.dead = true; M.deadT = 0; if (M.tele) { scene.remove(M.tele.ring); M.tele = null; }
-  const share = M.dmgAll ? M.dmgSkill / M.dmgAll : 0, xp = gainXp(Math.round((6 + M.lv * 1.5) * share));
+  const tot = Object.values(M.contrib).reduce((a, c) => a + c.a, 0) || 1, sh = {}; Object.keys(M.contrib).forEach(id => sh[id] = [M.contrib[id].s / tot, M.contrib[id].a / tot]);
+  netSend("mdie", { k: M.key, sh });
+  const me = sh[myId]; if (me) rewardKill(M, me[0], me[1]);
+}
+function rewardKill(M, shareSkill, shareAll) {   // thưởng của riêng mình: kinh nghiệm theo phần sát thương do CHIÊU NÓI, đồ rơi riêng nếu góp ≥ 10%
+  if (shareAll < 0.1) return;
+  const share = shareSkill, xp = gainXp(Math.round((6 + M.lv * 1.5) * share));
   if (xp) setTimeout(() => popText("+" + xp + " ⭐", M.g.position.clone(), "#f08c00"), 200);
   if (Math.random() < 0.5) { spiritCount++; try { localStorage.setItem("ev_spirits", spiritCount); } catch (e) {} }   // giải thoát thành Word Spirit
   const coins = Math.round((2 + M.lv * 0.6 + Math.random() * 3) * (1 + (gear().luck || 0) / 100)), p = M.g.position;

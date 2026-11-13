@@ -3099,28 +3099,29 @@ function updateMini(dt) {
 }
 let bigK = 1;
 function drawBig() {   // bản đồ lớn cả thành phố (phóng to, kéo để xem), phía bắc ở trên
-  const cv = $("bigCv"), w = Math.max(600, ($("bigWrap").clientWidth || 320) * 2), h = Math.round(w * 310 / 520), dpr = Math.min(2, devicePixelRatio || 1);
+  const cv = $("bigCv"), w = Math.max(600, ($("bigWrap").clientWidth || 320) * 2), h = Math.round(w * 670 / 700), dpr = Math.min(2, devicePixelRatio || 1);
   cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
-  const x = cv.getContext("2d"); bigK = w / 520;
-  x.setTransform(dpr * bigK, 0, 0, dpr * bigK, dpr * 365 * bigK, dpr * 155 * bigK);
+  const x = cv.getContext("2d"); bigK = w / 700;
+  x.setTransform(dpr * bigK, 0, 0, dpr * bigK, dpr * 365 * bigK, dpr * 335 * bigK);
+  x.fillStyle = "#6fae64"; x.fillRect(-365, -335, 700, 670);   // nền ngoài cùng
   drawCity(x, bigK, true); drawDots(x, 1.3);
   x.setTransform(dpr, 0, 0, dpr, 0, 0);   // chữ: cỡ cố định theo pixel
   x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 11px system-ui, sans-serif"; x.lineJoin = "round";
   const lab = (t, X, Z) => { const ws = t.split(" "), lines = []; ws.forEach(wd => { const L = lines[lines.length - 1]; if (L && (L + " " + wd).length <= 8) lines[lines.length - 1] = L + " " + wd; else lines.push(wd); });
-    lines.forEach((l, i) => { const px = (X + 365) * bigK, py = (Z + 155) * bigK + (i - (lines.length - 1) / 2) * 12; x.lineWidth = 3; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(l, px, py); x.fillStyle = "#212529"; x.fillText(l, px, py); }); };
+    lines.forEach((l, i) => { const px = (X + 365) * bigK, py = (Z + 335) * bigK + (i - (lines.length - 1) / 2) * 12; x.lineWidth = 3; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(l, px, py); x.fillStyle = "#212529"; x.fillText(l, px, py); }); };
   CITY.forEach(P => lab((P.id === "home" ? "🏠 " : "") + P.name, P.x, P.z));
   SPOTS.forEach(S => lab(S.name, S.x, S.z + (S.type === "market" ? 6 : 0)));
   PLACES.forEach(P => lab(P.name.replace("the ", "").replace(/^./, c => c.toUpperCase()), P.x, P.z + 3));
   LOTS.forEach(L => lab("🚧 " + L.name, L.x, L.z));
-  x.font = "bold 14px system-ui, sans-serif"; ZONES.forEach(Z => { const px = ((Z.x0 + Z.x1) / 2 + 365) * bigK, py = (Z.z0 + 155) * bigK + 12;   // tên khu
+  x.font = "bold 14px system-ui, sans-serif"; ZONES.forEach(Z => { const px = ((Z.x0 + Z.x1) / 2 + 365) * bigK, py = (Z.z0 + 335) * bigK + 12;   // tên khu
     x.lineWidth = 4; x.strokeStyle = "rgba(255,255,255,.95)"; x.strokeText(Z.name.toUpperCase(), px, py); x.fillStyle = "#7048e8"; x.fillText(Z.name.toUpperCase(), px, py); });
   const p = room ? room.P.doorPos : player.position, wr = $("bigWrap");
-  wr.scrollLeft = (p.x + 365) * bigK - wr.clientWidth / 2; wr.scrollTop = (p.z + 155) * bigK - wr.clientHeight / 2;   // cuộn tới chỗ mình đang đứng
+  wr.scrollLeft = (p.x + 365) * bigK - wr.clientWidth / 2; wr.scrollTop = (p.z + 335) * bigK - wr.clientHeight / 2;   // cuộn tới chỗ mình đang đứng
 }
 $("mini").onclick = () => { if (maze) return; $("bigmap").style.display = "block"; drawBig(); };
 $("bigClose").onclick = () => $("bigmap").style.display = "none";
 $("bigCv").onclick = e => {   // chạm địa điểm trên bản đồ lớn → chỉ đường tới đó
-  const r = $("bigCv").getBoundingClientRect(), wx = (e.clientX - r.left) / bigK - 365, wz = (e.clientY - r.top) / bigK - 155;
+  const r = $("bigCv").getBoundingClientRect(), wx = (e.clientX - r.left) / bigK - 365, wz = (e.clientY - r.top) / bigK - 335;
   let best = null, bd = 9;
   targets().filter(t => !t.npc).forEach(t => { const P = CITY.find(c => c.name === t.name), d = P ? Math.hypot(P.x - wx, P.z - wz) : Math.hypot(t.x - wx, t.z - wz); if (d < bd) { bd = d; best = t; } });
   if (!best || room) return;
