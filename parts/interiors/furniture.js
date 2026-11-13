@@ -60,7 +60,7 @@
     });
   }
   function logoTex(w, h) { return skin(w, h, 60, (x) => { x.fillStyle = "#16120f"; x.fillRect(0, 0, w, h); x.strokeStyle = "#c9a24a"; x.lineWidth = 0.06; x.strokeRect(0.1, 0.1, w - 0.2, h - 0.2);
-      x.fillStyle = "#e8c27a"; x.textAlign = "center"; x.textBaseline = "middle"; x.font = "bold 1.5px Georgia, serif"; x.fillText("HOME & COZY", w / 2, h * 0.44); x.fillStyle = "#c9a24a"; x.font = "0.38px Georgia, serif"; x.fillText("F U R N I T U R E  ·  D E C O R  ·  L I V I N G", w / 2, h * 0.8); }); }
+      signText(x, "HOME & COZY", w / 2, h * 0.43, w - 1.2, 0.8, "#e8c27a", "bold italic "); signText(x, "F U R N I T U R E  ·  D E C O R  ·  L I V I N G", w / 2, h * 0.8, w - 1.2, 0.2, "#c9a24a", ""); }); }
 
   function furnishHall(P, g, cx, cz, W, D, fur) {
     const H = (P.size || {}).h || 10, S = P.room.solids, FR = D / 2, BK = -D / 2, LW = -W / 2, RW = W / 2;
