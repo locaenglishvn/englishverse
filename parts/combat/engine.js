@@ -32,13 +32,54 @@ const TASK_ICON = { repeat: "📢", answer: "🎺", build: "🎸", name: "🥁",
 const TASK_NAME = { repeat: "REPEAT · nói lại", answer: "ANSWER · trả lời", build: "BUILD · xếp câu", name: "NAME · gọi tên", ask: "ASK · đặt câu hỏi" };
 
 /* ---------- 3. KỸ NĂNG (giai đoạn A: Power + Rhythm, mỗi nhánh 3 chiêu; Control, Harmony mở ở giai đoạn B) ---------- */
+/* kind: single (1 mục tiêu) · multi (nhiều đòn nảy) · aoe (vòng quanh mình) · zone (vòng quanh mục tiêu) · dash (lướt) · self (lên bản thân/đội)
+   fx: stun, root (không đi được), silence (không đánh được), slow, taunt, heal, shield, buff (tăng sát thương), haste (hồi chiêu nhanh), mana, cleanse
+   type: "passive" = nội tại (luôn có tác dụng, không gắn vào ô) · "ult" = tuyệt chiêu (mở ở Lv.40) */
 const SKILLS = {
-  echo_blast:   { branch: "power",  name: "Echo Blast",   icon: "💥", lv: 1,  mana: 25, cd: 3, base: 40, kind: "single", desc: "Nổ âm thanh vào 1 quái." },
-  sonic_spear:  { branch: "power",  name: "Sonic Spear",  icon: "🔱", lv: 6,  mana: 35, cd: 6, base: 75, kind: "single", desc: "Giáo âm thanh, sát thương rất cao 1 mục tiêu." },
-  thunder_clap: { branch: "power",  name: "Thunder Clap", icon: "⚡", lv: 12, mana: 30, cd: 5, base: 55, kind: "single", stun: 0.8, desc: "Sét đánh 1 quái, choáng ngắn." },
+  // ⚡ POWER – sát thương rất cao lên 1 mục tiêu
+  echo_blast:   { branch: "power", name: "Echo Blast",   icon: "💥", lv: 1,  mana: 25, cd: 3, base: 40, kind: "single", desc: "Nổ âm thanh vào 1 quái." },
+  sonic_spear:  { branch: "power", name: "Sonic Spear",  icon: "🔱", lv: 6,  mana: 35, cd: 6, base: 75, kind: "single", desc: "Giáo âm thanh xuyên thẳng, sát thương rất cao." },
+  thunder_clap: { branch: "power", name: "Thunder Clap", icon: "⚡", lv: 12, mana: 30, cd: 5, base: 55, kind: "single", stun: 0.8, desc: "Sét đánh 1 quái, choáng ngắn." },
+  big_voice:    { branch: "power", name: "Big Voice",    icon: "📣", lv: 20, mana: 45, cd: 9, base: 120, kind: "single", desc: "Gồng hơi, một đòn cực mạnh." },
+  piercing_note:{ branch: "power", name: "Piercing Note",icon: "🎯", lv: 28, mana: 35, cd: 6, base: 70, kind: "single", pierce: true, desc: "Xuyên giáp: bỏ qua điểm yếu, luôn ×1,5." },
+  last_word:    { branch: "power", name: "Last Word",    icon: "🗡️", lv: 36, mana: 40, cd: 8, base: 60, kind: "single", execute: 0.3, desc: "Kết liễu: ×3 khi quái còn dưới 30% máu." },
+  loud_clear:   { branch: "power", type: "passive", name: "Loud & Clear", icon: "🔊", lv: 8,  desc: "Perfect gây thêm +10% mỗi bậc." },
+  critical_tone:{ branch: "power", type: "passive", name: "Critical Tone", icon: "✴️", lv: 16, desc: "Chiêu Power có 5% mỗi bậc để chí mạng ×2." },
+  steady_voice: { branch: "power", type: "passive", name: "Steady Voice", icon: "🧱", lv: 24, desc: "Khiên khi nói dày thêm 4% mỗi bậc." },
+  dragon_roar:  { branch: "power", type: "ult", name: "Dragon Roar", icon: "🐉", lv: 40, mana: 80, cd: 30, base: 260, kind: "single", stun: 1.5, desc: "TUYỆT CHIÊU: rồng âm thanh, sát thương khổng lồ + choáng." },
+  // 🌀 CONTROL – sát thương ít, khống chế
+  question_arrow:{ branch: "control", name: "Question Arrow", icon: "🏹", lv: 1,  mana: 25, cd: 4, base: 15, kind: "single", stun: 2, desc: "Choáng 2 giây." },
+  riddle_trap:  { branch: "control", name: "Riddle Trap",  icon: "🕸️", lv: 6,  mana: 25, cd: 5, base: 10, kind: "zone", radius: 3, root: 3, desc: "Trói chân các quái quanh mục tiêu 3 giây." },
+  freeze_note:  { branch: "control", name: "Freeze Note",  icon: "❄️", lv: 12, mana: 30, cd: 7, base: 20, kind: "single", stun: 3, desc: "Đóng băng 1 quái 3 giây." },
+  silence_bubble:{ branch: "control", name: "Silence Bubble", icon: "🫧", lv: 20, mana: 30, cd: 8, base: 10, kind: "single", silence: 5, desc: "Khoá tấn công 5 giây." },
+  slow_song:    { branch: "control", name: "Slow Song",    icon: "🐌", lv: 28, mana: 30, cd: 8, base: 12, kind: "aoe", radius: 6, slow: 0.5, slowT: 5, desc: "Làm chậm mọi quái quanh mình 50%." },
+  mirror_ask:   { branch: "control", name: "Mirror Ask",   icon: "🪞", lv: 36, mana: 35, cd: 10, base: 25, kind: "zone", radius: 4, taunt: true, stun: 1, desc: "Kéo các quái lại gần nhau và choáng." },
+  sharp_ears:   { branch: "control", type: "passive", name: "Sharp Ears", icon: "👂", lv: 8,  desc: "Hiệu ứng khống chế lâu thêm 10% mỗi bậc." },
+  echo_chain:   { branch: "control", type: "passive", name: "Echo Chain", icon: "⛓️", lv: 16, desc: "Choáng lan sang 1 quái gần đó (từ bậc 1), thêm 1 quái ở bậc 4." },
+  calm_mind:    { branch: "control", type: "passive", name: "Calm Mind", icon: "🧘", lv: 24, desc: "Mỗi lần khống chế: hồi 3 mana mỗi bậc." },
+  silence_zone: { branch: "control", type: "ult", name: "Silence Zone", icon: "🌌", lv: 40, mana: 80, cd: 30, base: 40, kind: "aoe", radius: 8, stun: 3, silence: 6, desc: "TUYỆT CHIÊU: vùng im lặng, cả cụm choáng và không đánh được." },
+  // 💚 HARMONY – tăng sức
+  harmony_heal: { branch: "harmony", name: "Harmony Heal", icon: "💖", lv: 1,  mana: 30, cd: 5, kind: "self", heal: 0.25, desc: "Hồi 25% máu." },
+  chord_shield: { branch: "harmony", name: "Chord Shield", icon: "🛡️", lv: 6,  mana: 30, cd: 10, kind: "self", shield: 0.5, shieldT: 6, desc: "Khiên giảm 50% sát thương 6 giây." },
+  courage_chant:{ branch: "harmony", name: "Courage Chant",icon: "🔥", lv: 12, mana: 35, cd: 12, kind: "self", buff: 0.35, buffT: 8, desc: "Tăng 35% sát thương 8 giây." },
+  tempo_up:     { branch: "harmony", name: "Tempo Up",     icon: "⏩", lv: 20, mana: 30, cd: 12, kind: "self", haste: 0.5, hasteT: 8, desc: "Hồi chiêu nhanh gấp đôi 8 giây." },
+  mana_song:    { branch: "harmony", name: "Mana Song",    icon: "🎶", lv: 28, mana: 0,  cd: 15, kind: "self", mana: 60, desc: "Hồi 60 mana ngay." },
+  cleanse_note: { branch: "harmony", name: "Cleanse Note", icon: "✨", lv: 36, mana: 25, cd: 15, kind: "self", cleanse: true, heal: 0.15, desc: "Giải độc câm + hồi 15% máu." },
+  kind_words:   { branch: "harmony", type: "passive", name: "Kind Words", icon: "🤝", lv: 8,  desc: "Mỗi lần Perfect: hồi 2% máu mỗi bậc." },
+  team_spirit:  { branch: "harmony", type: "passive", name: "Team Spirit", icon: "🙌", lv: 16, desc: "Mọi chiêu +3% sát thương mỗi bậc (sau này áp cho cả đội)." },
+  warm_heart:   { branch: "harmony", type: "passive", name: "Warm Heart", icon: "❤️", lv: 24, desc: "Máu tối đa +6% mỗi bậc." },
+  grand_chorus: { branch: "harmony", type: "ult", name: "Grand Chorus", icon: "🌈", lv: 40, mana: 80, cd: 40, kind: "self", heal: 1, shield: 0.6, shieldT: 8, buff: 0.5, buffT: 8, desc: "TUYỆT CHIÊU: hồi đầy máu, khiên 60% và +50% sát thương 8 giây." },
+  // 🔥 RHYTHM – sát thương tốt lên cả cụm
   drum_roll:    { branch: "rhythm", name: "Drum Roll",    icon: "🥁", lv: 1,  mana: 25, cd: 3, base: 18, kind: "multi", hits: 3, desc: "3 đòn liền, nảy sang quái gần đó." },
   shock_wave:   { branch: "rhythm", name: "Shock Wave",   icon: "🌀", lv: 6,  mana: 35, cd: 6, base: 38, kind: "aoe", radius: 5, desc: "Sóng tròn quanh mình, trúng cả cụm." },
-  beat_dash:    { branch: "rhythm", name: "Beat Dash",    icon: "🔥", lv: 12, mana: 30, cd: 5, base: 45, kind: "dash", radius: 3, desc: "Lướt tới quái, nổ vùng khi chạm." }
+  beat_dash:    { branch: "rhythm", name: "Beat Dash",    icon: "💨", lv: 12, mana: 30, cd: 5, base: 45, kind: "dash", radius: 3, desc: "Lướt tới quái, nổ vùng khi chạm." },
+  echo_rain:    { branch: "rhythm", name: "Echo Rain",    icon: "🌧️", lv: 20, mana: 40, cd: 8, base: 50, kind: "zone", radius: 5, desc: "Mưa âm thanh lên vùng quanh mục tiêu." },
+  spin_beat:    { branch: "rhythm", name: "Spin Beat",    icon: "🌪️", lv: 28, mana: 35, cd: 7, base: 30, kind: "aoe", radius: 4, hits: 3, desc: "Xoay tròn 3 vòng, đánh mọi quái quanh mình." },
+  chain_beat:   { branch: "rhythm", name: "Chain Beat",   icon: "🔗", lv: 36, mana: 40, cd: 8, base: 40, kind: "multi", hits: 5, desc: "Nảy qua 5 quái." },
+  quick_tongue: { branch: "rhythm", type: "passive", name: "Quick Tongue", icon: "👅", lv: 8,  desc: "Hồi chiêu nhanh hơn 4% mỗi bậc." },
+  encore:       { branch: "rhythm", type: "passive", name: "Encore", icon: "🔁", lv: 16, desc: "3% mỗi bậc: chiêu Rhythm tung lại miễn phí." },
+  groove:       { branch: "rhythm", type: "passive", name: "Groove", icon: "🕺", lv: 24, desc: "Mỗi quái trúng chiêu Rhythm: +1 mana mỗi bậc." },
+  festival_frenzy:{ branch: "rhythm", type: "ult", name: "Festival Frenzy", icon: "🎆", lv: 40, mana: 80, cd: 30, base: 70, kind: "aoe", radius: 9, hits: 4, desc: "TUYỆT CHIÊU: lễ hội pháo hoa, 4 đợt nổ cả vùng rộng." }
 };
 const BRANCH = { power: { name: "Power", color: "#e5484d", icon: "⚡" }, control: { name: "Control", color: "#3b82f6", icon: "🌀" }, harmony: { name: "Harmony", color: "#2f9e44", icon: "💚" }, rhythm: { name: "Rhythm", color: "#e8590c", icon: "🔥" } };
 function skillRank(id) { return (save.combat.skills[id] || 0); }
