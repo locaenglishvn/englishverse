@@ -324,7 +324,7 @@ const VOCAB = {
     { w: "team photo",       pic: "🖼️", pos: "noun", kind: "thing",     at: "rest", say: "It's a team photo.",          ex: "Our team photo hangs on the wall." },
     { w: "bunk bed",         pic: "🛏️", pos: "noun", kind: "furniture", at: "rest", say: "It's a bunk bed.",            ex: "I sleep on the top bunk bed." },
     { w: "water cooler",     pic: "🚰", pos: "noun", kind: "machine",   at: "rest", say: "It's a water cooler.",        ex: "Get cold water from the water cooler." },
-    { w: "rice cooker",      pic: "🍚", pos: "noun", kind: "machine",   at: "rest", say: "It's a rice cooker.",         ex: "The rice cooker makes hot rice." },
+    { w: "water jug",        pic: "🍶", pos: "noun", kind: "thing",     at: "rest", say: "It's a water jug.",         ex: "Fill the water jug for the team." },
     { w: "couch",            pic: "🛋️", pos: "noun", kind: "furniture", at: "rest", say: "It's a couch.",               ex: "We watch TV on the couch." },
     // góc tập huấn (training)
     { w: "whistle",          pic: "📯", pos: "noun", kind: "thing",     at: "training", say: "It's a whistle.",         ex: "The coach blows a whistle to start." },
@@ -1086,7 +1086,7 @@ const VOCAB = {
     { w: "router",           pic: "📶", pos: "noun", kind: "machine", at: "computers", say: "It's a router.",            ex: "The router gives us Wi-Fi at home." },
     { w: "hard drive",       pic: "💽", pos: "noun", kind: "thing",   at: "computers", say: "It's a hard drive.",        ex: "All my photos are on the hard drive." },
     // bep (kitchen) – 8
-    { w: "electric rice cooker", pic: "🍚", pos: "noun", kind: "machine", at: "kitchen", say: "It's an electric rice cooker.", ex: "The electric rice cooker makes hot rice." },
+    { w: "rice cooker", pic: "🍚", pos: "noun", kind: "machine", at: "kitchen", say: "It's a rice cooker.", ex: "The rice cooker makes hot rice." },
     { w: "microwave",        pic: "🍱", pos: "noun", kind: "machine", at: "kitchen", say: "It's a microwave.",         ex: "Heat the soup in the microwave." },
     { w: "blender",          pic: "🍹", pos: "noun", kind: "machine", at: "kitchen", say: "It's a blender.",           ex: "Make a mango smoothie in the blender." },
     { w: "electric kettle",  pic: "🫖", pos: "noun", kind: "machine", at: "kitchen", say: "It's an electric kettle.",  ex: "Boil water quickly in the electric kettle." },
@@ -1097,7 +1097,7 @@ const VOCAB = {
     // do gia dung (appliances) – 7
     { w: "refrigerator",     pic: "🧊", pos: "noun", kind: "machine", at: "appliances", say: "It's a refrigerator.",         ex: "The milk is cold in the refrigerator." },
     { w: "washing machine",  pic: "🫧", pos: "noun", kind: "machine", at: "appliances", say: "It's a washing machine.",      ex: "The washing machine cleans our clothes." },
-    { w: "split air conditioner", pic: "❄️", pos: "noun", kind: "machine", at: "appliances", say: "It's a split air conditioner.", ex: "The split air conditioner keeps us cool." },
+    { w: "air purifier", pic: "🌬️", pos: "noun", kind: "machine", at: "appliances", say: "It's an air purifier.", ex: "The air purifier cleans the air." },
     { w: "electric fan",     pic: "🌀", pos: "noun", kind: "machine", at: "appliances", say: "It's an electric fan.",        ex: "The electric fan is cool on hot days." },
     { w: "vacuum cleaner",   pic: "🧹", pos: "noun", kind: "machine", at: "appliances", say: "It's a vacuum cleaner.",       ex: "The vacuum cleaner picks up the dust." },
     { w: "water purifier",   pic: "💧", pos: "noun", kind: "machine", at: "appliances", say: "It's a water purifier.",       ex: "The water purifier makes the water clean." },
