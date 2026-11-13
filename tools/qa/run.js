@@ -1,5 +1,6 @@
 /* EnglishVerse – CỔNG QA. Chạy:  node tools/qa/run.js            (kiểm tra tất cả)
                                   node tools/qa/run.js bank museum (chỉ vài nơi, theo id trong places.js)
+                                  node tools/qa/run.js --data      (chỉ kiểm tra dữ liệu NPC/từ vựng, không mở trình duyệt)
    Cần Playwright + Chromium (đã có sẵn trong máy làm việc). Ảnh chụp từng nơi lưu ở tools/qa/out/ (không đưa lên git).
    Kiểm tra:
    1. Dữ liệu: mỗi NPC có nơi đứng hợp lệ, mỗi bước có say / card / 3 lựa chọn và đúng 1 lựa chọn đúng; từ vựng đủ trường, không trùng giữa các nơi.
@@ -7,7 +8,7 @@
    3. Mỗi nơi có nội thất: đủ chỗ bày cho MỌI món từ vựng; tới được mọi NPC, mọi chỗ hỏi từ vựng, và cửa ra (dò đường trên lưới 0,4 m).
    4. Hiệu năng: số lần vẽ mỗi khung ≤ ngưỡng (ngoài trời 260, trong nhà 360, nơi rất rộng 450). */
 const { chromium } = require('playwright'), http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.resolve(__dirname, '../..'), OUT = path.join(__dirname, 'out'), ONLY = process.argv.slice(2);
+const ROOT = path.resolve(__dirname, '../..'), OUT = path.join(__dirname, 'out'), ONLY = process.argv.slice(2).filter(a => a[0] !== '-'), DATA_ONLY = process.argv.includes('--data');
 const BUDGET = { outdoor: 260, room: 360, bigRoom: 450 };   // bigRoom: nơi rộng > 40 m (bảo tàng) nhìn xuyên nhiều khu
 let fails = 0, warns = 0; const fail = (m) => { fails++; console.log('  ❌ ' + m); }, warn = (m) => { warns++; console.log('  ⚠️  ' + m); }, ok = (m) => console.log('  ✅ ' + m);
 
@@ -37,6 +38,7 @@ Object.keys(D.VOCAB).forEach(pid => {
 Object.keys(seenW).forEach(w => { if (seenW[w].length > 1) warn('từ "' + w + '" trùng ở: ' + seenW[w].join(', ') + ' (cùng 1 thẻ)'); });
 const npcPer = {}; D.LESSONS.forEach(L => { if (L.place) npcPer[L.place] = (npcPer[L.place] || 0) + 1; });
 if (!fails) ok(D.LESSONS.length + ' NPC, ' + Object.values(D.VOCAB).reduce((a, b) => a + b.length, 0) + ' từ vựng hợp lệ');
+if (DATA_ONLY) { console.log('\nKẾT QUẢ (chỉ dữ liệu): ' + (fails ? '❌ TRƯỢT – ' + fails + ' lỗi' : '✅ ĐẠT') + (warns ? ', ' + warns + ' cảnh báo' : '')); process.exit(fails ? 1 : 0); }
 
 // ---------- 2–4. Chạy game trong trình duyệt ----------
 const MIME = { '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.gltf': 'model/gltf+json', '.bin': 'application/octet-stream', '.jpg': 'image/jpeg' };
