@@ -274,6 +274,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 29. **Đợt 1 (đội AI)**: nội thất Town Hall, City Hospital, Verse School; 15 NPC mới + 92 từ vựng (Haiku viết, CTO soát); QA thêm `--data`
 30. **Đợt 2 (đội AI)**: nội thất Verse Plaza + 4 cửa hàng Market Street (Banh Mi Bakery, Pho Corner, Shop 24h, Green Cross Pharmacy; khung chung `parts/interiors/shopkit.js`); 22 NPC mới + 107 từ vựng
 31. **Đợt 3 (đội AI)**: nội thất Clothes Shop, Saigon Barber, Home & Cozy (shopKit; Home & Cozy trưng đúng đồ đang bán), Police Station, Fire Station; 20 NPC mới + 107 từ vựng, nội dung an toàn trẻ em (113/114/115, an toàn giao thông, cháy nổ)
+32. **Đợt 4 (theo góp ý chủ dự án)**: Home & Cozy dời cạnh Verse Plaza, nội thất 40 × 54 m tông tối có gu + ngoại thất to; **Verse Electronics** mới (siêu thị điện máy, 40 × 54 m); Bakery / Shop 24h / Pharmacy to bằng Cafe (20 × 48), Pharmacy có quầy thuốc vòng tròn; Clothes Shop 32 × 36; Pho 3 NPC, Barber 2 NPC; **tên NPC 80% tiếng Anh**, tên hiển thị không dấu; phòng trong nhà xếp theo bề rộng thật, người bán đặt được vị trí (`P.keeperAt`)
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |
@@ -287,8 +288,12 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 | City Hospital | ✅ 30 × 44 m: tiếp nhận, khu chờ, quầy thuốc, phòng khám, phòng bệnh, xét nghiệm | 6 + y tá Mai | 32 |
 | Verse School | ✅ 30 × 36 m: bảng, 16 bàn đôi, góc khoa học, mỹ thuật & âm nhạc, tủ đồ, căng tin | 5 | 30 |
 | Verse Plaza | ✅ 36 × 44 m: sảnh giếng trời, đài phun nước, thang cuốn, Toy Island, Tech Zone, Sport Star, Food Court | 6 | 27 |
-| Banh Mi Bakery · Pho Corner · Shop 24h · Green Cross Pharmacy | ✅ 16 × 18 m mỗi tiệm (khung `shopkit.js`) | 4 + người bán mỗi tiệm | 20 mỗi tiệm |
-| Clothes Shop · Saigon Barber · Home & Cozy | ✅ 16 × 18 m (shopKit) | 4 + người bán mỗi tiệm | 20 mỗi tiệm |
+| Banh Mi Bakery · Shop 24h · Green Cross Pharmacy | ✅ 20 × 48 m mỗi tiệm (Pharmacy: quầy vòng tròn) | 4 + người bán | 38 / 38 / 34 |
+| Pho Corner | ✅ 16 × 18 m | 3 + người bán | 20 |
+| Clothes Shop | ✅ 32 × 36 m: sào treo, bàn đồ gấp, bục ma-nơ-canh, giày, phụ kiện, góc vải | 4 + người bán | 45 |
+| Saigon Barber | ✅ 16 × 18 m | 2 + người bán | 20 |
+| Home & Cozy | ✅ 40 × 54 m showroom tối ấm: 8 phòng mẫu (cả đồ sân vườn) | 4 + người bán | 48 |
+| Verse Electronics | ✅ 40 × 54 m siêu thị điện máy | 4 | 44 |
 | Police Station | ✅ 24 × 30 m: quầy tiếp dân, văn phòng, điều phối, trang bị, đồ thất lạc | 5 | 24 |
 | Fire Station | ✅ 24 × 32 m: nhà xe + xe cứu hoả, giá đồ bảo hộ, góc báo động, khu nghỉ, góc tập huấn | 5 | 23 |
 | Các nơi còn lại | ⏳ phòng mẫu 16 × 12 (bày đồ theo `layout` cũ) | 1 (hoặc người bán) | chưa có |
