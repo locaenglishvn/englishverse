@@ -1251,12 +1251,12 @@ const LESSONS = [
   name: "Mai – Information Staff", color: 0x0b7285, place: "mall", x: -6, z: 14,
   steps: [
     { say: "Welcome to Verse Plaza! Where do you want to go?",
-      card: { w: "I’m going to…", pic: "🚶", ex: "I’m going to the toy shop." },
-      q: { w: "Where is the toy shop?", pic: "🧸", ex: "Where is the toy shop, please?" },
+      card: { w: "I’m going to…", pic: "🚶", ex: "I’m going to the food court." },
+      q: { w: "Where is the food court?", pic: "🍔", ex: "Where is the food court, please?" },
       choices: [
-        { t: "I want to go to the toy shop.", ok: true,  fb: "Great! Clear and polite. +10" },
-        { t: "Go to toy shop I want.",        ok: false, fb: "Word order: “I want to go to the toy shop.”" },
-        { t: "Toy shop is my mother.",        ok: false, fb: "Haha! Mums are not shops :) Try “I want to go to the toy shop.”" } ] },
+        { t: "I want to go to the food court.", ok: true,  fb: "Great! Clear and polite. +10" },
+        { t: "Go to food court I want.",        ok: false, fb: "Word order: “I want to go to the food court.”" },
+        { t: "Food court is my mother.",        ok: false, fb: "Haha! Mums are not shops :) Try “I want to go to the food court.”" } ] },
     { say: "The food court is at the back, on the right.",
       card: { w: "at the back", pic: "🔙", ex: "The food court is at the back." },
       choices: [
@@ -2088,7 +2088,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Tony – Little Patient", color: 0xe03131, place: "pharmacy", x: 5, z: -2,
+  name: "Tin – Little Patient", color: 0xe03131, place: "pharmacy", x: 5, z: -2,
   steps: [
     { say: "Ouch! I fell down. My knee hurts!",
       card: { w: "Don’t worry.", pic: "😊", ex: "Don’t worry. Let’s clean it first." },
