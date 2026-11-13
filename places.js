@@ -198,16 +198,16 @@ const SPOTS = [
    Bắc = phía z âm (trên bản đồ). Đường vành đai: x = ±47, z = ±63.
    ZONES: x0..x1, z0..z1 = phạm vi khu; color = màu nền trên bản đồ. */
 const ZONES = [
-  { id: "admin",    name: "Civic Center",      vi: "Khu hanh chinh",        x0: -44, x1: 44,   z0: -60,  z1: 60,   color: "#f1e3c6" },
-  { id: "sports",   name: "Sports District",   vi: "Khu the thao",          x0: -44, x1: 44,   z0: -150, z1: -66,  color: "#c3e6b4" },
-  { id: "tech",     name: "Tech Valley",       vi: "Khu cong nghe cao",     x0: -150, x1: -50, z0: -150, z1: -66,  color: "#c5dcf0" },
-  { id: "industry", name: "Industrial Park",   vi: "Khu cong nghiep",       x0: 50,  x1: 150,  z0: -150, z1: -66,  color: "#d6d6d6" },
-  { id: "living",   name: "Maple Town",        vi: "Khu dan cu & cong cong", x0: -150, x1: -50, z0: -60,  z1: 60,   color: "#e8dcc8" },
-  { id: "market",   name: "Market District",   vi: "Khu thuong mai, dich vu", x0: 50, x1: 150,  z0: -60,  z1: 60,   color: "#f5d9c8" },
-  { id: "transit",  name: "Station Square",    vi: "Khu nha ga, ho",        x0: -44, x1: 44,   z0: 66,   z1: 150,  color: "#cfe3f1" },
-  { id: "arena",    name: "Verse Arena",       vi: "Dao dau truong",        x0: -310, x1: -210, z0: -80, z1: 80,   color: "#e9dcc0" },
-  { id: "farm",     name: "Green Fields",      vi: "Khu nong nghiep",       x0: -150, x1: -50, z0: 66,   z1: 150,  color: "#d9ecb0" },
-  { id: "nature",   name: "Wild Woods",        vi: "Khu thien nhien",       x0: 50,  x1: 150,  z0: 66,   z1: 150,  color: "#b9e0a5" }
+  { id: "admin",    name: "Civic Center",      vi: "Khu hành chính",        x0: -44, x1: 44,   z0: -60,  z1: 60,   color: "#f1e3c6" },
+  { id: "sports",   name: "Sports District",   vi: "Khu thể thao",          x0: -44, x1: 44,   z0: -150, z1: -66,  color: "#c3e6b4" },
+  { id: "tech",     name: "Tech Valley",       vi: "Khu công nghệ cao",     x0: -150, x1: -50, z0: -150, z1: -66,  color: "#c5dcf0" },
+  { id: "industry", name: "Industrial Park",   vi: "Khu công nghiệp",       x0: 50,  x1: 150,  z0: -150, z1: -66,  color: "#d6d6d6" },
+  { id: "living",   name: "Maple Town",        vi: "Khu dân cư & công cộng", x0: -150, x1: -50, z0: -60,  z1: 60,   color: "#e8dcc8" },
+  { id: "market",   name: "Market District",   vi: "Khu thương mại, dịch vụ", x0: 50, x1: 150,  z0: -60,  z1: 60,   color: "#f5d9c8" },
+  { id: "transit",  name: "Station Square",    vi: "Khu nhà ga, hồ",        x0: -44, x1: 44,   z0: 66,   z1: 150,  color: "#cfe3f1" },
+  { id: "arena",    name: "Verse Arena",       vi: "Đảo đấu trường",        x0: -310, x1: -210, z0: -80, z1: 80,   color: "#e9dcc0" },
+  { id: "farm",     name: "Green Fields",      vi: "Khu nông nghiệp",       x0: -150, x1: -50, z0: 66,   z1: 150,  color: "#d9ecb0" },
+  { id: "nature",   name: "Wild Woods",        vi: "Khu thiên nhiên",       x0: 50,  x1: 150,  z0: 66,   z1: 150,  color: "#b9e0a5" }
 ];
 
 /* METRO: mỗi khu một trạm nhỏ, đứng gần bấm 🚇 để đi nhanh tới khu khác */

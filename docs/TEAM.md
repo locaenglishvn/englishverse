@@ -80,6 +80,11 @@ KHÔNG ĐƯỢC: sửa index.html (trừ khi đề bài cho phép), đổi dữ 
 - 1 NPC khó hơn có `minLv: 5`. Không bạo lực, không nội dung người lớn, không chính trị; danh nhân phải đúng lịch sử, không bịa trích dẫn.
 - `x, z` tính từ giữa phòng; không đứng trong vật cản, không chắn lối.
 
+**Tên & chữ tiếng Việt (chủ dự án chốt 13/11)**
+- Tên NPC: ~80% tên tiếng Anh, ~20% tên Việt; không trùng tên riêng với NPC/người bán khác.
+- Tên hiển thị (NPC, tiệm, biển hiệu, món ăn trong câu tiếng Anh): tiếng Việt **không dấu** (Banh Mi, Pho, Cafe Sua Da, Uncle Tu).
+- Chữ tiếng Việt mang tính **hướng dẫn** (gợi ý dịch nghĩa trong `fb`, phụ đề tên khu, thông báo trên màn hình): giữ **có dấu** bình thường.
+
 **Từ vựng (places.js → VOCAB.<id>)**
 - Trường: `w, pic (emoji), pos, kind (drink/food/tool/machine/plant/furniture/thing), at, say ("It's a …"), ex` (câu ví dụ ngắn, tự nhiên).
 - Không trùng từ đã có ở nơi khác (QA sẽ cảnh báo). Chọn từ đúng ngữ cảnh nơi đó, hữu ích cho trẻ.

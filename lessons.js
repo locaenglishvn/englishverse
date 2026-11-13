@@ -108,7 +108,7 @@ const LESSONS = [
       choices: [
         { t: "Yes, please. I’d like to borrow this book.", ok: true,  fb: "Perfect! +10" },
         { t: "Give book.",                                 ok: false, fb: "Too short. Try “I’d like to borrow…”" },
-        { t: "I want to lend a book.",                     ok: false, fb: "“Lend” = cho muon. You want to BORROW." } ] },
+        { t: "I want to lend a book.",                     ok: false, fb: "“Lend” = cho mượn. You want to BORROW." } ] },
     { say: "Sure. Do you have a library card?",
       card: { w: "library card", pic: "🪪", ex: "Here is my library card." },
       choices: [
@@ -361,7 +361,7 @@ const LESSONS = [
       card: { w: "warm up", pic: "🤸", ex: "Let’s warm up before we play." },
       choices: [
         { t: "Yes, I’m ready!",    ok: true,  fb: "Let’s go! +10" },
-        { t: "I am warm already.", ok: false, fb: "Warm up = khoi dong. Say “I’m ready!”" },
+        { t: "I am warm already.", ok: false, fb: "Warm up = khởi động. Say “I’m ready!”" },
         { t: "Ready is me.",       ok: false, fb: "Say “I’m ready!”" } ] },
     { say: "Great! What sport do you like best?",
       card: { w: "football", pic: "⚽", ex: "I like football best." },
@@ -419,7 +419,7 @@ const LESSONS = [
       card: { w: "fasten", pic: "🪢", ex: "Fasten your seat belt." },
       choices: [
         { t: "Done! Let’s fly!",       ok: true,  fb: "+10" },
-        { t: "Belt is fast.",          ok: false, fb: "Fasten = that. Say “Done!”" },
+        { t: "Belt is fast.",          ok: false, fb: "Fasten = thắt. Say “Done!”" },
         { t: "No belt for me.",        ok: false, fb: "Safety first! Fasten it :)" } ] }
   ]
 }
