@@ -1246,4 +1246,21 @@ const LESSONS = [
         { t: "Ask my mom.", ok: false, fb: "Try “do an experiment” :)" } ] }
   ]
 }
+
+/* ===== NPC: townhall – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
+/* ===== NPC: hospital – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
+/* ===== NPC: school – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
+/* ===== NPC: bakery – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
+/* ===== NPC: furniture – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
+/* ===== NPC: electronics – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
+/* ===== NPC: cinema – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
+/* ===== NPC: hotel – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+
 ];

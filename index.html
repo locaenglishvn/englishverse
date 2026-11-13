@@ -229,6 +229,18 @@ button{font:inherit;cursor:pointer}
 <script src="parts/interiors/library.js"></script>
 <script src="parts/interiors/bank.js"></script>
 <script src="parts/interiors/museum.js"></script>
+<script src="parts/interiors/townhall.js"></script>
+<script src="parts/interiors/hospital.js"></script>
+<script src="parts/interiors/school.js"></script>
+<script src="parts/interiors/bakery.js"></script>
+<script src="parts/interiors/furniture.js"></script>
+<script src="parts/interiors/electronics.js"></script>
+<script src="parts/interiors/cinema.js"></script>
+<script src="parts/interiors/hotel.js"></script>
+<script src="parts/exteriors/bakery.js"></script>
+<script src="parts/exteriors/electronics.js"></script>
+<script src="parts/exteriors/cinema.js"></script>
+<script src="parts/exteriors/hotel.js"></script>
 <script>
 /* ===== 2. DỰNG CẢNH 3D ===== */
 const scene = new THREE.Scene();
@@ -2604,13 +2616,14 @@ function buildInterior(P, i) {   // nội thất: sàn, 4 bức tường quay v�
   furnish(P, g, cx, cz, W, D);
   let k = null;
   if (P.keeper) {   // người bán (nếu có)
-    k = makeChar(P.keeper.color); k.position.set(cx, 0, cz - D / 2 + 2.4); { const I = npcInfo(P.keeper.name); k.add(nameTag(I.short, I.job)); }
-    P.room.solids.push({ x: cx, z: cz - D / 2 + 2.4, hw: 0.4, hd: 0.4 });
+    const kp = P.keeperPos ? [cx + P.keeperPos[0], cz + P.keeperPos[1]] : [cx, cz - D / 2 + 2.4];   // nội thất riêng có thể đặt P.keeperPos = [x, z] (tính từ giữa phòng) cho người bán
+    k = makeChar(P.keeper.color); k.position.set(kp[0], 0, kp[1]); { const I = npcInfo(P.keeper.name); k.add(nameTag(I.short, I.job)); }
+    P.room.solids.push({ x: kp[0], z: kp[1], hw: 0.4, hd: 0.4 });
   }
   P.keeperMesh = k;
   P.room.exit = { x: cx, z: cz + D / 2 - 1 };
   shade(g); scene.add(g);
-  if (k) { g.add(k); k.position.set(cx, 0, cz - D / 2 + 2.4); }
+  if (k) { const p0 = k.position.clone(); g.add(k); k.position.copy(p0); }
   P.int = g; g.visible = false;
 }
 Object.assign(EXTERIOR, EXTERIORS_EXTRA);   // ngoại thất file riêng (parts/exteriors/)

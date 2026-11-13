@@ -103,7 +103,7 @@ const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", le
    model  = mô hình 3D bên ngoài (building_A … building_H trong assets/city); scale = độ phóng to (mặc định 5)
    exterior = ngoại thất vẽ riêng (townhall, hospital, school, cafe, home – xem mục 8c trong index.html); khi có thì bỏ qua model */
 const CITY = [
-  { id: "bakery", name: "Banh Mi Bakery", type: "bakery", x: 56, z: -10, w: 10, d: 10, door: "south", exterior: "banhmi",
+  { id: "bakery", name: "Banh Mi Bakery", type: "bakery", x: -32.5, z: 6.5, w: 6, d: 9, door: "east", exterior: "bakeryDoor", layout: "bakery", size: { w: 20, d: 48, h: 7 },   // căn nhà ống vàng sát Cafe Sua Da
     color: 0xffe8cc, roof: 0xc0392b, awning: 0xe67e22, floor: 0xe9c99a, wall: 0xfff4e0,
     keeper: { name: "Anna – Baker", color: 0xf08c00, greet: "Good morning! Everything is fresh today. What would you like?", hint: "Can I have a banh mi, please?" },
     sells: ["banhmi", "donut", "milk"] },
@@ -115,11 +115,11 @@ const CITY = [
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
     keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to the Clothes Shop. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
     sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
-  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -44, w: 32, d: 13, door: "south", exterior: "townhall",
+  { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -44, w: 32, d: 13, door: "south", exterior: "townhall", layout: "townhall", size: { w: 36, d: 48, h: 12 },
     color: 0xf1f3f5, roof: 0x495057, awning: 0x1c7ed6, floor: 0xc9a27e, wall: 0xf8f0e3,
     keeper: { name: "Mr. Lee – Mayor", color: 0x343a40, greet: "Welcome to Town Hall! The quest board will open soon.", hint: "I'd like to take a quest." },
     sells: [] },
-  { id: "hospital", name: "City Hospital", type: "hospital", x: -62, z: -40, w: 20, d: 11, door: "east", exterior: "hospital",
+  { id: "hospital", name: "City Hospital", type: "hospital", x: -62, z: -40, w: 20, d: 11, door: "east", exterior: "hospital", layout: "hospital", size: { w: 60, d: 72, h: 6 },
     color: 0xffffff, roof: 0xc92a2a, awning: 0xfa5252, floor: 0xe7f5ff, wall: 0xffffff,
     keeper: { name: "Nurse Mai", color: 0x74c0fc, greet: "Hello! Doctor Pasteur is working in his lab. He will need your help soon.", hint: "I feel sick." },
     sells: [] },
@@ -131,7 +131,7 @@ const CITY = [
      layout = kiểu bày nội thất: shop | tables | shelves | desks | museum | cinema | salon | lab | home
      goods  = đồ trưng bày (emoji). NPC hội thoại của từng nơi nằm trong lessons.js (place: "id"). */
   // Hàng phía bắc (cửa nhìn ra North Avenue)
-  { id: "school", name: "Verse School", type: "school", x: -82, z: -14, w: 24, d: 18, door: "south", exterior: "school", layout: "desks",
+  { id: "school", name: "Verse School", type: "school", x: -82, z: -14, w: 24, d: 18, door: "south", exterior: "school", layout: "campus", size: { w: 60, d: 72, h: 12 },
     color: 0xfff3bf, roof: 0x1971c2, awning: 0xfab005, floor: 0xd9b38c, wall: 0xfff9db, goods: ["📚", "✏️", "📐", "🌍", "🎒", "🧮"], keeper: null, sells: [] },
   { id: "museum", name: "City Museum", type: "museum", x: -35, z: 40, w: 26, d: 12, door: "east", exterior: "museum", layout: "museumhall", size: { w: 60, d: 72, h: 14 },
     color: 0xf1f3f5, roof: 0x5c5f66, awning: 0x868e96, floor: 0xe9ecef, wall: 0xf8f9fa, goods: ["🦖", "🏺", "🗿", "⚱️", "🦴", "👑"], keeper: null, sells: [] },
@@ -144,7 +144,7 @@ const CITY = [
   { id: "lab", name: "Science Lab", type: "science lab", x: -75, z: -112, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
     color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
   // Hàng giữa (cửa nhìn ra Market Street)
-  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "showroom",
+  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 56, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "homecozy", size: { w: 60, d: 72, h: 10 },
     color: 0xf8f0e3, roof: 0x8d5a2b, awning: 0xa0522d, floor: 0xd9b38c, wall: 0xfff8f0, goods: [],
     keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Welcome to Home & Cozy. Do you need furniture for your home?", hint: "I’d like the sofa, please." },
     sells: ["d_couch", "d_chair", "d_lamp", "d_cactus", "d_shelf", "d_table", "d_cabinet", "d_rug"] },
@@ -172,10 +172,14 @@ const CITY = [
   // Hàng phía nam (cửa nhìn lên Market Street)
   { id: "home", name: "My Home", type: "home", x: -125, z: -14, w: 12, d: 11, door: "south", exterior: "home", layout: "home",
     color: 0xfff4e6, roof: 0xd9480f, awning: 0xfd7e14, floor: 0xd9b38c, wall: 0xfff8f0, keeper: null, sells: [] },
-  { id: "cinema", name: "Star Cinema", type: "cinema", x: 85, z: 18, w: 12, d: 12, door: "north", model: "building_H", scale: 6, layout: "cinema",
+  { id: "cinema", name: "Star Cinema", type: "cinema", x: 86.5, z: 18, w: 20, d: 16, door: "north", exterior: "cinema", layout: "starium", size: { w: 40, d: 56, h: 14 },
     color: 0x343a40, roof: 0x212529, awning: 0xfab005, floor: 0x5c1a1a, wall: 0x3b2f2a, goods: ["🎬", "🍿", "🎟️", "🥤", "🎥", "⭐"],
     keeper: { name: "Jack – Ticket Seller", color: 0xfab005, greet: "Hi! The movie starts at seven. Would you like some popcorn?", hint: "Can I have some popcorn, please?" },
-    sells: ["popcorn", "water"] }
+    sells: ["popcorn", "water"] },
+  { id: "electronics", name: "Verse Electronics", type: "electronics store", x: 63, z: 43, w: 22, d: 16, door: "west", exterior: "electronics", layout: "electronics", size: { w: 60, d: 72, h: 10 },   // siêu thị điện máy, cạnh Verse Plaza
+    color: 0x1c4fa0, roof: 0x1c4fa0, awning: 0xffd43b, floor: 0xf1f3f5, wall: 0xffffff, goods: [], keeper: null, sells: [] },
+  { id: "hotel", name: "Verse Hotel", type: "hotel", x: 33, z: 0, w: 18, d: 16, door: "west", exterior: "hotel", layout: "hotel", size: { w: 40, d: 60, h: 10 },   // ngoại thất theo khách sạn Majestic (Q.1)
+    color: 0xf8f1df, roof: 0x8a6d3b, awning: 0xc9a227, floor: 0xd9c7a4, wall: 0xf8f1df, goods: [], keeper: null, sells: [] }
 ];
 
 /* ĐỊA ĐIỂM NGOÀI TRỜI (không có nhà, đi thẳng vào): x, z = tâm khu; keys = từ khóa khi hỏi "Where is …?" */
@@ -224,7 +228,6 @@ const METRO = [
 
 /* Ô ĐẤT CHỜ XÂY: hiện hàng rào + bảng "Coming soon". big = công trình công cộng lớn (có cần cẩu). door = mặt tiền quay hướng nào */
 const LOTS = [
-  { name: "Verse Hotel",      x: 33,   z: 0,    w: 18, d: 16, door: "west",  big: true },
   { name: "Sports Center",    x: 30,   z: -93,  w: 16, d: 14, door: "west",  big: true },
   { name: "Swimming Pool",    x: 32,   z: -126, w: 14, d: 12, door: "west",  big: true },
   { name: "Tech Park",        x: -125, z: -112, w: 20, d: 16, door: "south", big: true },
@@ -238,6 +241,7 @@ const LOTS = [
   { name: "Clinic",           x: -110, z: 14,   w: 10, d: 10, door: "north" },
   { name: "Bookshop",         x: 145,  z: -10,  w: 9,  d: 10, door: "south" },
   { name: "Toy Store",        x: 145,  z: 11,   w: 9,  d: 10, door: "north" },
+  { name: "Pet Shop",         x: 120,  z: -10,  w: 10, d: 10, door: "south" },   // chỗ cũ của Home & Cozy
   { name: "Orchard",          x: -125, z: 80,   w: 20, d: 18, door: "north", big: true },
   { name: "Fish Pond",        x: -80,  z: 125,  w: 18, d: 16, door: "north" },
   { name: "Rice Field",       x: -125, z: 125,  w: 20, d: 18, door: "north" },
@@ -538,5 +542,29 @@ const VOCAB = {
     { w: "volcano model", pic: "🌋", pos: "noun", kind: "thing", at: "lab", say: "It's a volcano model.", ex: "The volcano model can erupt!" },
     { w: "telescope", pic: "🔭", pos: "noun", kind: "machine", at: "lab", say: "It's a telescope.", ex: "I can see stars with a telescope." },
     { w: "Tesla coil", pic: "⚡", pos: "noun", kind: "machine", at: "lab", say: "It's a Tesla coil.", ex: "A Tesla coil makes big sparks." }
+  ],
+  /* ===== VOCAB.townhall – điền món vào trong mảng dưới đây ===== */
+  townhall: [
+  ],
+  /* ===== VOCAB.hospital – điền món vào trong mảng dưới đây ===== */
+  hospital: [
+  ],
+  /* ===== VOCAB.school – điền món vào trong mảng dưới đây ===== */
+  school: [
+  ],
+  /* ===== VOCAB.bakery – điền món vào trong mảng dưới đây ===== */
+  bakery: [
+  ],
+  /* ===== VOCAB.furniture – điền món vào trong mảng dưới đây ===== */
+  furniture: [
+  ],
+  /* ===== VOCAB.electronics – điền món vào trong mảng dưới đây ===== */
+  electronics: [
+  ],
+  /* ===== VOCAB.cinema – điền món vào trong mảng dưới đây ===== */
+  cinema: [
+  ],
+  /* ===== VOCAB.hotel – điền món vào trong mảng dưới đây ===== */
+  hotel: [
   ]
 };
