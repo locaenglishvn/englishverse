@@ -71,6 +71,7 @@ KHÔNG ĐƯỢC: sửa index.html (trừ khi đề bài cho phép), đổi dữ 
 - Chỗ bày từ vựng: `P.anchors = { <khu>: [[x, y, z, chỗ đứng x, chỗ đứng z], …] }`, rồi `P.vgroup = new THREE.Group(); g.add(P.vgroup);`. Số chỗ mỗi khu ≥ số món có `at` = khu đó. Chỗ đứng phải đi tới được.
 - Mái / trần / vật trên cao: `userData.flat = true` (không đổ bóng).
 - **Vật chuyển động hoặc hiện/ẩn sau khi tải** (quạt quay, cửa mở…) phải thêm vào danh sách bỏ qua `dyn` trong `bakeWorld()` (index.html, mục 9); nếu không sẽ bị gộp khối và đứng im. Báo CTO.
+- Cửa hàng nhỏ (16 × 18 m): dùng khung chung `shopKit()` trong `parts/interiors/shopkit.js` (mẫu: `bakery.js`). Three.js bản r128: KHÔNG có `CapsuleGeometry` (dùng hình cầu kéo dãn).
 - Hiệu năng: dùng `mat(màu)` (dùng chung chất liệu) thay vì tạo chất liệu mới; nhiều vật giống nhau → `InstancedMesh`.
 
 **NPC (lessons.js) – trình độ Movers/Flyers (A1–A2)**
