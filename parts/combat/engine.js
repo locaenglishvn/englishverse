@@ -83,6 +83,8 @@ const SKILLS = {
 };
 const BRANCH = { power: { name: "Power", color: "#e5484d", icon: "⚡" }, control: { name: "Control", color: "#3b82f6", icon: "🌀" }, harmony: { name: "Harmony", color: "#2f9e44", icon: "💚" }, rhythm: { name: "Rhythm", color: "#e8590c", icon: "🔥" } };
 function skillRank(id) { return (save.combat.skills[id] || 0); }
+const pr = id => skillRank(id);   // bậc của nội tại
+function isActive(id) { const S = SKILLS[id]; return S && S.type !== "passive"; }
 function spTotal() { const L = save.level || 1; return L + Math.floor(L / 10); }   // 1 điểm mỗi cấp + 1 mỗi 10 cấp
 function spLeft() { return spTotal() - Object.values(save.combat.skills).reduce((a, b) => a + b, 0); }
 
@@ -113,8 +115,8 @@ function equipWeapon(id) {
 }
 
 /* ---------- 5. TRẠNG THÁI ---------- */
-const CB = { on: false, sec: null, mons: [], drops: [], cast: null, cd: {}, atkCd: 0, mp: 100, harmony: 0, harmonyUntil: 0, lastType: "", lastHurt: 0, ko: false, wideBefore: false, rerollAt: 0, dayWarned: false, rings: [] };
-function hpMax() { return 100 + ((save.level || 1) - 1) * 5; }
+const CB = { buff: { shield: 0, shieldUntil: 0, dmg: 0, dmgUntil: 0, hasteUntil: 0 }, on: false, sec: null, mons: [], drops: [], cast: null, cd: {}, atkCd: 0, mp: 100, harmony: 0, harmonyUntil: 0, lastType: "", lastHurt: 0, ko: false, wideBefore: false, rerollAt: 0, dayWarned: false, rings: [] };
+function hpMax() { return Math.round((100 + ((save.level || 1) - 1) * 5) * (1 + 0.06 * pr("warm_heart"))); }
 function hpNow() { return save.energy / 100 * hpMax(); }
 function setHp(v) { save.energy = Math.max(0, Math.min(100, v / hpMax() * 100)); }
 
@@ -172,11 +174,19 @@ body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important
 function drawCombatHud() {
   if (!$("cbHud")) return;
   for (let i = 0; i < 4; i++) { const id = save.combat.slots[i], S = SKILLS[id], b = $("cbS" + i); b.style.display = S ? "block" : "none"; if (S) { b.style.background = BRANCH[S.branch].color; b.innerHTML = S.icon + "<div class='cd' style='display:none'></div>"; } }
+  showWeaponInHand();
   const w = curWeapon(); $("cbWpn").innerHTML = (w ? w.icon : "✋") + "<b>" + (w ? "T" + w.weapon.tier : "") + "</b>";
   const foods = Object.keys(save.items).filter(k => ITEMS[k] && ITEMS[k].energy).sort((a, b) => ITEMS[b].energy - ITEMS[a].energy).slice(0, 2);
   [0, 1].forEach(i => { const f = foods[i], b = $("cbF" + i); b.dataset.id = f || ""; b.innerHTML = f ? ITEMS[f].icon + "<b>×" + save.items[f] + "</b>" : ""; b.style.visibility = f ? "visible" : "hidden"; });
 }
 
+let handW = null;
+function showWeaponInHand() {   // vũ khí hiện trên tay khi ở vùng hoang dã
+  if (typeof WEAPON_MODELS === "undefined" || !WEAPON_MODELS) return;
+  const w = CB.on ? curWeapon() : null, key = w ? w.name : "";
+  if (handW === key) return; handW = key;
+  try { WEAPON_MODELS.detach(player); if (w && !WEAPON_MODELS.attach(player, WEAPON_MODELS.make(w))) handW = null; } catch (e) { handW = null; }
+}
 /* ---------- 6. VÀO / RA VÙNG HOANG DÃ ---------- */
 function setCombatOn(on, sec) {
   CB.on = on; CB.sec = sec; document.body.classList.toggle("cbOn", on);
@@ -184,6 +194,7 @@ function setCombatOn(on, sec) {
   if (on) { CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
     flash("🌿 " + sec.name + "<div style='font-size:13px;font-weight:400'>Monster zone! Tap ⚔️ to hit, tap a skill and SPEAK to cast. / Vùng quái: bấm ⚔️ đánh thường, bấm chiêu rồi NÓI để tung chiêu.</div>"); }
   else { if (!CB.wideBefore && camWide) setWide(false); endCast(true); }
+  showWeaponInHand();
 }
 
 /* ---------- 7. VÒNG LẶP ---------- */
@@ -244,6 +255,8 @@ function monTick(M, dt, t) {
   if (M.dead) { M.deadT += dt; M.model.update(dt, t, "die"); M.g.scale.setScalar(Math.max(0.01, 1 - M.deadT)); if (M.deadT > 1) { scene.remove(M.g); M.gone = true; } return; }
   if (!CB.on || CB.sec.dir !== M.dir) { if (dist > 120) { scene.remove(M.g); M.gone = true; } return; }
   if (M.stun > 0) { M.stun -= dt; M.model.update(dt, t, "hit"); return; }
+  M.root = Math.max(0, (M.root || 0) - dt); M.silence = Math.max(0, (M.silence || 0) - dt); M.slowT = Math.max(0, (M.slowT || 0) - dt);
+  const spd = M.slowT > 0 ? 1 - (M.slow || 0) : 1;
   const fromHome = Math.hypot(p.x - M.home.x, p.z - M.home.z), aggro = !CB.ko && dist < 9 && fromHome < 25;
   let state = "idle";
   if (M.tele) {   // đang ra đòn: vòng đỏ báo trước, hết 0,8 s thì trúng nếu người chơi còn trong vòng
@@ -251,13 +264,13 @@ function monTick(M, dt, t) {
     if (M.tele.t >= 0.8) { if (Math.hypot(P.x - M.tele.x, P.z - M.tele.z) < M.T.range + 0.3) hurtPlayer(M); scene.remove(M.tele.ring); M.tele = null; M.atkT = 2.2; }
   } else if (aggro) {
     M.g.rotation.y = Math.atan2(P.x - p.x, P.z - p.z);
-    if (dist > M.T.range * 0.8) { const s = 2.3 * M.T.speed * dt; movMon(M, (P.x - p.x) / dist * s, (P.z - p.z) / dist * s); state = "walk"; }
+    if (dist > M.T.range * 0.8 && !M.root) { const s = 2.3 * M.T.speed * spd * dt; movMon(M, (P.x - p.x) / dist * s, (P.z - p.z) / dist * s); state = "walk"; }
     M.atkT -= dt;
-    if (dist < M.T.range + 0.6 && M.atkT <= 0) { const ring = new THREE.Mesh(new THREE.RingGeometry(M.T.range * 0.85, M.T.range, 28), new THREE.MeshBasicMaterial({ color: 0xe5484d, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));
+    if (dist < M.T.range + 0.6 && M.atkT <= 0 && !M.silence) { const ring = new THREE.Mesh(new THREE.RingGeometry(M.T.range * 0.85, M.T.range, 28), new THREE.MeshBasicMaterial({ color: 0xe5484d, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));
       ring.rotation.x = -Math.PI / 2; ring.position.set(P.x, 0.06, P.z); scene.add(ring); M.tele = { t: 0, ring, x: P.x, z: P.z }; }
   } else {   // đi tuần quanh nhà
     if (Math.hypot(M.tx - p.x, M.tz - p.z) < 0.5 || fromHome > 25) { M.tx = M.home.x + (Math.random() - 0.5) * 16; M.tz = M.home.z + (Math.random() - 0.5) * 16; }
-    const dx = M.tx - p.x, dz = M.tz - p.z, d = Math.hypot(dx, dz) || 1; movMon(M, dx / d * 0.9 * dt, dz / d * 0.9 * dt); M.g.rotation.y = Math.atan2(dx, dz); state = "walk";
+    const dx = M.tx - p.x, dz = M.tz - p.z, d = Math.hypot(dx, dz) || 1; if (!M.root) movMon(M, dx / d * 0.9 * spd * dt, dz / d * 0.9 * spd * dt); M.g.rotation.y = Math.atan2(dx, dz); state = "walk";
     if (M.hp < M.hpMax && dist > 20) M.hp = Math.min(M.hpMax, M.hp + dt * M.hpMax * 0.05);
   }
   if (M.hurtT > 0) { M.hurtT -= dt; state = "hit"; }
@@ -267,7 +280,8 @@ function movMon(M, dx, dz) { const p = M.g.position; if (!blocked(p.x + dx, p.z)
 function hurtPlayer(M) {
   if (CB.ko) return;
   let dmg = (5 + M.lv * 1.3) * M.T.dmg * (1 - Math.min(60, gear().resist || 0) / 100);
-  if (CB.cast) dmg *= 0.3;   // 🛡️ khiên giọng nói khi đang nói
+  if (CB.cast) dmg *= Math.max(0.1, 0.3 - 0.04 * pr("steady_voice"));   // 🛡️ khiên giọng nói khi đang nói (Steady Voice dày thêm)
+  if (performance.now() < CB.buff.shieldUntil) dmg *= 1 - CB.buff.shield;   // Chord Shield / Grand Chorus
   setHp(hpNow() - dmg); CB.lastHurt = performance.now(); charAct(player, "Hit_A");
   popText("-" + Math.round(dmg), player.position, CB.cast ? "#35c9c4" : "#e5484d");
   if (hpNow() <= 0) knockOut();
@@ -290,6 +304,7 @@ function normalAttack() {
   const M = nearestMon(3.2); CB.atkCd = 0.7; charAct(player, "1H_Melee_Attack_Chop");
   if (!M) return; player.rotation.y = Math.atan2(M.g.position.x - player.position.x, M.g.position.z - player.position.z);
   CB.mp = Math.min(100, CB.mp + 3);
+  if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.hit(M.g.position.clone(), 0xffffff);
   dealDamage(M, Math.round(4 + (save.level || 1) * 0.6), false);
 }
 function skillButton(btn, i) {   // bấm 1 lần: hiện đề; GIỮ nút để nói, thả tay là chấm
@@ -313,8 +328,8 @@ function startCast(id, btn) {
   const S = SKILLS[id];
   if ((CB.cd[id] || 0) > 0) return;
   if (CB.mp < S.mana) { popText("💧", player.position, "#3b82f6"); return; }
-  const target = nearestMon(S.kind === "aoe" ? 6 : 11);
-  if (!target && S.kind !== "aoe") { flash("🎯 No monster nearby / Không có quái gần đây"); return; }
+  const target = nearestMon(S.kind === "aoe" ? 8 : 11);
+  if (!target && S.kind !== "aoe" && S.kind !== "self") { flash("🎯 No monster nearby / Không có quái gần đây"); return; }
   CB.mp -= S.mana;
   const task = drawTask(Math.min(5, skillRank(id)));
   CB.cast = { id, S, task, target, limit: 10, left: 10, rec: false };
@@ -386,7 +401,10 @@ function resolveCast(alts, err) {
   if (acc === 0) { CB.mp += c.S.mana / 2; popText("Miss", player.position, "#868e96"); CB.cd[c.id] = 1; return; }
   popText(acc === 1 ? "Perfect!" : acc >= 0.7 ? "Good!" : "Weak", player.position, acc === 1 ? "#f08c00" : acc >= 0.7 ? "#2f9e44" : "#868e96");
   if (acc >= 0.7) { spokeOk(); if (c.task.card) practice(c.task.card); gainXp(4); harmonyStep(c.task.type); }
-  CB.cd[c.id] = c.S.cd; castSkill(c, acc); saveSoon();
+  CB.cd[c.id] = c.S.cd * (1 - 0.04 * pr("quick_tongue")) * (performance.now() < CB.buff.hasteUntil ? 0.5 : 1); castSkill(c, acc);
+  if (c.S.branch === "rhythm" && Math.random() < 0.03 * pr("encore")) setTimeout(() => { popText("Encore!", player.position, "#e8590c"); castSkill(c, acc); }, 600);
+  if (acc === 1 && pr("kind_words")) setHp(hpNow() + hpMax() * 0.02 * pr("kind_words"));
+  saveSoon();
 }
 function harmonyStep(type) { if (performance.now() < CB.harmonyUntil) return; if (type !== CB.lastType) CB.harmony += 25; CB.lastType = type; if (CB.harmony >= 100) { CB.harmony = 0; CB.harmonyUntil = performance.now() + 5000; flash("🎼 HARMONY! ×2 damage · 5s"); } }
 function skillDamage(c, acc, M) {
@@ -394,24 +412,47 @@ function skillDamage(c, acc, M) {
   let d = S.base * (1 + 0.25 * (rank - 1)) * (1 + (save.level || 1) * 0.04) * acc * (1 + (gear().voice || 0) / 100);
   if (w && (w.weapon.line === S.branch || w.weapon.line === "all")) d *= 1 + w.weapon.pct / 100;
   if (resoOn(c.task.type)) d *= 1.3;
-  if (M && M.T.weak === c.task.type) d *= 1.5;
+  if (M && (M.T.weak === c.task.type || S.pierce)) d *= 1.5;
+  if (S.execute && M && M.hp / M.hpMax < S.execute) d *= 3;
+  if (acc === 1) d *= 1 + 0.1 * pr("loud_clear");
+  d *= 1 + 0.03 * pr("team_spirit");
+  if (performance.now() < CB.buff.dmgUntil) d *= 1 + CB.buff.dmg;
+  if (S.branch === "power" && Math.random() < 0.05 * pr("critical_tone")) { d *= 2; c.crit = true; }
   if (performance.now() < CB.harmonyUntil) d *= 2;
   if (isPoisoned()) d *= 0.5;
   if (M && M.lv > (save.level || 1) + 8) d *= 0.3;   // quái mạnh hơn nhiều: nên lên cấp trước
   return Math.round(d);
 }
-function castSkill(c, acc) {
-  const S = c.S, P = player.position; charAct(player, "Spellcast_Shoot");
-  const alive = c.target && !c.target.dead ? c.target : nearestMon(11);
+function castSkill(c, acc) {   // hiệu ứng chiêu theo kind + fx (stun, root, silence, slow, taunt, heal, shield, buff, haste, mana, cleanse)
+  const S = c.S, P = player.position, rank = skillRank(c.id); charAct(player, "Spellcast_Shoot");
+  const alive = c.target && !c.target.dead ? c.target : nearestMon(11), ccMul = 1 + 0.1 * pr("sharp_ears");
   if (alive) player.rotation.y = Math.atan2(alive.g.position.x - P.x, alive.g.position.z - P.z);
-  const fx = (pos, color, size) => vfx(pos, color, size, skillRank(c.id));
-  if (S.kind === "single" && alive) { fx(alive.g.position, BRANCH[S.branch].color, 1.2); dealDamage(alive, skillDamage(c, acc, alive), true); if (S.stun) alive.stun = S.stun; }
-  if (S.kind === "multi" && alive) { let tgt = alive; for (let h = 0; h < S.hits; h++) { const M = tgt; setTimeout(() => { if (!M.dead) { fx(M.g.position, "#e8590c", 0.8); dealDamage(M, skillDamage(c, acc, M), true); } }, h * 220);
-      const nx = CB.mons.filter(m => !m.dead && m !== tgt && m.g.position.distanceTo(tgt.g.position) < 4)[0]; if (nx) tgt = nx; } }
-  if (S.kind === "aoe") { fx(P, "#e8590c", S.radius); CB.mons.forEach(M => { if (!M.dead && M.g.position.distanceTo(P) < S.radius) dealDamage(M, skillDamage(c, acc, M), true); }); }
+  const look = (to, radius) => { if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.play(c.id, { rank: S.type === "ult" ? 5 : rank, from: P.clone(), to: to ? to.clone() : null, radius, perfect: acc === 1 });
+    else vfx(to || P, BRANCH[S.branch].color, radius || 1.2, rank); if (S.type === "ult" || rank >= 5) window.CAM_SHAKE = 0.35; };
+  const cc = M => { let n = 0; if (S.stun) { M.stun = Math.max(M.stun, S.stun * ccMul); n++; } if (S.root) { M.root = S.root * ccMul; n++; } if (S.silence) { M.silence = S.silence * ccMul; n++; } if (S.slow) { M.slow = S.slow; M.slowT = S.slowT * ccMul; n++; }
+    if (n && pr("calm_mind")) CB.mp = Math.min(100, CB.mp + 3 * pr("calm_mind")); return n; };
+  const hit = M => { if (M.dead) return; dealDamage(M, skillDamage(c, acc, M), true); if (cc(M) && S.stun && pr("echo_chain") && S.branch === "control") {
+      CB.mons.filter(o => !o.dead && o !== M && o.g.position.distanceTo(M.g.position) < 5).slice(0, pr("echo_chain") >= 4 ? 2 : 1).forEach(o => o.stun = Math.max(o.stun, S.stun * 0.5)); }
+    if (S.branch === "rhythm" && pr("groove")) CB.mp = Math.min(100, CB.mp + pr("groove")); };
+  const inR = (pos, r) => CB.mons.filter(M => !M.dead && M.dir === (CB.sec && CB.sec.dir) && M.g.position.distanceTo(pos) < r);
+  const waves = (n, fn) => { for (let h = 0; h < n; h++) setTimeout(fn, h * 300); };
+  if (S.kind === "single" && alive) { look(alive.g.position); hit(alive); }
+  if (S.kind === "multi" && alive) { let tgt = alive; for (let h = 0; h < S.hits; h++) { const M = tgt; setTimeout(() => { if (!M.dead) { look(M.g.position, 0.8); hit(M); } }, h * 220);
+      const nx = CB.mons.filter(m => !m.dead && m !== tgt && m.g.position.distanceTo(tgt.g.position) < 5)[0]; if (nx) tgt = nx; } }
+  if (S.kind === "aoe") { look(null, S.radius); waves(S.hits || 1, () => inR(player.position, S.radius).forEach(hit)); }
+  if (S.kind === "zone" && alive) { const ctr = alive.g.position.clone(); look(ctr, S.radius);
+    if (S.taunt) inR(ctr, S.radius * 2).forEach(M => { M.g.position.lerp(ctr, 0.6); }); inR(ctr, S.radius).forEach(hit); }
   if (S.kind === "dash" && alive) { const a = alive.g.position, dx = a.x - P.x, dz = a.z - P.z, d = Math.hypot(dx, dz), step = Math.max(0, d - 1.2);
-    for (let s = 0; s < 10; s++) { const nx = P.x + dx / d * step / 10, nz = P.z + dz / d * step / 10; if (!blocked(nx, nz)) { P.x = nx; P.z = nz; } }
-    fx(a, "#e8590c", S.radius); CB.mons.forEach(M => { if (!M.dead && M.g.position.distanceTo(a) < S.radius) dealDamage(M, skillDamage(c, acc, M), true); }); }
+    for (let k = 0; k < 10; k++) { const nx = P.x + dx / d * step / 10, nz = P.z + dz / d * step / 10; if (!blocked(nx, nz)) { P.x = nx; P.z = nz; } }
+    look(a, S.radius); inR(a, S.radius).forEach(hit); }
+  if (S.kind === "self") { look(null, 2); const now = performance.now(), k = acc * (1 + 0.15 * (rank - 1));
+    if (S.heal) { setHp(hpNow() + hpMax() * S.heal * k); popText("+❤️", P, "#2f9e44"); }
+    if (S.shield) { CB.buff.shield = Math.min(0.85, S.shield * (0.8 + 0.2 * k)); CB.buff.shieldUntil = now + S.shieldT * 1000; }
+    if (S.buff) { CB.buff.dmg = S.buff * k; CB.buff.dmgUntil = now + S.buffT * 1000; }
+    if (S.haste) CB.buff.hasteUntil = now + S.hasteT * 1000;
+    if (S.mana) CB.mp = Math.min(100, CB.mp + S.mana * k);
+    if (S.cleanse) save.poisonUntil = 0; }
+  if (c.crit) popText("CRIT!", P, "#e5484d");
 }
 const VFX = [];
 function vfx(pos, color, size, rank) {   // hiệu ứng chiêu: bậc càng cao càng to, nhiều vòng, có hạt sáng
@@ -456,7 +497,8 @@ function dropAt(x, z, id, n) {
 }
 function cbOwnerId() { return myId; }
 function dropTick(dt, t) {
-  vfxTick(dt);
+  vfxTick(dt); if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.tick(dt); if (typeof WEAPON_MODELS !== "undefined" && WEAPON_MODELS && WEAPON_MODELS.tick) WEAPON_MODELS.tick(dt, t);
+  if (window.CAM_SHAKE > 0) { window.CAM_SHAKE -= dt; scene.position.set((Math.random() - 0.5) * 0.25, 0, (Math.random() - 0.5) * 0.25); } else if (scene.position.x || scene.position.z) scene.position.set(0, 0, 0);
   CB.drops.forEach(D => { D.t += dt; D.g.children[0].position.y = 0.6 + Math.sin(t * 3 + D.t) * 0.1;
     const mine = D.owner === cbOwnerId() || D.t > 20;   // 20 giây đầu chỉ người hạ quái nhặt được
     if (mine && !CB.ko && D.g.position.distanceTo(player.position) < 1.4) {
@@ -472,19 +514,28 @@ function dropTick(dt, t) {
 /* ---------- 11. BẢNG KỸ NĂNG ---------- */
 function drawSkills() {
   $("skSp").textContent = spLeft() + " điểm · Lv." + (save.level || 1) + " · còn " + xpToNext() + " ⭐ lên cấp";
-  let h = "<div style='font-size:12px;opacity:.8;margin-top:6px'>Bậc càng cao: chiêu mạnh hơn, đẹp hơn, và câu phải nói dài hơn (bậc 1 ≈ 3–4 từ · bậc 5 ≈ 11–12 từ). Bấm ⭐ để gắn chiêu vào ô.</div>";
-  ["power", "rhythm", "control", "harmony"].forEach(br => {
-    const B = BRANCH[br], list = Object.keys(SKILLS).filter(k => SKILLS[k].branch === br);
-    h += "<div class='brh' style='color:" + B.color + "'>" + B.icon + " " + B.name + "</div>";
-    if (!list.length) { h += "<div style='font-size:13px;opacity:.7'>Coming soon (giai đoạn B)</div>"; return; }
-    list.forEach(id => { const S = SKILLS[id], r = skillRank(id), lock = (save.level || 1) < S.lv, eq = save.combat.slots.indexOf(id) >= 0;
-      h += "<div class='sk'><div class='ic'>" + S.icon + "</div><div class='tx'><b>" + S.name + "</b> · bậc " + r + "/5<br>" + S.desc + "<br><span style='opacity:.7'>💧" + S.mana + " · ⏱" + S.cd + "s" + (lock ? " · 🔒 Lv." + S.lv : "") + "</span></div>" +
+  let h = "<div style='font-size:12px;opacity:.8;margin-top:6px'>Bậc càng cao: chiêu mạnh hơn, đẹp hơn (đổi hình ở bậc 3 và 5), và câu phải nói dài hơn (bậc 1 ≈ 3–4 từ · bậc 5 ≈ 11–12 từ). ⭐ = gắn vào ô · 👁️ = xem trước hiệu ứng.</div>";
+  ["power", "control", "harmony", "rhythm"].forEach(br => {
+    const B = BRANCH[br], list = Object.keys(SKILLS).filter(k => SKILLS[k].branch === br).sort((a, b) => ((SKILLS[a].type === "ult") - (SKILLS[b].type === "ult")) || SKILLS[a].lv - SKILLS[b].lv);
+    const pts = list.reduce((a, k) => a + skillRank(k), 0);
+    h += "<div class='brh' style='color:" + B.color + "'>" + B.icon + " " + B.name + " <span style='font-weight:500;font-size:12px;opacity:.8'>· " + pts + " điểm" + (pts >= 10 ? " · danh hiệu " + { power: "Thunder Voice", control: "Sharp Ears", harmony: "Kind Heart", rhythm: "Beat Master" }[br] : "") + "</span></div>";
+    list.forEach(id => { const S = SKILLS[id], r = skillRank(id), lock = (save.level || 1) < S.lv, eq = save.combat.slots.indexOf(id) >= 0, pas = S.type === "passive";
+      h += "<div class='sk' style='" + (S.type === "ult" ? "border-color:#fab005" : "") + "'><div class='ic'>" + S.icon + "</div><div class='tx'><b>" + S.name + "</b>" + (pas ? " · nội tại" : S.type === "ult" ? " · ★ tuyệt chiêu" : "") + " · bậc " + r + "/5<br>" + S.desc + "<br><span style='opacity:.7'>" + (pas ? "" : "💧" + S.mana + " · ⏱" + S.cd + "s") + (lock ? " · 🔒 Lv." + S.lv : "") + "</span></div>" +
+        (!pas ? "<button data-pv='" + id + "' title='Preview'>👁️</button>" : "") +
         (!lock && r < 5 && spLeft() > 0 ? "<button data-up='" + id + "' style='background:" + B.color + ";color:#fff'>+" + (r ? "" : " Learn") + "</button>" : "") +
-        (r ? "<button data-eq='" + id + "' style='background:" + (eq ? "#ffd43b" : "#e9ecef") + "'>" + (eq ? "⭐" : "☆") + "</button>" : "") + "</div>"; });
+        (r && !pas ? "<button data-eq='" + id + "' style='background:" + (eq ? "#ffd43b" : "#e9ecef") + "'>" + (eq ? "⭐" : "☆") + "</button>" : "") + "</div>"; });
   });
   $("skBody").innerHTML = h;
   $("skBody").querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const id = b.dataset.up; if (spLeft() <= 0) return; save.combat.skills[id] = skillRank(id) + 1;
-    if (save.combat.slots.indexOf(id) < 0) { const k = save.combat.slots.indexOf(null); if (k >= 0) save.combat.slots[k] = id; } saveNow(); drawSkills(); drawCombatHud(); });
+    if (isActive(id) && save.combat.slots.indexOf(id) < 0) { const k = save.combat.slots.indexOf(null); if (k >= 0) save.combat.slots[k] = id; } saveNow(); drawSkills(); drawCombatHud(); });
   $("skBody").querySelectorAll("[data-eq]").forEach(b => b.onclick = () => { const id = b.dataset.eq, S = save.combat.slots, k = S.indexOf(id);
     if (k >= 0) S[k] = null; else { const e = S.indexOf(null); if (e >= 0) S[e] = id; else S[3] = id; } saveNow(); drawSkills(); drawCombatHud(); });
+  $("skBody").querySelectorAll("[data-pv]").forEach(b => b.onclick = () => previewSkill(b.dataset.pv));
+}
+function previewSkill(id) {   // xem trước: hiệu ứng ở bậc hiện tại rồi bậc 5, ngay trước mặt nhân vật
+  $("skPanel").style.display = "none";
+  const S = SKILLS[id], P = player.position.clone(), to = P.clone().add(new THREE.Vector3(Math.sin(player.rotation.y) * 5, 0, Math.cos(player.rotation.y) * 5));
+  const show = (rank, delay) => setTimeout(() => { popText(S.icon + " " + S.name + " · bậc " + rank, P.clone().setY(1), BRANCH[S.branch].color);
+    if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.play(id, { rank, from: player.position.clone(), to: S.kind === "self" || S.kind === "aoe" ? null : to, radius: S.radius, perfect: true }); else vfx(to, BRANCH[S.branch].color, S.radius || 1.2, rank); }, delay);
+  show(Math.max(1, skillRank(id)), 200); show(3, 1700); show(5, 3200);
 }
