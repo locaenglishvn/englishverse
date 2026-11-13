@@ -1,0 +1,436 @@
+<title>Voice Combat Design</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Be+Vietnam+Pro:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Bố cục: một cột đọc ~68 ký tự, minh hoạ SVG chen giữa, bảng cuộn ngang khi hẹp */
+:root{
+  --bg:#f4f6fb; --panel:#ffffff; --ink:#1b2340; --muted:#5b6482; --line:#d9deec;
+  --wave:#0f9a9a; --wave-soft:#d6f3f1; --gold:#f5b72c; --gold-soft:#fff2cf;
+  --hp:#e5484d; --mp:#3b82f6; --ok:#2f9e44; --warn:#c2410c;
+  --power:#e5484d; --control:#3b82f6; --harmony:#2f9e44; --rhythm:#e8590c; --maestro:#9b5de5;
+  --screen:#2a3358; --screen2:#3a4675; --ground:#7cc47a;
+  --display:"Baloo 2", "Be Vietnam Pro", system-ui, sans-serif;
+  --body:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11152a; --panel:#1a2040; --ink:#e8ecfb; --muted:#a3abc9; --line:#2d355e;
+  --wave:#35c9c4; --wave-soft:#123a40; --gold:#f7c64f; --gold-soft:#3a3016; --warn:#ffa94d;
+  --screen:#0d1124; --screen2:#222b52; --ground:#3f7d48; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#11152a; --panel:#1a2040; --ink:#e8ecfb; --muted:#a3abc9; --line:#2d355e;
+  --wave:#35c9c4; --wave-soft:#123a40; --gold:#f7c64f; --gold-soft:#3a3016; --warn:#ffa94d;
+  --screen:#0d1124; --screen2:#222b52; --ground:#3f7d48; color-scheme:dark }
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,6vw,3.1rem);font-weight:800}
+h2{font-size:clamp(1.45rem,4vw,1.9rem);font-weight:800;margin-top:56px}
+h3{font-size:1.2rem;font-weight:600;margin-top:28px}
+p{margin:10px 0;max-width:68ch}
+ul{max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--wave)}
+.lead{font-size:1.1rem;color:var(--muted)}
+.wave{display:block;width:100%;height:46px;margin:18px 0 6px}
+.decided{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:20px}
+.decided div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.decided b{display:block;font-family:var(--display);font-size:1.05rem}
+.tag{display:inline-block;font-family:var(--mono);font-size:.7rem;padding:2px 8px;border-radius:99px;background:var(--wave-soft);color:var(--wave);letter-spacing:.06em}
+.tag.gold{background:var(--gold-soft);color:var(--warn)}
+.tag.new{background:var(--maestro);color:#fff}
+figure{margin:20px 0;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;overflow-x:auto}
+figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:10px;max-width:68ch}
+.row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.row>*{flex:1 1 300px;min-width:0}
+.formula{font-family:var(--mono);font-size:.88rem;background:var(--panel);border:1px dashed var(--wave);border-radius:12px;padding:12px 14px;overflow-x:auto;white-space:nowrap}
+.tbl{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.q{background:var(--gold-soft);border-radius:14px;padding:14px 18px;margin-top:16px}
+.q ol{margin:6px 0 0;padding-left:22px}
+.review{border-left:4px solid var(--wave);background:var(--panel);border-radius:0 12px 12px 0;padding:10px 16px;margin:10px 0}
+.review b{font-family:var(--display)}
+.branches{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0}
+.br{background:var(--panel);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:12px;padding:12px 14px;min-width:0;font-size:.9rem}
+.br h3{margin:0 0 4px;color:var(--c);font-size:1.15rem}
+.br .role{color:var(--muted);font-size:.82rem;margin-bottom:8px}
+.br ol{margin:0;padding-left:20px}
+.br li{margin:2px 0}
+.br .pas{color:var(--muted)}
+.br .ult{font-weight:700}
+svg text{font-family:var(--body)}
+.s-ink{fill:var(--ink)} .s-muted{fill:var(--muted)} .s-panel{fill:var(--panel)} .s-screen2{fill:var(--screen2)} .s-ground{fill:var(--ground)} .s-hp{fill:var(--hp)} .s-mp{fill:var(--mp)}
+@media (prefers-reduced-motion: no-preference){ .pulse{animation:pulse 1.6s ease-in-out infinite} @keyframes pulse{50%{opacity:.45}} .spin{transform-box:fill-box;transform-origin:center;animation:spin 6s linear infinite} @keyframes spin{to{transform:rotate(360deg)}} }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">EnglishVerse · thiết kế chiến đấu · bản 2 · 13/11</div>
+  <h1>Đánh quái bằng giọng nói</h1>
+  <p class="lead">Bản 2 sau góp ý của chủ dự án: vũ khí theo dòng kỹ năng + dòng hiếm, cây kỹ năng rộng hơn và chiêu đẹp dần theo bậc, quái rơi đồ để nhặt, nhịp lên cấp 6 tháng, giao tiếp giữa người chơi, quái phân cấp theo khoảng cách tới trung tâm.</p>
+  <svg class="wave" viewBox="0 0 800 46" preserveAspectRatio="none" aria-hidden="true"><path d="M0 23 Q20 5 40 23 T80 23 T120 23 Q140 2 160 23 T200 23 Q215 12 230 23 T260 23 Q290 -6 320 23 T380 23 Q395 14 410 23 T440 23 Q470 0 500 23 T560 23 Q575 10 590 23 T620 23 Q650 3 680 23 T740 23 Q760 14 780 23 L800 23" fill="none" stroke="var(--wave)" stroke-width="3" stroke-linecap="round"/></svg>
+
+  <div class="decided">
+    <div><span class="tag">Đã chốt</span><b>Khiên giọng nói −70%</b>Đang nói chiêu thì nhận ít sát thương hơn.</div>
+    <div><span class="tag">Đã chốt</span><b>Hết máu</b>Xám màn hình, đứng yên 2 giây, về cổng vùng hoang dã vừa ra.</div>
+    <div><span class="tag">Đã chốt</span><b>Mô hình 3 lớp</b>Kỹ năng = hiệu ứng · Voice Deck = bài nói · vũ khí = sức mạnh + cộng hưởng.</div>
+    <div><span class="tag">Đã chốt</span><b>Voice Deck</b>Sàn 15% mỗi loại bài, tối đa 35% cho loại yếu, được đổi đề.</div>
+    <div><span class="tag">Đã chốt</span><b>4 nhánh</b>Power · Control · Harmony · Rhythm.</div>
+    <div><span class="tag">Đã chốt</span><b>Khi nào xây</b>Chốt xong thiết kế là làm, không chờ buổi thử.</div>
+  </div>
+
+  <h2>1. Bản đồ: mỗi hướng một mùa, càng xa trung tâm quái càng mạnh</h2>
+  <p>Thay vì mỗi hướng một khoảng cấp, giờ <b>mỗi hướng đều có đủ cấp</b>, xếp thành các <b>vòng</b> quanh thành phố. Vòng trong gần thành phố là quái yếu, vòng ngoài là quái mạnh. Hướng chỉ quyết định <b>mùa, địa hình và hình dạng quái</b>. Muốn mở rộng bản đồ sau này chỉ cần thêm một vòng ngoài cùng.</p>
+  <figure>
+    <svg viewBox="0 0 640 520" role="img" aria-label="Bản đồ vòng cấp độ và 5 hướng mùa">
+      <defs><clipPath id="mapclip"><rect x="10" y="10" width="620" height="500" rx="12"/></clipPath></defs>
+      <rect x="10" y="10" width="620" height="500" rx="12" class="s-panel"/>
+      <g clip-path="url(#mapclip)" transform="translate(320 270)">
+        <g opacity=".9">
+          <path d="M0 0 L-260 -330 L260 -330 Z" fill="#dbe9f6"/>
+          <path d="M0 0 L260 -330 L420 -330 L420 -110 Z" fill="#fde2c8"/>
+          <path d="M0 0 L420 -110 L420 120 Z" fill="#f7d9b5"/>
+          <path d="M0 0 L420 120 L420 330 L250 330 Z" fill="#c8eef0"/>
+          <path d="M0 0 L250 330 L-250 330 Z" fill="#e4f6d6"/>
+          <path d="M0 0 L-250 330 L-420 330 L-420 -330 L-260 -330 Z" fill="#efe4cc"/>
+        </g>
+        <g fill="none" stroke="var(--ink)" stroke-opacity=".35" stroke-width="2" stroke-dasharray="6 5">
+          <circle r="120"/><circle r="175"/><circle r="230"/><circle r="285"/>
+        </g>
+        <rect x="-62" y="-52" width="124" height="104" rx="10" class="s-screen2"/>
+        <text y="-4" text-anchor="middle" fill="#fff" font-weight="800" font-size="16" font-family="var(--display)">VERSE CITY</text>
+        <text y="16" text-anchor="middle" fill="#cdd5f3" font-size="11">an toàn · mua bán</text>
+        <g font-size="11.5" font-weight="700" class="s-ink">
+          <text x="0" y="-128" text-anchor="middle">Vòng 1 · Lv.1–12</text>
+          <text x="0" y="-183" text-anchor="middle">Vòng 2 · Lv.12–25</text>
+          <text x="0" y="-238" text-anchor="middle">Vòng 3 · Lv.25–40</text>
+        </g>
+        <text x="0" y="-292" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--maestro)">Vòng 4 · Lv.40–50 (mở sau)</text>
+        <g font-weight="700" font-size="14">
+          <text x="-150" y="-200" fill="#1864ab">❄️ Bắc · đông tuyết</text>
+          <text x="150" y="-200" fill="#c2410c">🍁 Đông Bắc · thu</text>
+          <text x="190" y="10" fill="#9a3412">🏜️ Đông · hẻm núi khô</text>
+          <text x="150" y="215" fill="#0b7285">🏝️ Đông Nam · biển nhiệt đới</text>
+          <text x="-120" y="215" fill="#2b8a3e">🌸 Nam · xuân</text>
+          <text x="-300" y="10" fill="#7c5a2a">Tây: Verse Arena</text>
+        </g>
+        <g fill="var(--gold)" stroke="var(--ink)" stroke-width="1.5"><circle cx="0" cy="-62" r="7"/><circle cx="62" cy="-40" r="7"/><circle cx="72" cy="10" r="7"/><circle cx="62" cy="52" r="7"/><circle cx="0" cy="62" r="7"/></g>
+      </g>
+      <text x="24" y="500" class="s-muted" font-size="12">● cổng vào vùng (chỗ hồi sinh khi hết máu) · Bắc ở trên · vòng nét đứt = ranh giới cấp quái</text>
+    </svg>
+    <figcaption>Ví dụ: quái Lv.20 có ở cả 5 hướng (vòng 2). Ở hướng Bắc nó là con cú tuyết, ở hướng Nam là con cú hoa, cùng sức mạnh. Người chơi chọn hướng theo mùa mình thích và chủ đề từ vựng của vùng đó.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <tr><th>Hướng</th><th>Mùa / địa hình</th><th>Chủ đề từ vựng thêm</th><th>Ví dụ cùng một loại quái, khác hình dạng</th></tr>
+    <tr><td>❄️ Bắc</td><td>Đông: núi tuyết, hồ băng, hang</td><td>quần áo ấm, thời tiết, sức khoẻ</td><td>Riddle Bug → bọ tuyết lông trắng</td></tr>
+    <tr><td>🍁 Đông Bắc</td><td>Thu: rừng phong, sương, cối xay gió</td><td>cảm xúc, nghề nghiệp, mùa màng</td><td>→ bọ lá phong đỏ</td></tr>
+    <tr><td>🏜️ Đông</td><td>Khô: hẻm núi đỏ, sa mạc, phế tích</td><td>phương hướng, lịch sử, đồ vật</td><td>→ bọ cát</td></tr>
+    <tr><td>🏝️ Đông Nam</td><td>Mưa nhiệt đới: biển, rừng ngập mặn</td><td>biển, đồ ăn, du lịch</td><td>→ bọ san hô</td></tr>
+    <tr><td>🌸 Nam</td><td>Xuân: đồi hoa, rừng tre, suối</td><td>màu sắc, con vật, cây cối</td><td>→ bọ hoa</td></tr>
+  </table></div>
+
+  <h2>2. Cách đánh: thời gian thực, đánh thường + chiêu nói</h2>
+  <div class="row">
+    <figure style="flex:0 1 330px">
+      <svg viewBox="0 0 300 560" role="img" aria-label="Màn hình chiến đấu trên điện thoại">
+        <rect x="4" y="4" width="292" height="552" rx="34" fill="var(--ink)"/>
+        <rect x="14" y="14" width="272" height="532" rx="26" class="s-ground"/>
+        <rect x="14" y="14" width="272" height="150" rx="26" fill="#8fd3f4"/>
+        <rect x="26" y="30" width="150" height="12" rx="6" fill="#00000033"/><rect x="26" y="30" width="108" height="12" rx="6" class="s-hp"/><text x="182" y="40" font-size="11" fill="#fff" font-weight="700">72/100</text>
+        <rect x="26" y="48" width="150" height="10" rx="5" fill="#00000033"/><rect x="26" y="48" width="60" height="10" rx="5" class="s-mp"/><text x="182" y="57" font-size="11" fill="#fff" font-weight="700">40 💧</text>
+        <rect x="26" y="64" width="150" height="8" rx="4" fill="#00000033"/><rect x="26" y="64" width="90" height="8" rx="4" fill="var(--maestro)"/><text x="182" y="72" font-size="10" fill="#fff" font-weight="700">🎼 Hợp âm</text>
+        <ellipse cx="200" cy="250" rx="48" ry="12" fill="#e5484d55" stroke="#e5484d" stroke-dasharray="5 4" class="pulse"/>
+        <circle cx="200" cy="222" r="26" fill="#ffd43b"/><circle cx="191" cy="216" r="4" fill="#1b2340"/><circle cx="209" cy="216" r="4" fill="#1b2340"/><path d="M186 234 Q200 242 214 234" stroke="#1b2340" stroke-width="3" fill="none"/>
+        <text x="200" y="182" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">🐞 Riddle Bug Lv.3 · sợ 🎺</text><rect x="168" y="187" width="64" height="6" rx="3" fill="#00000044"/><rect x="168" y="187" width="40" height="6" rx="3" class="s-hp"/>
+        <circle cx="120" cy="330" r="34" fill="none" stroke="var(--wave)" stroke-width="4" opacity=".85" class="pulse"/>
+        <circle cx="120" cy="322" r="16" fill="#f1c27d"/><rect x="106" y="336" width="28" height="26" rx="8" fill="#f8f9fa"/>
+        <path d="M136 330 L152 300" stroke="#74c0fc" stroke-width="4" stroke-linecap="round"/><circle cx="153" cy="297" r="5" fill="#e7f5ff"/>
+        <text x="120" y="378" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">🛡️ −70% khi đang nói</text>
+        <g><circle cx="60" cy="270" r="8" fill="#ffd43b" stroke="#b07d00"/><text x="60" y="274" text-anchor="middle" font-size="9" font-weight="700" fill="#7a5a00">$</text><rect x="70" y="276" width="16" height="16" rx="4" fill="#e599f7" stroke="#9b5de5"/><text x="78" y="300" text-anchor="middle" font-size="9" fill="#fff">rơi đồ</text></g>
+        <rect x="26" y="392" width="248" height="56" rx="12" fill="#ffffff"/>
+        <text x="38" y="410" font-size="10" fill="#5b6482">🎺 ANSWER · Question Arrow · 5s · Resonance!</text>
+        <text x="38" y="430" font-size="13" fill="#1b2340" font-weight="700">"What colour is a banana?"</text>
+        <text x="38" y="443" font-size="10" fill="#0f9a9a">🎤 giữ nút chiêu và trả lời đủ câu · 🔄 đổi đề</text>
+        <circle cx="66" cy="496" r="34" fill="#ffffff44"/><circle cx="66" cy="496" r="15" fill="#ffffffaa"/>
+        <circle cx="232" cy="500" r="28" fill="#f8f9fa" stroke="#1b2340" stroke-width="2"/><text x="232" y="507" text-anchor="middle" font-size="20">⚔️</text>
+        <circle cx="180" cy="512" r="18" fill="var(--power)"/><text x="180" y="518" text-anchor="middle" font-size="14">⚡</text>
+        <circle cx="190" cy="470" r="18" fill="var(--control)" stroke="#fff" stroke-width="3"/><text x="190" y="476" text-anchor="middle" font-size="14">🌀</text>
+        <circle cx="222" cy="446" r="18" fill="var(--harmony)"/><text x="222" y="452" text-anchor="middle" font-size="14">💚</text>
+        <circle cx="262" cy="452" r="18" fill="var(--rhythm)" opacity=".45"/><text x="262" y="458" text-anchor="middle" font-size="14">🔥</text><text x="262" y="476" text-anchor="middle" font-size="9" fill="#fff">3s</text>
+        <rect x="236" y="70" width="38" height="38" rx="10" fill="#ffffffcc"/><text x="255" y="96" text-anchor="middle" font-size="20">🥖</text><text x="270" y="106" text-anchor="end" font-size="9" fill="#1b2340" font-weight="700">×2</text>
+        <rect x="236" y="114" width="38" height="38" rx="10" fill="#ffffffcc"/><text x="255" y="140" text-anchor="middle" font-size="20">🍜</text>
+      </svg>
+      <figcaption>Phải: ⚔️ đánh thường + 4 chiêu. Trái: cần điều khiển. Trên: máu, mana, thanh Hợp âm, 2 ô ăn nhanh. Quái chết thì đồng xu và vật phẩm rơi xuống đất.</figcaption>
+    </figure>
+    <div>
+      <div class="tbl"><table style="min-width:0">
+        <tr><th></th><th>⚔️ Đánh thường</th><th>Chiêu</th></tr>
+        <tr><td>Nói?</td><td>Không</td><td><b>Có</b>: 1 bài nói 3–6 giây</td></tr>
+        <tr><td>Sức mạnh</td><td>≈ 10% một chiêu</td><td>Perfect 100% · Good 70% · Weak 30%</td></tr>
+        <tr><td>Mana</td><td>+3 mỗi đòn</td><td>−25 đến −40</td></tr>
+      </table></div>
+      <p><b>Mana</b> hồi từ 0 tới đầy trong khoảng <b>8 giây</b>. Một trận quái thường 30–60 giây, có 4–8 lần nói.</p>
+      <p><b>Quái chủ động:</b> đi tuần, thấy người chơi thì đuổi, đánh có vòng đỏ báo trước để né. Kéo quá xa thì quái quay về chỗ cũ.</p>
+      <p><b>Máu:</b> ăn đồ (mua ở tiệm bằng lời nói, hoặc nhặt từ quái). Ngoài trận máu tự hồi chậm.</p>
+      <p><b>Kinh nghiệm</b> chia theo phần sát thương do <i>chiêu nói</i> gây ra. Chỉ bấm đánh thường thì gần như không lên cấp.</p>
+      <h3>Một lần tung chiêu</h3>
+      <p>Bấm chiêu → trừ mana → rút 1 thẻ đề từ Voice Deck → giữ 🎤 nói (khiên −70%, tối đa 6 giây) → chấm Perfect / Good / Weak / Miss → hiệu ứng + ôn thẻ (⭐). Miss thì hoàn ½ mana.</p>
+    </div>
+  </div>
+
+  <h2>3. Mô hình 3 lớp (đã chốt) – cập nhật lớp vũ khí</h2>
+  <p>Lớp vũ khí được làm rõ theo góp ý: <b>mỗi dòng vũ khí tăng sức cho một nhánh kỹ năng</b>. Phần "cộng hưởng với loại bài nói" chuyển thành <b>thuộc tính phụ ngẫu nhiên</b> trên vũ khí rơi ra, nên mỗi món đồ nhặt được có thể khác nhau. Đây là lý do để người chơi muốn đánh quái tìm đồ.</p>
+  <figure>
+    <svg viewBox="0 0 760 250" role="img" aria-label="Ba lớp: kỹ năng, Voice Deck, vũ khí">
+      <g font-size="13">
+        <rect x="10" y="14" width="230" height="222" rx="16" fill="var(--panel)" stroke="var(--line)"/>
+        <text x="125" y="42" text-anchor="middle" class="s-ink" font-weight="800" font-size="16">① KỸ NĂNG</text><text x="125" y="61" text-anchor="middle" class="s-muted" font-size="12">chiêu làm gì</text>
+        <rect x="30" y="78" width="190" height="32" rx="9" fill="var(--power)"/><text x="125" y="99" text-anchor="middle" fill="#fff" font-weight="700">⚡ Power · 1 mục tiêu</text>
+        <rect x="30" y="116" width="190" height="32" rx="9" fill="var(--control)"/><text x="125" y="137" text-anchor="middle" fill="#fff" font-weight="700">🌀 Control · khoá, choáng</text>
+        <rect x="30" y="154" width="190" height="32" rx="9" fill="var(--harmony)"/><text x="125" y="175" text-anchor="middle" fill="#fff" font-weight="700">💚 Harmony · tăng sức</text>
+        <rect x="30" y="192" width="190" height="32" rx="9" fill="var(--rhythm)"/><text x="125" y="213" text-anchor="middle" fill="#fff" font-weight="700">🔥 Rhythm · đánh cả cụm</text>
+        <rect x="265" y="14" width="230" height="222" rx="16" fill="var(--wave-soft)" stroke="var(--wave)"/>
+        <text x="380" y="42" text-anchor="middle" class="s-ink" font-weight="800" font-size="16">② VOICE DECK</text><text x="380" y="61" text-anchor="middle" class="s-muted" font-size="12">người chơi phải nói gì</text>
+        <g class="s-ink"><text x="285" y="94">📢 Repeat – lặp lại</text><text x="285" y="120">🎺 Answer – nghe, trả lời</text><text x="285" y="146">🎸 Build – xếp câu, đổi thì</text><text x="285" y="172">🥁 Name – gọi tên nhanh</text><text x="285" y="198">💬 Ask – đặt câu hỏi</text></g>
+        <text x="380" y="224" text-anchor="middle" class="s-muted" font-size="11.5">sàn 15% · loại yếu tới 35% · đổi đề được</text>
+        <rect x="520" y="14" width="230" height="222" rx="16" fill="var(--gold-soft)" stroke="var(--gold)"/>
+        <text x="635" y="42" text-anchor="middle" class="s-ink" font-weight="800" font-size="16">③ VŨ KHÍ</text><text x="635" y="61" text-anchor="middle" class="s-muted" font-size="12">mạnh tới đâu</text>
+        <g class="s-ink" font-size="12.5"><text x="538" y="92">Chỉ số chính:</text><text x="538" y="110" class="s-muted">+% sức mạnh nhánh của nó</text>
+        <text x="538" y="138">Thuộc tính phụ (ngẫu nhiên):</text><text x="538" y="156" class="s-muted">🎵 Resonance [loại bài] +30%</text><text x="538" y="174" class="s-muted">💧 hồi mana nhanh · ⭐ thưởng Perfect</text><text x="538" y="192" class="s-muted">🛡️ khiên dày hơn · 🍀 rơi đồ</text></g>
+        <text x="635" y="224" text-anchor="middle" class="s-muted" font-size="11.5">2 ô vũ khí, đổi trong 1 giây</text>
+      </g>
+    </svg>
+  </figure>
+  <div class="formula">Sát thương = Sức mạnh chiêu (bậc) × Vũ khí cùng nhánh (+%) × Độ chính xác (1 / 0,7 / 0,3) × Resonance (1,3) × Điểm yếu quái (1,5) × Hợp âm (2)</div>
+  <p style="font-size:.9rem;color:var(--muted)">Độ chính xác và vũ khí luôn được tính. Ba hệ số cuối chỉ nhân khi điều kiện đúng: thuộc tính phụ trùng loại bài, quái sợ loại bài đó, thanh Hợp âm đầy.</p>
+
+  <h2>4. Vũ khí: 4 dòng theo nhánh + 1 dòng hiếm</h2>
+  <p>Vũ khí không chỉ là nhạc cụ: đũa thần, quyền trượng, búa, chuông… miễn là cầm vừa tay. Mỗi dòng có <b>6 bậc</b>, mỗi bậc cần đạt cấp nhất định mới trang bị được. Bậc càng cao hình càng đẹp, phát sáng và có hiệu ứng.</p>
+  <figure>
+    <svg viewBox="0 0 760 520" role="img" aria-label="Năm dòng vũ khí và các bậc">
+      <g font-size="11.5">
+        <g class="s-muted" font-family="var(--mono)" font-size="10.5" letter-spacing=".05em">
+          <text x="150" y="24" text-anchor="middle">LV.1</text><text x="268" y="24" text-anchor="middle">LV.8</text><text x="386" y="24" text-anchor="middle">LV.15</text><text x="504" y="24" text-anchor="middle">LV.25</text><text x="622" y="24" text-anchor="middle">LV.35</text><text x="722" y="24" text-anchor="middle">LV.45</text>
+        </g>
+        <!-- POWER -->
+        <text x="10" y="80" font-weight="800" fill="var(--power)" font-size="13">⚡ POWER</text><text x="10" y="96" class="s-muted">loa, búa sấm</text>
+        <g transform="translate(150 78)"><path d="M-14 6 L6 -6 L6 18 Z" fill="#c9a26b"/><rect x="-22" y="0" width="10" height="14" rx="3" fill="#8d5a2b"/></g>
+        <g transform="translate(268 78)"><path d="M-14 6 L10 -10 L10 22 Z" fill="#e0b040"/><rect x="-24" y="0" width="12" height="14" rx="3" fill="#b07d00"/></g>
+        <g transform="translate(386 78)"><rect x="-3" y="-20" width="6" height="44" rx="3" fill="#868e96"/><path d="M-10 -24 L4 -24 L-4 -10 L8 -10 L-8 10 L-2 -4 L-12 -4 Z" fill="#ffd43b"/></g>
+        <g transform="translate(504 78)"><rect x="-3" y="-8" width="6" height="34" rx="3" fill="#5c3a24"/><rect x="-18" y="-24" width="36" height="20" rx="4" fill="#495057"/><path d="M-6 -22 L4 -14 L-2 -14 L6 -6" stroke="#ffd43b" stroke-width="2.5" fill="none"/></g>
+        <g transform="translate(622 78)"><circle r="26" fill="var(--power)" opacity=".18" class="pulse"/><path d="M-16 8 L14 -14 L14 26 Z" fill="#e5484d"/><circle cx="14" cy="6" r="6" fill="#ffd43b"/><rect x="-26" y="2" width="12" height="14" rx="3" fill="#7a1414"/></g>
+        <text x="722" y="70" text-anchor="middle" class="s-muted">hiếm hơn</text><text x="722" y="86" text-anchor="middle" class="s-muted">(boss)</text>
+        <g class="s-ink" font-size="10.5"><text x="150" y="118" text-anchor="middle">Loa gỗ</text><text x="268" y="118" text-anchor="middle">Kèn đồng</text><text x="386" y="118" text-anchor="middle">Gậy sét</text><text x="504" y="118" text-anchor="middle">Búa sấm</text><text x="622" y="118" text-anchor="middle">Dragon Roar Horn</text></g>
+        <!-- CONTROL -->
+        <text x="10" y="170" font-weight="800" fill="var(--control)" font-size="13">🌀 CONTROL</text><text x="10" y="186" class="s-muted">đũa thần, quyền trượng</text>
+        <g transform="translate(150 168)"><rect x="-2" y="-18" width="4" height="40" rx="2" fill="#f8f9fa" stroke="#adb5bd"/></g>
+        <g transform="translate(268 168)"><rect x="-2" y="-12" width="4" height="36" rx="2" fill="#8d5a2b"/><path d="M0 -24 L7 -12 L0 -6 L-7 -12 Z" fill="#74c0fc"/></g>
+        <g transform="translate(386 168)"><rect x="-3" y="-10" width="6" height="36" rx="3" fill="#adb5bd"/><path d="M0 -26 L10 -12 L0 -4 L-10 -12 Z" fill="#a5d8ff"/><path d="M-12 -14 L12 -14" stroke="#e7f5ff" stroke-width="2"/></g>
+        <g transform="translate(504 168)"><rect x="-3" y="-8" width="6" height="36" rx="3" fill="#364fc7"/><circle cy="-18" r="11" fill="none" stroke="#748ffc" stroke-width="3"/><path d="M-4 -24 A8 8 0 1 0 6 -12 A6 6 0 1 1 -4 -24" fill="#dbe4ff"/></g>
+        <g transform="translate(622 168)"><circle r="28" fill="var(--control)" opacity=".18" class="pulse"/><rect x="-3" y="-6" width="6" height="34" rx="3" fill="#1c3d8f"/><g class="spin"><circle cy="-18" r="13" fill="none" stroke="#91a7ff" stroke-width="2" stroke-dasharray="4 3"/></g><circle cy="-18" r="6" fill="#e7f5ff"/></g>
+        <g class="s-ink" font-size="10.5"><text x="150" y="208" text-anchor="middle">Đũa phấn</text><text x="268" y="208" text-anchor="middle">Đũa pha lê</text><text x="386" y="208" text-anchor="middle">Trượng băng</text><text x="504" y="208" text-anchor="middle">Trượng trăng</text><text x="622" y="208" text-anchor="middle">Time Scepter</text></g>
+        <!-- HARMONY -->
+        <text x="10" y="260" font-weight="800" fill="var(--harmony)" font-size="13">💚 HARMONY</text><text x="10" y="276" class="s-muted">sáo, đàn hạc, chuông</text>
+        <g transform="translate(150 258)"><rect x="-3" y="-18" width="6" height="40" rx="3" fill="#8ce99a"/><g fill="#2b8a3e"><circle cy="-8" r="1.5"/><circle cy="0" r="1.5"/><circle cy="8" r="1.5"/></g></g>
+        <g transform="translate(268 258)"><path d="M-12 18 Q-14 -18 0 -22 Q14 -18 12 18 Z" fill="none" stroke="#c9a26b" stroke-width="4"/><g stroke="#f8f9fa" stroke-width="1.2"><path d="M-6 -12 V16"/><path d="M0 -16 V16"/><path d="M6 -12 V16"/></g></g>
+        <g transform="translate(386 258)"><rect x="-3" y="-4" width="6" height="30" rx="3" fill="#8d5a2b"/><path d="M-10 -4 Q-10 -24 0 -24 Q10 -24 10 -4 Z" fill="#ffd43b"/><circle cy="-2" r="3" fill="#b07d00"/></g>
+        <g transform="translate(504 258)"><path d="M-14 20 Q-18 -20 0 -26 Q18 -20 14 20 Z" fill="none" stroke="#fab005" stroke-width="4"/><circle cy="-26" r="6" fill="#ffd43b"/><g stroke="#fff3bf" stroke-width="1.3"><path d="M-7 -14 V18"/><path d="M0 -18 V18"/><path d="M7 -14 V18"/></g></g>
+        <g transform="translate(622 258)"><circle r="28" fill="var(--harmony)" opacity=".18" class="pulse"/><path d="M-14 20 Q-20 -16 0 -26 Q20 -16 14 20 Z" fill="none" stroke="#2f9e44" stroke-width="5"/><g fill="#69db7c"><circle cx="-12" cy="-14" r="4"/><circle cx="12" cy="-14" r="4"/><circle cy="-28" r="5"/></g></g>
+        <g class="s-ink" font-size="10.5"><text x="150" y="298" text-anchor="middle">Sáo tre</text><text x="268" y="298" text-anchor="middle">Đàn lia</text><text x="386" y="298" text-anchor="middle">Gậy chuông</text><text x="504" y="298" text-anchor="middle">Đàn hạc mặt trời</text><text x="622" y="298" text-anchor="middle">World Tree Harp</text></g>
+        <!-- RHYTHM -->
+        <text x="10" y="350" font-weight="800" fill="var(--rhythm)" font-size="13">🔥 RHYTHM</text><text x="10" y="366" class="s-muted">dùi trống, trống lắc</text>
+        <g transform="translate(150 348)"><path d="M-10 18 L4 -18" stroke="#c9a26b" stroke-width="4" stroke-linecap="round"/><path d="M4 18 L-4 -18" stroke="#c9a26b" stroke-width="4" stroke-linecap="round"/></g>
+        <g transform="translate(268 348)"><path d="M-12 18 L4 -18" stroke="#8d5a2b" stroke-width="4" stroke-linecap="round"/><path d="M6 18 L-4 -18" stroke="#8d5a2b" stroke-width="4" stroke-linecap="round"/><circle cx="4" cy="-18" r="4" fill="#e8590c"/><circle cx="-4" cy="-18" r="4" fill="#e8590c"/></g>
+        <g transform="translate(386 348)"><circle r="16" fill="#ffd8a8" stroke="#c2410c" stroke-width="3"/><g fill="#ffd43b"><circle cx="-14" cy="-6" r="3"/><circle cx="14" cy="-6" r="3"/><circle cx="0" cy="15" r="3"/></g></g>
+        <g transform="translate(504 348)"><rect x="-16" y="-10" width="14" height="22" rx="5" fill="#c2410c"/><rect x="2" y="-10" width="14" height="22" rx="5" fill="#c2410c"/><path d="M-9 -16 L-12 -24 M9 -16 L12 -24" stroke="#ffd43b" stroke-width="3"/></g>
+        <g transform="translate(622 348)"><circle r="28" fill="var(--rhythm)" opacity=".18" class="pulse"/><ellipse cy="4" rx="16" ry="10" fill="#e8590c"/><path d="M-16 4 Q-24 -20 -4 -26 Q-10 -12 0 -8 Q10 -12 4 -26 Q24 -20 16 4" fill="#ffa94d"/></g>
+        <g class="s-ink" font-size="10.5"><text x="150" y="388" text-anchor="middle">Dùi tre</text><text x="268" y="388" text-anchor="middle">Dùi đôi</text><text x="386" y="388" text-anchor="middle">Trống lắc lửa</text><text x="504" y="388" text-anchor="middle">Găng trống bão</text><text x="622" y="388" text-anchor="middle">Phoenix Drums</text></g>
+        <!-- MAESTRO -->
+        <rect x="4" y="414" width="752" height="100" rx="14" fill="var(--maestro)" opacity=".1"/>
+        <text x="14" y="448" font-weight="800" fill="var(--maestro)" font-size="13">✨ MAESTRO</text><text x="14" y="464" class="s-muted">dòng hiếm</text><text x="14" y="480" class="s-muted">tăng cả 4 nhánh</text>
+        <g transform="translate(386 462)"><rect x="-2" y="-22" width="4" height="44" rx="2" fill="#f8f9fa" stroke="#c0a8f0"/><circle cy="-22" r="5" fill="#fff3bf"/></g>
+        <g transform="translate(504 462)"><circle r="22" fill="var(--maestro)" opacity=".2" class="pulse"/><rect x="-2" y="-22" width="4" height="44" rx="2" fill="#d0bfff"/><circle cy="-22" r="7" fill="#e599f7"/><g class="spin"><circle cy="-22" r="13" fill="none" stroke="#e599f7" stroke-width="1.5" stroke-dasharray="2 4"/></g></g>
+        <g transform="translate(660 462)"><circle r="40" fill="url(#aur)" opacity=".5" class="pulse"/><rect x="-2.5" y="-26" width="5" height="52" rx="2.5" fill="#fff"/><circle cy="-26" r="9" fill="#ffd43b"/><g class="spin"><circle cy="-26" r="20" fill="none" stroke="#ffd43b" stroke-width="2" stroke-dasharray="3 5"/></g><text x="-26" y="-6" font-size="14" fill="#9b5de5">♪</text><text x="18" y="10" font-size="14" fill="#3b82f6">♫</text><text x="-22" y="22" font-size="12" fill="#2f9e44">♩</text></g>
+        <defs><radialGradient id="aur"><stop offset="0" stop-color="#ffd43b"/><stop offset=".5" stop-color="#e599f7"/><stop offset="1" stop-color="#74c0fc" stop-opacity="0"/></radialGradient></defs>
+        <g class="s-ink" font-size="10.5"><text x="386" y="502" text-anchor="middle">Starlight Baton · Lv.20</text><text x="504" y="502" text-anchor="middle">Aurora Baton · Lv.35</text><text x="660" y="510" text-anchor="middle" font-weight="700">Baton of the First Voice · Lv.45</text></g>
+      </g>
+    </svg>
+    <figcaption>Tên và hình là bản phác. Dòng Maestro là đũa nhạc trưởng: nhạc trưởng điều khiển mọi nhạc cụ, nên nó tăng cả 4 nhánh. Có điểm nhấn riêng: nốt nhạc bay quanh, vệt sáng cầu vồng, danh hiệu "Maestro" dưới tên. Chỉ có từ trùm, nhiệm vụ đặc biệt hoặc thắng đấu trường.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <tr><th>Độ hiếm</th><th>Cấp trang bị</th><th>Chỉ số nhánh</th><th>Thuộc tính phụ</th><th>Có được từ</th></tr>
+    <tr><td>Common (trắng)</td><td class="num">Lv.1</td><td class="num">+10%</td><td>0</td><td>Mua ở tiệm, quái vòng 1</td></tr>
+    <tr><td>Uncommon (xanh lá)</td><td class="num">Lv.8</td><td class="num">+20%</td><td>1</td><td>Mua, quái vòng 1–2</td></tr>
+    <tr><td>Rare (xanh dương)</td><td class="num">Lv.15</td><td class="num">+35%</td><td>1–2</td><td>Chỉ rơi từ quái vòng 2+</td></tr>
+    <tr><td>Epic (tím)</td><td class="num">Lv.25</td><td class="num">+50%</td><td>2</td><td>Quái vòng 3, trùm</td></tr>
+    <tr><td>Legendary (vàng)</td><td class="num">Lv.35</td><td class="num">+70%</td><td>3, hiệu ứng riêng</td><td>Trùm, nhiệm vụ đặc biệt, đấu trường</td></tr>
+    <tr><td>✨ Maestro</td><td class="num">Lv.20 / 35 / 45</td><td class="num">+25% / 40% / 60% cả 4 nhánh</td><td>2–3 + hào quang</td><td>Chỉ trùm, nhiệm vụ đặc biệt, thắng đấu trường</td></tr>
+  </table></div>
+
+  <h2>5. Cây kỹ năng rộng hơn, chiêu đẹp dần theo bậc</h2>
+  <p>Mỗi nhánh có <b>10 ô</b>: 6 chiêu chủ động, 3 nội tại, 1 tuyệt chiêu. Từ Lv.25, mỗi nhánh rẽ thành <b>2 hướng chuyên sâu</b>, chọn 1, kiểu các game nhập vai trên thị trường. Tổng cộng 40 ô, mỗi ô tối đa 5 bậc. Người chơi <b>không thể</b> nâng hết, nên phải chọn lối chơi.</p>
+  <div class="branches">
+    <div class="br" style="--c:var(--power)"><h3>⚡ Power</h3><div class="role">Sát thương rất cao lên <b>1 mục tiêu</b></div>
+      <ol><li>Echo Blast – nổ âm thanh</li><li>Sonic Spear – giáo âm xuyên</li><li>Thunder Clap – sét đánh</li><li>Big Voice – gồng 2s, đòn cực mạnh</li><li>Piercing Note – xuyên giáp</li><li>Last Word – kết liễu quái &lt; 30% máu</li>
+      <li class="pas">◇ Loud &amp; Clear – Perfect +10%</li><li class="pas">◇ Critical Tone – chí mạng</li><li class="pas">◇ Steady Voice – khiên dày hơn khi gồng</li><li class="ult">★ Dragon Roar</li></ol>
+      <p class="role" style="margin:8px 0 0">Lv.25 rẽ: <b>Thunder</b> (sét, nhanh) hoặc <b>Blaze</b> (lửa, đốt dần)</p></div>
+    <div class="br" style="--c:var(--control)"><h3>🌀 Control</h3><div class="role">Sát thương ít, <b>khống chế</b>: choáng, đóng băng, khoá tấn công</div>
+      <ol><li>Question Arrow – choáng</li><li>Riddle Trap – trói chân</li><li>Freeze Note – đóng băng</li><li>Silence Bubble – khoá tấn công</li><li>Slow Song – làm chậm cả vùng</li><li>Mirror Ask – bắt quái đổi mục tiêu</li>
+      <li class="pas">◇ Sharp Ears – hiệu ứng lâu hơn</li><li class="pas">◇ Echo Chain – lan sang quái bên cạnh</li><li class="pas">◇ Calm Mind – hồi mana khi khống chế</li><li class="ult">★ Silence Zone</li></ol>
+      <p class="role" style="margin:8px 0 0">Lv.25 rẽ: <b>Frost</b> (băng) hoặc <b>Time</b> (làm chậm thời gian)</p></div>
+    <div class="br" style="--c:var(--harmony)"><h3>💚 Harmony</h3><div class="role">Chuyên <b>tăng sức</b>: hồi máu, khiên, tăng sát thương, hồi mana cho đội</div>
+      <ol><li>Harmony Heal – hồi máu</li><li>Chord Shield – khiên</li><li>Courage Chant – tăng sát thương</li><li>Tempo Up – đánh nhanh hơn</li><li>Mana Song – hồi mana cả đội</li><li>Cleanse Note – giải câm, giải độc</li>
+      <li class="pas">◇ Kind Words – hồi máu khi bạn Perfect</li><li class="pas">◇ Team Spirit – hào quang cho đội</li><li class="pas">◇ Warm Heart – tăng máu tối đa</li><li class="ult">★ Grand Chorus</li></ol>
+      <p class="role" style="margin:8px 0 0">Lv.25 rẽ: <b>Guardian</b> (khiên) hoặc <b>Muse</b> (tăng sát thương)</p></div>
+    <div class="br" style="--c:var(--rhythm)"><h3>🔥 Rhythm</h3><div class="role">Sát thương tốt lên <b>một cụm nhiều quái</b></div>
+      <ol><li>Drum Roll – 3 đòn liền</li><li>Shock Wave – sóng tròn quanh mình</li><li>Beat Dash – lướt xuyên cụm</li><li>Echo Rain – mưa âm thanh 1 vùng</li><li>Spin Beat – xoay tròn</li><li>Chain Beat – nảy qua 5 quái</li>
+      <li class="pas">◇ Quick Tongue – hồi chiêu nhanh</li><li class="pas">◇ Encore – 15% tung lại miễn phí</li><li class="pas">◇ Groove – mỗi quái trúng +mana</li><li class="ult">★ Festival Frenzy</li></ol>
+      <p class="role" style="margin:8px 0 0">Lv.25 rẽ: <b>Storm</b> (rộng) hoặc <b>Fire Dance</b> (liên hoàn)</p></div>
+  </div>
+
+  <h3>Hình ảnh chiêu thay đổi theo bậc</h3>
+  <p>Mỗi chiêu có <b>3 mốc hình ảnh</b>: bậc 1, bậc 3, bậc 5. Bậc càng cao, chiêu càng to, nhiều hạt sáng hơn, đổi màu và đổi hình dạng. Bậc 5 thêm rung màn hình nhẹ và âm thanh riêng. Đây là phần thưởng thị giác cho việc chịu khó nói câu dài hơn.</p>
+  <figure>
+    <svg viewBox="0 0 760 470" role="img" aria-label="Hình ảnh chiêu ở bậc 1, 3, 5 cho 4 nhánh">
+      <defs>
+        <radialGradient id="gP"><stop offset="0" stop-color="#fff3bf"/><stop offset=".5" stop-color="#ffa94d"/><stop offset="1" stop-color="#e5484d" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gC"><stop offset="0" stop-color="#e7f5ff"/><stop offset=".6" stop-color="#74c0fc"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gH"><stop offset="0" stop-color="#fff9db"/><stop offset=".6" stop-color="#8ce99a"/><stop offset="1" stop-color="#2f9e44" stop-opacity="0"/></radialGradient>
+        <radialGradient id="gR"><stop offset="0" stop-color="#fff3bf"/><stop offset=".6" stop-color="#ffa94d"/><stop offset="1" stop-color="#e8590c" stop-opacity="0"/></radialGradient>
+      </defs>
+      <g class="s-muted" font-family="var(--mono)" font-size="11" letter-spacing=".05em"><text x="260" y="22" text-anchor="middle">BẬC 1</text><text x="450" y="22" text-anchor="middle">BẬC 3</text><text x="640" y="22" text-anchor="middle">BẬC 5</text></g>
+      <g font-size="12.5">
+        <text x="10" y="80" font-weight="800" fill="var(--power)">⚡ Sonic Spear</text><text x="10" y="98" class="s-muted">1 mục tiêu</text>
+        <g transform="translate(260 82)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><path d="M-50 10 L30 -6" stroke="#ffd8a8" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="-8" r="12" fill="#ffd43b"/></g>
+        <g transform="translate(450 82)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><path d="M-56 12 L30 -6" stroke="#ffa94d" stroke-width="8" stroke-linecap="round"/><path d="M30 -6 L18 -14 L20 2 Z" fill="#ffa94d"/><g fill="#ffd43b"><circle cx="-30" cy="0" r="2"/><circle cx="-10" cy="-8" r="2"/><circle cx="6" cy="6" r="2"/></g><circle cx="48" cy="-8" r="12" fill="#ffd43b"/><circle cx="48" cy="-8" r="18" fill="none" stroke="#ffa94d" stroke-width="2"/></g>
+        <g transform="translate(640 82)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle cx="48" cy="-8" r="34" fill="url(#gP)" class="pulse"/><path d="M-60 16 Q-20 -24 34 -8" stroke="#e5484d" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M-60 16 Q-20 -24 34 -8" stroke="#ffd43b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M34 -8 L16 -22 L22 4 Z" fill="#ffd43b"/><path d="M-66 10 l-6 -6 M-66 22 l-8 2" stroke="#ffd43b" stroke-width="2"/><circle cx="48" cy="-8" r="10" fill="#ffd43b"/><text x="-70" y="38" fill="#ffd43b" font-size="10" font-weight="700">giáo rồng · rung màn hình</text></g>
+        <text x="10" y="190" font-weight="800" fill="var(--control)">🌀 Freeze Note</text><text x="10" y="208" class="s-muted">khống chế</text>
+        <g transform="translate(260 192)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle r="14" fill="#ffd43b"/><circle r="20" fill="none" stroke="#a5d8ff" stroke-width="3"/></g>
+        <g transform="translate(450 192)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle r="14" fill="#ffd43b"/><path d="M0 -26 L10 -10 L26 0 L10 10 L0 26 L-10 10 L-26 0 L-10 -10 Z" fill="#a5d8ff" opacity=".75"/><g fill="#e7f5ff"><circle cx="-30" cy="-16" r="2"/><circle cx="32" cy="14" r="2"/></g></g>
+        <g transform="translate(640 192)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle r="38" fill="url(#gC)" class="pulse"/><path d="M0 -32 L8 -12 L30 -16 L14 0 L30 16 L8 12 L0 32 L-8 12 L-30 16 L-14 0 L-30 -16 L-8 -12 Z" fill="#d0ebff"/><circle r="11" fill="#ffd43b" opacity=".6"/><g class="spin"><circle r="30" fill="none" stroke="#e7f5ff" stroke-width="1.5" stroke-dasharray="3 6"/></g><text x="-70" y="38" fill="#a5d8ff" font-size="10" font-weight="700">ngôi sao băng · đóng cả cụm</text></g>
+        <text x="10" y="300" font-weight="800" fill="var(--harmony)">💚 Harmony Heal</text><text x="10" y="318" class="s-muted">tăng sức</text>
+        <g transform="translate(260 302)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle cy="6" r="12" fill="#f1c27d"/><text x="0" y="-16" text-anchor="middle" fill="#8ce99a" font-weight="700">+20</text></g>
+        <g transform="translate(450 302)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><ellipse cy="26" rx="34" ry="8" fill="#8ce99a" opacity=".5"/><circle cy="6" r="12" fill="#f1c27d"/><g fill="#8ce99a" font-size="14"><text x="-24" y="-8">♪</text><text x="16" y="-14">♫</text></g><text x="0" y="-20" text-anchor="middle" fill="#8ce99a" font-weight="700">+45</text></g>
+        <g transform="translate(640 302)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle cy="6" r="36" fill="url(#gH)" class="pulse"/><ellipse cy="26" rx="56" ry="10" fill="none" stroke="#ffd43b" stroke-width="2"/><g fill="#f1c27d"><circle cx="-34" cy="10" r="9"/><circle cy="4" r="11"/><circle cx="34" cy="10" r="9"/></g><path d="M-10 -26 Q0 -40 10 -26 Q0 -18 -10 -26" fill="#ffd43b"/><text x="-70" y="38" fill="#8ce99a" font-size="10" font-weight="700">cánh hoa vàng · hồi cả đội</text></g>
+        <text x="10" y="410" font-weight="800" fill="var(--rhythm)">🔥 Shock Wave</text><text x="10" y="428" class="s-muted">cả cụm</text>
+        <g transform="translate(260 412)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle r="24" fill="none" stroke="#ffa94d" stroke-width="3"/><circle r="8" fill="#f1c27d"/><g fill="#ffd43b"><circle cx="-40" cy="-6" r="7"/><circle cx="42" cy="10" r="7"/></g></g>
+        <g transform="translate(450 412)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle r="22" fill="none" stroke="#ffa94d" stroke-width="5"/><circle r="34" fill="none" stroke="#e8590c" stroke-width="3"/><circle r="8" fill="#f1c27d"/><g fill="#ffd43b"><circle cx="-44" cy="-6" r="7"/><circle cx="46" cy="10" r="7"/><circle cx="10" cy="-30" r="6"/></g></g>
+        <g transform="translate(640 412)"><rect x="-80" y="-40" width="160" height="84" rx="10" class="s-screen2"/><circle r="40" fill="url(#gR)" class="pulse"/><g class="spin"><path d="M0 -36 Q20 -20 0 0 Q-20 20 0 36" stroke="#ffd43b" stroke-width="3" fill="none"/><path d="M-36 0 Q-20 -20 0 0 Q20 20 36 0" stroke="#e8590c" stroke-width="3" fill="none"/></g><circle r="8" fill="#f1c27d"/><text x="-70" y="38" fill="#ffa94d" font-size="10" font-weight="700">lốc lửa · hút quái vào giữa</text></g>
+      </g>
+    </svg>
+    <figcaption>Phác hoạ ý tưởng. Trong game là hiệu ứng 3D: hạt sáng, vệt, vòng. Có giới hạn số hạt để điện thoại cũ vẫn mượt.</figcaption>
+  </figure>
+  <p><b>Màn hình xem trước</b> (giữ từ bản 1): bấm một ô sẽ thấy ảnh động chiêu ở bậc hiện tại <i>và ở bậc 5</i> để người chơi biết mình đang hướng tới cái gì, cùng chỉ số từng bậc, câu ví dụ có nút nghe thử, và nút "Thử ngay" ở bãi tập Verse Arena. Gắn 4 chiêu bất kỳ, tẩy điểm miễn phí mỗi tuần ở Town Hall.</p>
+
+  <h2>6. Quái rơi đồ để nhặt, buôn bán và trao đổi</h2>
+  <div class="row">
+    <div>
+      <p><b>Rơi xuống đất, phải tự đi tới nhặt:</b> xu và vật phẩm văng ra quanh xác quái. Bước qua là nhặt; đồ hiếm có cột sáng theo màu độ hiếm để dễ thấy.</p>
+      <p><b>Đồ của ai người nấy nhặt:</b> mỗi người thấy đồ rơi của riêng mình trong 30 giây đầu, để trẻ không tranh giành nhau. Sau 30 giây ai cũng nhặt được.</p>
+      <p><b>Nguồn đồ:</b> tiệm chỉ bán đồ cơ bản (Common, Uncommon, thức ăn). <b>Phần lớn đồ tốt đến từ quái.</b> Đồ hiếm nhất chỉ có từ trùm, nhiệm vụ đặc biệt và thắng các game đấu trường.</p>
+    </div>
+    <div>
+      <div class="tbl" style="margin-top:0"><table style="min-width:0">
+        <tr><th>Rơi từ quái thường</th><th>Tỉ lệ</th></tr>
+        <tr><td>Xu</td><td class="num">mỗi con</td></tr>
+        <tr><td>Thức ăn, nguyên liệu</td><td class="num">40%</td></tr>
+        <tr><td>Trang phục / vũ khí Common</td><td class="num">8%</td></tr>
+        <tr><td>Uncommon</td><td class="num">3%</td></tr>
+        <tr><td>Rare (vòng 2+)</td><td class="num">0,8%</td></tr>
+        <tr><td>Epic (vòng 3, trùm)</td><td class="num">0,15%</td></tr>
+        <tr><td>Legendary / Maestro</td><td class="num">chỉ trùm, nhiệm vụ, đấu trường</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>Không dùng thì</th><th>Làm thế nào (phải nói)</th><th>Luyện</th></tr>
+    <tr><td><b>Bán cho tiệm</b></td><td>"I'd like to sell this sword. How much is it?" – người bán trả giá, có thể mặc cả</td><td>Giao dịch, số đếm</td></tr>
+    <tr><td><b>Tặng bạn</b></td><td>"This is for you!" → bạn nhận phải nói "Thank you!"</td><td>Lịch sự</td></tr>
+    <tr><td><b>Đổi đồ với người khác</b></td><td>Cửa sổ trao đổi: mỗi bên nói đề nghị ("Can I swap my wand for your drum?"), cả hai bấm xác nhận</td><td>Đề nghị, thương lượng</td></tr>
+  </table></div>
+
+  <h2>7. Nhịp lên cấp: tối đa sau khoảng 6 tháng, 2 giờ mỗi ngày</h2>
+  <p>Hiện game lên cấp quá nhanh. Mục tiêu mới: <b>cấp tối đa Lv.50 cần khoảng 360 giờ chơi</b> (2 giờ × 180 ngày), đủ để tiến bộ ngôn ngữ thật. Mấy cấp đầu vẫn nhanh để trẻ có hứng, càng về sau càng chậm.</p>
+  <figure>
+    <svg viewBox="0 0 720 320" role="img" aria-label="Biểu đồ số giờ chơi tích luỹ theo cấp">
+      <g font-size="11.5">
+        <g stroke="var(--line)"><path d="M70 260 H690"/><path d="M70 206 H690"/><path d="M70 152 H690"/><path d="M70 98 H690"/><path d="M70 44 H690"/></g>
+        <g class="s-muted" text-anchor="end" style="font-variant-numeric:tabular-nums"><text x="62" y="264">0 giờ</text><text x="62" y="210">90</text><text x="62" y="156">180</text><text x="62" y="102">270</text><text x="62" y="48">360</text></g>
+        <g class="s-muted" text-anchor="middle" style="font-variant-numeric:tabular-nums"><text x="70" y="280">Lv.0</text><text x="194" y="280">10</text><text x="318" y="280">20</text><text x="442" y="280">30</text><text x="566" y="280">40</text><text x="690" y="280">50</text></g>
+        <g opacity=".14"><rect x="70" y="44" width="124" height="216" fill="#2f9e44"/><rect x="194" y="44" width="124" height="216" fill="#3b82f6"/><rect x="318" y="44" width="124" height="216" fill="#9b5de5"/><rect x="442" y="44" width="248" height="216" fill="#e8590c"/></g>
+        <g font-weight="700" font-size="11"><text x="132" y="60" text-anchor="middle" fill="#2b8a3e">Pre-A1 → A1</text><text x="256" y="60" text-anchor="middle" fill="#1c7ed6">A1 (Movers)</text><text x="380" y="60" text-anchor="middle" fill="#7048e8">A2 (Flyers)</text><text x="566" y="60" text-anchor="middle" fill="#c2410c">A2+ → B1</text></g>
+        <polyline points="70,260 194,254 318,230 442,188 566,128 690,44" fill="none" stroke="var(--wave)" stroke-width="4" stroke-linejoin="round"/>
+        <g fill="var(--wave)"><circle cx="194" cy="254" r="5"/><circle cx="318" cy="230" r="5"/><circle cx="442" cy="188" r="5"/><circle cx="566" cy="128" r="5"/><circle cx="690" cy="44" r="6"/></g>
+        <g class="s-ink" font-weight="700" style="font-variant-numeric:tabular-nums"><text x="194" y="244" text-anchor="middle">10 giờ</text><text x="318" y="220" text-anchor="middle">50 giờ</text><text x="442" y="178" text-anchor="middle">120 giờ</text><text x="566" y="118" text-anchor="end">220 giờ</text><text x="682" y="40" text-anchor="end">360 giờ ≈ 6 tháng</text></g>
+        <text x="380" y="304" text-anchor="middle" class="s-muted">Cấp (trục ngang) · số giờ chơi tích luỹ (trục dọc) · nền màu = trình độ mục tiêu</text>
+      </g>
+    </svg>
+  </figure>
+  <div class="tbl"><table>
+    <tr><th>Cấp</th><th>Giờ chơi để qua chặng</th><th>Ước tính ngày (2 giờ/ngày)</th><th>Điều kiện ngôn ngữ để lên cấp</th></tr>
+    <tr><td class="num">1 → 10</td><td class="num">10 giờ</td><td class="num">~5 ngày</td><td>70% thẻ đạt ⭐⭐ (đã có)</td></tr>
+    <tr><td class="num">10 → 20</td><td class="num">40 giờ</td><td class="num">~20 ngày</td><td>+ 500 câu tự nói đúng, Voice Deck đủ 4 loại ≥ 50% Good</td></tr>
+    <tr><td class="num">20 → 30</td><td class="num">70 giờ</td><td class="num">~35 ngày</td><td>+ câu bậc 3 (6–8 từ), mở loại bài Ask</td></tr>
+    <tr><td class="num">30 → 40</td><td class="num">100 giờ</td><td class="num">~50 ngày</td><td>+ câu bậc 4 (8–10 từ), nhiệm vụ nghe dài</td></tr>
+    <tr><td class="num">40 → 50</td><td class="num">140 giờ</td><td class="num">~70 ngày</td><td>+ câu bậc 5 (10–12 từ), mỗi loại bài ≥ 60% Good</td></tr>
+  </table></div>
+  <p><b>Điểm kỹ năng:</b> 1 điểm mỗi cấp, +1 mỗi 5 cấp, cộng vài điểm từ nhiệm vụ lớn, tổng khoảng 65 điểm. Cây có 40 ô × 5 bậc = 200 bậc, nên chỉ đủ đầu tư sâu khoảng 2 nhánh.</p>
+  <p><b>Chơi lành mạnh</b> (phụ huynh yên tâm): sau 2 giờ trong ngày, kinh nghiệm nhận được giảm một nửa và nhân vật nhắc "Time to rest your voice!". Hôm sau trở lại bình thường. Không phạt, chỉ không khuyến khích chơi quá lâu.</p>
+
+  <h2>8. Giao tiếp giữa người chơi với nhau</h2>
+  <p>Đây là phần quan trọng nhất về giá trị: tiếng Anh dùng để nói <b>với người thật</b>, không chỉ với máy. Mọi lượt nói giữa người chơi được lưu vào chỉ số <b>💛 Heart</b> và tính vào kỹ năng <i>giao tiếp tương tác</i> trong báo cáo CEFR.</p>
+  <div class="tbl"><table>
+    <tr><th>Cơ chế</th><th>Người chơi làm gì</th><th>Vì sao phải nói với nhau</th></tr>
+    <tr><td><b>Vòng câu nhanh</b></td><td>Giữ nút 💬, chọn câu ("Let's team up!", "Can you help me?", "Watch out!") rồi <i>nói to</i>. Nói đúng thì câu hiện thành bóng chat trên đầu</td><td>Cách chat an toàn, ai cũng dùng được</td></tr>
+    <tr><td><b>Lập đội</b></td><td>Mời: "Do you want to join my team?" · Trả lời: "Sure!"</td><td>Trong đội: +20% kinh nghiệm, chia đồ</td></tr>
+    <tr><td><b>Chiêu song tấu (Duet)</b></td><td>2 người tung chiêu cách nhau ≤ 3 giây, một người gọi "Ready… go!"</td><td>Combo mạnh gấp đôi, chỉ có khi phối hợp</td></tr>
+    <tr><td><b>Nhiệm vụ thiếu thông tin</b></td><td>Mỗi người giữ nửa tấm bản đồ kho báu, phải tả cho nhau ("The tree is next to the river.")</td><td>Không nói thì không ai tìm được</td></tr>
+    <tr><td><b>Người dẫn đường (Guide)</b></td><td>Người mới hỏi "Where is the bakery?" · người cũ trả lời bằng lời và ghim bản đồ</td><td>Cả hai được Heart; người cũ được danh hiệu Guide</td></tr>
+    <tr><td><b>Trùm theo nhóm</b></td><td>Mỗi người một vai trong một hội thoại nhiều lượt (vd: hỏi đường, gọi món, xin giúp)</td><td>Đủ vai mới hạ được trùm</td></tr>
+    <tr><td><b>Tặng, đổi đồ</b></td><td>Mục 6</td><td>Đề nghị, cảm ơn, thương lượng</td></tr>
+  </table></div>
+  <p><b>An toàn trẻ em (🔴 cần anh chốt):</b> mặc định trẻ <b>chỉ nói được các câu trong vòng câu nhanh và các khung câu có chỗ trống</b> ("I need a ___", "Where is the ___?"), máy kiểm tra trước khi hiện. Không có chat tự do, không gửi được số điện thoại hay tên thật. Chat tự do bằng giọng nói (có lọc) chỉ mở cho người lớn hoặc khi phụ huynh cho phép.</p>
+
+  <h2>9. Chia nhiệm vụ giao tiếp trong toàn game (cập nhật)</h2>
+  <div class="tbl"><table>
+    <tr><th>Nơi</th><th>Kiểu giao tiếp</th><th>Kỹ năng chính</th><th>Chỉ số</th><th>Mục tiêu / 30 phút</th></tr>
+    <tr><td>NPC trong nhà</td><td>Hội thoại 3 lượt</td><td>Phản hồi, mẫu câu</td><td>🗣️ Voice</td><td class="num">~10 lượt</td></tr>
+    <tr><td>Đồ trưng bày</td><td>Tự hỏi "What is this?"</td><td>Đặt câu hỏi, từ vựng</td><td>🧠 Mind</td><td class="num">~5 lượt</td></tr>
+    <tr><td>Cửa hàng</td><td>Mua thức ăn, bán đồ, mặc cả</td><td>Giao dịch</td><td>🗣️ Voice</td><td class="num">~5 lượt</td></tr>
+    <tr><td>Vùng hoang dã</td><td>Chiêu nói (Voice Deck)</td><td>Cả 5 loại, tự cân bằng</td><td>🗣️ 👂 🧠</td><td class="num">~30 lượt</td></tr>
+    <tr><td><b>Với người chơi khác</b></td><td>Câu nhanh, lập đội, Duet, đổi đồ, chỉ đường</td><td><b>Tương tác thật</b></td><td>💛 Heart</td><td class="num">~10 lượt</td></tr>
+    <tr><td>Trùm, nhiệm vụ danh nhân</td><td>Nhập vai nhóm, nghe chuyện, kể lại</td><td>Nghe dài, nói tự do</td><td>👂 Ears · 💛</td><td class="num">theo dịp</td></tr>
+  </table></div>
+
+  <h2>10. CTO tự review: rủi ro và cách xử lý</h2>
+  <div class="review"><b>Nhận dạng giọng nói</b> trên iPhone và với giọng trẻ em chưa ổn định. → Kết quả kém nhất vẫn tính Weak (30%); đổi đề miễn phí nếu máy không nghe được 2 lần liền; câu bậc thấp ngắn để dễ nhận.</div>
+  <div class="review"><b>Lớp học ồn</b> (nhiều trẻ nói cùng lúc). → Nút giữ để nói (không nghe liên tục); ngưỡng chấm giảm nhẹ khi phát hiện ồn.</div>
+  <div class="review"><b>Hiệu ứng đẹp làm máy yếu bị giật.</b> → Giới hạn số hạt; chế độ "Đồ hoạ nhẹ" tự bật khi khung hình thấp; hiệu ứng bậc 5 chỉ đầy đủ trên máy mạnh.</div>
+  <div class="review"><b>Lạm phát xu và đồ</b> khi rơi nhiều. → Tiệm thu mua giá thấp; đồ hiếm chỉ từ trùm và sự kiện; sửa vũ khí tốn xu.</div>
+  <div class="review"><b>Lừa đảo khi đổi đồ giữa trẻ em.</b> → Cửa sổ đổi hiện rõ độ hiếm hai bên, cảnh báo khi chênh lệch lớn, cả hai phải xác nhận 2 lần; đồ Legendary và Maestro không đổi được.</div>
+  <div class="review"><b>Lên cấp chậm dễ chán.</b> → 10 cấp đầu nhanh (~5 ngày); luôn có mục tiêu ngắn: thẻ mới, đồ rơi, bậc chiêu mới đổi hình ảnh, nhiệm vụ ngày.</div>
+  <div class="review"><b>Quái đồng bộ nhiều người</b> cần máy chủ đáng tin. → Giai đoạn đầu mỗi vùng có 1 máy làm "chủ phòng"; khi đông người chuyển sang máy chủ (có thể phát sinh chi phí, sẽ hỏi trước).</div>
+
+  <h2>11. Thứ tự xây dựng</h2>
+  <div class="tbl"><table>
+    <tr><th>Giai đoạn</th><th>Nội dung</th><th>Chơi được gì</th></tr>
+    <tr><td><b>A</b></td><td>Vòng 1 ở cả 5 hướng; chiến đấu thời gian thực; máu / mana / thức ăn; Voice Deck 4 loại; rơi đồ để nhặt; Power + Rhythm mỗi nhánh 3 chiêu; vũ khí Common–Uncommon; nhịp lên cấp mới</td><td>Một mình đánh quái, nhặt đồ, lên cấp</td></tr>
+    <tr><td><b>B</b></td><td>Đủ 4 nhánh, cây kỹ năng 40 ô, xem trước, bãi tập; hình ảnh chiêu bậc 1/3/5; Rare–Epic; thuộc tính phụ; thanh Hợp âm; bán đồ cho tiệm; vòng 2</td><td>Xây lối chơi riêng, săn đồ</td></tr>
+    <tr><td><b>C</b></td><td>Quái chung nhiều người, lập đội, Duet, vòng câu nhanh, đổi đồ, trùm nhóm, Maestro + Legendary, loại bài Ask, vòng 3</td><td>Chơi và nói cùng bạn bè</td></tr>
+  </table></div>
+
+  <div class="q">
+    <h3 style="margin-top:0">Cần chủ dự án chốt (bản 2)</h3>
+    <ol>
+      <li><b>Bản đồ vòng</b>: 4 vòng cấp quanh thành phố, hướng chỉ đổi mùa, hình dạng quái và chủ đề từ. Đồng ý?</li>
+      <li><b>Vũ khí</b>: 6 bậc mỗi dòng (Lv.1 / 8 / 15 / 25 / 35 / 45), dòng Maestro là đũa nhạc trưởng tăng cả 4 nhánh. Ổn?</li>
+      <li><b>Đồ rơi riêng 30 giây</b> rồi ai cũng nhặt được: đồng ý?</li>
+      <li><b>Nhịp</b>: Lv.50 tối đa ≈ 360 giờ; sau 2 giờ/ngày kinh nghiệm giảm một nửa. Đồng ý?</li>
+      <li><b>An toàn chat</b>: mặc định chỉ vòng câu nhanh và khung câu có chỗ trống, chat tự do chỉ khi phụ huynh cho phép. Đồng ý?</li>
+    </ol>
+  </div>
+</div>

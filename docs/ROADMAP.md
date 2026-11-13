@@ -301,6 +301,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
+0. **Hệ thống chiến đấu bằng giọng nói (đang chốt thiết kế, bản 2):** xem `docs/design/voice-combat.html` (bản xem trên điện thoại: https://claude.ai/artifact/HouMFg33PkkFkRYcmoK6Vu). Đã chốt: khiên −70% khi nói; hết máu → xám 2 giây, về cổng vùng; mô hình 3 lớp (kỹ năng = hiệu ứng, Voice Deck = bài nói, vũ khí = sức mạnh + cộng hưởng); Voice Deck sàn 15%, loại yếu tới 35%, được đổi đề; 4 nhánh Power / Control / Harmony / Rhythm. Chờ chốt bản 2: bản đồ vòng cấp, vũ khí 6 bậc + dòng Maestro, đồ rơi riêng 30 giây, Lv.50 ≈ 360 giờ, an toàn chat.
 1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Science Lab, Star Cinema, Fix-It Workshop, My Home (nâng cấp); các ô 🚧.
 2. **Ngoại thất** các nơi còn dùng mẫu nhà phố (Science Lab, Fix-It Workshop, Pho Corner, Star Cinema…) và các ô 🚧 khi người dùng gửi ảnh.
 3. **Trò chơi đồng đội ở Verse Arena** (Quiz Tower, Word Race, Treasure Hunt, Team Battle) – đều bắt buộc giao tiếp tiếng Anh.
