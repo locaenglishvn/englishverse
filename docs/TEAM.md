@@ -88,6 +88,8 @@ KHÔNG ĐƯỢC: sửa index.html (trừ khi đề bài cho phép), đổi dữ 
 - Ghế/bàn đặt ngay chỗ đứng khi vào phòng → người chơi kẹt ở cửa (đã gặp ở Trường học, Đồn công an).
 - NPC đứng chắn lối hẹp giữa 2 dãy bàn → không tới được đồ phía trong (đã gặp ở Thư viện).
 - Tấm tường trên cửa giữa 2 khu thò sang mái khu bên cạnh → lùi tấm đó vào trong khu mình.
+- Chạy 2 Writer song song → dễ trùng tên NPC và trùng từ vựng giữa 2 phần (QA chỉ bắt được trùng từ sau khi ghép). CTO: ghép xong chạy `--data`, rà tên; đề bài nên chia sẵn chữ cái đầu tên / nhóm từ cho mỗi Writer.
+- Agent tạo worktree từ `main`, không phải nhánh làm việc → đề bài phải có BƯỚC 0: `git merge --ff-only <nhánh làm việc>`.
 - Nhãn tên NPC xuyên tường: nơi nhiều khu dùng `P.zones` để chỉ hiện tên trong khu đang đứng.
 
 ## 8. Backup & khôi phục

@@ -217,7 +217,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Officer Ben – Police Officer", color: 0x1864ab, place: "police", x: 0, z: -3.6,
+  name: "Officer Ben – Police Officer", color: 0x1864ab, place: "police", x: 6, z: 2,
   steps: [
     { say: "Hello. Is everything OK?",
       card: { w: "lost", pic: "🔍", ex: "I lost my wallet." },
@@ -240,7 +240,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Captain Rosa – Firefighter", color: 0xc92a2a, place: "fire", x: 0, z: -3.6,
+  name: "Captain Son – Firefighter", color: 0xc92a2a, place: "fire", x: 3, z: 6,
   steps: [
     { say: "Hi! Do you know the fire number in Vietnam?",
       card: { w: "emergency", pic: "🚨", ex: "In an emergency, call 114." },
@@ -1396,6 +1396,200 @@ const LESSONS = [
         { t: "I take long, I am a turtle!",    ok: false, fb: "Haha, turtles are slow! Try “How long will it take?”" } ] }
   ]
 },
+{
+  name: "Phong – Desk Officer", color: 0x1971c2, place: "police", x: -5, z: 8,
+  steps: [
+    { say: "Hello! How can we help you today?",
+      card: { w: "report", pic: "📝", ex: "I want to report a lost bag." },
+      q: { w: "How can we help?", pic: "🙋", ex: "How can we help you today?" },
+      choices: [
+        { t: "I want to report a lost bag.", ok: true,  fb: "Clear and polite! +10" },
+        { t: "Bag I want lost report.",      ok: false, fb: "Word order: “I want to report a lost bag.”" },
+        { t: "I am a bag, lost today.",      ok: false, fb: "Haha, you are not a bag :) Try “I want to report a lost bag.”" } ] },
+    { say: "Oh no! When did you lose it?",
+      card: { w: "yesterday", pic: "📅", ex: "I lost it yesterday." },
+      q: { w: "When…?", pic: "🗓️", ex: "When did you lose it?" },
+      choices: [
+        { t: "I lost it yesterday.",           ok: true,  fb: "Great! Time helps us find it. +10" },
+        { t: "I lose it yesterday.",           ok: false, fb: "Past tense: “I lost it yesterday.”" },
+        { t: "Yesterday is my favourite day.", ok: false, fb: "Nice! But tell me WHEN you lost it." } ] },
+    { say: "Thank you. Please fill in this claim form.",
+      card: { w: "Thank you!", pic: "🙏", ex: "Thank you! I’ll fill in the form." },
+      choices: [
+        { t: "Thank you! I’ll fill in the form.", ok: true,  fb: "Polite and clear! +10" },
+        { t: "Form is I fill thank you.",         ok: false, fb: "Word order: “Thank you! I’ll fill in the form.”" },
+        { t: "I am the form, please.",            ok: false, fb: "Haha! You are not a form :) Try “I’ll fill in the form.”" } ] }
+  ]
+},
+{
+  name: "Thi – Dispatcher", color: 0x0b7285, place: "police", x: -7, z: -6,
+  steps: [
+    { say: "Hi! Where do you want to go?",
+      card: { w: "directions", pic: "🧭", ex: "Can you tell me the way, please?" },
+      choices: [
+        { t: "Can you tell me the way to the park?", ok: true,  fb: "Clear question! +10" },
+        { t: "Way park the to me tell?",              ok: false, fb: "Word order: “Can you tell me the way to the park?”" },
+        { t: "I am the park, yes.",                   ok: false, fb: "Haha! Try “Can you tell me the way to the park?”" } ] },
+    { say: "The park is near the bank. Go straight, then turn left.",
+      card: { w: "at the bank", pic: "🏦", ex: "Turn left at the bank." },
+      q: { w: "Which way?", pic: "❓", ex: "Which way is the park?" },
+      choices: [
+        { t: "OK. I’ll turn left at the bank.", ok: true,  fb: "Great! Now you know the way. +10" },
+        { t: "Left turn I bank at.",            ok: false, fb: "Word order: “Turn left at the bank.”" },
+        { t: "Bank the at left I turn.",        ok: false, fb: "Almost! Say “I’ll turn left at the bank.”" } ] },
+    { say: "If you are in danger, call one one three.",
+      card: { w: "113", pic: "📞", ex: "Call 113 for the police." },
+      choices: [
+        { t: "Yes. I’ll call 113 if I need help.", ok: true,  fb: "Brilliant! Always ask for help. +10" },
+        { t: "One one four is the police.",        ok: false, fb: "Close! 114 is fire. Police is 113." },
+        { t: "I will hide and not call.",          ok: false, fb: "No! Call 113 or find an adult for help." } ] }
+  ]
+},
+{
+  name: "Hieu – Traffic Officer", color: 0xe8590c, place: "police", x: 7, z: -9,
+  steps: [
+    { say: "Hello! Wear a helmet when you ride. Do you ride a bike?",
+      card: { w: "wear a helmet", pic: "⛑️", ex: "Always wear a helmet on your bike." },
+      q: { w: "Do you ride a bike?", pic: "🚲", ex: "Do you ride a bike?" },
+      choices: [
+        { t: "Yes, I always wear a helmet.", ok: true,  fb: "Great! Safety first. +10" },
+        { t: "Helmet is wear I always.",     ok: false, fb: "Word order: “I always wear a helmet.”" },
+        { t: "No, I don’t need a helmet.",   ok: false, fb: "Helmets keep your head safe. Try “I always wear one.”" } ] },
+    { say: "Stop at the red light. Then look before you cross.",
+      card: { w: "cross the road", pic: "🚸", ex: "Look left and right before you cross the road." },
+      choices: [
+        { t: "Look left, look right, then cross.", ok: true,  fb: "Safe crossing! +10" },
+        { t: "Cross fast when I see a dog.",       ok: false, fb: "Look at the traffic first, not the dog :)" },
+        { t: "Left right look cross then.",        ok: false, fb: "Word order: “Look left, look right, then cross.”" } ] },
+    { say: "Good! Wear a reflective vest at night, too.",
+      card: { w: "reflective vest", pic: "🦺", ex: "A reflective vest helps drivers see me." },
+      choices: [
+        { t: "Drivers can see me in the dark.", ok: true,  fb: "Bright idea! +10" },
+        { t: "Vest is reflective I am.",        ok: false, fb: "Try “Drivers can see me in the dark.”" },
+        { t: "Yellow is my favourite vest.",    ok: false, fb: "Nice colour! But tell me WHY the vest helps." } ] }
+  ]
+},
+{
+  name: "Vu – Detective", color: 0x495057, place: "police", x: -2, z: -11, minLv: 5,
+  steps: [
+    { say: "Hello! I’m looking for a lost cat. Have you seen it?",
+      card: { w: "missing", pic: "🐱", ex: "My cat is missing since morning." },
+      q: { w: "Have you seen it?", pic: "👀", ex: "Have you seen my cat?" },
+      choices: [
+        { t: "No, but I can help you look.", ok: true,  fb: "Kind! Let’s look together. +10" },
+        { t: "Cat seen, I have it not.",     ok: false, fb: "Word order: “No, I didn’t see it.”" },
+        { t: "I am the cat, meow!",          ok: false, fb: "Haha! Meow! But try “No, I didn’t see it.”" } ] },
+    { say: "Thank you! It’s black and white. When did you last see it?",
+      card: { w: "this morning", pic: "🌅", ex: "I saw it this morning in the park." },
+      choices: [
+        { t: "I saw it this morning in the park.", ok: true,  fb: "Helpful! Time and place! +10" },
+        { t: "I see it morning yesterday.",        ok: false, fb: "Word order: “I saw it this morning.”" },
+        { t: "It is a very nice cat, I think.",    ok: false, fb: "Nice cat! But tell me WHEN you saw it." } ] },
+    { say: "Great! Let’s find it together.",
+      card: { w: "together", pic: "🤝", ex: "We will find it together." },
+      choices: [
+        { t: "Thank you! Let’s find it together.", ok: true,  fb: "Lovely teamwork! +10" },
+        { t: "Together is we find it, OK.",        ok: false, fb: "Word order: “Let’s find it together.”" },
+        { t: "I will find it alone, fast.",        ok: false, fb: "Two people can find it faster. Try “Let’s find it together.”" } ] }
+  ]
+},
+{
+  name: "Khang – Firefighter", color: 0xc92a2a, place: "fire", x: -1, z: -4,
+  steps: [
+    { say: "Hi! This is our big red fire truck. Do you like it?",
+      card: { w: "fire truck", pic: "🚒", ex: "The fire truck is big and red." },
+      q: { w: "Do you like it?", pic: "👍", ex: "Do you like our fire truck?" },
+      choices: [
+        { t: "Yes, I like it. It’s big and red.", ok: true,  fb: "Great! Big and red! +10" },
+        { t: "Fire truck is big red is.",          ok: false, fb: "Word order: “The fire truck is big and red.”" },
+        { t: "I am a fire truck, yes.",            ok: false, fb: "Haha! You are not a truck :) Try “I like it.”" } ] },
+    { say: "Listen! If you hear the siren, move to the side.",
+      card: { w: "siren", pic: "🚨", ex: "Move to the side when you hear a siren." },
+      q: { w: "What should you do?", pic: "❓", ex: "What should you do?" },
+      choices: [
+        { t: "I move to the side and wait.", ok: true,  fb: "Right! Make room for the truck. +10" },
+        { t: "I run to the siren to see!",   ok: false, fb: "No! Stay away. Let the truck pass safely." },
+        { t: "Siren is music, I dance.",     ok: false, fb: "Fun! But first, move to the side." } ] },
+    { say: "Good job! Tell me one fire safety rule.",
+      card: { w: "fire safety", pic: "🔥", ex: "Fire safety is important for everyone." },
+      choices: [
+        { t: "Never play with matches.",   ok: true,  fb: "Excellent! Matches are not toys. +10" },
+        { t: "Matches are toys. I play.",  ok: false, fb: "No! Matches can start a fire. Keep them away." },
+        { t: "Fire is my favourite game.", ok: false, fb: "Fire is not a game! Try “Never play with matches.”" } ] }
+  ]
+},
+{
+  name: "Bach – Firefighter", color: 0xe03131, place: "fire", x: 8, z: -6,
+  steps: [
+    { say: "Hi! I wear special clothes at work. Do you like my helmet?",
+      card: { w: "protective gear", pic: "🧥", ex: "Firefighters wear protective gear." },
+      choices: [
+        { t: "Yes! Your red helmet is cool.", ok: true,  fb: "Nice! Clear and friendly. +10" },
+        { t: "Helmet is red, I like.",        ok: false, fb: "Try “I like your red helmet.”" },
+        { t: "Helmet, you are very red!",     ok: false, fb: "Haha, the helmet is red, not you! Try “Your helmet is cool.”" } ] },
+    { say: "Firefighters wear boots and gloves. Why?",
+      card: { w: "to be safe", pic: "🛡️", ex: "We wear gloves to be safe." },
+      q: { w: "Why?", pic: "❓", ex: "Why do firefighters wear boots?" },
+      choices: [
+        { t: "To keep their feet and hands safe.", ok: true,  fb: "Yes! Safety first. +10" },
+        { t: "Because gloves are nice.",           ok: false, fb: "Nice, but gloves keep hands safe. Try “To keep safe.”" },
+        { t: "Because boots are very big.",        ok: false, fb: "Big boots are fun! But they keep feet safe." } ] },
+    { say: "Thank you for talking to me! Have a good day.",
+      card: { w: "goodbye", pic: "👋", ex: "Goodbye! Have a good day." },
+      choices: [
+        { t: "Thank you! Goodbye!",      ok: true,  fb: "Friendly! +10" },
+        { t: "Thank you, I am goodbye.", ok: false, fb: "Try “Thank you! Goodbye!”" },
+        { t: "Goodbye, I am helmet.",    ok: false, fb: "Haha! Try “Goodbye! Have a good day.”" } ] }
+  ]
+},
+{
+  name: "Hoang – Fire Cook", color: 0xe8590c, place: "fire", x: 8, z: 8,
+  steps: [
+    { say: "Hi! I cook lunch for the team. Are you hungry?",
+      card: { w: "hungry", pic: "🍜", ex: "I’m hungry. What’s for lunch?" },
+      q: { w: "Are you hungry?", pic: "🍽️", ex: "Are you hungry?" },
+      choices: [
+        { t: "Yes, I’m hungry. What’s for lunch?", ok: true,  fb: "Yum! +10" },
+        { t: "Hungry I am, yes lunch.",            ok: false, fb: "Word order: “I’m hungry. What’s for lunch?”" },
+        { t: "Lunch is my favourite fire.",        ok: false, fb: "Ha! Fire is not food. Try “Yes, I’m hungry.”" } ] },
+    { say: "Remember, turn off the stove when you finish cooking.",
+      card: { w: "stove", pic: "🍳", ex: "Turn off the stove after cooking." },
+      choices: [
+        { t: "OK. I will turn off the stove.",   ok: true,  fb: "Great! A safe kitchen. +10" },
+        { t: "Stove off I turn will.",           ok: false, fb: "Word order: “I will turn off the stove.”" },
+        { t: "I leave the stove on, it’s fine.", ok: false, fb: "Careful! A stove can start a fire. Turn it off." } ] },
+    { say: "Good! Would you like some soup?",
+      card: { w: "would like", pic: "🥣", ex: "I would like some soup, please." },
+      choices: [
+        { t: "Yes, please. I would like some soup.", ok: true,  fb: "Polite! +10" },
+        { t: "Soup is I would like please.",         ok: false, fb: "Word order: “I would like some soup, please.”" },
+        { t: "No, soup is a bike.",                  ok: false, fb: "Haha! Bikes are not soup :) Try “No, thank you.”" } ] }
+  ]
+},
+{
+  name: "Nga – Safety Instructor", color: 0x2f9e44, place: "fire", x: -6, z: 10, minLv: 5,
+  steps: [
+    { say: "Hello! Today we practise a fire escape plan. Are you ready?",
+      card: { w: "escape plan", pic: "🗺️", ex: "Every family needs an escape plan." },
+      choices: [
+        { t: "Yes, I am ready. Show me!", ok: true,  fb: "Great! Let’s practise. +10" },
+        { t: "I ready am, yes is.",       ok: false, fb: "Word order: “Yes, I am ready. Show me!”" },
+        { t: "Plan is my escape, I run.", ok: false, fb: "Try “Yes, I am ready. Show me!”" } ] },
+    { say: "If your clothes catch fire, what should you do?",
+      card: { w: "stop, drop and roll", pic: "🔥", ex: "Stop, drop and roll on the floor." },
+      q: { w: "What do you do first?", pic: "❓", ex: "What do you do first?" },
+      choices: [
+        { t: "Stop, drop and roll on the floor.", ok: true,  fb: "Correct! Stop, drop and roll. +10" },
+        { t: "Run fast to find my mum.",          ok: false, fb: "No! Running makes the fire bigger. Stop, drop and roll." },
+        { t: "Wave my hands and jump around.",    ok: false, fb: "Waving can spread the fire. Try “Stop, drop and roll.”" } ] },
+    { say: "Very good! In a fire, use the stairs, not the lift.",
+      card: { w: "use the stairs", pic: "🪜", ex: "Use the stairs, not the lift." },
+      choices: [
+        { t: "We use the stairs, not the lift.", ok: true,  fb: "Right! Lifts can stop in a fire. +10" },
+        { t: "Stairs is the lift, we use.",      ok: false, fb: "Word order: “We use the stairs, not the lift.”" },
+        { t: "I take the lift with my toys.",    ok: false, fb: "Toys can wait! In a fire, use the stairs." } ] }
+  ]
+},
 /* ----- Town Hall (townhall) ----- */
 {
   name: "Ana – Receptionist", color: 0x9c36b5, place: "townhall", x: -6, z: 12,
@@ -2158,6 +2352,301 @@ const LESSONS = [
         { t: "Yes, I will be here tomorrow. See you!", ok: true,  fb: "Nice! See you soon. +10" },
         { t: "Here be will I tomorrow, yes.",          ok: false, fb: "Word order: “Yes, I will be here tomorrow.”" },
         { t: "Tomorrow is a bear, I think.",           ok: false, fb: "Ha! Tomorrow is a day, not a bear :) Try “Yes, I will be here.”" } ] }
+  ]
+},
+/* ----- Clothes Shop (clothes) ----- */
+{
+  name: "Quynh – Shop Assistant", color: 0xf783ac, place: "clothes", x: -5, z: -2,
+  steps: [
+    { say: "Hello! Are you looking for a T-shirt or a jacket?",
+      card: { w: "I’m looking for a jacket.", pic: "🧥", ex: "I’m looking for a jacket for winter." },
+      q: { w: "What are you looking for?", pic: "🙋", ex: "What are you looking for today?" },
+      choices: [
+        { t: "I’m looking for a jacket, please.", ok: true,  fb: "Great! Clear and polite. +10" },
+        { t: "Jacket looking I for am.",           ok: false, fb: "Word order: “I’m looking for a jacket.”" },
+        { t: "A jacket is my big cat.",            ok: false, fb: "Ha! A jacket is not a cat :) Try “I’m looking for a jacket.”" } ] },
+    { say: "Great! What size do you need? Small, medium or large?",
+      card: { w: "I need a medium.", pic: "📏", ex: "I need a medium, please." },
+      choices: [
+        { t: "I need a medium, please.", ok: true,  fb: "Perfect! Sizes: small, medium, large. +10" },
+        { t: "Medium need I a please.",  ok: false, fb: "Word order: “I need a medium, please.”" },
+        { t: "Medium is my sweet dog.",  ok: false, fb: "Ha! Medium is a size, not a dog :) Try “I need a medium.”" } ] },
+    { say: "Want to try it? The fitting room is at the back.",
+      card: { w: "Can I try it on?", pic: "🪞", ex: "Can I try it on, please?" },
+      choices: [
+        { t: "Yes, can I try it on, please?", ok: true,  fb: "Yes, go ahead! Asking first is polite. +10" },
+        { t: "Try on it I can, yes mirror.",  ok: false, fb: "Word order: “Can I try it on?”" },
+        { t: "The fitting room is my blue cow.", ok: false, fb: "Ha! A fitting room is not a cow :) Try “Can I try it on?”" } ] }
+  ]
+},
+{
+  name: "Chi – Teen Shopper", color: 0xf06595, place: "clothes", x: 5, z: -2,
+  steps: [
+    { say: "This shirt is too big for me. What should I do?",
+      card: { w: "Try a smaller size.", pic: "🔎", ex: "Try a smaller size, it might fit better." },
+      q: { w: "What should I do?", pic: "🤔", ex: "What should I do when clothes are too big?" },
+      choices: [
+        { t: "Try a smaller size, it might fit better.", ok: true,  fb: "Good idea! A smaller size fits better. +10" },
+        { t: "Smaller size a try, big me shirt.",        ok: false, fb: "Word order: “Try a smaller size.”" },
+        { t: "Shirts are my green sandwich.",            ok: false, fb: "Ha! Shirts are not sandwiches :) Try “Try a smaller size.”" } ] },
+    { say: "Thanks! Which colour do you like? Red, blue or white?",
+      card: { w: "I like blue.", pic: "🔵", ex: "I like blue, because it’s cool." },
+      q: { w: "Which colour?", pic: "🎨", ex: "Which colour do you like, blue or red?" },
+      choices: [
+        { t: "I like blue, because it’s cool.", ok: true,  fb: "Nice colour, and a good reason! +10" },
+        { t: "Blue like I, cool because it’s.", ok: false, fb: "Word order: “I like blue, because it’s cool.”" },
+        { t: "Colour is my pink bicycle.",      ok: false, fb: "Ha! A colour is not a bicycle :) Try “I like blue.”" } ] },
+    { say: "Blue is cool! Will you buy a shirt too?",
+      card: { w: "Yes, I will buy one.", pic: "🛍️", ex: "Yes, I will buy one for school." },
+      choices: [
+        { t: "Yes, I will buy one for school.", ok: true,  fb: "Lovely! will + verb. +10" },
+        { t: "Buy one school will I for yes.",  ok: false, fb: "Word order: “Yes, I will buy one for school.”" },
+        { t: "Shirts are a big purple moon.",   ok: false, fb: "Ha! Shirts are not moons :) Try “Yes, I will buy one.”" } ] }
+  ]
+},
+{
+  name: "Mr. Phat – Dad Shopper", color: 0x5c940d, place: "clothes", x: -5, z: 4,
+  steps: [
+    { say: "Excuse me! Where are the sandals? I need size five.",
+      card: { w: "They’re on the shoe shelf.", pic: "👟", ex: "They’re on the shoe shelf, over there." },
+      choices: [
+        { t: "They’re on the shoe shelf, over there.", ok: true,  fb: "Yes! Easy to find. +10" },
+        { t: "Shelf shoe on the are they, sandals.",   ok: false, fb: "Word order: “They’re on the shoe shelf.”" },
+        { t: "Sandals are my big banana.",             ok: false, fb: "Ha! Sandals are not bananas :) Try “They’re on the shoe shelf.”" } ] },
+    { say: "Thanks! Which is cheaper, the boots or the sneakers?",
+      card: { w: "The sneakers are cheaper.", pic: "💲", ex: "The sneakers are cheaper than the boots." },
+      q: { w: "Which is cheaper?", pic: "💲", ex: "Which is cheaper, the boots or the sneakers?" },
+      choices: [
+        { t: "The sneakers are cheaper than the boots.", ok: true,  fb: "Good comparison! +10" },
+        { t: "Cheaper boots the are than sneakers.",     ok: false, fb: "Word order: “The sneakers are cheaper than the boots.”" },
+        { t: "Boots are my tall spaceship.",             ok: false, fb: "Ha! Boots are not spaceships :) Try “The sneakers are cheaper…”" } ] },
+    { say: "Okay, I’ll take the sneakers! Where do I pay?",
+      card: { w: "The counter is at the back.", pic: "🧾", ex: "The counter is at the back of the shop." },
+      choices: [
+        { t: "The counter is at the back of the shop.", ok: true,  fb: "Great! Thank you for helping. +10" },
+        { t: "Back the at shop is counter the.",        ok: false, fb: "Word order: “The counter is at the back.”" },
+        { t: "Pay is my big blue cloud.",               ok: false, fb: "Ha! Money is not a cloud :) Try “The counter is at the back.”" } ] }
+  ]
+},
+{
+  name: "Ms. Dung – Fashion Shopper", color: 0xd6336c, place: "clothes", x: 5, z: 4, minLv: 5,
+  steps: [
+    { say: "Should I buy the red dress or the yellow one?",
+      card: { w: "You should buy the red dress.", pic: "👗", ex: "You should buy the red dress, because it’s pretty." },
+      q: { w: "Which one should I buy?", pic: "❓", ex: "Which one should I buy, red or yellow?" },
+      choices: [
+        { t: "You should buy the red dress, because it’s pretty.", ok: true,  fb: "Excellent! A good choice with a reason. +10" },
+        { t: "Dress should buy red you the, because.",            ok: false, fb: "Word order: “You should buy the red dress.”" },
+        { t: "Yellow is my tall giraffe.",                        ok: false, fb: "Ha! Yellow is a colour, not a giraffe :) Try “You should buy…”" } ] },
+    { say: "Is the red dress cheaper than the jacket?",
+      card: { w: "Yes, it’s cheaper than the jacket.", pic: "💲", ex: "Yes, it’s cheaper than the jacket, I think." },
+      choices: [
+        { t: "Yes, it’s cheaper than the jacket.", ok: true,  fb: "Good comparison! A good deal. +10" },
+        { t: "Cheaper jacket than yes it’s, the.", ok: false, fb: "Word order: “Yes, it’s cheaper than the jacket.”" },
+        { t: "Jackets are my blue clouds.",        ok: false, fb: "Ha! Jackets are not clouds :) Try “Yes, it’s cheaper…”" } ] },
+    { say: "Great, I’ll buy it! Would you like to see the hats too?",
+      card: { w: "I’d like to see them.", pic: "🧢", ex: "I’d like to see the hats, please." },
+      choices: [
+        { t: "Yes, I’d like to see them, please.", ok: true,  fb: "Lovely! would like + verb. +10" },
+        { t: "See them like to I’d, please, yes.", ok: false, fb: "Word order: “Yes, I’d like to see them, please.”" },
+        { t: "Hats are my fast rocket.",           ok: false, fb: "Ha! Hats are not rockets :) Try “I’d like to see them.”" } ] }
+  ]
+},
+/* ----- Saigon Barber (salon) ----- */
+{
+  name: "Lam – Junior Barber", color: 0x5c7cfa, place: "salon", x: -5, z: -2,
+  steps: [
+    { say: "Hi! Do you want short hair or long hair today?",
+      card: { w: "I’d like short hair.", pic: "✂️", ex: "I’d like short hair, please." },
+      q: { w: "Short or long hair?", pic: "💇", ex: "Do you want short or long hair today?" },
+      choices: [
+        { t: "I’d like short hair, please.", ok: true,  fb: "Great! Short and clear. +10" },
+        { t: "Hair short like I’d, please.", ok: false, fb: "Word order: “I’d like short hair.”" },
+        { t: "Hair is my big blue bicycle.", ok: false, fb: "Ha! Hair is not a bicycle :) Try “I’d like short hair.”" } ] },
+    { say: "Okay! Shall I wash your hair first, or cut it first?",
+      card: { w: "Wash it first, please.", pic: "🚿", ex: "Wash it first, please, then cut it." },
+      choices: [
+        { t: "Wash it first, please, then cut it.", ok: true,  fb: "Good plan! Wash first, then cut. +10" },
+        { t: "First wash, please it, cut then.",    ok: false, fb: "Word order: “Wash it first, please.”" },
+        { t: "Hair is a big yellow cloud.",         ok: false, fb: "Ha! Hair is not a cloud :) Try “Wash it first, please.”" } ] },
+    { say: "Great! The basin is at the back. Please lean back now.",
+      card: { w: "That feels nice, thanks!", pic: "😌", ex: "That feels nice, thank you!" },
+      choices: [
+        { t: "That feels nice, thank you!",     ok: true,  fb: "Lovely! Thank you :) +10" },
+        { t: "Nice feels thank that you, yes.", ok: false, fb: "Word order: “That feels nice, thank you!”" },
+        { t: "Basin is my blue pencil.",        ok: false, fb: "Ha! A basin is not a pencil :) Try “That feels nice…”" } ] }
+  ]
+},
+{
+  name: "Ti – Young Customer", color: 0xe8590c, place: "salon", x: 5, z: -2,
+  steps: [
+    { say: "My hair is wet. Can I have a towel, please?",
+      card: { w: "Sure, here is a towel.", pic: "🧻", ex: "Sure, here is a towel for you." },
+      choices: [
+        { t: "Sure, here is a towel for you.", ok: true,  fb: "Thank you! Very kind. +10" },
+        { t: "Towel for you here is sure a.",  ok: false, fb: "Word order: “Sure, here is a towel.”" },
+        { t: "Towels are my green frogs.",     ok: false, fb: "Ha! Towels are not frogs :) Try “Sure, here is a towel.”" } ] },
+    { say: "Thanks! Which is better for me, short or long hair?",
+      card: { w: "Short hair is better for you.", pic: "💇", ex: "Short hair is better for you, I think." },
+      q: { w: "Short or long?", pic: "❓", ex: "Which is better, short or long hair?" },
+      choices: [
+        { t: "Short hair is better for you, I think.", ok: true,  fb: "Good advice, kind and honest. +10" },
+        { t: "Better hair short you for is.",          ok: false, fb: "Word order: “Short hair is better for you.”" },
+        { t: "Long hair is my tall tower.",            ok: false, fb: "Ha! Hair is not a tower :) Try “Short hair is better…”" } ] },
+    { say: "Okay! I’ll wait in the chair by the door. How long?",
+      card: { w: "About twenty minutes.", pic: "⏱️", ex: "It takes about twenty minutes." },
+      choices: [
+        { t: "It takes about twenty minutes.", ok: true,  fb: "Thanks! Now I can plan my time. +10" },
+        { t: "Minutes twenty about takes it.", ok: false, fb: "Word order: “It takes about twenty minutes.”" },
+        { t: "Twenty is my tall tree.",        ok: false, fb: "Ha! Twenty is a number, not a tree :) Try “It takes…”" } ] }
+  ]
+},
+{
+  name: "Mr. Viet – Dad Customer", color: 0x1971c2, place: "salon", x: -5, z: 4,
+  steps: [
+    { say: "Excuse me! Is it my turn now? I waited a long time.",
+      card: { w: "Please wait a little more.", pic: "⏳", ex: "Please wait a little more, it’s almost ready." },
+      choices: [
+        { t: "Please wait a little more. It’s almost ready.", ok: true,  fb: "Kind and clear! +10" },
+        { t: "Turn my is it, now wait.",                       ok: false, fb: "Word order: “Please wait a little more.”" },
+        { t: "Turns are my shiny spaceship.",                  ok: false, fb: "Ha! Turns are not spaceships :) Try “Please wait a little more.”" } ] },
+    { say: "Okay. My son wants a new hairstyle. Should he have short hair?",
+      card: { w: "Yes, short hair is cool.", pic: "😎", ex: "Yes, short hair is cool for kids." },
+      q: { w: "What do you think?", pic: "🤔", ex: "What do you think about short hair?" },
+      choices: [
+        { t: "Yes, short hair is cool for kids.", ok: true,  fb: "Good advice! +10" },
+        { t: "Hair cool short is kids, yes for.", ok: false, fb: "Word order: “Yes, short hair is cool for kids.”" },
+        { t: "Son is my big blue stool.",         ok: false, fb: "Ha! A son is not a stool :) Try “Yes, short hair is cool.”" } ] },
+    { say: "Thanks! I’ll buy some hair gel from the shelf too.",
+      card: { w: "The hair gel is on the shelf.", pic: "🧴", ex: "The hair gel is on the shelf over there." },
+      choices: [
+        { t: "The hair gel is on the shelf over there.", ok: true,  fb: "Thank you! Very helpful. +10" },
+        { t: "Shelf the on is gel hair, there.",         ok: false, fb: "Word order: “The hair gel is on the shelf.”" },
+        { t: "Hair gel is my big yellow dog.",           ok: false, fb: "Ha! Hair gel is not a dog :) Try “The hair gel is on the shelf.”" } ] }
+  ]
+},
+{
+  name: "Mrs. Hanh – Mum Customer", color: 0xae3ec9, place: "salon", x: 5, z: 4, minLv: 5,
+  steps: [
+    { say: "My daughter has long hair. Should she cut it short?",
+      card: { w: "Yes, she should cut it short.", pic: "✂️", ex: "Yes, she should cut it short, I think." },
+      q: { w: "Should she cut it?", pic: "❓", ex: "Should she cut it short, or keep it long?" },
+      choices: [
+        { t: "Yes, she should, because short hair is easier to wash.", ok: true,  fb: "Excellent! A clear reason with “because”. +10" },
+        { t: "Short should she hair cut, because yes.",                 ok: false, fb: "Word order: “Yes, she should cut it short.”" },
+        { t: "Daughter is my big green bus.",                           ok: false, fb: "Ha! A daughter is not a bus :) Try “Yes, she should…”" } ] },
+    { say: "Which is easier to wash, short hair or long hair?",
+      card: { w: "Short hair is easier to wash.", pic: "🚿", ex: "Short hair is easier to wash than long hair." },
+      q: { w: "Which is easier?", pic: "🚿", ex: "Which is easier to wash, short or long hair?" },
+      choices: [
+        { t: "Short hair is easier to wash than long hair.", ok: true,  fb: "Great comparison! +10" },
+        { t: "Easier wash to hair is short than long.",       ok: false, fb: "Word order: “Short hair is easier to wash than long hair.”" },
+        { t: "Long hair is my tall, happy whale.",            ok: false, fb: "Ha! Hair is not a whale :) Try “Short hair is easier…”" } ] },
+    { say: "Okay! Where should I wait while she gets her haircut?",
+      card: { w: "You can wait by the door.", pic: "🚪", ex: "You can wait by the door, on the chair." },
+      choices: [
+        { t: "You can wait by the door, on the chair.", ok: true,  fb: "Yes! The waiting chairs are near the door. +10" },
+        { t: "Door the by can wait you, chair.",        ok: false, fb: "Word order: “You can wait by the door.”" },
+        { t: "Haircut is a big purple mouse.",          ok: false, fb: "Ha! A haircut is not a mouse :) Try “You can wait by the door.”" } ] }
+  ]
+},
+/* ----- Home & Cozy (furniture) ----- */
+{
+  name: "Ngan – Delivery Helper", color: 0x2f9e44, place: "furniture", x: -5, z: -2,
+  steps: [
+    { say: "Hi! Do you need furniture for your living room or bedroom?",
+      card: { w: "I need it for my living room.", pic: "🛋️", ex: "I need a sofa for my living room." },
+      q: { w: "Living room or bedroom?", pic: "🏠", ex: "Do you need it for the living room or the bedroom?" },
+      choices: [
+        { t: "I need it for my living room, please.", ok: true,  fb: "Great! Let’s find a sofa for you. +10" },
+        { t: "Room living my for it need I.",          ok: false, fb: "Word order: “I need it for my living room.”" },
+        { t: "Bedroom is my blue elephant.",           ok: false, fb: "Ha! A bedroom is not an elephant :) Try “I need it…”" } ] },
+    { say: "Here’s a soft sofa. Do you like brown or blue?",
+      card: { w: "I like the brown one.", pic: "🟫", ex: "I like the brown one, because it’s warm." },
+      q: { w: "Which colour do you like?", pic: "🎨", ex: "Which colour do you like, brown or blue?" },
+      choices: [
+        { t: "I like the brown one, because it’s warm.", ok: true,  fb: "Lovely choice with a reason! +10" },
+        { t: "One brown the like I, warm because it’s.", ok: false, fb: "Word order: “I like the brown one, because it’s warm.”" },
+        { t: "Sofa is my big green fish.",               ok: false, fb: "Ha! A sofa is not a fish :) Try “I like the brown one.”" } ] },
+    { say: "Good choice! Would you like it delivered to your home?",
+      card: { w: "Yes, please deliver it to my home.", pic: "🚚", ex: "Yes, please deliver it to my home on Friday." },
+      choices: [
+        { t: "Yes, please deliver it to my home.", ok: true,  fb: "Perfect! We will bring it home. +10" },
+        { t: "Home my to deliver it, yes please.", ok: false, fb: "Word order: “Yes, please deliver it to my home.”" },
+        { t: "Delivery is my big red whale.",      ok: false, fb: "Haha! A delivery is not a whale :) Try “Yes, please deliver it…”" } ] }
+  ]
+},
+{
+  name: "Grandma Hien – Customer", color: 0x845ef7, place: "furniture", x: 5, z: -2,
+  steps: [
+    { say: "This table is too small for my room. What can I do?",
+      card: { w: "Measure the room first.", pic: "📏", ex: "Measure the room first, then choose a bigger table." },
+      choices: [
+        { t: "Measure the room first, then choose a bigger one.", ok: true,  fb: "Wise idea! Measure before you buy. +10" },
+        { t: "Room the measure first, bigger choose.",            ok: false, fb: "Word order: “Measure the room first.”" },
+        { t: "Tables are my tall green trees.",                   ok: false, fb: "Ha! Tables are not trees :) Try “Measure the room first.”" } ] },
+    { say: "Thanks! Which rug is better, the small or the big one?",
+      card: { w: "The big one is better.", pic: "🟫", ex: "The big one is better for my living room." },
+      q: { w: "Which rug is better?", pic: "❓", ex: "Which rug is better for my room?" },
+      choices: [
+        { t: "The big one is better, because it fits the room.", ok: true,  fb: "Excellent! A clear reason. +10" },
+        { t: "Better big one is, because fits it room.",         ok: false, fb: "Word order: “The big one is better, because it fits the room.”" },
+        { t: "Rugs are my blue clouds.",                         ok: false, fb: "Ha! Rugs are not clouds :) Try “The big one is better…”" } ] },
+    { say: "Okay! Will you deliver it on Sunday morning?",
+      card: { w: "Yes, we will deliver it.", pic: "🗓️", ex: "Yes, we will deliver it on Sunday morning." },
+      choices: [
+        { t: "Yes, we will deliver it on Sunday morning.", ok: true,  fb: "Great! Sunday morning, thank you. +10" },
+        { t: "Sunday on deliver it will we, yes.",         ok: false, fb: "Word order: “Yes, we will deliver it on Sunday morning.”" },
+        { t: "Carpets are my orange dragon.",              ok: false, fb: "Ha! Carpets are not dragons :) Try “Yes, we will deliver it.”" } ] }
+  ]
+},
+{
+  name: "Khanh – Kid Shopper", color: 0x12b886, place: "furniture", x: -5, z: 4,
+  steps: [
+    { say: "Wow! I want a big bed! Can I try this one?",
+      card: { w: "Yes, you can try it.", pic: "🛏️", ex: "Yes, you can try it, it’s very soft." },
+      choices: [
+        { t: "Yes, you can try it. It’s very soft!", ok: true,  fb: "Yay! Lie down and relax. +10" },
+        { t: "Try you can it, very soft yes.",       ok: false, fb: "Word order: “Yes, you can try it.”" },
+        { t: "Bed is my blue monkey.",               ok: false, fb: "Ha! A bed is not a monkey :) Try “Yes, you can try it.”" } ] },
+    { say: "Thanks! Is there a bedside table for my clock?",
+      card: { w: "Yes, it’s next to the bed.", pic: "📍", ex: "Yes, it’s next to the bed, by the wall." },
+      q: { w: "Where is the bedside table?", pic: "❓", ex: "Where is the bedside table, please?" },
+      choices: [
+        { t: "Yes, it’s next to the bed.",       ok: true,  fb: "Great! Now my clock has a home. +10" },
+        { t: "Next bed the to it’s, yes table.", ok: false, fb: "Word order: “Yes, it’s next to the bed.”" },
+        { t: "Clock is my tall giant hippo.",    ok: false, fb: "Ha! A clock is not a hippo :) Try “Yes, it’s next to the bed.”" } ] },
+    { say: "Thanks! I want the blue blanket too. Can I have it?",
+      card: { w: "Yes, you can have it.", pic: "✅", ex: "Yes, you can have it for your bed." },
+      choices: [
+        { t: "Yes, you can have it for your bed.", ok: true,  fb: "Lovely! Sweet dreams. +10" },
+        { t: "Have it can you bed for yes, your.", ok: false, fb: "Word order: “Yes, you can have it for your bed.”" },
+        { t: "Blanket is my fast red car.",        ok: false, fb: "Ha! A blanket is not a car :) Try “Yes, you can have it…”" } ] }
+  ]
+},
+{
+  name: "Mrs. Dao – Home Shopper", color: 0xc2255c, place: "furniture", x: 5, z: 4, minLv: 5,
+  steps: [
+    { say: "Should I buy a round table or a square one?",
+      card: { w: "You should buy a round table.", pic: "⭕", ex: "You should buy a round table, because it’s safe." },
+      q: { w: "Round or square?", pic: "⭕", ex: "Should I buy a round table or a square one?" },
+      choices: [
+        { t: "You should buy a round table, because it’s safe for kids.", ok: true,  fb: "Excellent! Safety first, with a reason. +10" },
+        { t: "Table round a buy should you, because.",                    ok: false, fb: "Word order: “You should buy a round table.”" },
+        { t: "Square is my blue elephant.",                               ok: false, fb: "Ha! Square is a shape, not an elephant :) Try “You should buy…”" } ] },
+    { say: "Thanks! Is a wooden chair better than a plastic one?",
+      card: { w: "Yes, it’s stronger and nicer.", pic: "🪵", ex: "Yes, it’s stronger and nicer than plastic." },
+      q: { w: "Which chair is better?", pic: "🪑", ex: "Which chair is better, wooden or plastic?" },
+      choices: [
+        { t: "Yes, a wooden chair is stronger than plastic.", ok: true,  fb: "Good comparison! Strong and nice. +10" },
+        { t: "Stronger chair wooden a is than yes plastic.",  ok: false, fb: "Word order: “Yes, a wooden chair is stronger than plastic.”" },
+        { t: "Plastic is my big blue cloud.",                 ok: false, fb: "Ha! Plastic is not a cloud :) Try “Yes, a wooden chair…”" } ] },
+    { say: "Okay! The table will come on Monday. Will you be home?",
+      card: { w: "Yes, I will be home on Monday.", pic: "🏠", ex: "Yes, I will be home on Monday." },
+      choices: [
+        { t: "Yes, I will be home on Monday.", ok: true,  fb: "Perfect! See you then. +10" },
+        { t: "Monday home be will I yes, on.",         ok: false, fb: "Word order: “Yes, I will be home on Monday.”" },
+        { t: "Monday is my big purple whale.",         ok: false, fb: "Ha! Monday is a day, not a whale :) Try “Yes, I will be home…”" } ] }
   ]
 }
 

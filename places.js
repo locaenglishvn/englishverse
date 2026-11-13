@@ -111,7 +111,7 @@ const CITY = [
     color: 0xe6fcf5, roof: 0x2b8a3e, awning: 0x37b24d, floor: 0xdee2e6, wall: 0xf8f9fa,
     keeper: { name: "Sam – Pharmacist", color: 0x1c7ed6, greet: "Hello! How are you feeling today?", hint: "I have a sore throat. Can I have some throat syrup?" },
     sells: ["syrup", "vaccine"] },
-  { id: "clothes", name: "Clothes Shop", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", exterior: "clothes",
+  { id: "clothes", name: "Clothes Shop", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", exterior: "clothes", layout: "clothesshop", size: { w: 16, d: 18, h: 4.5 },
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
     keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to the Clothes Shop. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
     sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
@@ -144,7 +144,7 @@ const CITY = [
   { id: "lab", name: "Science Lab", type: "science lab", x: -75, z: -112, w: 12, d: 12, door: "south", model: "building_F", scale: 6, layout: "lab",
     color: 0xe3fafc, roof: 0x0b7285, awning: 0x15aabf, floor: 0xdee2e6, wall: 0xf8f9fa, goods: ["🧪", "🔬", "🧫", "🧲", "🔭", "⚗️"], keeper: null, sells: [] },
   // Hàng giữa (cửa nhìn ra Market Street)
-  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "showroom",
+  { id: "furniture", name: "Home & Cozy", type: "furniture store", x: 120, z: -10, w: 10, d: 10, door: "south", exterior: "furniture", layout: "furnishop", size: { w: 16, d: 18, h: 4.5 },
     color: 0xf8f0e3, roof: 0x8d5a2b, awning: 0xa0522d, floor: 0xd9b38c, wall: 0xfff8f0, goods: [],
     keeper: { name: "Omar – Seller", color: 0x8d5a2b, greet: "Hello! Welcome to Home & Cozy. Do you need furniture for your home?", hint: "I’d like the sofa, please." },
     sells: ["d_couch", "d_chair", "d_lamp", "d_cactus", "d_shelf", "d_table", "d_cabinet", "d_rug"] },
@@ -152,7 +152,7 @@ const CITY = [
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xf03e3e, floor: 0xe9c99a, wall: 0xfff4e6, goods: ["🍜", "🌯", "🍹", "🥢", "🍚", "🌶️"],
     keeper: { name: "Chef Bao – Cook", color: 0xf8f9fa, greet: "Welcome to Pho Corner! Are you hungry?", hint: "Can I have a bowl of pho, please?" },
     sells: ["pho", "springroll", "lemontea"] },
-  { id: "salon", name: "Saigon Barber", type: "barber shop", x: 92, z: -10, w: 10, d: 10, door: "south", exterior: "barber", layout: "salon",
+  { id: "salon", name: "Saigon Barber", type: "barber shop", x: 92, z: -10, w: 10, d: 10, door: "south", exterior: "barber", layout: "barbershop", size: { w: 16, d: 18, h: 4.5 },
     color: 0xf3f0ff, roof: 0x7048e8, awning: 0x9775fa, floor: 0xf1f3f5, wall: 0xf8f0fc, goods: ["✂️", "💈", "🪮", "🧴", "💇", "🪞"],
     keeper: { name: "Lily – Hairdresser", color: 0x9775fa, greet: "Hi! Welcome to Saigon Barber. What hairstyle would you like today?", hint: "I’d like short hair, please." },
     sells: ["hair_Rogue", "hair_Knight", "hair_Mage", "hair_Barbarian"] },
@@ -162,9 +162,9 @@ const CITY = [
     sells: ["apple", "banana", "water", "riceball", "milk"] },
   { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 75, z: -86, w: 10, d: 10, door: "north", model: "building_B", layout: "lab",
     color: 0xf1f3f5, roof: 0x495057, awning: 0xfab005, floor: 0xadb5bd, wall: 0xe9ecef, goods: ["🔧", "🔨", "🪛", "🚲", "⚙️", "🪚"], keeper: null, sells: [] },
-  { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 16, d: 12, door: "north", exterior: "police", layout: "desks",
+  { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 16, d: 12, door: "north", exterior: "police", layout: "policehall", size: { w: 24, d: 30, h: 5 },
     color: 0xe7f5ff, roof: 0x1864ab, awning: 0x1c7ed6, floor: 0xdee2e6, wall: 0xf1f3f5, goods: ["🚓", "🔦", "📋", "🗺️", "🔑", "🚨"], keeper: null, sells: [] },
-  { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", exterior: "fire", layout: "lab",
+  { id: "fire", name: "Fire Station", type: "fire station", x: -78, z: 12, w: 10, d: 10, door: "north", exterior: "fire", layout: "firehall", size: { w: 24, d: 32, h: 8 },
     color: 0xfff5f5, roof: 0xc92a2a, awning: 0xe03131, floor: 0xadb5bd, wall: 0xfff5f5, goods: ["🚒", "🧯", "🪜", "⛑️", "🚨", "🧑‍🚒"], keeper: null, sells: [] },
   { id: "mall", name: "Verse Plaza", type: "shopping mall", x: 64.5, z: 16, w: 24, d: 20, door: "west",   // quay mặt về quảng trường (phía tây)
     exterior: "mall", layout: "mallhall", size: { w: 36, d: 44, h: 12 },
@@ -267,6 +267,67 @@ const AMBIENT = [
    kind = nhóm đồ: từ Lv.20 người chơi hỏi rõ hơn "What is this drink / food / tool / machine / plant / furniture / thing?"
    at = đồ bày ở khu nào trong nơi đó (đúng ngữ cảnh) – xem anchors trong index.html */
 const VOCAB = {
+  police: [
+    // quầy tiếp dân (desk)
+    { w: "service counter",  pic: "🛎️", pos: "noun", kind: "furniture", at: "desk", say: "It's a service counter.",     ex: "Ask for help at the service counter." },
+    { w: "claim form",       pic: "📝", pos: "noun", kind: "thing",     at: "desk", say: "It's a claim form.",          ex: "Fill in the claim form, please." },
+    { w: "ballpoint pen",    pic: "🖊️", pos: "noun", kind: "tool",      at: "desk", say: "It's a ballpoint pen.",       ex: "Write your name with a ballpoint pen." },
+    { w: "bulletin board",   pic: "📌", pos: "noun", kind: "thing",     at: "desk", say: "It's a bulletin board.",      ex: "Read the notices on the bulletin board." },
+    { w: "queue number",     pic: "🔢", pos: "noun", kind: "thing",     at: "desk", say: "It's a queue number.",        ex: "Take a queue number and wait, please." },
+    // văn phòng (office)
+    { w: "desktop computer", pic: "🖥️", pos: "noun", kind: "machine",   at: "office", say: "It's a desktop computer.",   ex: "The officer types on the desktop computer." },
+    { w: "photocopier",      pic: "🖨️", pos: "noun", kind: "machine",   at: "office", say: "It's a photocopier.",        ex: "The photocopier makes two copies." },
+    { w: "filing cabinet",   pic: "🗄️", pos: "noun", kind: "furniture", at: "office", say: "It's a filing cabinet.",     ex: "The papers are in the filing cabinet." },
+    { w: "file folder",      pic: "📁", pos: "noun", kind: "thing",     at: "office", say: "It's a file folder.",        ex: "Put the report in the file folder." },
+    { w: "desk phone",       pic: "☎️", pos: "noun", kind: "machine",   at: "office", say: "It's a desk phone.",         ex: "Call me on the desk phone." },
+    // phòng điều phối (dispatch)
+    { w: "big map",          pic: "🗺️", pos: "noun", kind: "thing",     at: "dispatch", say: "It's a big map.",          ex: "The big map shows every street." },
+    { w: "walkie-talkie",    pic: "📻", pos: "noun", kind: "machine",   at: "dispatch", say: "It's a walkie-talkie.",    ex: "The officer talks on a walkie-talkie." },
+    { w: "radar screen",     pic: "📡", pos: "noun", kind: "machine",   at: "dispatch", say: "It's a radar screen.",     ex: "The radar screen shows the cars." },
+    { w: "traffic light",    pic: "🚦", pos: "noun", kind: "machine",   at: "dispatch", say: "It's a traffic light.",    ex: "Stop when the traffic light is red." },
+    { w: "headset",          pic: "🎧", pos: "noun", kind: "thing",     at: "dispatch", say: "It's a headset.",          ex: "The officer wears a headset." },
+    // trang bị (gear)
+    { w: "helmet",           pic: "⛑️", pos: "noun", kind: "thing",     at: "gear", say: "It's a helmet.",               ex: "Always wear a helmet when you ride a bike." },
+    { w: "reflective vest",  pic: "🦺", pos: "noun", kind: "thing",     at: "gear", say: "It's a reflective vest.",      ex: "The vest helps drivers see you." },
+    { w: "bicycle",          pic: "🚲", pos: "noun", kind: "thing",     at: "gear", say: "It's a bicycle.",              ex: "The police ride a bicycle on the street." },
+    { w: "traffic cone",     pic: "🚧", pos: "noun", kind: "thing",     at: "gear", say: "It's a traffic cone.",         ex: "Walk around the traffic cone." },
+    { w: "stop sign",        pic: "🛑", pos: "noun", kind: "thing",     at: "gear", say: "It's a stop sign.",            ex: "Stop at the stop sign." },
+    // kệ đồ thất lạc (lost and found)
+    { w: "keys",             pic: "🔑", pos: "noun", kind: "thing",     at: "lostfound", say: "They're keys.",           ex: "I lost my keys at school." },
+    { w: "scarf",            pic: "🧣", pos: "noun", kind: "thing",     at: "lostfound", say: "It's a scarf.",           ex: "My scarf is warm and blue." },
+    { w: "water bottle",     pic: "💧", pos: "noun", kind: "thing",     at: "lostfound", say: "It's a water bottle.",    ex: "Is this your water bottle?" },
+    { w: "raincoat",         pic: "🧥", pos: "noun", kind: "thing",     at: "lostfound", say: "It's a raincoat.",        ex: "Wear a raincoat when it rains." }
+  ],
+  fire: [
+    // nhà xe (garage)
+    { w: "fire truck",       pic: "🚒", pos: "noun", kind: "machine",   at: "garage", say: "It's a fire truck.",          ex: "The fire truck is big and red." },
+    { w: "fire hose",        pic: "💦", pos: "noun", kind: "tool",      at: "garage", say: "It's a fire hose.",           ex: "The fire hose is long and heavy." },
+    { w: "siren",            pic: "🚨", pos: "noun", kind: "machine",   at: "garage", say: "It's a siren.",               ex: "We hear the siren from far away." },
+    { w: "water tank",       pic: "🛢️", pos: "noun", kind: "thing",     at: "garage", say: "It's a water tank.",          ex: "The truck carries a big water tank." },
+    { w: "flashlight",       pic: "🔦", pos: "noun", kind: "tool",      at: "garage", say: "It's a flashlight.",          ex: "Use a flashlight in the dark." },
+    { w: "toolbox",          pic: "🧰", pos: "noun", kind: "tool",      at: "garage", say: "It's a toolbox.",             ex: "The toolbox has many tools inside." },
+    // giá đồ bảo hộ (gear)
+    { w: "fire helmet",      pic: "⛑️", pos: "noun", kind: "thing",     at: "gear", say: "It's a fire helmet.",         ex: "A fire helmet keeps your head safe." },
+    { w: "fire extinguisher", pic: "🧯", pos: "noun", kind: "tool",     at: "gear", say: "It's a fire extinguisher.",   ex: "The fire extinguisher is red." },
+    { w: "fire boots",       pic: "🥾", pos: "noun", kind: "thing",     at: "gear", say: "They're fire boots.",         ex: "The fire boots keep my feet safe." },
+    { w: "fire gloves",      pic: "🧤", pos: "noun", kind: "thing",     at: "gear", say: "They're fire gloves.",        ex: "Fire gloves protect your hands." },
+    { w: "fire jacket",      pic: "🧥", pos: "noun", kind: "thing",     at: "gear", say: "It's a fire jacket.",         ex: "The fire jacket is thick and strong." },
+    // góc báo động (alarm)
+    { w: "fire alarm",       pic: "🚨", pos: "noun", kind: "machine",   at: "alarm", say: "It's a fire alarm.",         ex: "Leave the building when you hear the fire alarm." },
+    { w: "smoke detector",   pic: "📟", pos: "noun", kind: "machine",   at: "alarm", say: "It's a smoke detector.",     ex: "The smoke detector beeps when there is smoke." },
+    { w: "sprinkler",        pic: "🚿", pos: "noun", kind: "machine",   at: "alarm", say: "It's a sprinkler.",          ex: "The sprinkler is on the ceiling." },
+    { w: "exit sign",        pic: "🚪", pos: "noun", kind: "thing",     at: "alarm", say: "It's an exit sign.",         ex: "Follow the exit sign to get out." },
+    // khu nghỉ và bếp (rest)
+    { w: "team photo",       pic: "🖼️", pos: "noun", kind: "thing",     at: "rest", say: "It's a team photo.",          ex: "Our team photo hangs on the wall." },
+    { w: "bunk bed",         pic: "🛏️", pos: "noun", kind: "furniture", at: "rest", say: "It's a bunk bed.",            ex: "I sleep on the top bunk bed." },
+    { w: "water cooler",     pic: "🚰", pos: "noun", kind: "machine",   at: "rest", say: "It's a water cooler.",        ex: "Get cold water from the water cooler." },
+    { w: "rice cooker",      pic: "🍚", pos: "noun", kind: "machine",   at: "rest", say: "It's a rice cooker.",         ex: "The rice cooker makes hot rice." },
+    { w: "couch",            pic: "🛋️", pos: "noun", kind: "furniture", at: "rest", say: "It's a couch.",               ex: "We watch TV on the couch." },
+    // góc tập huấn (training)
+    { w: "whistle",          pic: "📯", pos: "noun", kind: "thing",     at: "training", say: "It's a whistle.",         ex: "The coach blows a whistle to start." },
+    { w: "training mat",     pic: "🧘", pos: "noun", kind: "thing",     at: "training", say: "It's a training mat.",    ex: "We practise on the training mat." },
+    { w: "rope",             pic: "🪢", pos: "noun", kind: "thing",     at: "training", say: "It's a rope.",            ex: "Hold the rope tight and walk slowly." }
+  ],
   mall: [
     // sảnh giữa (atrium)
     { w: "escalator",     pic: "🪜", pos: "noun", kind: "machine", at: "atrium", say: "It's an escalator.",       ex: "We take the escalator to the second floor." },
@@ -797,6 +858,87 @@ const VOCAB = {
     { w: "blood pressure monitor", pic: "🩺", pos: "noun", kind: "machine", at: "health", say: "It's a blood pressure monitor.", ex: "The nurse uses a blood pressure monitor." },
     { w: "first aid kit",    pic: "🧰", pos: "noun", kind: "thing",   at: "health", say: "It's a first aid kit.",    ex: "The first aid kit is in the cupboard." },
     { w: "health chart",     pic: "📊", pos: "noun", kind: "thing",   at: "health", say: "It's a health chart.",     ex: "The health chart shows healthy food." }
+  ],
+  // Clothes Shop – shop quần áo (clothes)
+  clothes: [
+    // giá treo quần áo (rack)
+    { w: "clothes rack",     pic: "👚", pos: "noun", kind: "furniture", at: "rack", say: "It's a clothes rack.",       ex: "The shirts are on the clothes rack." },
+    { w: "T-shirt",          pic: "👕", pos: "noun", kind: "thing",     at: "rack", say: "It's a T-shirt.",            ex: "This T-shirt is blue and very soft." },
+    { w: "coat",             pic: "🧥", pos: "noun", kind: "thing",     at: "rack", say: "It's a coat.",               ex: "Wear a coat when it’s cold." },
+    { w: "dress",            pic: "👗", pos: "noun", kind: "thing",     at: "rack", say: "It's a dress.",              ex: "The yellow dress is very pretty." },
+    { w: "skirt",            pic: "👗", pos: "noun", kind: "thing",     at: "rack", say: "It's a skirt.",              ex: "I like this long skirt." },
+    { w: "sweater",          pic: "🧶", pos: "noun", kind: "thing",     at: "rack", say: "It's a sweater.",            ex: "A warm sweater is good in winter." },
+    // kệ giày (shoes)
+    { w: "sneakers",         pic: "👟", pos: "noun", kind: "thing",     at: "shoes", say: "They're sneakers.",         ex: "My sneakers are white and new." },
+    { w: "sandals",          pic: "🩴", pos: "noun", kind: "thing",     at: "shoes", say: "They're sandals.",          ex: "Sandals are cool in summer." },
+    { w: "boots",            pic: "🥾", pos: "noun", kind: "thing",     at: "shoes", say: "They're boots.",            ex: "The boots keep my feet warm." },
+    { w: "high heels",       pic: "👠", pos: "noun", kind: "thing",     at: "shoes", say: "They're high heels.",       ex: "High heels are hard to walk in." },
+    { w: "shoe box",         pic: "📦", pos: "noun", kind: "thing",     at: "shoes", say: "It's a shoe box.",          ex: "Put the shoes back in the shoe box." },
+    // gương & phòng thử (mirror)
+    { w: "full-length mirror", pic: "🪞", pos: "noun", kind: "thing",   at: "mirror", say: "It's a full-length mirror.", ex: "Look at yourself in the full-length mirror." },
+    { w: "fitting room",     pic: "🚪", pos: "noun", kind: "thing",     at: "mirror", say: "It's a fitting room.",       ex: "Try it on in the fitting room." },
+    { w: "curtain",          pic: "🪟", pos: "noun", kind: "thing",     at: "mirror", say: "It's a curtain.",            ex: "Close the curtain, please." },
+    { w: "hanger",           pic: "🪝", pos: "noun", kind: "thing",     at: "mirror", say: "It's a hanger.",             ex: "Hang your coat on a hanger." },
+    // quầy thu ngân (counter)
+    { w: "cash desk",        pic: "💵", pos: "noun", kind: "machine",   at: "counter", say: "It's a cash desk.",         ex: "Pay for your clothes at the cash desk." },
+    { w: "size label",       pic: "🏷️", pos: "noun", kind: "thing",     at: "counter", say: "It's a size label.",        ex: "Check the size label before you buy." },
+    { w: "bill",             pic: "🧾", pos: "noun", kind: "thing",     at: "counter", say: "It's a bill.",              ex: "Keep the bill, please." },
+    { w: "shopping bag",     pic: "🛍️", pos: "noun", kind: "thing",     at: "counter", say: "It's a shopping bag.",      ex: "Do you need a shopping bag?" },
+    { w: "purse",            pic: "👛", pos: "noun", kind: "thing",     at: "counter", say: "It's a purse.",             ex: "Keep your money safe in your purse." }
+  ],
+  // Saigon Barber – tiệm cắt tóc (salon)
+  salon: [
+    // ghế cắt tóc (chair)
+    { w: "barber chair",     pic: "💺", pos: "noun", kind: "furniture", at: "chair", say: "It's a barber chair.",      ex: "Sit in the barber chair, please." },
+    { w: "hair cape",        pic: "🧣", pos: "noun", kind: "thing",     at: "chair", say: "It's a hair cape.",         ex: "Put the hair cape on, please." },
+    { w: "hair dryer",       pic: "💨", pos: "noun", kind: "machine",   at: "chair", say: "It's a hair dryer.",        ex: "The hair dryer is hot, so be careful." },
+    { w: "hair scissors",    pic: "✂️", pos: "noun", kind: "tool",      at: "chair", say: "They're hair scissors.",    ex: "Be careful with the hair scissors." },
+    { w: "comb",             pic: "🪮", pos: "noun", kind: "tool",      at: "chair", say: "It's a comb.",              ex: "Use a comb to make your hair neat." },
+    { w: "hair clippers",    pic: "✂️", pos: "noun", kind: "machine",   at: "chair", say: "They're hair clippers.",    ex: "The hair clippers buzz when they work." },
+    // bồn gội đầu (wash)
+    { w: "wash basin",       pic: "🛁", pos: "noun", kind: "thing",     at: "wash", say: "It's a wash basin.",         ex: "Lean back over the wash basin." },
+    { w: "shower head",      pic: "🚿", pos: "noun", kind: "thing",     at: "wash", say: "It's a shower head.",        ex: "The water comes from the shower head." },
+    { w: "towel",            pic: "🧻", pos: "noun", kind: "thing",     at: "wash", say: "It's a towel.",              ex: "Dry your hair with a soft towel." },
+    { w: "conditioner",      pic: "🧴", pos: "noun", kind: "thing",     at: "wash", say: "It's conditioner.",          ex: "Use conditioner after you wash your hair." },
+    // kệ sản phẩm (products)
+    { w: "hair gel",         pic: "🧴", pos: "noun", kind: "thing",     at: "products", say: "It's hair gel.",         ex: "Put a little hair gel on your hair." },
+    { w: "hair spray",       pic: "🧴", pos: "noun", kind: "thing",     at: "products", say: "It's hair spray.",       ex: "Hair spray keeps my hair in place." },
+    { w: "hair clip",        pic: "📎", pos: "noun", kind: "thing",     at: "products", say: "It's a hair clip.",      ex: "This hair clip is pink and pretty." },
+    { w: "hair band",        pic: "🎀", pos: "noun", kind: "thing",     at: "products", say: "It's a hair band.",      ex: "She wears a red hair band." },
+    { w: "hairbrush",        pic: "🪮", pos: "noun", kind: "tool",      at: "products", say: "It's a hairbrush.",      ex: "Brush your hair every morning." },
+    // ghế chờ gần cửa (waiting)
+    { w: "wall clock",       pic: "🕐", pos: "noun", kind: "thing",     at: "waiting", say: "It's a wall clock.",      ex: "The wall clock shows it’s ten o’clock." },
+    { w: "number ticket",    pic: "🎫", pos: "noun", kind: "thing",     at: "waiting", say: "It's a number ticket.",   ex: "Take a number ticket and wait, please." },
+    { w: "hairstyle book",   pic: "📖", pos: "noun", kind: "thing",     at: "waiting", say: "It's a hairstyle book.",  ex: "Look at the hairstyle book for ideas." },
+    { w: "photo album",      pic: "📒", pos: "noun", kind: "thing",     at: "waiting", say: "It's a photo album.",     ex: "The photo album has many hairstyles." },
+    { w: "ceiling fan",      pic: "🌀", pos: "noun", kind: "machine",   at: "waiting", say: "It's a ceiling fan.",     ex: "The ceiling fan is cool on a hot day." }
+  ],
+  // Home & Cozy – cửa hàng nội thất (furniture)
+  furniture: [
+    // góc phòng khách (living)
+    { w: "armchair",         pic: "🛋️", pos: "noun", kind: "furniture", at: "living", say: "It's an armchair.",        ex: "Grandpa reads a book in the armchair." },
+    { w: "coffee table",     pic: "🪵", pos: "noun", kind: "furniture", at: "living", say: "It's a coffee table.",     ex: "Put your cup on the coffee table." },
+    { w: "rug",              pic: "🟫", pos: "noun", kind: "thing",     at: "living", say: "It's a rug.",              ex: "The rug is soft under my feet." },
+    { w: "TV",               pic: "📺", pos: "noun", kind: "machine",   at: "living", say: "It's a TV.",               ex: "We watch a film on TV after dinner." },
+    { w: "beanbag",          pic: "🔴", pos: "noun", kind: "thing",     at: "living", say: "It's a beanbag.",          ex: "Sit on the beanbag and read." },
+    { w: "floor lamp",       pic: "💡", pos: "noun", kind: "thing",     at: "living", say: "It's a floor lamp.",       ex: "Turn on the floor lamp, please." },
+    // góc phòng ngủ (bedroom)
+    { w: "double bed",       pic: "🛏️", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a double bed.",      ex: "We have a big double bed." },
+    { w: "bedside table",    pic: "🪑", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a bedside table.",   ex: "Put the clock on the bedside table." },
+    { w: "wardrobe",         pic: "🚪", pos: "noun", kind: "furniture", at: "bedroom", say: "It's a wardrobe.",        ex: "My clothes are in the wardrobe." },
+    { w: "pillow",           pic: "🛌", pos: "noun", kind: "thing",     at: "bedroom", say: "It's a pillow.",          ex: "Rest your head on the soft pillow." },
+    { w: "duvet",            pic: "🛏️", pos: "noun", kind: "thing",     at: "bedroom", say: "It's a duvet.",           ex: "The duvet is warm and soft at night." },
+    // góc bếp và bàn ăn (kitchen)
+    { w: "dining table",     pic: "🍽️", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a dining table.",    ex: "We eat dinner at the dining table." },
+    { w: "dining chair",     pic: "🪑", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a dining chair.",    ex: "Sit on the dining chair, please." },
+    { w: "kitchen cabinet",  pic: "🗄️", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a kitchen cabinet.", ex: "The cups are in the kitchen cabinet." },
+    { w: "microwave",        pic: "🍱", pos: "noun", kind: "machine",   at: "kitchen", say: "It's a microwave.",       ex: "Heat the soup in the microwave." },
+    { w: "teapot",           pic: "🫖", pos: "noun", kind: "thing",     at: "kitchen", say: "It's a teapot.",          ex: "The teapot keeps the tea hot." },
+    // đồ trang trí (decor)
+    { w: "picture",          pic: "🖼️", pos: "noun", kind: "thing",     at: "decor", say: "It's a picture.",           ex: "This picture is of the beach." },
+    { w: "flower pot",       pic: "🪴", pos: "noun", kind: "plant",     at: "decor", say: "It's a flower pot.",        ex: "The flower pot sits by the window." },
+    { w: "cactus",           pic: "🌵", pos: "noun", kind: "plant",     at: "decor", say: "It's a cactus.",            ex: "A cactus needs very little water." },
+    { w: "table lamp",       pic: "🪔", pos: "noun", kind: "thing",     at: "decor", say: "It's a table lamp.",        ex: "Turn on the table lamp at night." }
   ]
 
 };

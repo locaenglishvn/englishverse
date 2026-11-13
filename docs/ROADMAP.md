@@ -273,6 +273,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 28. **Vận hành đội AI**: tách nội thất ra `parts/`, cổng QA `tools/qa/run.js`, `docs/TEAM.md`; sửa kẹt cửa Trường học / Đồn công an
 29. **Đợt 1 (đội AI)**: nội thất Town Hall, City Hospital, Verse School; 15 NPC mới + 92 từ vựng (Haiku viết, CTO soát); QA thêm `--data`
 30. **Đợt 2 (đội AI)**: nội thất Verse Plaza + 4 cửa hàng Market Street (Banh Mi Bakery, Pho Corner, Shop 24h, Green Cross Pharmacy; khung chung `parts/interiors/shopkit.js`); 22 NPC mới + 107 từ vựng
+31. **Đợt 3 (đội AI)**: nội thất Clothes Shop, Saigon Barber, Home & Cozy (shopKit; Home & Cozy trưng đúng đồ đang bán), Police Station, Fire Station; 20 NPC mới + 107 từ vựng, nội dung an toàn trẻ em (113/114/115, an toàn giao thông, cháy nổ)
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |
@@ -287,12 +288,15 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 | Verse School | ✅ 30 × 36 m: bảng, 16 bàn đôi, góc khoa học, mỹ thuật & âm nhạc, tủ đồ, căng tin | 5 | 30 |
 | Verse Plaza | ✅ 36 × 44 m: sảnh giếng trời, đài phun nước, thang cuốn, Toy Island, Tech Zone, Sport Star, Food Court | 6 | 27 |
 | Banh Mi Bakery · Pho Corner · Shop 24h · Green Cross Pharmacy | ✅ 16 × 18 m mỗi tiệm (khung `shopkit.js`) | 4 + người bán mỗi tiệm | 20 mỗi tiệm |
+| Clothes Shop · Saigon Barber · Home & Cozy | ✅ 16 × 18 m (shopKit) | 4 + người bán mỗi tiệm | 20 mỗi tiệm |
+| Police Station | ✅ 24 × 30 m: quầy tiếp dân, văn phòng, điều phối, trang bị, đồ thất lạc | 5 | 24 |
+| Fire Station | ✅ 24 × 32 m: nhà xe + xe cứu hoả, giá đồ bảo hộ, góc báo động, khu nghỉ, góc tập huấn | 5 | 23 |
 | Các nơi còn lại | ⏳ phòng mẫu 16 × 12 (bày đồ theo `layout` cũ) | 1 (hoặc người bán) | chưa có |
 
 ---
 
 ## 6. Việc tiếp theo (theo thứ tự đề xuất)
-1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Clothes Shop, Saigon Barber, Home & Cozy (dùng `shopkit.js`), Police Station, Fire Station, Science Lab, Star Cinema.
+1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Science Lab, Star Cinema, Fix-It Workshop, My Home (nâng cấp); các ô 🚧.
 2. **Ngoại thất** các nơi còn dùng mẫu nhà phố (Science Lab, Fix-It Workshop, Pho Corner, Star Cinema…) và các ô 🚧 khi người dùng gửi ảnh.
 3. **Trò chơi đồng đội ở Verse Arena** (Quiz Tower, Word Race, Treasure Hunt, Team Battle) – đều bắt buộc giao tiếp tiếng Anh.
 4. **Vùng hoang dã có quái** quanh thành phố (rừng, đồi, đầm lầy, hang, phế tích), càng xa càng mạnh; thêm quái Riddle Bug, Scramble Worm; vũ khí nhạc cụ.
