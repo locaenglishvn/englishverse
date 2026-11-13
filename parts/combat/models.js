@@ -1,6 +1,7 @@
 /* EnglishVerse – MÔ HÌNH QUÁI (dễ thương, low-poly). Xem docs/design/voice-combat.html mục 5.
    MONSTER_MODELS.make(type, season, lv) → { g, update(dt, t, state) }
      type:   "ghost" (Echo Ghost) · "bug" (Riddle Bug) · "worm" (Scramble Worm) · "crab" (Question Crab) · "bat" (Blank Bat)
+             · "turtle" (Tense Turtle) · "slime" (Shy Slime) · "parrot" (Mimic Parrot) · "owl" (Story Owl)
      season: "winter" | "autumn" | "desert" | "tropic" | "spring" (đổi màu + phụ kiện); khác / bỏ trống = màu tím nhạt trung tính
      lv:     chỉ làm quái to thêm tối đa 15% (cao 1,2–1,8 m, chân ở y = 0, mặt hướng +z)
      state:  "idle" (nhún nhẹ) · "walk" (lắc lư) · "attack" (lao tới / vung, 0,5 s) · "hit" (nháy trắng + rung) · "die" (xẹp + mờ dần, 0,8 s)
@@ -40,7 +41,7 @@ const MONSTER_MODELS = (function () {
     spring: { main: 0xa6e37e, dark: 0x6ebf52, accent: 0xff8fc0, ghost: 0xe6ffe0 },
     none: { main: 0xbca6ff, dark: 0x8b73e6, accent: 0xffd43b, ghost: 0xeeeaff }
   };
-  const EYE = 0x2b2d42, WHITE = 0xffffff, PINK = 0xff9ab0;
+  const EYE = 0x2b2d42, WHITE = 0xffffff, PINK = 0xff9ab0, OR2 = 0xffb300;
 
   /* phụ kiện trên đầu theo mùa (đặt ở (x, y, z), r = bán kính đầu) */
   function accessory(L, season, x, y, z, r, P) {
@@ -85,7 +86,7 @@ const MONSTER_MODELS = (function () {
   let TILE = null;
   const LETTERS = "ABCDEFGHILMNOPRSTW";
 
-  /* ----- 5 loại quái: mỗi hàm dựng vào group "body" và trả về phần hoạt hình riêng ----- */
+  /* ----- 9 loại quái: mỗi hàm dựng vào group "body" và trả về phần hoạt hình riêng ----- */
   function mesh(ctx, parent, L, opacity) { const m = bake(L, opacity === undefined ? 1 : opacity); parent.add(m); ctx.mats.push({ m: m.material, base: opacity === undefined ? 1 : opacity }); return m; }
   function sprite(ctx, parent, txt, color, x, y, z, size) {
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: bubbleTex(txt, color), depthWrite: false })); s.scale.set(size, size, 1); s.position.set(x, y, z); s.userData.flag = true; parent.add(s); ctx.mats.push({ m: s.material, base: 1 }); return s;
@@ -151,13 +152,71 @@ const MONSTER_MODELS = (function () {
         mesh(ctx, gr, W); return gr; });
       const q = sprite(ctx, body, "__", "#e8590c", 0.5, 1.55, 0.1, 0.5);
       return { wings, q, qy: 1.55, float: 0.2 };
+    },
+    turtle(ctx, body, P, season) {   // Tense Turtle: rùa lo lắng, trên mai có đồng hồ kim quay tích tắc
+      const B = [], F = [], skin = P.ghost, TH = 0.7;
+      add(B, "sph", P.dark, 0, 0.66, -0.05, 0.8, 0.56, 0.86); add(B, "sph", skin, 0, 0.22, 0, 0.7, 0.2, 0.74);
+      add(B, "sph", P.main, 0, 1.2, -0.4, 0.26, 0.07, 0.26); [[-0.52, 0.92, -0.25], [0.52, 0.92, -0.25], [-0.48, 0.88, -0.62], [0.48, 0.88, -0.62]].forEach(q => add(B, "sph", P.main, q[0], q[1], q[2], 0.22, 0.07, 0.22, 0, 0, q[0] > 0 ? -0.5 : 0.5));   // mảnh mai
+      add(B, "sph", skin, 0, 0.5, 0.62, 0.26, 0.24, 0.3); add(B, "sph", skin, 0, 0.64, 0.9, 0.34, 0.32, 0.36);   // cổ + đầu
+      [[-0.48, 0.42], [0.48, 0.42], [-0.48, -0.5], [0.48, -0.5]].forEach(q => add(B, "sph", skin, q[0], 0.17, q[1], 0.17, 0.17, 0.21));
+      add(B, "cone", skin, 0, 0.3, -0.9, 0.09, 0.3, 0.09, 0, -1.4);
+      add(B, "cyl", P.accent, 0, 1.11, 0.22, 0.35, 0.05, 0.35, 0, TH); add(B, "cyl", WHITE, 0, 1.13, 0.22, 0.3, 0.05, 0.3, 0, TH);   // viền + mặt đồng hồ
+      face(F, 0, 0.74, 1.17, 0.15, 0.85); cheeks(F, 0, 0.58, 1.18, 0.25); add(F, "box", EYE, 0, 0.5, 1.22, 0.1, 0.02, 0.03);
+      [-1, 1].forEach(k => add(F, "box", EYE, k * 0.15, 0.88, 1.16, 0.14, 0.03, 0.04, 0, 0, -k * 0.45));   // lông mày lo lắng
+      add(F, "sph", 0x7fd3ff, 0.36, 0.92, 1.05, 0.07, 0.09, 0.06); add(F, "cone", 0x7fd3ff, 0.36, 0.95, 1.05, 0.05, 0.11, 0.05);   // giọt mồ hôi
+      accessory(F, season, 0, 0.94, 0.86, 0.3, P);
+      mesh(ctx, body, B); mesh(ctx, body, F);
+      const hg = new THREE.Group(); hg.position.set(0, 1.16 + 0.03, 0.22 + 0.03); hg.rotation.x = TH; body.add(hg);   // hai kim: quay quanh trục pháp tuyến mặt đồng hồ
+      const hands = [0.26, 0.17].map((len, i) => { const L = [], g = new THREE.Group(); add(L, "box", i ? P.accent : EYE, 0, 0, len / 2, i ? 0.05 : 0.035, 0.025, len); add(L, "sph", EYE, 0, 0.01, 0, 0.04); g.position.y = i * 0.012; hg.add(g); mesh(ctx, g, L); return g; });
+      return { hands };
+    },
+    slime(ctx, body, P, season) {   // Shy Slime: giọt nhầy nửa trong suốt, má hồng, e thẹn
+      const B = [], C = [], F = [];
+      add(B, "sph", P.main, 0, 0.6, 0, 0.7, 0.62, 0.7); add(B, "sph", P.main, 0, 0.1, 0, 0.84, 0.15, 0.84); [[-0.55, 0.3], [0.5, 0.42], [0.1, -0.7]].forEach(q => add(B, "sph", P.main, q[0], 0.12, q[1], 0.17, 0.13, 0.17));   // thân + vũng + giọt chảy
+      add(C, "sph", P.dark, 0, 0.5, 0, 0.3, 0.26, 0.3); [[0.3, 0.78, -0.1, 0.09], [-0.28, 0.4, 0.2, 0.07], [0.1, 0.98, 0.15, 0.06], [-0.2, 0.85, -0.2, 0.05]].forEach(q => add(C, "sph", WHITE, q[0], q[1], q[2], q[3]));   // lõi + bọt khí
+      face(F, 0, 0.68, 0.62, 0.22, 0.9); [-1, 1].forEach(k => add(F, "sph", 0xff6f91, k * 0.4, 0.52, 0.58, 0.16, 0.09, 0.04)); add(F, "sph", EYE, 0, 0.48, 0.67, 0.05, 0.03, 0.03);
+      add(F, "sph", WHITE, -0.38, 0.68, 0.64, 0.045); add(F, "sph", WHITE, 0.46, 0.7, 0.62, 0.04);   // ánh nhìn né sang bên
+      accessory(F, season, 0, 1.16, 0.0, 0.4, P);
+      mesh(ctx, body, B, 0.72); mesh(ctx, body, C, 0.92); mesh(ctx, body, F);
+      return { jelly: 2.8, bob: 0.025 };
+    },
+    parrot(ctx, body, P, season) {   // Mimic Parrot: vẹt nhiều màu, mào + đuôi cầu vồng, mỏ mở ra nhại lại
+      const B = [], F = [], J = [], R = [0xff4d4d, 0xffa94d, 0xffe066, 0x69db7c, 0x4dabf7, 0x9775fa], OR = 0xffb300;
+      add(B, "sph", P.main, 0, 0.78, -0.05, 0.42, 0.52, 0.4); add(B, "sph", P.ghost, 0, 0.7, 0.12, 0.3, 0.4, 0.24); add(B, "sph", P.main, 0, 1.3, 0.12, 0.34, 0.32, 0.32); add(B, "sph", 0xfff6e0, 0, 1.27, 0.3, 0.26, 0.22, 0.16);
+      [[0, 0.08, 0], [-1, 0.1, 0.4], [1, 0.1, -0.4]].forEach((c, i) => add(B, "cone", R[i * 2], c[0] * 0.1, 1.58, -0.02, 0.07, 0.26 - i * 0.02, 0.07, 0, -0.3, -c[2]));   // mào
+      add(B, "cone", OR, 0, 1.24, 0.52, 0.13, 0.26, 0.13, 0, 1.15); add(B, "cone", 0xe69500, 0, 1.18, 0.64, 0.07, 0.12, 0.07, 0, 2.9);   // mỏ trên + móc
+      [-1, 1].forEach(k => { add(B, "cyl", OR, k * 0.14, 0, 0, 0.05, 0.4, 0.05); add(B, "box", OR, k * 0.14, 0, 0.1, 0.16, 0.05, 0.24); });
+      for (let i = 0; i < 6; i++) add(B, "cone", R[i], (i - 2.5) * 0.09, 0.68, -0.4, 0.07, 0.95 + (i % 2) * 0.18, 0.05, 0, -2.1, (i - 2.5) * 0.09);   // đuôi cầu vồng
+      face(F, 0, 1.36, 0.4, 0.15, 0.9); cheeks(F, 0, 1.22, 0.4, 0.23); accessory(F, season, 0, 1.64, 0.08, 0.28, P);
+      add(J, "cone", 0xe69500, 0, 0, 0, 0.1, 0.22, 0.1, 0, 1.5);   // mỏ dưới (gốc ở khớp hàm)
+      mesh(ctx, body, B); mesh(ctx, body, F);
+      const jaw = new THREE.Group(); jaw.position.set(0, 1.19, 0.44); body.add(jaw); mesh(ctx, jaw, J);
+      const pwings = [-1, 1].map(k => { const W = [], g = new THREE.Group(); g.position.set(k * 0.4, 1.0, -0.04); body.add(g);
+        add(W, "sph", 0x4dabf7, k * 0.05, -0.25, 0, 0.12, 0.42, 0.22); add(W, "sph", 0x69db7c, k * 0.07, -0.52, -0.02, 0.1, 0.22, 0.18); add(W, "sph", 0xffe066, k * 0.08, -0.68, -0.03, 0.08, 0.14, 0.14); mesh(ctx, g, W); return g; });
+      const q = sprite(ctx, body, "♪", "#2f9e44", 0.5, 2.05, 0.2, 0.5);
+      return { pwings, jaw, q, qy: 2.05 };
+    },
+    owl(ctx, body, P, season) {   // Story Owl: cú đeo kính, ôm quyển sách mở
+      const B = [], F = [], K = [], bk = P.accent;
+      add(B, "sph", P.main, 0, 0.62, 0, 0.56, 0.62, 0.5); add(B, "sph", 0xfff0d6, 0, 0.58, 0.2, 0.4, 0.48, 0.32);
+      add(B, "sph", P.main, 0, 1.22, 0.04, 0.5, 0.4, 0.42); add(B, "sph", 0xfff0d6, 0, 1.2, 0.28, 0.4, 0.3, 0.2);
+      [-1, 1].forEach(k => { add(B, "cone", P.dark, k * 0.3, 1.5, 0, 0.12, 0.3, 0.1, 0, 0, -k * 0.35); add(B, "sph", P.dark, k * 0.5, 0.62, -0.02, 0.14, 0.44, 0.3, 0, 0, k * 0.2); add(B, "sph", P.dark, k * 0.36, 0.5, 0.32, 0.12, 0.14, 0.17);
+        add(B, "sph", OR2, k * 0.17, 0.07, 0.28, 0.15, 0.08, 0.2); });
+      add(B, "cone", 0xffb300, 0, 1.13, 0.5, 0.07, 0.15, 0.07, 0, 1.7); add(B, "cone", P.dark, 0, 0.22, -0.5, 0.2, 0.3, 0.12, 0, -1.7);
+      [-1, 1].forEach(k => { add(F, "sph", 0x6b4a2f, k * 0.19, 1.26, 0.44, 0.2, 0.2, 0.05); add(F, "sph", WHITE, k * 0.19, 1.26, 0.47, 0.16, 0.16, 0.04); add(F, "sph", EYE, k * 0.19, 1.25, 0.51, 0.085, 0.1, 0.04); add(F, "sph", WHITE, k * 0.16, 1.3, 0.54, 0.03); add(F, "box", 0x6b4a2f, k * 0.4, 1.27, 0.28, 0.03, 0.03, 0.3); });   // kính
+      add(F, "box", 0x6b4a2f, 0, 1.25, 0.45, 0.12, 0.03, 0.04); cheeks(F, 0, 1.08, 0.44, 0.3); accessory(F, season, 0, 1.6, 0.0, 0.38, P);
+      add(K, "box", bk, 0, -0.04, -0.01, 0.84, 0.04, 0.34); add(K, "box", 0xfff6e0, -0.19, 0.0, 0, 0.36, 0.04, 0.3, 0, 0, -0.2); add(K, "box", 0xfff6e0, 0.19, 0.0, 0, 0.36, 0.04, 0.3, 0, 0, 0.2);
+      [-1, 1].forEach(k => [-0.08, 0, 0.08].forEach(z => add(K, "box", 0xb8a98a, k * 0.2, 0.035, z, 0.26, 0.01, 0.02, 0, 0, k * 0.2)));   // dòng chữ
+      mesh(ctx, body, B); mesh(ctx, body, F);
+      const book = new THREE.Group(); book.position.set(0, 0.62, 0.52); book.rotation.x = -0.6; body.add(book); mesh(ctx, book, K);
+      return { book };
     }
   };
 
   function make(type, season, lv) {
     init();
     const P = PAL[season] || PAL.none, build = BUILD[type] || BUILD.ghost, g = new THREE.Group(), body = new THREE.Group(); g.add(body);
-    body.scale.setScalar((1 + Math.min(lv || 1, 30) * 0.005) * ({ ghost: 0.86, worm: 0.84, bug: 0.9 }[type] || 1));   // chỉnh để mọi loài cao khoảng 1,2–1,8 m
+    body.scale.setScalar((1 + Math.min(lv || 1, 30) * 0.005) * ({ ghost: 0.86, worm: 0.84, bug: 0.9, parrot: 0.82, owl: 0.92, slime: 0.95 }[type] || 1));   // chỉnh để mọi loài cao khoảng 1,2–1,8 m
     const ctx = { mats: [] }, X = build(ctx, body, P, PAL[season] ? season : "none"), k0 = body.scale.x, phase = Math.random() * 6.28;
     const letters = X.tiles || [];
     let cur = "idle", st = 0, flashOn = false, lastAlpha = 1, dead = false;
@@ -168,7 +227,7 @@ const MONSTER_MODELS = (function () {
       if (state !== cur) { cur = state; st = 0; if (state !== "die" && dead) { dead = false; body.visible = true; setAlpha(1); letters.forEach(l => l.visible = true); } }
       st += dt;
       const ph = t * 2.2 + phase; let bx = 0, by = X.float || 0, bz = 0, rx = 0, rz = 0, sx = 1, sy = 1, alpha = 1, flash = false, lunge = 0, wave = 1;
-      if (state === "idle") { by += Math.sin(ph) * (X.bob || 0.03); sy = 1 + Math.sin(ph) * 0.025; sx = 1 - Math.sin(ph) * 0.012; }
+      if (state === "idle") { by += Math.sin(ph) * (X.bob || 0.03); sy = 1 + Math.sin(ph) * 0.025 * (X.jelly || 1); sx = 1 - Math.sin(ph) * 0.012 * (X.jelly || 1); }
       else if (state === "walk") { const w = t * 8 + phase; rz = Math.sin(w) * 0.12; by += Math.abs(Math.sin(w)) * 0.08; sy = 1 + Math.sin(w * 2) * 0.03; wave = 2.2; }
       else if (state === "attack") { const p = Math.min(1, st / 0.5); lunge = Math.sin(p * Math.PI); bz = lunge * 0.75; rx = lunge * 0.3; by += lunge * 0.1; sy = 1 - lunge * 0.06; wave = 3; }
       else if (state === "hit") { const f = Math.max(0, 1 - st / 0.35); bx = Math.sin(st * 55) * 0.07 * f; rz = Math.sin(st * 40) * 0.08 * f; flash = st < 0.4 && Math.floor(st * 16) % 2 === 0; sy = 1 - 0.08 * f; }
@@ -179,6 +238,10 @@ const MONSTER_MODELS = (function () {
       if (X.ant) { X.ant.rotation.z = Math.sin(t * 5 * wave + phase) * 0.14; X.ant.rotation.x = Math.sin(t * 3 + phase) * 0.1 + lunge * 0.3; }
       if (X.claws) X.claws.forEach((c, i) => { const s = i ? 1 : -1; c.rotation.z = s * (Math.sin(t * 2.4 * wave + phase + i) * 0.12 + 0.08); c.rotation.x = -0.15 + lunge * 1.5 + (state === "idle" ? Math.sin(t * 2.4 + i * 2) * 0.12 : 0); });
       if (X.wings) X.wings.forEach((w, i) => { const s = i ? 1 : -1, f = state === "die" ? -0.3 : Math.sin(t * (state === "idle" ? 7 : 13) + phase) * (state === "idle" ? 0.35 : 0.6) + 0.15 - lunge * 0.6; w.rotation.z = s * f; });
+      if (X.hands) { const a = t * (state === "attack" ? 7 : 1.6) + phase; X.hands[0].rotation.y = a; X.hands[1].rotation.y = a / 12; }   // kim đồng hồ rùa
+      if (X.pwings) X.pwings.forEach((w, i) => { const s = i ? 1 : -1, f = state === "die" ? 0 : 0.1 + (state === "idle" ? Math.max(0, Math.sin(t * 3 + phase)) * 0.1 : Math.abs(Math.sin(t * 14 + phase)) * (state === "walk" ? 0.5 : 0.95)); w.rotation.z = s * f; });
+      if (X.jaw) X.jaw.rotation.x = state === "attack" ? 0.6 : state === "die" ? 0.2 : 0.06 + Math.max(0, Math.sin(t * 2.5 + phase)) * (state === "idle" ? 0.3 : 0.15);   // mỏ mở ra nhại lại
+      if (X.book) { X.book.rotation.z = Math.sin(t * 1.7 + phase) * 0.06; X.book.rotation.x = -0.6 - lunge * 0.5; }
       if (X.q) { X.q.position.y = X.qy + Math.sin(t * 3 + phase) * 0.05; }
     }
     return { g, update };
