@@ -25,8 +25,13 @@ const MON = {
   bug:   { name: "Riddle Bug", icon: "🐞", weak: "answer", hp: 0.9, dmg: 0.9, speed: 1.1, range: 2.0 },
   worm:  { name: "Scramble Worm", icon: "🪱", weak: "build", hp: 1.2, dmg: 1.1, speed: 0.8, range: 2.4 },
   crab:  { name: "Question Crab", icon: "🦀", weak: "answer", hp: 1.3, dmg: 1.0, speed: 0.9, range: 2.2 },
-  bat:   { name: "Blank Bat", icon: "🦇", weak: "name", hp: 0.8, dmg: 1.2, speed: 1.3, range: 2.0 }
+  bat:   { name: "Blank Bat", icon: "🦇", weak: "name", hp: 0.8, dmg: 1.2, speed: 1.3, range: 2.0 },
+  turtle: { name: "Tense Turtle", icon: "🐢", weak: "build", hp: 1.6, dmg: 0.9, speed: 0.6, range: 2.0 },   // vòng 2
+  slime: { name: "Shy Slime", icon: "🫧", weak: "ask", hp: 1.0, dmg: 1.0, speed: 1.0, range: 2.0 },
+  parrot: { name: "Mimic Parrot", icon: "🦜", weak: "repeat", hp: 0.9, dmg: 1.2, speed: 1.4, range: 2.2 },
+  owl:   { name: "Story Owl", icon: "🦉", weak: "answer", hp: 1.2, dmg: 1.1, speed: 1.0, range: 2.4 }
 };
+const SEASON_MON2 = { spring: ["owl", "slime", "bug"], tropic: ["parrot", "crab", "turtle"], desert: ["turtle", "bat", "owl"], autumn: ["owl", "parrot", "slime"], winter: ["turtle", "slime", "ghost"] };
 const SEASON_MON = { spring: ["ghost", "bug", "bug"], tropic: ["crab", "worm", "bug"], desert: ["bat", "worm", "crab"], autumn: ["bug", "bat", "ghost"], winter: ["ghost", "bat", "crab"] };
 const TASK_ICON = { repeat: "📢", answer: "🎺", build: "🎸", name: "🥁", ask: "💬" };
 const TASK_NAME = { repeat: "REPEAT · nói lại", answer: "ANSWER · trả lời", build: "BUILD · xếp câu", name: "NAME · gọi tên", ask: "ASK · đặt câu hỏi" };
@@ -191,9 +196,9 @@ function showWeaponInHand() {   // vũ khí hiện trên tay khi ở vùng hoang
 }
 /* ---------- 6. VÀO / RA VÙNG HOANG DÃ ---------- */
 function setCombatOn(on, sec) {
-  CB.on = on; CB.sec = sec; document.body.classList.toggle("cbOn", on);
+  const wasOn = CB.on; CB.on = on; CB.sec = sec; document.body.classList.toggle("cbOn", on);
   ["cbHud", "cbFood"].forEach(id => $(id).style.display = on ? "flex" : "none"); $("cbBtns").style.display = on ? "block" : "none";
-  if (on) { CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
+  if (on) { if (!wasOn) CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
     flash("🌿 " + sec.name + "<div style='font-size:13px;font-weight:400'>Monster zone! Tap ⚔️ to hit, tap a skill and SPEAK to cast. / Vùng quái: bấm ⚔️ đánh thường, bấm chiêu rồi NÓI để tung chiêu.</div>"); }
   else { if (!CB.wideBefore && camWide) setWide(false); endCast(true); }
   showWeaponInHand();
@@ -204,7 +209,7 @@ function updateCombat(dt, t) {
   if (!save || !save.combat || typeof WILDS === "undefined") return;
   dayTick(dt);
   const sec = (!room && !maze) ? WILDS.sectorAt(player.position.x, player.position.z) : null;
-  if (!!sec !== CB.on || (sec && CB.sec && sec.dir !== CB.sec.dir)) setCombatOn(!!sec, sec);
+  if (!!sec !== CB.on || (sec && CB.sec && (sec.dir !== CB.sec.dir || sec.ring !== CB.sec.ring))) setCombatOn(!!sec, sec);
   CB.mp = Math.min(100, CB.mp + dt * 12.5);
   for (const k in CB.cd) CB.cd[k] = Math.max(0, CB.cd[k] - dt);
   CB.atkCd = Math.max(0, CB.atkCd - dt);
@@ -240,7 +245,7 @@ function spawnTick() {
   const pts = WILDS.spawnPoints(s.dir, s.ring) || []; if (!pts.length) return;
   const far = pts.filter(p => Math.hypot(p.x - player.position.x, p.z - player.position.z) > 14 && Math.hypot(p.x - player.position.x, p.z - player.position.z) < 45);
   const p = (far.length ? far : pts)[Math.floor(Math.random() * (far.length ? far.length : pts.length))];
-  const list = SEASON_MON[s.season] || SEASON_MON.spring; makeMon(list[Math.floor(Math.random() * list.length)], s, p.x, p.z);
+  const list = (s.ring >= 2 ? SEASON_MON2 : SEASON_MON)[s.season] || SEASON_MON.spring; makeMon(list[Math.floor(Math.random() * list.length)], s, p.x, p.z);
 }
 function makeMon(type, sec, x, z) {
   const T = MON[type], lv = ringLevel(x, z);
@@ -292,7 +297,7 @@ function hurtPlayer(M) {
 function knockOut() {   // hết máu: xám 2 giây rồi về cổng vùng
   CB.ko = true; endCast(true); $("cbKo").style.display = "flex"; talking = true;
   setTimeout(() => {
-    const g = (WILDS.gates || []).find(G => CB.sec && G.dir === CB.sec.dir) || WILDS.gates[0];
+    const G2 = CB.sec && CB.sec.ring >= 2 && WILDS.gates2 ? WILDS.gates2 : WILDS.gates, g = (G2 || []).find(G => CB.sec && G.dir === CB.sec.dir) || WILDS.gates[0];
     if (g) { player.position.set(g.x, 0, g.z); camSnap = true; }
     setHp(hpMax() * 0.5); CB.ko = false; talking = false; $("cbKo").style.display = "none"; saveNow(); renderHud();
   }, 2000);
