@@ -217,7 +217,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Officer Ben – Police Officer", color: 0x1864ab, place: "police", x: 0, z: -3.6,
+  name: "Officer Ben – Police Officer", color: 0x1864ab, place: "police", x: 6, z: 2,
   steps: [
     { say: "Hello. Is everything OK?",
       card: { w: "lost", pic: "🔍", ex: "I lost my wallet." },
@@ -240,7 +240,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Captain Rosa – Firefighter", color: 0xc92a2a, place: "fire", x: 0, z: -3.6,
+  name: "Captain Linh – Firefighter", color: 0xc92a2a, place: "fire", x: 3, z: 6,
   steps: [
     { say: "Hi! Do you know the fire number in Vietnam?",
       card: { w: "emergency", pic: "🚨", ex: "In an emergency, call 114." },
@@ -1394,6 +1394,200 @@ const LESSONS = [
         { t: "How long will it take, please?", ok: true,  fb: "Polite question! +10" },
         { t: "Take long how will it, please.", ok: false, fb: "Word order: “How long will it take, please?”" },
         { t: "I take long, I am a turtle!",    ok: false, fb: "Haha, turtles are slow! Try “How long will it take?”" } ] }
+  ]
+},
+{
+  name: "Phong – Desk Officer", color: 0x1971c2, place: "police", x: -5, z: 8,
+  steps: [
+    { say: "Hello! How can we help you today?",
+      card: { w: "report", pic: "📝", ex: "I want to report a lost bag." },
+      q: { w: "How can we help?", pic: "🙋", ex: "How can we help you today?" },
+      choices: [
+        { t: "I want to report a lost bag.", ok: true,  fb: "Clear and polite! +10" },
+        { t: "Bag I want lost report.",      ok: false, fb: "Word order: “I want to report a lost bag.”" },
+        { t: "I am a bag, lost today.",      ok: false, fb: "Haha, you are not a bag :) Try “I want to report a lost bag.”" } ] },
+    { say: "Oh no! When did you lose it?",
+      card: { w: "yesterday", pic: "📅", ex: "I lost it yesterday." },
+      q: { w: "When…?", pic: "🗓️", ex: "When did you lose it?" },
+      choices: [
+        { t: "I lost it yesterday.",           ok: true,  fb: "Great! Time helps us find it. +10" },
+        { t: "I lose it yesterday.",           ok: false, fb: "Past tense: “I lost it yesterday.”" },
+        { t: "Yesterday is my favourite day.", ok: false, fb: "Nice! But tell me WHEN you lost it." } ] },
+    { say: "Thank you. Please fill in this claim form.",
+      card: { w: "Thank you!", pic: "🙏", ex: "Thank you! I’ll fill in the form." },
+      choices: [
+        { t: "Thank you! I’ll fill in the form.", ok: true,  fb: "Polite and clear! +10" },
+        { t: "Form is I fill thank you.",         ok: false, fb: "Word order: “Thank you! I’ll fill in the form.”" },
+        { t: "I am the form, please.",            ok: false, fb: "Haha! You are not a form :) Try “I’ll fill in the form.”" } ] }
+  ]
+},
+{
+  name: "Thi – Dispatcher", color: 0x0b7285, place: "police", x: -7, z: -6,
+  steps: [
+    { say: "Hi! Where do you want to go?",
+      card: { w: "directions", pic: "🧭", ex: "Can you tell me the way, please?" },
+      choices: [
+        { t: "Can you tell me the way to the park?", ok: true,  fb: "Clear question! +10" },
+        { t: "Way park the to me tell?",              ok: false, fb: "Word order: “Can you tell me the way to the park?”" },
+        { t: "I am the park, yes.",                   ok: false, fb: "Haha! Try “Can you tell me the way to the park?”" } ] },
+    { say: "The park is near the bank. Go straight, then turn left.",
+      card: { w: "at the bank", pic: "🏦", ex: "Turn left at the bank." },
+      q: { w: "Which way?", pic: "❓", ex: "Which way is the park?" },
+      choices: [
+        { t: "OK. I’ll turn left at the bank.", ok: true,  fb: "Great! Now you know the way. +10" },
+        { t: "Left turn I bank at.",            ok: false, fb: "Word order: “Turn left at the bank.”" },
+        { t: "Bank the at left I turn.",        ok: false, fb: "Almost! Say “I’ll turn left at the bank.”" } ] },
+    { say: "If you are in danger, call one one three.",
+      card: { w: "113", pic: "📞", ex: "Call 113 for the police." },
+      choices: [
+        { t: "Yes. I’ll call 113 if I need help.", ok: true,  fb: "Brilliant! Always ask for help. +10" },
+        { t: "One one four is the police.",        ok: false, fb: "Close! 114 is fire. Police is 113." },
+        { t: "I will hide and not call.",          ok: false, fb: "No! Call 113 or find an adult for help." } ] }
+  ]
+},
+{
+  name: "Hieu – Traffic Officer", color: 0xe8590c, place: "police", x: 7, z: -9,
+  steps: [
+    { say: "Hello! Wear a helmet when you ride. Do you ride a bike?",
+      card: { w: "wear a helmet", pic: "⛑️", ex: "Always wear a helmet on your bike." },
+      q: { w: "Do you ride a bike?", pic: "🚲", ex: "Do you ride a bike?" },
+      choices: [
+        { t: "Yes, I always wear a helmet.", ok: true,  fb: "Great! Safety first. +10" },
+        { t: "Helmet is wear I always.",     ok: false, fb: "Word order: “I always wear a helmet.”" },
+        { t: "No, I don’t need a helmet.",   ok: false, fb: "Helmets keep your head safe. Try “I always wear one.”" } ] },
+    { say: "Stop at the red light. Then look before you cross.",
+      card: { w: "cross the road", pic: "🚸", ex: "Look left and right before you cross the road." },
+      choices: [
+        { t: "Look left, look right, then cross.", ok: true,  fb: "Safe crossing! +10" },
+        { t: "Cross fast when I see a dog.",       ok: false, fb: "Look at the traffic first, not the dog :)" },
+        { t: "Left right look cross then.",        ok: false, fb: "Word order: “Look left, look right, then cross.”" } ] },
+    { say: "Good! Wear a reflective vest at night, too.",
+      card: { w: "reflective vest", pic: "🦺", ex: "A reflective vest helps drivers see me." },
+      choices: [
+        { t: "Drivers can see me in the dark.", ok: true,  fb: "Bright idea! +10" },
+        { t: "Vest is reflective I am.",        ok: false, fb: "Try “Drivers can see me in the dark.”" },
+        { t: "Yellow is my favourite vest.",    ok: false, fb: "Nice colour! But tell me WHY the vest helps." } ] }
+  ]
+},
+{
+  name: "Vu – Detective", color: 0x495057, place: "police", x: -2, z: -11, minLv: 5,
+  steps: [
+    { say: "Hello! I’m looking for a lost cat. Have you seen it?",
+      card: { w: "missing", pic: "🐱", ex: "My cat is missing since morning." },
+      q: { w: "Have you seen it?", pic: "👀", ex: "Have you seen my cat?" },
+      choices: [
+        { t: "No, but I can help you look.", ok: true,  fb: "Kind! Let’s look together. +10" },
+        { t: "Cat seen, I have it not.",     ok: false, fb: "Word order: “No, I didn’t see it.”" },
+        { t: "I am the cat, meow!",          ok: false, fb: "Haha! Meow! But try “No, I didn’t see it.”" } ] },
+    { say: "Thank you! It’s black and white. When did you last see it?",
+      card: { w: "this morning", pic: "🌅", ex: "I saw it this morning in the park." },
+      choices: [
+        { t: "I saw it this morning in the park.", ok: true,  fb: "Helpful! Time and place! +10" },
+        { t: "I see it morning yesterday.",        ok: false, fb: "Word order: “I saw it this morning.”" },
+        { t: "It is a very nice cat, I think.",    ok: false, fb: "Nice cat! But tell me WHEN you saw it." } ] },
+    { say: "Great! Let’s find it together.",
+      card: { w: "together", pic: "🤝", ex: "We will find it together." },
+      choices: [
+        { t: "Thank you! Let’s find it together.", ok: true,  fb: "Lovely teamwork! +10" },
+        { t: "Together is we find it, OK.",        ok: false, fb: "Word order: “Let’s find it together.”" },
+        { t: "I will find it alone, fast.",        ok: false, fb: "Two people can find it faster. Try “Let’s find it together.”" } ] }
+  ]
+},
+{
+  name: "Khang – Firefighter", color: 0xc92a2a, place: "fire", x: -1, z: -4,
+  steps: [
+    { say: "Hi! This is our big red fire truck. Do you like it?",
+      card: { w: "fire truck", pic: "🚒", ex: "The fire truck is big and red." },
+      q: { w: "Do you like it?", pic: "👍", ex: "Do you like our fire truck?" },
+      choices: [
+        { t: "Yes, I like it. It’s big and red.", ok: true,  fb: "Great! Big and red! +10" },
+        { t: "Fire truck is big red is.",          ok: false, fb: "Word order: “The fire truck is big and red.”" },
+        { t: "I am a fire truck, yes.",            ok: false, fb: "Haha! You are not a truck :) Try “I like it.”" } ] },
+    { say: "Listen! If you hear the siren, move to the side.",
+      card: { w: "siren", pic: "🚨", ex: "Move to the side when you hear a siren." },
+      q: { w: "What should you do?", pic: "❓", ex: "What should you do?" },
+      choices: [
+        { t: "I move to the side and wait.", ok: true,  fb: "Right! Make room for the truck. +10" },
+        { t: "I run to the siren to see!",   ok: false, fb: "No! Stay away. Let the truck pass safely." },
+        { t: "Siren is music, I dance.",     ok: false, fb: "Fun! But first, move to the side." } ] },
+    { say: "Good job! Tell me one fire safety rule.",
+      card: { w: "fire safety", pic: "🔥", ex: "Fire safety is important for everyone." },
+      choices: [
+        { t: "Never play with matches.",   ok: true,  fb: "Excellent! Matches are not toys. +10" },
+        { t: "Matches are toys. I play.",  ok: false, fb: "No! Matches can start a fire. Keep them away." },
+        { t: "Fire is my favourite game.", ok: false, fb: "Fire is not a game! Try “Never play with matches.”" } ] }
+  ]
+},
+{
+  name: "Bach – Firefighter", color: 0xe03131, place: "fire", x: 8, z: -6,
+  steps: [
+    { say: "Hi! I wear special clothes at work. Do you like my helmet?",
+      card: { w: "protective gear", pic: "🧥", ex: "Firefighters wear protective gear." },
+      choices: [
+        { t: "Yes! Your red helmet is cool.", ok: true,  fb: "Nice! Clear and friendly. +10" },
+        { t: "Helmet is red, I like.",        ok: false, fb: "Try “I like your red helmet.”" },
+        { t: "Helmet, you are very red!",     ok: false, fb: "Haha, the helmet is red, not you! Try “Your helmet is cool.”" } ] },
+    { say: "Firefighters wear boots and gloves. Why?",
+      card: { w: "to be safe", pic: "🛡️", ex: "We wear gloves to be safe." },
+      q: { w: "Why?", pic: "❓", ex: "Why do firefighters wear boots?" },
+      choices: [
+        { t: "To keep their feet and hands safe.", ok: true,  fb: "Yes! Safety first. +10" },
+        { t: "Because gloves are nice.",           ok: false, fb: "Nice, but gloves keep hands safe. Try “To keep safe.”" },
+        { t: "Because boots are very big.",        ok: false, fb: "Big boots are fun! But they keep feet safe." } ] },
+    { say: "Thank you for talking to me! Have a good day.",
+      card: { w: "goodbye", pic: "👋", ex: "Goodbye! Have a good day." },
+      choices: [
+        { t: "Thank you! Goodbye!",      ok: true,  fb: "Friendly! +10" },
+        { t: "Thank you, I am goodbye.", ok: false, fb: "Try “Thank you! Goodbye!”" },
+        { t: "Goodbye, I am helmet.",    ok: false, fb: "Haha! Try “Goodbye! Have a good day.”" } ] }
+  ]
+},
+{
+  name: "Hoang – Fire Cook", color: 0xe8590c, place: "fire", x: 8, z: 8,
+  steps: [
+    { say: "Hi! I cook lunch for the team today.",
+      card: { w: "hungry", pic: "🍜", ex: "I’m hungry. What’s for lunch?" },
+      q: { w: "Are you hungry?", pic: "🍽️", ex: "Are you hungry?" },
+      choices: [
+        { t: "Yes, I’m hungry. What’s for lunch?", ok: true,  fb: "Yum! +10" },
+        { t: "Hungry I am, yes lunch.",            ok: false, fb: "Word order: “I’m hungry. What’s for lunch?”" },
+        { t: "Lunch is my favourite fire.",        ok: false, fb: "Ha! Fire is not food. Try “Yes, I’m hungry.”" } ] },
+    { say: "Remember, turn off the stove when you finish cooking.",
+      card: { w: "stove", pic: "🍳", ex: "Turn off the stove after cooking." },
+      choices: [
+        { t: "OK. I will turn off the stove.",   ok: true,  fb: "Great! A safe kitchen. +10" },
+        { t: "Stove off I turn will.",           ok: false, fb: "Word order: “I will turn off the stove.”" },
+        { t: "I leave the stove on, it’s fine.", ok: false, fb: "Careful! A stove can start a fire. Turn it off." } ] },
+    { say: "Good! Would you like some soup?",
+      card: { w: "would like", pic: "🥣", ex: "I would like some soup, please." },
+      choices: [
+        { t: "Yes, please. I would like some soup.", ok: true,  fb: "Polite! +10" },
+        { t: "Soup is I would like please.",         ok: false, fb: "Word order: “I would like some soup, please.”" },
+        { t: "No, soup is a bike.",                  ok: false, fb: "Haha! Bikes are not soup :) Try “No, thank you.”" } ] }
+  ]
+},
+{
+  name: "Nga – Safety Instructor", color: 0x2f9e44, place: "fire", x: -6, z: 10, minLv: 5,
+  steps: [
+    { say: "Hello! Today we practise a fire escape plan. Are you ready?",
+      card: { w: "escape plan", pic: "🗺️", ex: "Every family needs an escape plan." },
+      choices: [
+        { t: "Yes, I am ready. Show me!", ok: true,  fb: "Great! Let’s practise. +10" },
+        { t: "I ready am, yes is.",       ok: false, fb: "Word order: “Yes, I am ready. Show me!”" },
+        { t: "Plan is my escape, I run.", ok: false, fb: "Try “Yes, I am ready. Show me!”" } ] },
+    { say: "Oh no, your clothes are on fire! Remember this rule.",
+      card: { w: "stop, drop and roll", pic: "🔥", ex: "Stop, drop and roll on the floor." },
+      q: { w: "What do you do first?", pic: "❓", ex: "What do you do first?" },
+      choices: [
+        { t: "Stop, drop and roll on the floor.", ok: true,  fb: "Correct! Stop, drop and roll. +10" },
+        { t: "Run fast to find my mum.",          ok: false, fb: "No! Running makes the fire bigger. Stop, drop and roll." },
+        { t: "Wave my hands and jump around.",    ok: false, fb: "Waving can spread the fire. Try “Stop, drop and roll.”" } ] },
+    { say: "Very good! In a fire, use the stairs, not the lift.",
+      card: { w: "use the stairs", pic: "🪜", ex: "Use the stairs, not the lift." },
+      choices: [
+        { t: "We use the stairs, not the lift.", ok: true,  fb: "Right! Lifts can stop in a fire. +10" },
+        { t: "Stairs is the lift, we use.",      ok: false, fb: "Word order: “We use the stairs, not the lift.”" },
+        { t: "I take the lift with my toys.",    ok: false, fb: "Toys can wait! In a fire, use the stairs." } ] }
   ]
 },
 /* ----- Town Hall (townhall) ----- */
