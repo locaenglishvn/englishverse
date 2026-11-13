@@ -554,6 +554,48 @@ const VOCAB = {
   ],
   /* ===== VOCAB.bakery – điền món vào trong mảng dưới đây ===== */
   bakery: [
+    // quầy bánh mì (khu trước)
+    { w: "banh mi",         pic: "🥪", pos: "noun", kind: "food",    at: "counter", say: "It's a banh mi.",          ex: "I'd like a banh mi, please." },
+    { w: "baguette",        pic: "🥖", pos: "noun", kind: "food",    at: "counter", say: "It's a baguette.",         ex: "The baguette is long and crispy." },
+    { w: "pâté",            pic: "🥫", pos: "noun", kind: "food",    at: "counter", say: "It's pâté.",               ex: "I like pâté in my banh mi." },
+    { w: "pork roll",       pic: "🍖", pos: "noun", kind: "food",    at: "counter", say: "It's pork roll.",          ex: "Pork roll is a Vietnamese meat." },
+    { w: "cucumber",        pic: "🥒", pos: "noun", kind: "food",    at: "counter", say: "It's a cucumber.",         ex: "Fresh cucumber is cool and crunchy." },
+    { w: "pickled carrots", pic: "🥕", pos: "noun", kind: "food",    at: "counter", say: "They're pickled carrots.", ex: "Pickled carrots taste sweet and sour." },
+    { w: "coriander",       pic: "🌿", pos: "noun", kind: "food",    at: "counter", say: "It's coriander.",          ex: "No coriander, please." },
+    { w: "chilli",          pic: "🌶️", pos: "noun", kind: "food",    at: "counter", say: "It's a chilli.",           ex: "This chilli is very hot!" },
+    { w: "paper bag",       pic: "🛍️", pos: "noun", kind: "thing",   at: "counter", say: "It's a paper bag.",        ex: "Put the bread in a paper bag, please." },
+    // kệ bánh mì dọc tường
+    { w: "sandwich bread",  pic: "🍞", pos: "noun", kind: "food",    at: "shelf", say: "It's sandwich bread.",     ex: "I eat sandwich bread for breakfast." },
+    { w: "bagel",           pic: "🥯", pos: "noun", kind: "food",    at: "shelf", say: "It's a bagel.",            ex: "A bagel has a hole in the middle." },
+    { w: "steamed bun",     pic: "🥟", pos: "noun", kind: "food",    at: "shelf", say: "It's a steamed bun.",      ex: "The steamed bun is soft and hot." },
+    { w: "butter",          pic: "🧈", pos: "noun", kind: "food",    at: "shelf", say: "It's butter.",             ex: "Put some butter on the bread." },
+    { w: "jam",             pic: "🍓", pos: "noun", kind: "food",    at: "shelf", say: "It's jam.",                ex: "I like strawberry jam." },
+    // tủ kính bánh ngọt
+    { w: "sponge cake",     pic: "🍰", pos: "noun", kind: "food",    at: "cases", say: "It's a sponge cake.",      ex: "The sponge cake is soft and sweet." },
+    { w: "flan",            pic: "🍮", pos: "noun", kind: "food",    at: "cases", say: "It's a flan.",             ex: "Flan is sweet and smooth." },
+    { w: "birthday cake",   pic: "🎂", pos: "noun", kind: "food",    at: "cases", say: "It's a birthday cake.",    ex: "We have a birthday cake for my sister." },
+    { w: "mooncake",        pic: "🥮", pos: "noun", kind: "food",    at: "cases", say: "It's a mooncake.",         ex: "We eat mooncakes at the Mid-Autumn Festival." },
+    { w: "muffin",          pic: "🧁", pos: "noun", kind: "food",    at: "cases", say: "It's a muffin.",           ex: "I'd like a blueberry muffin." },
+    { w: "tart",            pic: "🥧", pos: "noun", kind: "food",    at: "cases", say: "It's a tart.",             ex: "The fruit tart looks delicious." },
+    // tủ lạnh nước
+    { w: "orange juice",    pic: "🍊", pos: "noun", kind: "drink",   at: "fridge", say: "It's orange juice.",      ex: "I drink orange juice every morning." },
+    { w: "yogurt",          pic: "🥛", pos: "noun", kind: "food",    at: "fridge", say: "It's yogurt.",            ex: "Yogurt is cold and creamy." },
+    { w: "soda can",        pic: "🥤", pos: "noun", kind: "drink",   at: "fridge", say: "It's a soda can.",        ex: "Can I have a cold soda can?" },
+    // góc ngồi
+    { w: "table",           pic: "🍽️", pos: "noun", kind: "furniture", at: "seats", say: "It's a table.",         ex: "A table for two, please." },
+    { w: "chair",           pic: "🪑", pos: "noun", kind: "furniture", at: "seats", say: "It's a chair.",         ex: "Please sit on this chair." },
+    { w: "plate",           pic: "🍽️", pos: "noun", kind: "thing",   at: "seats", say: "It's a plate.",           ex: "Put the cake on the plate." },
+    // bếp sau
+    { w: "oven",            pic: "♨️", pos: "noun", kind: "machine", at: "kitchen", say: "It's an oven.",          ex: "The bread is in the oven." },
+    { w: "dough mixer",     pic: "🌀", pos: "noun", kind: "machine", at: "kitchen", say: "It's a dough mixer.",    ex: "The dough mixer is very strong." },
+    { w: "rolling pin",     pic: "🪵", pos: "noun", kind: "tool",    at: "kitchen", say: "It's a rolling pin.",    ex: "Use a rolling pin to flatten the dough." },
+    { w: "flour",           pic: "🌾", pos: "noun", kind: "food",    at: "kitchen", say: "It's flour.",            ex: "We need flour to make bread." },
+    { w: "dough",           pic: "⚪", pos: "noun", kind: "food",    at: "kitchen", say: "It's dough.",            ex: "The dough is soft and sticky." },
+    { w: "baking tray",     pic: "🍪", pos: "noun", kind: "tool",    at: "kitchen", say: "It's a baking tray.",    ex: "Put the bread on the baking tray." },
+    { w: "rolling rack",    pic: "🛒", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a rolling rack.", ex: "The hot bread is on the rolling rack." },
+    { w: "sink",            pic: "🚰", pos: "noun", kind: "furniture", at: "kitchen", say: "It's a sink.",         ex: "Wash your hands in the sink." },
+    { w: "timer",           pic: "⏲️", pos: "noun", kind: "machine", at: "kitchen", say: "It's a timer.",          ex: "The timer rings after twenty minutes." },
+    { w: "apron",           pic: "👨‍🍳", pos: "noun", kind: "thing",   at: "kitchen", say: "It's an apron.",        ex: "The baker wears a white apron." }
   ],
   /* ===== VOCAB.furniture – điền món vào trong mảng dưới đây ===== */
   furniture: [

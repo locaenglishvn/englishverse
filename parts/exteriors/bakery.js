@@ -2,7 +2,7 @@
    (mặt tiền đã vẽ sẵn trong ngoại thất cafe). File này chỉ thêm ổ bánh mì khổng lồ trên mái hiên, xe bánh mì kính, cửa vào. */
 EXTERIORS_EXTRA.bakeryDoor = function (g) {
   const F = 4.52;   // mặt tiền nhà ống (tính từ giữa căn)
-  const bread = new THREE.Group(); bread.position.set(0, 3.55, F + 0.55); bread.rotation.z = 0.06; g.add(bread);
+  const bread = new THREE.Group(); bread.position.set(0, 4.45, F + 0.6); bread.rotation.z = 0.06; g.add(bread);
   lc(bread, 0.42, 0.42, 3.2, 0xd9902f, 0, 0, 0, 14).rotation.z = Math.PI / 2;
   [-1.6, 1.6].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.42, 14, 10), mat(0xd9902f)); e.position.x = x; e.scale.x = 0.7; bread.add(e); });
   [-1, -0.3, 0.4, 1.1].forEach(x => { const c = lb(bread, 0.08, 0.05, 0.5, 0xf0c27a, x, 0.4, 0); c.rotation.y = 0.5; });

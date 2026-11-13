@@ -1254,6 +1254,129 @@ const LESSONS = [
 /* ===== NPC: school – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
 
 /* ===== NPC: bakery – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+,{
+  name: "Auntie Hanh – Banh Mi Seller", color: 0xe8590c, place: "bakery", x: -7.5, z: 9.6,
+  steps: [
+    { say: "Hello! What would you like in your banh mi?",
+      q: { w: "What would you like…?", pic: "🥪", ex: "What would you like in your banh mi?" },
+      card: { w: "with pâté", pic: "🥫", ex: "One banh mi with pâté, please." },
+      choices: [
+        { t: "One banh mi with pâté, please.", ok: true,  fb: "Perfect order! +10" },
+        { t: "I want banh mi pâté have.",      ok: false, fb: "Try “One banh mi with pâté, please.”" },
+        { t: "Pâté is good morning.",          ok: false, fb: "Haha! Say what you want: “with pâté”." } ] },
+    { say: "Sure. Would you like chilli?",
+      q: { w: "Would you like…?", pic: "🌶️", ex: "Would you like chilli?" },
+      card: { w: "no chilli", pic: "🚫", ex: "No chilli, please." },
+      choices: [
+        { t: "No chilli, please.",      ok: true,  fb: "Clear and polite! +10" },
+        { t: "Chilli no I like.",       ok: false, fb: "Word order: “No chilli, please.”" },
+        { t: "Yes, I am a chilli.",     ok: false, fb: "Ha ha! Try “No chilli, please.”" } ] },
+    { say: "Here you are. That’s 20,000 dong.",
+      card: { w: "How much is it?", pic: "💰", ex: "How much is it? – It’s 20,000 dong." },
+      choices: [
+        { t: "Here you are. Thank you!", ok: true,  fb: "Lovely! +10" },
+        { t: "It is how much?",          ok: false, fb: "Say “How much is it?” when you ask." },
+        { t: "I give you bread.",        ok: false, fb: "You pay money :) Try “Here you are.”" } ] }
+  ]
+},
+{
+  name: "Chef Minh – Pastry Chef", color: 0xf1f3f5, place: "bakery", x: 3.2, z: -13.2,
+  steps: [
+    { say: "Welcome to my kitchen! First, we mix flour, water and yeast.",
+      q: { w: "First… then…", pic: "1️⃣", ex: "First we mix the flour. Then we make dough." },
+      card: { w: "mix the flour", pic: "🌾", ex: "First, we mix the flour and water." },
+      choices: [
+        { t: "What do you make with it?", ok: true,  fb: "Good question! +10" },
+        { t: "Flour is mix I.",           ok: false, fb: "Try “What do you make with it?”" },
+        { t: "I mix you.",                ok: false, fb: "Not you, the flour :) Ask about the bread." } ] },
+    { say: "Then we make the dough soft. We wait one hour.",
+      card: { w: "wait one hour", pic: "⏲️", ex: "The dough must wait for one hour." },
+      choices: [
+        { t: "Why does it wait?",         ok: true,  fb: "Smart! The dough grows. +10" },
+        { t: "Hour one is wait why.",     ok: false, fb: "Try “Why does it wait?”" },
+        { t: "I am hungry now.",          ok: false, fb: "Me too! But first ask: “Why does it wait?”" } ] },
+    { say: "Then we bake it in the oven for twenty minutes. It smells great!",
+      q: { w: "bake in the oven", pic: "♨️", ex: "We bake the bread in the oven." },
+      card: { w: "It smells great!", pic: "👃", ex: "The bread smells great!" },
+      choices: [
+        { t: "It smells great! I’m hungry.", ok: true,  fb: "Delicious! +10" },
+        { t: "Oven is smell me.",            ok: false, fb: "Try “It smells great!”" },
+        { t: "The bread is run away.",       ok: false, fb: "Ha ha! Say “It smells great!”" } ] }
+  ]
+},
+{
+  name: "Mimi – Birthday Girl", color: 0xe64980, place: "bakery", x: 0.9, z: 4.4,
+  steps: [
+    { say: "Hi! It’s my birthday tomorrow. I want a cake!",
+      card: { w: "Happy birthday!", pic: "🎉", ex: "Happy birthday! How old are you?" },
+      choices: [
+        { t: "Happy birthday! How old are you?", ok: true,  fb: "Sweet! +10" },
+        { t: "Birthday is happy you.",           ok: false, fb: "Say “Happy birthday!”" },
+        { t: "I am not birthday.",               ok: false, fb: "Be kind :) Try “Happy birthday!”" } ] },
+    { say: "I’m nine! Which cake is nice? Chocolate or strawberry?",
+      q: { w: "Chocolate or strawberry?", pic: "🍓", ex: "Do you like chocolate or strawberry?" },
+      card: { w: "I like… best", pic: "😋", ex: "I like strawberry best." },
+      choices: [
+        { t: "I like strawberry best.", ok: true,  fb: "Pink and yummy! +10" },
+        { t: "Strawberry I am like.",   ok: false, fb: "Word order: “I like strawberry.”" },
+        { t: "Yes, the cake.",          ok: false, fb: "She asked you to choose one :)" } ] },
+    { say: "Great idea! How many candles? Nine, right?",
+      card: { w: "nine candles", pic: "🕯️", ex: "We need nine candles, please." },
+      choices: [
+        { t: "Yes, nine candles, please.", ok: true,  fb: "Great! +10" },
+        { t: "Nine candle have.",          ok: false, fb: "Many things: “nine candles”." },
+        { t: "I am nine.",                 ok: false, fb: "She is nine! Say “nine candles”." } ] }
+  ]
+},
+{
+  name: "Mr. Dat – Delivery Man", color: 0x1c7ed6, place: "bakery", x: 6.5, z: 15, minLv: 5,
+  steps: [
+    { say: "Good morning! I have twenty bags of flour for the bakery.",
+      q: { w: "How many…?", pic: "🔢", ex: "How many bags do you have?" },
+      card: { w: "bags of flour", pic: "🌾", ex: "Twenty bags of flour, please." },
+      choices: [
+        { t: "Thank you. Please put them in the kitchen.", ok: true,  fb: "Very polite! +10" },
+        { t: "Put flour kitchen at.",                      ok: false, fb: "Try “Please put them in the kitchen.”" },
+        { t: "I do not eat flour.",                        ok: false, fb: "Ha ha! Try “Please put them in the kitchen.”" } ] },
+    { say: "Of course. Could you sign here, please?",
+      q: { w: "Could you…?", pic: "🙏", ex: "Could you sign here, please?" },
+      card: { w: "sign here", pic: "✍️", ex: "Please sign here." },
+      choices: [
+        { t: "Sure. Is this the right place?", ok: true,  fb: "Good checking! +10" },
+        { t: "Sign is here I.",                ok: false, fb: "Try “Sure. Is this the right place?”" },
+        { t: "No, I am a customer.",           ok: false, fb: "He asks you to sign. Try “Sure.”" } ] },
+    { say: "Thanks! I must go. I have ten more deliveries today.",
+      card: { w: "deliveries", pic: "🚚", ex: "He has ten deliveries today." },
+      choices: [
+        { t: "Good luck! Drive safely.", ok: true,  fb: "Kind words! +10" },
+        { t: "You are go quickly bye.",  ok: false, fb: "Try “Good luck! Drive safely.”" },
+        { t: "Give me one delivery.",    ok: false, fb: "Be kind :) Try “Drive safely.”" } ] }
+  ]
+},
+{
+  name: "Grandpa Ba – Regular Customer", color: 0x868e96, place: "bakery", x: 5.4, z: -3.9,
+  steps: [
+    { say: "Good morning! I come here every day. The bread is always fresh.",
+      card: { w: "every day", pic: "📅", ex: "I eat breakfast here every day." },
+      choices: [
+        { t: "Wow, you must love this bakery!", ok: true,  fb: "Nice talking! +10" },
+        { t: "Every day is come you.",          ok: false, fb: "Try “You must love this bakery!”" },
+        { t: "I am the bread.",                 ok: false, fb: "Ha ha! Try “You must love this bakery!”" } ] },
+    { say: "I do. Which bread tastes the best, do you think?",
+      q: { w: "Which…?", pic: "🥖", ex: "Which bread do you like?" },
+      card: { w: "crispy and warm", pic: "🔥", ex: "The baguette is crispy and warm." },
+      choices: [
+        { t: "I think the baguette is crispy and warm.", ok: true,  fb: "Good opinion! +10" },
+        { t: "Baguette is crispy warm is.",              ok: false, fb: "Try “The baguette is crispy and warm.”" },
+        { t: "I do not know the bread.",                 ok: false, fb: "Take a look at the shelf and try “crispy and warm.”" } ] },
+    { say: "Yes! Would you like to sit with me? I have a free seat.",
+      card: { w: "Would you like to…?", pic: "🪑", ex: "Would you like to sit down?" },
+      choices: [
+        { t: "Thank you! I’d love to.", ok: true,  fb: "Friendly! +10" },
+        { t: "No sit I.",               ok: false, fb: "Try “Thank you! I’d love to.”" },
+        { t: "The seat is a table.",    ok: false, fb: "Try “I’d love to.”" } ] }
+  ]
+}
 
 /* ===== NPC: furniture – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
 
