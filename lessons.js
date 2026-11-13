@@ -1766,6 +1766,369 @@ const LESSONS = [
 
 
 /* ===== NPC: hospital – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
+,{
+  name: "Ms. Hanh – Receptionist", color: 0x2fb894, place: "hospital", x: -21, z: 12.3,
+  steps: [
+    { say: "Good morning! Can I help you?",
+      q: { w: "Can I help you?", pic: "🙋", ex: "Can I help you?" },
+      card: { w: "I'd like to see a doctor.", pic: "🩺", ex: "I'd like to see a doctor, please." },
+      choices: [
+        { t: "I'd like to see a doctor, please.", ok: true, fb: "Polite and clear! +10" },
+        { t: "I want see doctor.", ok: false, fb: "Say “I’d like to see a doctor.”" },
+        { t: "I am a doctor.", ok: false, fb: "Haha :) Say “I’d like to see a doctor.”" } ] },
+    { say: "Please take a number and wait here. Your number is twenty-three.",
+      card: { w: "Take a number.", pic: "🎫", ex: "Please take a number." },
+      choices: [
+        { t: "OK. I'll wait here.", ok: true, fb: "Good listening! +10" },
+        { t: "I go home now.", ok: false, fb: "Please wait a little :)" },
+        { t: "Number is twenty-three yes.", ok: false, fb: "Try “OK, I’ll wait here.”" } ] },
+    { say: "Your doctor is in the Children's Clinic. Go down the corridor and turn left.",
+      q: { w: "Where is…?", pic: "📍", ex: "Where is the Children's Clinic?" },
+      card: { w: "down the corridor", pic: "➡️", ex: "Go down the corridor." },
+      choices: [
+        { t: "Thank you! I'll go down the corridor.", ok: true, fb: "You listened well! +10" },
+        { t: "Corridor where?", ok: false, fb: "Say “Thank you! I’ll go down the corridor.”" },
+        { t: "I turn right.", ok: false, fb: "Listen again: turn LEFT :)" } ] }
+  ]
+}
+,{
+  name: "Dr. Hung – ER Doctor", color: 0x1c7ed6, place: "hospital", x: -19.6, z: 1.2, minLv: 5,
+  steps: [
+    { say: "A boy fell off his bike. He hurt his arm.",
+      card: { w: "hurt his arm", pic: "💪", ex: "He fell and hurt his arm." },
+      choices: [
+        { t: "Oh no! Is he OK now?", ok: true, fb: "Kind question! +10" },
+        { t: "He is hurting arm yesterday.", ok: false, fb: "Try “Is he OK now?”" },
+        { t: "I like your bike.", ok: false, fb: "Funny :) But the boy needs help." } ] },
+    { say: "We took an X-ray. His arm isn't broken. It's only a sprain.",
+      card: { w: "sprain", pic: "🩹", ex: "A sprain is a small injury, not a broken bone." },
+      choices: [
+        { t: "That's good news. His arm isn't broken.", ok: true, fb: "You understood! +10" },
+        { t: "His arm not break.", ok: false, fb: "Say “His arm isn’t broken.”" },
+        { t: "It's a bad news.", ok: false, fb: "Listen: NOT broken. Good news!" } ] },
+    { say: "He must rest for three days. What should he do next time?",
+      q: { w: "What should…?", pic: "🤔", ex: "What should he do next time?" },
+      card: { w: "He should rest.", pic: "😴", ex: "He should rest and wear a helmet." },
+      choices: [
+        { t: "He should wear a helmet when he rides.", ok: true, fb: "Great advice! +10" },
+        { t: "He must to run.", ok: false, fb: "Try “He should wear a helmet.”" },
+        { t: "He should play football tomorrow.", ok: false, fb: "A hurt arm needs rest :)" } ] }
+  ]
+}
+,{
+  name: "Khoa – Paramedic", color: 0xe03131, place: "hospital", x: -24.5, z: 7.6,
+  steps: [
+    { say: "I'm a paramedic. I help people in an emergency.",
+      card: { w: "emergency", pic: "🚨", ex: "Call 115 in an emergency." },
+      choices: [
+        { t: "Wow! Your job is important.", ok: true, fb: "Nice! +10" },
+        { t: "Emergency is eat.", ok: false, fb: "Not food :) Say “Your job is important.”" },
+        { t: "I am emergency too.", ok: false, fb: "Try “Your job is important.”" } ] },
+    { say: "First I check the patient. Then I take him to the hospital quickly.",
+      card: { w: "quickly", pic: "⚡", ex: "The ambulance goes quickly." },
+      choices: [
+        { t: "The ambulance goes very quickly!", ok: true, fb: "Good! +10" },
+        { t: "Ambulance go quick very.", ok: false, fb: "Say “goes very quickly.”" },
+        { t: "It goes slowly.", ok: false, fb: "Listen: QUICKLY :)" } ] },
+    { say: "Do you know what number to call for an ambulance in Vietnam?",
+      q: { w: "Do you know…?", pic: "❓", ex: "Do you know the number?" },
+      card: { w: "Call one-one-five.", pic: "📞", ex: "Call 115 for an ambulance." },
+      choices: [
+        { t: "You call one-one-five.", ok: true, fb: "Correct! 115 +10" },
+        { t: "You call one-one-three.", ok: false, fb: "113 is the police. Ambulance is one-one-five." },
+        { t: "You call your friend.", ok: false, fb: "In an emergency, call one-one-five." } ] }
+  ]
+}
+,{
+  name: "Dr. Thao – Paediatrician", color: 0xf08c00, place: "hospital", x: -10.5, z: -12.5,
+  steps: [
+    { say: "Hello! What's the matter?",
+      q: { w: "What's the matter?", pic: "🩺", ex: "What's the matter?" },
+      card: { w: "I have a headache.", pic: "🤕", ex: "I have a headache and a fever." },
+      choices: [
+        { t: "I have a headache.", ok: true, fb: "Clear! +10" },
+        { t: "I am headache.", ok: false, fb: "Say “I have a headache.”" },
+        { t: "My head is hurt?", ok: false, fb: "Try “I have a headache.”" } ] },
+    { say: "Open your mouth and say Ahh. Does your throat hurt?",
+      card: { w: "Open your mouth.", pic: "😮", ex: "Open your mouth, please." },
+      choices: [
+        { t: "Yes, it hurts a little.", ok: true, fb: "Good! +10" },
+        { t: "Yes, it is pain.", ok: false, fb: "Say “It hurts.”" },
+        { t: "My mouth is open.", ok: false, fb: "Answer her question: “Yes, it hurts.”" } ] },
+    { say: "You have a cold. Drink warm water and sleep early.",
+      card: { w: "Get some rest.", pic: "😴", ex: "Get some rest and drink water." },
+      choices: [
+        { t: "OK, I'll drink water and sleep early.", ok: true, fb: "Well done! +10" },
+        { t: "I drink yesterday water.", ok: false, fb: "Say “I’ll drink water.”" },
+        { t: "I will play all night.", ok: false, fb: "The doctor says sleep early :)" } ] }
+  ]
+}
+,{
+  name: "Bin – Little Patient", color: 0x74c0fc, place: "hospital", x: -21, z: -8.5,
+  steps: [
+    { say: "I don't feel well. I have a stomach ache.",
+      card: { w: "stomach ache", pic: "🤢", ex: "I have a stomach ache." },
+      choices: [
+        { t: "I'm sorry to hear that. Sit down, please.", ok: true, fb: "Kind! +10" },
+        { t: "You are happy?", ok: false, fb: "Bin feels sick, not happy." },
+        { t: "Sorry I stomach.", ok: false, fb: "Try “I’m sorry to hear that.”" } ] },
+    { say: "The doctor wants to give me an injection. I'm scared!",
+      card: { w: "I'm scared.", pic: "😨", ex: "I'm scared of the dark." },
+      choices: [
+        { t: "Don't worry. It's quick and you'll feel better.", ok: true, fb: "Comforting! +10" },
+        { t: "You are scary.", ok: false, fb: "“Scared” = afraid. Say “Don’t worry.”" },
+        { t: "Run away fast!", ok: false, fb: "Be kind: “Don’t worry.”" } ] },
+    { say: "I was brave! Now I want to be healthy. What should I eat?",
+      q: { w: "What should I…?", pic: "🥦", ex: "What should I eat?" },
+      card: { w: "healthy food", pic: "🥦", ex: "Fruit and vegetables are healthy food." },
+      choices: [
+        { t: "Eat fruit and vegetables every day.", ok: true, fb: "Healthy choice! +10" },
+        { t: "Eat candy every day.", ok: false, fb: "Candy isn't healthy :)" },
+        { t: "Don't eat anything.", ok: false, fb: "We need healthy food!" } ] }
+  ]
+}
+,{
+  name: "Dr. Duc – Dentist", color: 0x12b886, place: "hospital", x: -22.2, z: -20.7,
+  steps: [
+    { say: "Open your mouth, please. I can see a small hole in this tooth.",
+      card: { w: "a hole in the tooth", pic: "🦷", ex: "There is a hole in my tooth." },
+      choices: [
+        { t: "Oh no! Does it hurt?", ok: true, fb: "Good question! +10" },
+        { t: "My tooth is a window.", ok: false, fb: "Haha, ask “Does it hurt?”" },
+        { t: "I have hole tooth.", ok: false, fb: "Try “Does it hurt?”" } ] },
+    { say: "No, it doesn't hurt. How often do you brush your teeth?",
+      q: { w: "How often…?", pic: "🪥", ex: "How often do you brush your teeth?" },
+      card: { w: "twice a day", pic: "🪥", ex: "I brush my teeth twice a day." },
+      choices: [
+        { t: "I brush them twice a day.", ok: true, fb: "Excellent! +10" },
+        { t: "I brush it one day.", ok: false, fb: "Say “twice a day.”" },
+        { t: "I don't brush.", ok: false, fb: "Please brush: “twice a day.”" } ] },
+    { say: "Good! Brush in the morning and before bed. Don't eat too many sweets.",
+      card: { w: "too many sweets", pic: "🍬", ex: "Don't eat too many sweets." },
+      choices: [
+        { t: "OK. I won't eat too many sweets.", ok: true, fb: "Healthy smile! +10" },
+        { t: "I eat many sweets.", ok: false, fb: "Try “I won’t eat too many sweets.”" },
+        { t: "I brush the sweets.", ok: false, fb: "Haha! Say “I won’t eat too many sweets.”" } ] }
+  ]
+}
+,{
+  name: "Dr. Eva – Eye Doctor", color: 0x845ef7, place: "hospital", x: -15, z: -30.2,
+  steps: [
+    { say: "Look at the chart. Can you read the letters?",
+      q: { w: "Can you…?", pic: "👁️", ex: "Can you read the letters?" },
+      card: { w: "Can you read…?", pic: "👁️", ex: "I can read the first letter." },
+      choices: [
+        { t: "Yes, I can. The first letter is E.", ok: true, fb: "Sharp eyes! +10" },
+        { t: "I can reading.", ok: false, fb: "Say “I can read.”" },
+        { t: "Yes, I eat E.", ok: false, fb: "Say “The first letter is E.”" } ] },
+    { say: "Please cover your left eye. Now read the next line.",
+      card: { w: "cover your eye", pic: "🙈", ex: "Cover your left eye with your hand." },
+      choices: [
+        { t: "OK. The next line is F, P.", ok: true, fb: "Great! +10" },
+        { t: "I cover eyes both.", ok: false, fb: "Only the LEFT eye :)" },
+        { t: "Which is left eye?", ok: false, fb: "Try “OK. F, P.”" } ] },
+    { say: "Your eyes are fine. Don't read in the dark or look at your phone too long.",
+      card: { w: "take a break", pic: "⏸️", ex: "Take a break from your phone." },
+      choices: [
+        { t: "OK. I'll take a break from my phone.", ok: true, fb: "Healthy eyes! +10" },
+        { t: "I look phone all night.", ok: false, fb: "Rest your eyes: “I’ll take a break.”" },
+        { t: "Phone is my eye.", ok: false, fb: "Try “I’ll take a break.”" } ] }
+  ]
+}
+,{
+  name: "Mr. Long – X-ray Technician", color: 0x4263eb, place: "hospital", x: 13.5, z: 4.5,
+  steps: [
+    { say: "We're going to take an X-ray of your arm. Please stand here.",
+      card: { w: "Stand here, please.", pic: "🧍", ex: "Stand here, please." },
+      choices: [
+        { t: "OK. I'm ready.", ok: true, fb: "Good! +10" },
+        { t: "I standing here.", ok: false, fb: "Say “OK. I’m ready.”" },
+        { t: "No, I sit.", ok: false, fb: "Please stand here :)" } ] },
+    { say: "Keep still. Don't move. Take a deep breath.",
+      card: { w: "Don't move.", pic: "✋", ex: "Don't move, please." },
+      choices: [
+        { t: "I'll keep still.", ok: true, fb: "Well done! +10" },
+        { t: "I moving now.", ok: false, fb: "Say “I’ll keep still.”" },
+        { t: "I run.", ok: false, fb: "Please keep still :)" } ] },
+    { say: "All done! The doctor will look at the picture. Your bones look strong.",
+      card: { w: "strong", pic: "💪", ex: "Strong bones help you run." },
+      choices: [
+        { t: "Great! Thank you for your help.", ok: true, fb: "Polite! +10" },
+        { t: "Bones is strong thank.", ok: false, fb: "Say “Thank you for your help.”" },
+        { t: "I want another X-ray.", ok: false, fb: "All done! Say thank you :)" } ] }
+  ]
+}
+,{
+  name: "Ms. Quyen – Lab Scientist", color: 0x40c057, place: "hospital", x: 16.5, z: -7.3, minLv: 5,
+  steps: [
+    { say: "Welcome to the lab! Have you ever looked through a microscope?",
+      q: { w: "Have you ever…?", pic: "🔬", ex: "Have you ever looked through a microscope?" },
+      card: { w: "germs", pic: "🦠", ex: "Washing your hands stops germs." },
+      choices: [
+        { t: "No, I haven't. Can I try?", ok: true, fb: "Curious scientist! +10" },
+        { t: "Yes, I look yesterday.", ok: false, fb: "Say “Yes, I have” or “No, I haven’t.”" },
+        { t: "I have never microscope.", ok: false, fb: "Try “No, I haven’t. Can I try?”" } ] },
+    { say: "Germs live on our hands, our phones and our desks. Why do we wash our hands?",
+      q: { w: "Why do we…?", pic: "🧼", ex: "Why do we wash our hands?" },
+      card: { w: "to stop germs", pic: "🧼", ex: "We wash our hands to stop germs." },
+      choices: [
+        { t: "We wash our hands to stop germs.", ok: true, fb: "Smart! +10" },
+        { t: "To make hands blue.", ok: false, fb: "Haha, no :)" },
+        { t: "Because soap is nice.", ok: false, fb: "Nice, but the main reason is germs." } ] },
+    { say: "If you wash your hands for twenty seconds, you'll stop many germs.",
+      q: { w: "If you…, you'll…", pic: "⏱️", ex: "If you wash your hands, you'll stop germs." },
+      card: { w: "twenty seconds", pic: "⏱️", ex: "Wash for twenty seconds." },
+      choices: [
+        { t: "I'll wash my hands before I eat.", ok: true, fb: "Healthy habit! +10" },
+        { t: "I wash hands one second.", ok: false, fb: "Longer: twenty seconds :)" },
+        { t: "I will wash my phone in soup.", ok: false, fb: "Haha! Try “I’ll wash my hands before I eat.”" } ] }
+  ]
+}
+,{
+  name: "Mr. Phat – Pharmacist", color: 0x2f9e44, place: "hospital", x: 23.2, z: 21.5,
+  steps: [
+    { say: "Here is your medicine. Take this medicine twice a day.",
+      card: { w: "twice a day", pic: "💊", ex: "Take it twice a day." },
+      choices: [
+        { t: "Twice a day. I understand.", ok: true, fb: "Good! +10" },
+        { t: "Two day a twice.", ok: false, fb: "Say “Twice a day.”" },
+        { t: "I take the medicine two.", ok: false, fb: "Try “Twice a day. I understand.”" } ] },
+    { say: "Take one pill after breakfast and one pill after dinner.",
+      card: { w: "after breakfast", pic: "🍳", ex: "Take one pill after breakfast." },
+      choices: [
+        { t: "One after breakfast and one after dinner.", ok: true, fb: "Perfect! +10" },
+        { t: "Pills eat breakfast.", ok: false, fb: "Say “One after breakfast.”" },
+        { t: "One pill for dinner only.", ok: false, fb: "Two pills: breakfast AND dinner." } ] },
+    { say: "Don't take more than two pills a day. Keep medicine away from small children.",
+      card: { w: "Keep it away.", pic: "🧒", ex: "Keep medicine away from children." },
+      choices: [
+        { t: "OK. I'll keep it in a safe place.", ok: true, fb: "Safe! +10" },
+        { t: "I give pills to my brother.", ok: false, fb: "Medicine is not for brothers :)" },
+        { t: "I take ten pills.", ok: false, fb: "No! Only two pills a day." } ] }
+  ]
+}
+,{
+  name: "Mrs. Trang – Worried Parent", color: 0xe64980, place: "hospital", x: -16, z: 24,
+  steps: [
+    { say: "My son has a high fever. I'm very worried.",
+      card: { w: "I'm worried.", pic: "😟", ex: "I'm worried about my son." },
+      choices: [
+        { t: "Don't worry. The doctor will help him.", ok: true, fb: "Kind! +10" },
+        { t: "You are very happy.", ok: false, fb: "She is worried, not happy." },
+        { t: "Your son is worry.", ok: false, fb: "Say “Don’t worry.”" } ] },
+    { say: "His temperature is thirty-nine degrees. He feels hot and tired.",
+      card: { w: "temperature", pic: "🌡️", ex: "The temperature is thirty-eight degrees." },
+      choices: [
+        { t: "He should drink water and rest.", ok: true, fb: "Good advice! +10" },
+        { t: "He should go swimming.", ok: false, fb: "A sick boy needs rest :)" },
+        { t: "He should eat a lot of ice cream.", ok: false, fb: "Try “He should drink water and rest.”" } ] },
+    { say: "Thank you. Where can I buy some medicine?",
+      q: { w: "Where can I…?", pic: "📍", ex: "Where can I buy medicine?" },
+      card: { w: "on the right", pic: "➡️", ex: "The pharmacy is on the right." },
+      choices: [
+        { t: "The pharmacy is over there on the right.", ok: true, fb: "Helpful! +10" },
+        { t: "Pharmacy is eat.", ok: false, fb: "Point and say “It’s on the right.”" },
+        { t: "I don't know the medicine.", ok: false, fb: "Try “The pharmacy is on the right.”" } ] }
+  ]
+}
+,{
+  name: "Uncle Dung – Porter", color: 0x868e96, place: "hospital", x: 2.8, z: 7,
+  steps: [
+    { say: "Excuse me, can you open the door for me, please?",
+      q: { w: "Can you…for me?", pic: "🚪", ex: "Can you open the door for me?" },
+      card: { w: "Can you…?", pic: "🚪", ex: "Can you help me, please?" },
+      choices: [
+        { t: "Sure! No problem.", ok: true, fb: "Helpful! +10" },
+        { t: "No, door is open.", ok: false, fb: "Say “Sure! No problem.”" },
+        { t: "I am the door.", ok: false, fb: "Haha :) Say “Sure! No problem.”" } ] },
+    { say: "I'm new here. Where is the Dentist?",
+      q: { w: "Where is…?", pic: "📍", ex: "Where is the Dentist?" },
+      card: { w: "on the left", pic: "⬅️", ex: "The Dentist is on the left." },
+      choices: [
+        { t: "The Dentist is on the left, after the Children's Clinic.", ok: true, fb: "Great directions! +10" },
+        { t: "The Dentist is on the right, next to the Lab.", ok: false, fb: "Check the signs: it’s on the LEFT." },
+        { t: "Dentist is a doctor.", ok: false, fb: "Say where it is: “on the left.”" } ] },
+    { say: "Thanks! Please walk slowly and keep quiet. Patients are resting.",
+      card: { w: "Walk slowly.", pic: "🚶", ex: "Walk slowly in the hospital." },
+      choices: [
+        { t: "Sorry! I'll walk slowly.", ok: true, fb: "Polite! +10" },
+        { t: "I will run, run, run.", ok: false, fb: "Be careful in a hospital." },
+        { t: "I am quiet loud.", ok: false, fb: "Say “Sorry! I’ll walk slowly.”" } ] }
+  ]
+}
+,{
+  name: "Nurse Tam – Ward Nurse", color: 0x15aabf, place: "hospital", x: 11.5, z: -30,
+  steps: [
+    { say: "Hello! Are you visiting someone? Visiting hours are from two to eight.",
+      card: { w: "visiting hours", pic: "🕑", ex: "Visiting hours are from two to eight." },
+      choices: [
+        { t: "Yes, I'm visiting my grandpa.", ok: true, fb: "Good! +10" },
+        { t: "Yes, I visit hours.", ok: false, fb: "Say “I’m visiting my grandpa.”" },
+        { t: "No, I'm sleeping here.", ok: false, fb: "Say “I’m visiting my grandpa.”" } ] },
+    { say: "Please speak quietly and wash your hands.",
+      card: { w: "speak quietly", pic: "🤫", ex: "Please speak quietly." },
+      choices: [
+        { t: "OK. I'll speak quietly.", ok: true, fb: "Kind! +10" },
+        { t: "I speak loud.", ok: false, fb: "Patients are resting :)" },
+        { t: "Quiet is speak.", ok: false, fb: "Try “I’ll speak quietly.”" } ] },
+    { say: "Grandpa Khoi is in bed three. He likes visitors. Bring some fruit!",
+      card: { w: "bring some fruit", pic: "🍎", ex: "I'll bring some fruit." },
+      choices: [
+        { t: "Thank you. I'll bring some fruit.", ok: true, fb: "Thoughtful! +10" },
+        { t: "I bring fruit yesterday.", ok: false, fb: "Say “I’ll bring some fruit.”" },
+        { t: "I eat visitors.", ok: false, fb: "Haha :) Say “I’ll bring some fruit.”" } ] }
+  ]
+}
+,{
+  name: "Grandpa Khoi – Patient", color: 0x9c6b3c, place: "hospital", x: 23.8, z: -31,
+  steps: [
+    { say: "Hello, young friend. I feel a bit better today. How are you?",
+      q: { w: "How are you?", pic: "🙂", ex: "How are you?" },
+      card: { w: "Get well soon!", pic: "💐", ex: "Get well soon, Grandpa!" },
+      choices: [
+        { t: "I'm fine, thank you. Get well soon!", ok: true, fb: "So kind! +10" },
+        { t: "Me fine, you old.", ok: false, fb: "Be polite: “Get well soon!”" },
+        { t: "I am very ill.", ok: false, fb: "Say “I’m fine. Get well soon!”" } ] },
+    { say: "Look at my leg. I can't walk well.",
+      q: { w: "What happened?", pic: "❓", ex: "What happened to your leg?" },
+      card: { w: "broke my leg", pic: "🦵", ex: "He broke his leg last week." },
+      choices: [
+        { t: "What happened to your leg?", ok: true, fb: "Caring! +10" },
+        { t: "What is happen leg?", ok: false, fb: "Say “What happened to your leg?”" },
+        { t: "Why you leg?", ok: false, fb: "Try “What happened to your leg?”" } ] },
+    { say: "I fell down the stairs last week. Be careful on stairs!",
+      card: { w: "fell down", pic: "🪜", ex: "I fell down the stairs." },
+      choices: [
+        { t: "I'll be careful. Thank you, Grandpa!", ok: true, fb: "Wise! +10" },
+        { t: "I fall down every day.", ok: false, fb: "Take care: “I’ll be careful.”" },
+        { t: "Stairs are bad.", ok: false, fb: "Try “I’ll be careful.”" } ] }
+  ]
+}
+,{
+  name: "Nurse Chi – Head Nurse", color: 0x0ca678, place: "hospital", x: 2, z: -34.4,
+  steps: [
+    { say: "Good morning! Do you wash your hands before meals?",
+      q: { w: "Do you…?", pic: "🧼", ex: "Do you wash your hands?" },
+      card: { w: "wash your hands", pic: "🧼", ex: "Wash your hands with soap." },
+      choices: [
+        { t: "Yes, I do. I wash my hands with soap.", ok: true, fb: "Clean hands! +10" },
+        { t: "Yes, I wash my food.", ok: false, fb: "Hands, not food :)" },
+        { t: "No, hands are clean.", ok: false, fb: "Always use soap: “I wash my hands with soap.”" } ] },
+    { say: "How many hours do you sleep every night?",
+      q: { w: "How many hours…?", pic: "😴", ex: "How many hours do you sleep?" },
+      card: { w: "nine hours", pic: "😴", ex: "I sleep about nine hours." },
+      choices: [
+        { t: "I sleep about nine hours.", ok: true, fb: "Good sleep! +10" },
+        { t: "I sleep nine hour a night.", ok: false, fb: "Say “nine hours.”" },
+        { t: "I don't sleep at night.", ok: false, fb: "Kids need about nine hours of sleep." } ] },
+    { say: "Great! Eat fruit, drink water and exercise to stay healthy.",
+      card: { w: "stay healthy", pic: "💪", ex: "Exercise every day to stay healthy." },
+      choices: [
+        { t: "I exercise every day to stay healthy.", ok: true, fb: "Super healthy! +10" },
+        { t: "I stay in bed all day.", ok: false, fb: "Try to move: “I exercise every day.”" },
+        { t: "I drink soda every day.", ok: false, fb: "Water is healthier :)" } ] }
+  ]
+}
 
 /* ===== NPC: school – thêm các NPC (bắt đầu bằng ",{") ngay dưới dòng này ===== */
 
