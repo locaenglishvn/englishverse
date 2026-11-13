@@ -184,6 +184,9 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 | `index.html` | Toàn bộ game (HTML + CSS + JS, không có bước build), ~3.300 dòng |
 | `lessons.js` | Mảng `LESSONS`: NPC hội thoại. Mỗi bước: `say`, `choices`, `card` (thẻ câu nói), `q` (thẻ câu hỏi). NPC có `place: "id"` thì đứng trong nhà đó (x, z tính từ giữa phòng, z âm = phía trong cùng); `minLv` = cấp tối thiểu |
 | `places.js` | `ITEMS` (đồ ăn, thuốc, trang phục, dịch vụ cắt tóc, nội thất), `RARITY`, `LEGENDS`, `STARTER`, `CITY` (nhà vào được), `SPOTS` (khu ngoài trời), `ZONES` (9 khu + đảo), `METRO`, `LOTS` (ô đất chờ xây), `AMBIENT` (NPC đi tuần/trực gác), `VOCAB` (từ vựng theo nơi) |
+| `parts/` | `registry.js` (danh bạ `INTERIORS`, `EXTERIORS_EXTRA`) + `interiors/<id>.js` (cafe, post, library, bank, museum) + `exteriors/` – mỗi nơi 1 file, xem `docs/TEAM.md` |
+| `tools/qa/run.js` | **Cổng QA**: `node tools/qa/run.js [id…]` – kiểm dữ liệu NPC/từ vựng, lỗi JS, đường đi tới NPC/đồ/cửa, số lần vẽ; ảnh ở `tools/qa/out/` |
+| `docs/TEAM.md` | Vận hành đội AI: mục tiêu, phân quyền, quy trình, mẫu đề bài, sổ tay kỹ thuật, backup |
 | `lib/` | three.js r128, GLTFLoader, SkeletonUtils, supabase-js (để sẵn, không dùng CDN) |
 | `assets/` | Mô hình 3D KayKit (CC0) – `characters/`, `city/`, `furniture/`; nguồn trong `assets/CREDITS.md` |
 | `CLAUDE.md` | Quy tắc làm việc |
@@ -267,6 +270,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 25. Library đủ 5 NPC + 32 từ vựng; **đổi chỗ Verse Plaza ↔ Star Cinema** (Verse Plaza ở x 64,5 z 16, quay mặt về quảng trường); **nội thất Verse Bank** (5 NPC, 34 từ vựng)
 26. **Nội thất City Museum** 4 khu (khủng long, điêu khắc & cổ vật, tranh nổi tiếng, khoa học & vũ trụ), 17 NPC, 68 từ vựng
 27. **Tối ưu hiệu năng**: gộp khối tĩnh, bóng đổ thông minh, ẩn NPC phòng khác → lần vẽ mỗi khung giảm từ ~1.270 xuống ~210
+28. **Vận hành đội AI**: tách nội thất ra `parts/`, cổng QA `tools/qa/run.js`, `docs/TEAM.md`; sửa kẹt cửa Trường học / Đồn công an
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |

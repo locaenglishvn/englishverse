@@ -723,7 +723,7 @@ const LESSONS = [
   ]
 },
 {
-  name: "Grandpa Vinh – Old Reader", color: 0x495057, place: "library", x: -6.4, z: -6.4, minLv: 5,
+  name: "Grandpa Vinh – Old Reader", color: 0x495057, place: "library", x: -8.5, z: -8.5, minLv: 5,
   steps: [
     { say: "Ah, a young reader! I come here every morning to read the newspaper.",
       q: { w: "How often do you…?", pic: "🔁", ex: "How often do you come here?" },
