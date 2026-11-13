@@ -89,6 +89,10 @@ KHÔNG ĐƯỢC: sửa index.html (trừ khi đề bài cho phép), đổi dữ 
 - Tấm tường trên cửa giữa 2 khu thò sang mái khu bên cạnh → lùi tấm đó vào trong khu mình.
 - Nhãn tên NPC xuyên tường: nơi nhiều khu dùng `P.zones` để chỉ hiện tên trong khu đang đứng.
 
+- **Vận hành agent:** bản sao (worktree) của agent được tạo từ `main`, KHÔNG phải từ nhánh CTO → trước khi giao việc, merge phần chuẩn bị lên `main` (hoặc dặn agent `git merge <mã commit chuẩn bị>` ngay đầu việc).
+- **Giới hạn sử dụng:** 8 agent Sonnet chạy cùng lúc đã làm hết hạn mức 5 giờ của gói trong ~1 giờ (13/11). Chạy **tối đa 3 agent một lượt**; dặn agent làm gọn, không đọc lại file lớn.
+- Khi kiểm tra bằng server tạm (`python3 -m http.server`), tắt server cũ trước – server cũ chạy từ thư mục khác sẽ cho kết quả sai.
+
 ## 8. Backup & khôi phục
 | Lớp | Cách | Khôi phục |
 |---|---|---|

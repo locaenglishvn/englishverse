@@ -6,3 +6,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | Ngày | Mã commit (main) | Nội dung bản này | QA |
 |---|---|---|---|
 | 2026-11-13 | `8936100` | Bảo tàng 4 khu, Thư viện, Ngân hàng, Bưu điện mới, tối ưu hiệu năng (~210 lần vẽ) | ✅ |
+| 2026-11-13 (chiều) | `c068e0d` | Trước khi thêm Bakery, giới hạn 120 phút, vị trí mới | ✅ |

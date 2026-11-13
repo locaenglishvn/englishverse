@@ -271,6 +271,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 26. **Nội thất City Museum** 4 khu (khủng long, điêu khắc & cổ vật, tranh nổi tiếng, khoa học & vũ trụ), 17 NPC, 68 từ vựng
 27. **Tối ưu hiệu năng**: gộp khối tĩnh, bóng đổ thông minh, ẩn NPC phòng khác → lần vẽ mỗi khung giảm từ ~1.270 xuống ~210
 28. **Vận hành đội AI**: tách nội thất ra `parts/`, cổng QA `tools/qa/run.js`, `docs/TEAM.md`; sửa kẹt cửa Trường học / Đồn công an
+29. **Giới hạn chơi 120 phút/ngày** (nhắc khi còn 20 / 5 phút, khoá đến 0h); **Banh Mi Bakery** dời vào căn nhà ống sát Cafe Sua Da + nội thất (5 NPC, 36 từ); Home & Cozy dời về Market Street (56, −10); thêm Verse Electronics (63, 43) và Verse Hotel (33, 0, thay ô đất); Star Cinema rộng hơn; `P.keeperPos` cho người bán
 
 ### Tình trạng nội thất
 | Nơi | Nội thất | NPC | Từ vựng |
