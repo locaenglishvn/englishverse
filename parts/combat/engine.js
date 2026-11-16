@@ -139,40 +139,42 @@ function initCombat() {
 }
 function buildCombatUi() {
   const css = document.createElement("style"); css.textContent = `
-#cbHud{position:fixed;left:12px;top:calc(134px + env(safe-area-inset-top,0px));display:none;flex-direction:column;gap:4px;z-index:5;pointer-events:none}
-.cbBar{width:170px;height:12px;border-radius:6px;background:rgba(0,0,0,.35);overflow:hidden;position:relative}.cbBar div{height:100%}.cbBar span{position:absolute;left:6px;top:-2px;font:700 10px system-ui;color:#fff}
-#cbBtns{position:fixed;right:14px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:190px;height:190px;display:none;z-index:6}
-#cbBtns button{position:absolute;border:0;border-radius:50%;color:#fff;font-size:22px;box-shadow:0 3px 10px rgba(0,0,0,.35);touch-action:none;-webkit-user-select:none;user-select:none}
-#cbAtk{right:8px;bottom:8px;width:76px;height:76px;background:#f8f9fa!important;color:#1b2340!important;font-size:30px!important}
-.cbSk{width:54px;height:54px}.cbSk .cd{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.55);font:700 13px system-ui;display:flex;align-items:center;justify-content:center}
-.cbSk.rec{transform:scale(1.15);box-shadow:0 0 0 5px #35c9c4}
-#cbCard{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(272px + env(safe-area-inset-bottom,0px));width:min(92vw,420px);background:#fff;color:#1b2340;border-radius:16px;padding:10px 14px;display:none;z-index:7;box-shadow:0 6px 20px rgba(0,0,0,.3)}
-#cbCard .t{font:600 11px ui-monospace,monospace;color:#5b6482;display:flex;justify-content:space-between;gap:6px}#cbCard .q{font:700 18px system-ui;margin:4px 0}#cbCard .h{font-size:12px;color:#0f9a9a}
-#cbCard .bar{height:4px;background:#e9ecef;border-radius:2px;margin-top:6px}#cbCard .bar div{height:100%;background:#0f9a9a;border-radius:2px}
-#cbCard button{border:0;background:#e9ecef;border-radius:99px;padding:2px 10px;font-size:12px}
+#cbHud{position:fixed;left:12px;top:calc(160px + env(safe-area-inset-top,0px));display:none;flex-direction:column;gap:4px;z-index:5;pointer-events:none}
+#cbBtns{position:fixed;right:10px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:210px;height:210px;display:none;z-index:6}
+#cbBtns button{position:absolute;font-size:22px;touch-action:none;-webkit-user-select:none;user-select:none}
+#cbAtk{right:10px;bottom:10px;width:84px;height:84px;--c:#f4efe0!important;color:#3a2a10!important;text-shadow:none!important;font-size:34px!important}
+.cbSk{width:54px;height:54px}.cbSk .cd{position:absolute;inset:0;border-radius:50%;background:rgba(10,14,30,.7);font:700 13px system-ui;display:flex;align-items:center;justify-content:center}
+.cbSk.rec{transform:scale(1.14);box-shadow:0 0 0 3px #1b2340,0 0 0 5px #35f0e8,0 0 18px 9px rgba(53,240,232,.85),inset 0 -4px 6px rgba(0,0,0,.35)}
+#cbCard{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(286px + env(safe-area-inset-bottom,0px));width:min(92vw,420px);display:none;z-index:7}
+#cbCard .t{display:flex;justify-content:space-between;align-items:center;gap:6px}#cbCard .t small{font:600 11px var(--ev-font);color:var(--ev-mut);margin-left:6px}
+#cbCard .q{font:700 20px var(--ev-font);margin:8px 0 2px}#cbCard .vi{font-size:13px;color:var(--ev-mut)}#cbCard .h{font-size:12px;color:var(--ev-gold);margin-top:4px;min-height:0}
+#cbCard .bar{height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin-top:8px}#cbCard .bar div{height:100%;background:var(--ev-gold);border-radius:2px}
+#cbCard #cbReroll{padding:3px 10px;font-size:12px}
 #cbKo{position:fixed;inset:0;background:rgba(80,80,80,.7);display:none;align-items:center;justify-content:center;color:#fff;font:800 24px system-ui;z-index:20;text-align:center}
-#cbFood{position:fixed;right:14px;bottom:calc(214px + env(safe-area-inset-bottom,0px));display:none;flex-direction:row;gap:6px;z-index:5}
-#cbFood button,#cbWpn{width:46px;height:46px;border-radius:12px;border:0;background:rgba(255,255,255,.85);font-size:22px;position:relative}
-#cbFood b,#cbWpn b{position:absolute;right:2px;bottom:0;font:700 10px system-ui;color:#1b2340}
+#cbFood{position:fixed;right:14px;bottom:calc(222px + env(safe-area-inset-bottom,0px));display:none;flex-direction:row;gap:6px;z-index:5}
+#cbFood button{width:48px;height:48px;font-size:22px}#cbFood button.empty{opacity:.4;filter:grayscale(.6)}
+#cbFood b{position:absolute;right:3px;bottom:0;font:700 11px var(--ev-font);color:#fff;text-shadow:0 1px 2px #000}#cbFood i{position:absolute;left:3px;top:1px;font-size:10px;font-style:normal}
 #skBtn{position:fixed;left:12px;top:calc(196px + env(safe-area-inset-top,0px));border:0;border-radius:99px;padding:6px 12px;font-weight:700;background:var(--panel);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:5}
 body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important;right:14px!important}
 #skPanel .brh{display:flex;align-items:center;gap:6px;font-weight:800;margin-top:12px}#skPanel .sk{display:flex;gap:8px;align-items:center;border:1px solid rgba(128,128,128,.3);border-radius:12px;padding:8px;margin-top:6px}
 #skPanel .sk .ic{font-size:26px;width:36px;text-align:center}#skPanel .sk .tx{flex:1;font-size:13px}#skPanel .sk button{border:0;border-radius:10px;padding:6px 10px;font-weight:700}`;
   document.head.appendChild(css);
   const d = document.createElement("div"); d.innerHTML = `
-<div id="cbHud"><div class="cbBar"><div id="cbHp" style="background:#e5484d"></div><span id="cbHpT"></span></div><div class="cbBar"><div id="cbMp" style="background:#3b82f6"></div><span id="cbMpT"></span></div><div class="cbBar" style="height:8px;width:120px"><div id="cbHm" style="background:#9b5de5"></div></div><div id="cbZone" style="font:700 12px system-ui;color:#fff;text-shadow:0 1px 3px #000"></div></div>
-<div id="cbBtns"><button id="cbAtk">⚔️</button></div>
-<div id="cbFood"><button id="cbWpn" title="Swap weapon"></button><button id="cbF0"></button><button id="cbF1"></button></div>
-<div id="cbCard"><div class="t"><span id="cbCt"></span><span><button id="cbReroll">🔄 đổi đề</button></span></div><div class="q" id="cbCq"></div><div class="h" id="cbCh"></div><div class="bar"><div id="cbCbar"></div></div></div>
+<div id="cbHud"><div id="cbZone" style="font:700 12px system-ui;color:#fff;text-shadow:0 1px 3px #000"></div></div>
+<div id="cbBtns"><button id="cbAtk" class="ev-round">⚔️</button></div>
+<div id="cbFood"><button id="cbF0" class="ev-slot"></button><button id="cbF1" class="ev-slot"></button><button id="cbF2" class="ev-slot"></button></div>
+<div id="cbCard" class="ev-panel"><div class="ev-in"><div class="t"><span id="cbCt"></span><button class="ev-btn alt" id="cbReroll">🔄 đổi đề</button></div><div class="q" id="cbCq"></div><div class="vi" id="cbVi"></div><div class="h" id="cbCh"></div><div class="bar"><div id="cbCbar"></div></div></div></div>
 <div id="cbKo"><div>🤐 You lost your voice…<div style="font:500 14px system-ui;margin-top:8px">Mất giọng! Về cổng vùng sau 2 giây</div></div></div>
 <button id="skBtn">🌟 Skills</button>
 <div id="skPanel" class="over"><div class="box" style="padding:12px;max-height:80vh;overflow:auto"><div style="display:flex;justify-content:space-between;align-items:center"><b>🌟 Skills · <span id="skSp"></span></b><button class="x" id="skClose">✕</button></div><div id="skBody"></div></div></div>`;
   document.body.appendChild(d);
   const B = $("cbBtns");
-  [[0, 98, 4], [1, 66, 68], [2, 8, 100], [3, 120, 128]].forEach(([i, r, b]) => { const e = document.createElement("button"); e.className = "cbSk"; e.id = "cbS" + i; e.style.right = r + "px"; e.style.bottom = b + "px"; B.appendChild(e); skillButton(e, i); });
+  [0, 1, 2, 3].forEach(i => { const a = i * Math.PI / 5.6, r = 116, e = document.createElement("button"); e.className = "cbSk ev-round"; e.id = "cbS" + i; e.style.right = Math.round(52 + r * Math.cos(a) - 27) + "px"; e.style.bottom = Math.round(52 + r * Math.sin(a) - 27) + "px"; B.appendChild(e); skillButton(e, i); });
   $("cbAtk").addEventListener("pointerdown", e => { e.preventDefault(); normalAttack(); });
-  $("cbWpn").onclick = () => { const W = save.combat.weapons; if (W[0] && W[1]) { save.combat.wIdx = 1 - save.combat.wIdx; saveNow(); drawCombatHud(); const w = curWeapon(); popText(w.icon, player.position, "#9b5de5"); } };
-  [0, 1].forEach(i => $("cbF" + i).onclick = () => { const id = $("cbF" + i).dataset.id; if (id) { useItem(id); drawCombatHud(); } });
+  [0, 1, 2].forEach(i => $("cbF" + i).onclick = () => { const id = $("cbF" + i).dataset.id, kind = FOOD_KINDS[i].k; if (!id) { flash("Mua ở Shop 24h / Buy at Shop 24h"); return; }
+    if (kind === "mana") { const it = ITEMS[id], M = typeof mpMax === "function" ? mpMax() : 100; if (CB.mp >= M) { flash("💧 Mana đầy / Mana is full"); return; } if (!save.items[id]) return; takeItem(save.items, id); CB.mp = Math.min(M, CB.mp + it.mana); saveNow(); popText("💧+" + it.mana, player.position, "#3fa3ff"); }
+    else useItem(id);
+    drawCombatHud(); });
   $("cbReroll").onclick = reroll;
   $("skBtn").onclick = () => { drawSkills(); $("skPanel").style.display = "block"; };
   $("skClose").onclick = () => $("skPanel").style.display = "none";
@@ -180,11 +182,17 @@ body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important
 }
 function drawCombatHud() {
   if (!$("cbHud")) return;
-  for (let i = 0; i < 4; i++) { const id = save.combat.slots[i], S = SKILLS[id], b = $("cbS" + i); b.style.display = S ? "block" : "none"; if (S) { b.style.background = BRANCH[S.branch].color; b.innerHTML = S.icon + "<div class='cd' style='display:none'></div>"; } }
+  for (let i = 0; i < 4; i++) { const id = save.combat.slots[i], S = SKILLS[id], b = $("cbS" + i); b.style.display = S ? "block" : "none"; if (S) { b.style.setProperty("--c", BRANCH[S.branch].color); b.innerHTML = S.icon + "<div class='cd' style='display:none'></div>"; } }
   showWeaponInHand();
-  const w = curWeapon(); $("cbWpn").innerHTML = (w ? w.icon : "✋") + "<b>" + (w ? "T" + w.weapon.tier : "") + "</b>";
-  const foods = Object.keys(save.items).filter(k => ITEMS[k] && ITEMS[k].energy).sort((a, b) => ITEMS[b].energy - ITEMS[a].energy).slice(0, 2);
-  [0, 1].forEach(i => { const f = foods[i], b = $("cbF" + i); b.dataset.id = f || ""; b.innerHTML = f ? ITEMS[f].icon + "<b>×" + save.items[f] + "</b>" : ""; b.style.visibility = f ? "visible" : "hidden"; });
+  drawFoodSlots(true);
+}
+const FOOD_KINDS = [{ k: "energy", ic: "❤️" }, { k: "mana", ic: "💧" }, { k: "cure", ic: "☠️" }];
+let foodSig = "";
+function drawFoodSlots(force) {   // 3 ô cố định: hồi máu · hồi mana · giải độc
+  const picks = FOOD_KINDS.map(K => Object.keys(save.items).filter(k => ITEMS[k] && ITEMS[k][K.k] && !ITEMS[k].slot && !ITEMS[k].weapon).sort((x, y) => (ITEMS[y][K.k] > 0 ? ITEMS[y][K.k] : 0) - (ITEMS[x][K.k] > 0 ? ITEMS[x][K.k] : 0))[0] || "");
+  const sig = picks.map(k => k + (save.items[k] || "")).join("|"); if (!force && sig === foodSig) return; foodSig = sig;
+  picks.forEach((f, i) => { const b = $("cbF" + i); if (!b) return; b.dataset.id = f; b.classList.toggle("empty", !f);
+    b.innerHTML = (f ? ITEMS[f].icon + "<b>" + save.items[f] + "</b>" : "") + "<i>" + FOOD_KINDS[i].ic + "</i>"; });
 }
 
 let handW = null;
@@ -199,8 +207,10 @@ function setCombatOn(on, sec) {
   const wasOn = CB.on; CB.on = on; CB.sec = sec; document.body.classList.toggle("cbOn", on);
   ["cbHud", "cbFood"].forEach(id => $(id).style.display = on ? "flex" : "none"); $("cbBtns").style.display = on ? "block" : "none";
   if (on) { if (!wasOn) CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
+    if (!wasOn) { if (!save.combat.tut && typeof evTutorial === "function") evTutorial(); if (typeof gateHint === "function") gateHint(); }
     flash("🌿 " + sec.name + "<div style='font-size:13px;font-weight:400'>Monster zone! Tap ⚔️ to hit, tap a skill and SPEAK to cast. / Vùng quái: bấm ⚔️ đánh thường, bấm chiêu rồi NÓI để tung chiêu.</div>"); }
-  else { if (!CB.wideBefore && camWide) setWide(false); endCast(true); }
+  else { if (!CB.wideBefore && camWide) setWide(false); endCast(true); if (typeof evHarmonyOff === "function") evHarmonyOff(); }
+  if (typeof evHudUpdate === "function") evHudUpdate();
   showWeaponInHand();
 }
 
@@ -253,11 +263,9 @@ function combatWire(ch) {
 }
 let cbHudT = 0;
 function hudTick() {
+  if (typeof evHarmonyFx === "function") evHarmonyFx();   // hào quang Harmony: mỗi khung hình
   if ((cbHudT += 1) % 6) return;   // cập nhật thanh ~10 lần/giây
-  const hp = hpNow(), H = hpMax();
-  $("cbHp").style.width = hp / H * 100 + "%"; $("cbHpT").textContent = "❤️ " + Math.round(hp) + "/" + H;
-  $("cbMp").style.width = CB.mp + "%"; $("cbMpT").textContent = "💧 " + Math.round(CB.mp);
-  $("cbHm").style.width = (performance.now() < CB.harmonyUntil ? 100 : CB.harmony) + "%";
+  if (typeof evHudUpdate === "function") evHudUpdate(); drawFoodSlots();
   for (let i = 0; i < 4; i++) { const id = save.combat.slots[i], S = SKILLS[id], b = $("cbS" + i); if (!S) continue; const c = b.querySelector(".cd"), cd = CB.cd[id] || 0, low = CB.mp < S.mana;
     c.style.display = cd > 0 || low ? "flex" : "none"; c.textContent = cd > 0 ? Math.ceil(cd) + "s" : "💧"; }
 }
@@ -284,12 +292,13 @@ function makeMon(type, sec, x, z) {
   let model = null; try { if (MONSTER_MODELS.make) model = MONSTER_MODELS.make(type, sec.season, lv); } catch (e) {}
   if (!model) { const g = new THREE.Group(); const b = new THREE.Mesh(new THREE.SphereGeometry(0.6, 12, 10), mat(0xffd43b)); b.position.y = 0.7; g.add(b); model = { g, update() {} }; }
   const g = model.g; g.position.set(x, 0, z); scene.add(g);
-  const tag = nameTag(T.icon + " " + T.name + " Lv." + lv, "sợ " + TASK_ICON[T.weak]); tag.position.y = 2.3; g.add(tag);
   const hpm = Math.round((40 + lv * 15) * T.hp);
-  const M = { key: myId + "-" + (++monSeq), ring: sec.ring, type, T, lv, dir: sec.dir, contrib: {}, g, model, tag, hp: hpm, hpMax: hpm, home: { x, z }, tx: x, tz: z, state: "idle", atkT: 0, tele: null, stun: 0, dmgSkill: 0, dmgAll: 0, dead: false, gone: false, hurtT: 0 };
+  const M = { tag: null, key: myId + "-" + (++monSeq), ring: sec.ring, type, T, lv, dir: sec.dir, contrib: {}, g, model, hp: hpm, hpMax: hpm, home: { x, z }, tx: x, tz: z, state: "idle", atkT: 0, tele: null, stun: 0, dmgSkill: 0, dmgAll: 0, dead: false, gone: false, hurtT: 0 };
+  evMonTag(M); g.add(M.tag);   // nhãn tên đổi màu theo cấp + thanh máu (parts/ui/hud.js)
   CB.mons.push(M); return M;
 }
 function monTick(M, dt, t) {
+  if (M.tag && !M.dead) evMonTag(M);   // cập nhật thanh máu khi M.hp đổi (cả quái remote)
   const p = M.g.position, P = player.position, dist = Math.hypot(P.x - p.x, P.z - p.z);
   if (M.dead) { M.deadT += dt; M.model.update(dt, t, "die"); M.g.scale.setScalar(Math.max(0.01, 1 - M.deadT)); if (M.deadT > 1) { scene.remove(M.g); M.gone = true; } return; }
   if (!CB.on || CB.sec.dir !== M.dir) { if (dist > 120 || M.remote) { scene.remove(M.g); M.gone = true; } return; }
@@ -393,10 +402,13 @@ function startCast(id, btn) {
   CB.cast = { id, S, task, target, limit: 10, left: 10, rec: false };
   showCard(); speak(task.speak);
 }
+const TASK_COL = { repeat: "#3fa3ff", answer: "#3fd68c", build: "#ff8a2a", name: "#ff5a5f", ask: "#b07cff" };
 function showCard() {
-  const c = CB.cast, k = c.task;
-  $("cbCt").textContent = TASK_ICON[k.type] + " " + TASK_NAME[k.type] + " · " + c.S.name + (resoOn(k.type) ? " · 🎵 Resonance!" : "");
-  $("cbCq").textContent = k.show; $("cbCh").textContent = "🎤 Giữ nút " + c.S.icon + " và nói" + (k.hint ? " · " + k.hint : "");
+  const c = CB.cast, k = c.task, nm = TASK_NAME[k.type].split(" · ")[0];
+  $("cbCt").innerHTML = '<span class="ev-tag" style="--c:' + TASK_COL[k.type] + '">' + TASK_ICON[k.type] + " " + nm + "</span><small>" + c.S.name + (resoOn(k.type) ? " · 🎵 Resonance!" : "") + "</small>";
+  $("cbCq").textContent = k.show; $("cbVi").textContent = k.vi || "";
+  const tip = (save.level || 1) <= 2 ? "🎤 Giữ nút " + c.S.icon + " và nói" : "";
+  $("cbCh").textContent = tip + (k.hint ? (tip ? " · " : "") + k.hint : "");
   $("cbReroll").style.visibility = performance.now() > CB.rerollAt ? "visible" : "hidden";
   $("cbCard").style.display = "block";
 }

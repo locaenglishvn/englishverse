@@ -5,12 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>EnglishVerse</title>
 <style>
-:root{--panel:rgba(255,255,255,.95);--ink:#1f2937;--accent:#e8590c;--ok:#2f9e44;--bad:#c92a2a;color-scheme:light dark}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--panel:rgba(32,34,42,.95);--ink:#f1f3f5}}
-:root[data-theme="dark"]{--panel:rgba(32,34,42,.95);--ink:#f1f3f5}
+:root{--panel:#1b2340;--ink:#eef1fb;--accent:#e8590c;--ok:#3fd68c;--bad:#ff6b6b;color-scheme:dark}
 html,body{margin:0;height:100%;overflow:hidden;background:#cfe8ff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
 canvas{display:block}
-.chip{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);padding:6px 14px;border-radius:999px;font-weight:700;font-size:15px}
+/* HUD chân dung (trên trái) – dùng khung parts/ui/theme.js */
+#evHud{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:8px;width:244px;z-index:5;pointer-events:none;color:var(--ev-fg,#eef1fb);font-family:var(--ev-font,system-ui)}
+#evHud .pt{position:absolute;left:0;top:0;width:58px;height:64px}
+#evHud .hex{position:absolute;inset:0;display:grid;place-items:center;font-size:30px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(150deg,#ffe28a,#c9842a 40%,#3a4677 70%,#c9842a);filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}
+#evHud .hex>span{display:grid;place-items:center;width:calc(100% - 6px);height:calc(100% - 6px);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:radial-gradient(circle at 50% 35%,#4a5a96,#1b2340)}
+#evHud .lvb{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font:700 11px var(--ev-font,system-ui);color:#2a1a00;padding:1px 8px;white-space:nowrap;background:linear-gradient(180deg,#ffe9a8,#ffc94a 50%,#e0a12e);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);filter:drop-shadow(0 2px 0 #8a5a12)}
+#evHud .col{margin-left:64px;display:flex;flex-direction:column;gap:3px;padding-top:2px}
+#evHud .hpRow{display:flex;align-items:center;gap:4px}#evHud .hpRow .ev-bar{flex:1}
+#evHud .ev-bar{height:15px}#evHud .ev-bar>em{line-height:15px}
+#evHud #hMp{display:none}body.cbOn #evHud #hMp{display:block}
+#evHud #hXp{height:12px}#evHud #hXp>em{line-height:12px;font-size:9px}
+#statusIcons{font-size:13px;min-width:0;text-shadow:0 1px 2px #000}
+#evHud .row{margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;font:700 12px var(--ev-font,system-ui);white-space:nowrap;text-shadow:0 1px 2px #000}
+#evHud .row>span{background:rgba(20,26,46,.78);padding:2px 6px;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+#evHud .row>span:empty{display:none}
+#hHm{display:none;background:rgba(112,64,196,.85)!important;color:#f1e4ff}
+#gateChip{position:fixed;left:12px;top:calc(130px + env(safe-area-inset-top,0px));display:none;z-index:5;background:var(--ev-know,#b07cff);color:#fff;font:700 12px var(--ev-font,system-ui);padding:4px 12px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);filter:drop-shadow(0 2px 0 rgba(0,0,0,.4));animation:gatePulse 1.6s ease-in-out infinite}
+@keyframes gatePulse{50%{opacity:.6}}
+#evTut{position:fixed;inset:0;z-index:30;touch-action:none}
+#evTut .spot{position:fixed;border-radius:14px;border:3px solid var(--ev-gold,#ffc94a);box-shadow:0 0 0 9999px rgba(8,12,28,.7),0 0 18px 4px rgba(255,201,74,.6);transition:all .25s;pointer-events:none}
+#evTut .cap{position:fixed;left:16px;right:16px;max-width:380px;margin:0 auto}
+#evTut .en{font:700 16px var(--ev-font,system-ui)}#evTut .vi{font-size:14px;margin-top:4px;color:#d6dcf5}#evTut .nx{font-size:11px;margin-top:8px;color:var(--ev-mut,#a3abc9)}
+#evTut .skip{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top,0px));padding:6px 14px;font-size:13px}
 #stick{position:fixed;left:24px;bottom:calc(28px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,.2);touch-action:none}
 #knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.9)}
 button{font:inherit;cursor:pointer}
@@ -30,9 +50,7 @@ button{font:inherit;cursor:pointer}
 #askp .q{border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:999px;padding:8px 12px;font-size:15px}
 #askMic{background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
 #guide{position:fixed;top:calc(140px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-#bagBtn,#statusChip{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-#bagBtn{left:100px}#statusChip{left:12px;top:calc(94px + env(safe-area-inset-top,0px));font-size:14px}
-#energyBar{display:inline-block;width:60px;height:8px;border-radius:4px;background:rgba(128,128,128,.3);vertical-align:middle;overflow:hidden}#energyBar div{height:100%;background:#e5484d}
+#bagBtn{position:fixed;top:calc(92px + env(safe-area-inset-top,0px));left:100px;border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px}
 .over{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 .over .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
 .x{border:0;background:transparent;color:var(--ink);font-size:20px}
@@ -50,7 +68,7 @@ button{font:inherit;cursor:pointer}
 .gal div{border:2px solid rgba(128,128,128,.3);border-radius:12px;padding:6px;text-align:center;font-size:12px}
 .gal .pic{font-size:30px}
 .bar{height:8px;border-radius:4px;background:rgba(128,128,128,.3);overflow:hidden;margin-top:4px}.bar div{height:100%;background:#fab005}
-#albumBtn{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#albumBtn{position:fixed;top:calc(92px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #album{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 #album .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
 .tabs{display:flex;gap:6px;margin-top:8px}.tabs button{flex:1;border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:12px;padding:6px 4px;font-weight:700;font-size:13px}.tabs button.on{border-color:var(--accent);background:rgba(232,89,12,.12)}
@@ -104,12 +122,30 @@ button{font:inherit;cursor:pointer}
 #shopMic{display:none;margin:10px auto 0;width:96px;height:96px;border-radius:50%;border:0;background:#e8590c;color:#fff;font-size:14px;font-weight:700;touch-action:none;-webkit-touch-callout:none}
 #shopMic.rec{background:#c92a2a;transform:scale(1.08)}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
+/* ---- Áp bộ khung giao diện (parts/ui/theme.js): nền xanh đêm, viền vàng góc vát, nổi ---- */
+#dlg,.over .box,#album .box,#askp,#guide,#namep .box,#chatp,.panel{border:2px solid transparent;border-radius:0;background:linear-gradient(180deg,#2a3560,#1b2340 40%,#141a2e) padding-box,linear-gradient(150deg,#ffe28a,#c9842a 22%,#3a4677 45%,#3a4677 62%,#c9842a 85%,#ffe28a) border-box;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+#guide{border-radius:0}
+#askp,#guide{z-index:6}
+#bagBtn,#askBtn,#zoomBtn,#albumBtn,#online,#mazeLeave{background:linear-gradient(180deg,#3a4677,#1b2340);color:var(--ev-fg,#eef1fb);box-shadow:inset 0 0 0 2px var(--ev-gold,#ffc94a),0 3px 0 #7a5212,0 5px 10px rgba(0,0,0,.35);font-family:var(--ev-font,system-ui)}
+#bagBtn:active,#askBtn:active,#zoomBtn:active,#albumBtn:active{transform:translateY(2px)}
+.opt,#askp .q,#chatList button,.q2{border:2px solid var(--ev-line,#3a4677);border-radius:6px;background:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 0 rgba(0,0,0,.35)}
+.opt.ok{border-color:var(--ok)}.opt.bad{border-color:var(--bad)}
+#who{color:var(--ev-gold,#ffc94a)}
 </style>
 </head>
 <body>
-<div class="chip"><span id="lvl">Lv.1</span> · ⭐ <span id="score">0</span> · 🪙 <span id="coins">0</span></div>
+<div id="evHud">
+  <div class="pt"><div class="hex"><span>🧑</span></div><b class="lvb" id="lvl">Lv.1</b></div>
+  <div class="col">
+    <div class="hpRow"><div class="ev-bar hp" id="hHp"><i></i><em></em></div><span id="statusIcons"></span></div>
+    <div class="ev-bar mp" id="hMp"><i></i><em></em></div>
+    <div class="ev-bar xp" id="hXp"><i></i><em></em></div>
+    <div class="row"><span>🪙 <span id="coins">0</span></span><span id="hPow"></span><span id="hHm"></span></div>
+  </div>
+  <span id="score" hidden>0</span>
+</div>
+<div id="gateChip"></div>
 <button id="bagBtn">🎒</button>
-<div id="statusChip">❤️ <span id="energyBar"><div style="width:100%"></div></span> <span id="statusIcons"></span></div>
 <div id="bag" class="over"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center"><b>🎒 My Bag</b><button id="bagClose" class="x">✕</button></div>
   <div id="bagInfo" style="font-size:14px;margin-top:4px"></div>
@@ -224,6 +260,7 @@ button{font:inherit;cursor:pointer}
 <script src="lessons.js"></script>
 <script src="places.js"></script>
 <script src="parts/ui/theme.js"></script>
+<script src="parts/ui/hud.js"></script>
 <script src="parts/registry.js"></script>
 <script src="parts/world/wilds.js"></script>
 <script src="parts/combat/models.js"></script>
@@ -1264,9 +1301,9 @@ function flash(html) {   // thông báo nhanh giữa màn hình
   $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
 }
 function renderHud() {
-  checkLevel(); $("score").textContent = score; $("coins").textContent = save.coins; $("lvl").textContent = "Lv." + playerLevel();
-  $("energyBar").firstElementChild.style.width = save.energy + "%";
+  checkLevel(); $("score").textContent = score;
   $("statusIcons").textContent = (isPoisoned() ? "☠️ " : "") + (isProtected() ? "🛡️" : "");
+  if (typeof evHudUpdate === "function") evHudUpdate();
 }
 /* TÚI ĐỒ 🎒 dạng ô (như trong game): mỗi loại đồ chiếm 1 ô, cùng loại thì cộng dồn. Túi đầy → cất bớt vào rương 🧰 ở nhà. */
 const BAG_SIZE = 20, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Hat", top: "👕 Top", legs: "👟 Shoes", cape: "🎒 Cape" };
