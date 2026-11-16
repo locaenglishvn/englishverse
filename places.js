@@ -24,7 +24,7 @@ const ITEMS = {
   lemontea:   { name: "Lemon tea",     icon: "🍹", price: 5,  energy: 12, desc: "Cold lemon tea. +12 HP ❤️." },
   popcorn:    { name: "Popcorn",       icon: "🍿", price: 6,  energy: 15, desc: "Salty popcorn for the movie. +15 HP ❤️." },
   // 🥤 Đồ uống hồi mana (Shop 24h)
-  lemon_tea:  { name: "Lemon tea",     icon: "🍋", price: 5,  mana: 30, desc: "Fresh and cool. +30 mana 💧." },
+  lemon_tea:  { name: "Lemon juice",   icon: "🍋", price: 5,  mana: 30, desc: "Fresh and cool. +30 mana 💧." },
   coconut:    { name: "Coconut water", icon: "🥥", price: 8,  mana: 50, desc: "Fresh and cool. +50 mana 💧." },
   sugarcane:  { name: "Sugarcane juice", icon: "🧃", price: 12, mana: 80, desc: "Fresh and cool. +80 mana 💧." },
   // 💇 Dịch vụ cắt tóc (Saigon Barber): đổi khuôn mặt + kiểu tóc ngay, không vào túi
