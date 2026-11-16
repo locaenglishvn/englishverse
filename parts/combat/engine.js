@@ -123,7 +123,7 @@ function equipWeapon(id) {
 
 /* ---------- 5. TRẠNG THÁI ---------- */
 const CB = { buff: { shield: 0, shieldUntil: 0, dmg: 0, dmgUntil: 0, hasteUntil: 0 }, on: false, sec: null, mons: [], drops: [], cast: null, cd: {}, atkCd: 0, mp: 100, harmony: 0, harmonyUntil: 0, lastType: "", lastHurt: 0, ko: false, wideBefore: false, rerollAt: 0, dayWarned: false, rings: [] };
-function hpMax() { return Math.round((100 + ((save.level || 1) - 1) * 5) * (1 + 0.06 * pr("warm_heart"))); }
+function hpMax() { const g = gear(); return Math.round((100 + ((save.level || 1) - 1) * 5) * (1 + 0.06 * pr("warm_heart")) + g.hp + g.stamina * 2); }   // + máu của trang bị (stamina cũ = hp ×2)
 function hpNow() { return save.energy / 100 * hpMax(); }
 function setHp(v) { save.energy = Math.max(0, Math.min(100, v / hpMax() * 100)); }
 

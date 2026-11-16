@@ -146,16 +146,7 @@ button{font:inherit;cursor:pointer}
 </div>
 <div id="gateChip"></div>
 <button id="bagBtn">🎒</button>
-<div id="bag" class="over"><div class="box">
-  <div style="display:flex;justify-content:space-between;align-items:center"><b>🎒 My Bag</b><button id="bagClose" class="x">✕</button></div>
-  <div id="bagInfo" style="font-size:14px;margin-top:4px"></div>
-  <div style="font-size:13px;font-weight:700;margin-top:10px">Đang mặc / Wearing</div>
-  <div id="bagEquip" class="slots" style="grid-template-columns:repeat(4,1fr);margin-top:4px"></div>
-  <div id="bagStats" style="font-size:13px;margin-top:6px"></div>
-  <div style="font-size:13px;font-weight:700;margin-top:10px" id="bagTitle"></div>
-  <div id="bagItems" class="slots" style="margin-top:4px"></div>
-  <div id="bagDetail" class="detail"></div>
-</div></div>
+<div id="bag" class="over"></div>   <!-- nội dung dựng bởi parts/ui/bag.js -->
 <div id="chest" class="over"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center"><b>🧰 My Chest</b><button id="chestClose" class="x">✕</button></div>
   <div style="font-size:13px;opacity:.8;margin-top:4px">Chạm vào món đồ để chuyển giữa túi 🎒 và rương 🧰. Tap an item to move it.</div>
@@ -261,6 +252,7 @@ button{font:inherit;cursor:pointer}
 <script src="places.js"></script>
 <script src="parts/ui/theme.js"></script>
 <script src="parts/ui/hud.js"></script>
+<script src="parts/ui/bag.js"></script>
 <script src="parts/registry.js"></script>
 <script src="parts/world/wilds.js"></script>
 <script src="parts/combat/models.js"></script>
@@ -505,6 +497,7 @@ function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương
       rig.add(c); c.bind(new THREE.Skeleton(bones, src.skeleton.boneInverses), src.bindMatrix);
     } else { const bone = root.getObjectByName(src.parent.name); if (bone) bone.add(c); }   // mũ, áo choàng: gắn vào xương đầu/ngực
   });
+  if (typeof addGearExtras === "function") addGearExtras(root, look);   // găng tay / giày / thắt lưng (parts/ui/bag.js)
   root.scale.setScalar(tpl.scale);
   return root;
 }
@@ -541,7 +534,7 @@ function charAct(g, name) {   // hoạt ảnh một lần: reo mừng, niệm ph
   u.cur = name; u.busy = a.getClip().duration - 0.2;
 }
 function setAvatar(g, look) {   // look: tên bộ nhân vật (NPC) hoặc { head, hat, top, legs, cape } (người chơi)
-  if (typeof look === "object" && look) look = { head: look.head, hat: look.hat || null, top: look.top, legs: look.legs, cape: look.cape || null };
+  if (typeof look === "object" && look) look = { head: look.head, hat: look.hat || null, top: look.top, legs: look.legs, cape: look.cape || null, gloves: look.gloves || null, shoes: look.shoes || null, belt: look.belt || null };
   else if (!AVATARS[look]) return;
   g.userData.model = look; attachModel(g);
 }
@@ -605,9 +598,16 @@ if (!save.equip) {   // người chơi cũ (trước khi có trang phục) hoặ
   let old = null; try { old = localStorage.getItem("ev_avatar"); } catch (e) {}
   save.head = FACES[old] ? old : old === "Rogue_Hooded" ? "Rogue" : null;
 }
+{   // chuyển trang phục cũ sang 8 ô: top→armor, legs→pants, ô mới = null (vũ khí không nằm trong equip)
+  const E = save.equip;
+  if ("top" in E) { if (E.armor == null) E.armor = E.top; delete E.top; }
+  if ("legs" in E) { if (E.pants == null) E.pants = E.legs; delete E.legs; }
+  ["hat", "armor", "pants", "shoes", "gloves", "belt", "cape"].forEach(k => { if (!(k in E)) E[k] = null; });
+  delete E.weapon;
+}
 save.chest = save.chest || {}; save.decor = save.decor || []; save.spoken = save.spoken || 0; save.legends = save.legends || [];
 if (!FACES[save.head]) save.head = Object.keys(FACES)[Math.floor(Math.random() * 4)];
-function myLook() { return Object.assign({ head: save.head }, save.equip); }
+function myLook() { const E = save.equip; return { head: save.head, hat: E.hat, top: E.armor, legs: E.pants, cape: E.cape, gloves: E.gloves, shoes: E.shoes, belt: E.belt }; }
 const player = makeChar(0x3b82f6, myLook());
 player.position.set(0, 0, 34);   // xuất hiện trên quảng trường, nhìn về Town Hall
 LESSONS.forEach(L => {
@@ -901,8 +901,8 @@ function npcInfo(full) {   // "Ms. Hoa – Teacher" → tên ngắn, nghề, t�
 function safeLook(a) {   // kiểm tra trang phục người khác gửi tới (chỉ nhận món có thật)
   if (typeof a === "string") return AVATARS[a] ? a : "Rogue";
   if (!a || typeof a !== "object") return "Rogue";
-  const ok = (id, slot) => ITEMS[id] && ITEMS[id].slot === slot ? id : null;
-  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "top") || "tee_white", legs: ok(a.legs, "legs") || "pants_plain", cape: ok(a.cape, "cape") };
+  const ok = (id, slot) => ITEMS[id] && slotOf(ITEMS[id]) === slot ? id : null;
+  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_white", legs: ok(a.legs, "pants") || "pants_plain", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
 }
 function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
@@ -1319,16 +1319,12 @@ function renderHud() {
   if (typeof evHudUpdate === "function") evHudUpdate();
 }
 /* TÚI ĐỒ 🎒 dạng ô (như trong game): mỗi loại đồ chiếm 1 ô, cùng loại thì cộng dồn. Túi đầy → cất bớt vào rương 🧰 ở nhà. */
-const BAG_SIZE = 20, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Hat", top: "👕 Top", legs: "👟 Shoes", cape: "🎒 Cape" };
-const STAT_ICON = { voice: "🗣️ Voice", ears: "👂 Ears", stamina: "💪 Stamina", resist: "🛡️ Resist", luck: "🍀 Luck" };
+const BAG_SIZE = 20, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Nón", armor: "🛡️ Áo giáp", pants: "👖 Quần", shoes: "👟 Giày", gloves: "🧤 Găng tay", belt: "🎗️ Thắt lưng", cape: "🧣 Áo choàng", weapon: "📢 Vũ khí" };
+const STAT_ICON = { voice: "🗣️ Voice", ears: "👂 Ears", stamina: "💪 Stamina", resist: "🛡️ Resist", luck: "🍀 Luck", hp: "❤️ HP", mana: "💧 Mana", hpRegen: "❤️ HP/s", mpRegen: "💧 MP regen", speed: "🏃 Speed" };
 function addItem(store, size, id, n) { if (!store[id] && Object.keys(store).length >= size) return false; store[id] = (store[id] || 0) + (n || 1); return true; }
 function takeItem(store, id) { if (!store[id]) return false; if (--store[id] <= 0) delete store[id]; return true; }
-function gear() {   // tổng chỉ số từ trang phục đang mặc
-  const g = { voice: 0, ears: 0, stamina: 0, resist: 0, luck: 0 };
-  Object.values(save.equip).forEach(id => { const it = ITEMS[id]; if (it && it.stats) for (const k in it.stats) g[k] += it.stats[k]; });
-  return g;
-}
-function statsText(st) { return Object.keys(st || {}).filter(k => st[k]).map(k => STAT_ICON[k].split(" ")[0] + " +" + st[k]).join("  ") || "–"; }
+// gear() (tổng chỉ số 8 ô) nằm trong parts/ui/bag.js
+function statsText(st) { return Object.keys(st || {}).filter(k => st[k]).map(k => (STAT_ICON[k] || k).split(" ")[0] + " +" + st[k]).join("  ") || "–"; }
 function rarityTag(it) { const r = RARITY[it.rarity]; return r ? '<span class="rar" style="color:' + r.color + '">' + r.name + (it.lv > 1 ? " · Lv." + it.lv : "") + "</span>" : ""; }
 function slotBtn(id, count, label) {   // một ô đồ
   const b = document.createElement("button"), it = id && ITEMS[id];
@@ -1363,46 +1359,19 @@ function refreshLook() { setAvatar(player, myLook()); lastSent = ""; saveNow(); 
 function wear(id) {   // mặc đồ: lấy từ túi, đồ cũ cùng ô quay về túi
   const it = ITEMS[id]; if (!it || !it.slot || !save.items[id]) return;
   if (playerLevel() < it.lv) { flash("🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv); return; }
-  const prev = save.equip[it.slot];
+  const sl = slotOf(it), prev = save.equip[sl];
   if (prev && !save.items[prev] && save.items[id] > 1 && Object.keys(save.items).length >= BAG_SIZE) { flash("🎒 Bag is full! / Túi đầy!"); return; }
-  takeItem(save.items, id); save.equip[it.slot] = id;
+  takeItem(save.items, id); save.equip[sl] = id;
   if (prev) addItem(save.items, BAG_SIZE, prev);
   refreshLook(); charAct(player, "Cheer"); speak("You look great in the " + it.name + "!");
   bagSel = null; drawBag();
 }
-function takeOff(slot) {   // cởi mũ / áo choàng (áo và quần thì phải luôn mặc)
+function takeOff(slot) {   // cởi một ô trang bị, trả về túi
   const id = save.equip[slot]; if (!id) return;
-  if (slot === "top" || slot === "legs") { flash("Choose another " + (slot === "top" ? "top" : "pair of shoes") + " to change. / Chọn món khác trong túi để thay."); return; }
   if (!addItem(save.items, BAG_SIZE, id)) { flash("🎒 Bag is full! / Túi đầy!"); return; }
   save.equip[slot] = null; refreshLook(); drawBag();
 }
-let bagSel = null;
-function drawBag() {
-  $("bagInfo").innerHTML = "🪙 " + save.coins + " coins · ⚡ " + Math.round(save.energy) + "/100" + (isPoisoned() ? " · ☠️ Poisoned" : "") + (isProtected() ? " · 🛡️ Protected" : "");
-  $("bagEquip").innerHTML = "";
-  Object.keys(SLOT_NAMES).forEach(sl => {
-    const id = save.equip[sl], b = slotBtn(id, 0, SLOT_NAMES[sl].split(" ")[1]);
-    b.onclick = () => { bagSel = "eq:" + sl; drawBag(); };
-    if (bagSel === "eq:" + sl) b.classList.add("sel");
-    $("bagEquip").appendChild(b);
-  });
-  $("bagStats").textContent = "Stats: " + statsText(gear());
-  $("bagTitle").textContent = "Items " + Object.keys(save.items).length + "/" + BAG_SIZE;
-  drawSlots($("bagItems"), save.items, BAG_SIZE, id => { bagSel = id; drawBag(); }, bagSel);
-  const d = $("bagDetail");
-  let id = bagSel, worn = false;
-  if (id && id.indexOf("eq:") === 0) { worn = id.slice(3); id = save.equip[worn]; }
-  const it = id && ITEMS[id];
-  if (!it || (!worn && !save.items[id])) { d.style.display = "none"; return; }
-  d.style.display = "block";
-  d.innerHTML = "<div style='font-size:17px;font-weight:700'>" + it.icon + " " + it.name + "</div>" + (it.rarity ? rarityTag(it) + "<div style='font-size:13px'>" + SLOT_NAMES[it.slot] + " · " + statsText(it.stats) + "</div>" : "") +
-    "<div style='font-size:13px;opacity:.85;margin-top:4px'>" + it.desc + "</div><div class='acts'></div>";
-  const act = (t, f, bg) => { const b = document.createElement("button"); b.textContent = t; b.onclick = f; if (bg) b.style.background = bg; d.querySelector(".acts").appendChild(b); };
-  if (worn) { if (worn === "hat" || worn === "cape") act("Take off / Cởi ra", () => takeOff(worn), "#868e96"); }
-  else act(it.slot ? "Wear / Mặc" + (playerLevel() < it.lv ? " 🔒 Lv." + it.lv : "") : "Use / Dùng", () => useItem(id));
-}
-$("bagBtn").onclick = () => { bagSel = null; drawBag(); $("bag").style.display = "block"; };
-$("bagClose").onclick = () => $("bag").style.display = "none";
+// drawBag / openBag / closeBag / chi tiết món: parts/ui/bag.js
 function drawChest() {   // rương ở nhà: chạm để chuyển đồ qua lại
   $("chestBagT").textContent = "🎒 Bag " + Object.keys(save.items).length + "/" + BAG_SIZE;
   $("chestT").textContent = "🧰 Chest " + Object.keys(save.chest).length + "/" + CHEST_SIZE;
@@ -2521,7 +2490,7 @@ function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng
     counter(0xf8f0fc);
     [-4, 4].forEach(dx => { addBox(g, 3, 0.08, 0.08, 0x868e96, cx + dx, 1.9, cz); [0xe64980, 0x4dabf7, 0xfab005, 0x51cf66].forEach((c, i) => addBox(g, 0.5, 0.9, 0.12, c, cx + dx - 1.1 + i * 0.73, 1.4, cz)); P.room.solids.push({ x: cx + dx, z: cz, hw: 1.5, hd: 0.2 }); });
     addBox(g, 1.2, 2.2, 0.1, 0xd0ebff, cx + 5.6, 1.3, back + 0.1);   // gương
-    P.room.spots = [{ x: cx + 5.6, z: back + 1.4, label: "🪞 Try on / Mặc thử", fn: () => { bagSel = null; drawBag(); $("bag").style.display = "block"; } }];
+    P.room.spots = [{ x: cx + 5.6, z: back + 1.4, label: "🪞 Try on / Mặc thử", fn: () => { bagSel = null; openBag(); } }];
     fur("cabinet_small_decorated", cx - 5, back + 0.5, 0, 1.1, 1, 0.5);
     fur("armchair", cx + 5.6, cz + 3, -Math.PI / 2, 1, 0.9, 0.8);
   }
@@ -2634,7 +2603,7 @@ function furnishHome(P, g, cx, cz, W, D, fur) {
   const gt = textPlate("MY GALLERY", 3, 0.5, "#fff8e7", "#6c4a2f"); gt.position.set(cx, 3, back + 0.04); g.add(gt);
   P.room.spots = [
     { x: cx + 6.2, z: back + 2, label: "🧰 Open chest", fn: () => { drawChest(); $("chest").style.display = "block"; } },
-    { x: cx - W / 2 + 1.2, z: cz + 1.4, label: "🪞 Wardrobe", fn: () => { bagSel = null; drawBag(); $("bag").style.display = "block"; } },
+    { x: cx - W / 2 + 1.2, z: cz + 1.4, label: "🪞 Wardrobe", fn: () => { bagSel = null; openBag(); } },
     { x: cx, z: back + 1.6, label: "🖼️ My Gallery", fn: openGallery },
     { x: cx - 6, z: back + 3.3, label: "🛏️ Sleep / Ngủ", fn: sleepAtHome }
   ];
@@ -3216,7 +3185,7 @@ function loop() {
     }
     player.rotation.y = camAngle + Math.PI;
   } else if (!maze && !talking && len > 0.1) {
-    const k = Math.min(len, 1) / len * 6 * dt;   // tốc độ đi: 6 m/giây
+    const k = Math.min(len, 1) / len * 6 * (1 + gear().speed / 100) * dt;   // tốc độ đi: 6 m/giây (+ % chạy nhanh của trang bị)
     const c = Math.cos(camAngle), s = Math.sin(camAngle);
     const wx = (mx * c + mz * s) * k, wz = (-mx * s + mz * c) * k;
     if (!blocked(player.position.x + wx, player.position.z)) player.position.x += wx;

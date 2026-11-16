@@ -70,15 +70,15 @@ function evLvColor(ml) {
 function evMonTag(M) {   // tạo lần đầu rồi chỉ vẽ lại khi máu / cấp đổi
   const hpK = Math.max(0, Math.min(40, Math.round(M.hp / (M.hpMax || 1) * 40))), key = hpK + "|" + M.lv + "|" + (save.level || 1);
   if (M.tagKey === key) return M.tag; M.tagKey = key;
-  if (!M.tagC) { M.tagC = document.createElement("canvas"); M.tagC.width = 320; M.tagC.height = 120; M.tagTex = new THREE.CanvasTexture(M.tagC); M.tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: M.tagTex, depthTest: false })); M.tag.scale.set(2.4, 2.4 * 120 / 320, 1); M.tag.position.y = 2.4; }
+  if (!M.tagC) { M.tagC = document.createElement("canvas"); M.tagC.width = 320; M.tagC.height = 120; M.tagTex = new THREE.CanvasTexture(M.tagC); M.tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: M.tagTex, depthTest: false })); M.tag.scale.set(4.4, 4.4 * 120 / 320, 1); M.tag.position.y = 2.9; }
   const g = M.tagC.getContext("2d"), [col, skull] = evLvColor(M.lv);
   g.clearRect(0, 0, 320, 120);
   g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0, 4, 320, 44);
   g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = col; let sz = 32; const txt = M.T.icon + " " + M.T.name + " Lv." + M.lv + skull;
   do { g.font = "bold " + sz + "px system-ui,sans-serif"; sz -= 2; } while (g.measureText(txt).width > 304 && sz > 14); g.fillText(txt, 160, 27);
-  g.fillStyle = "rgba(0,0,0,.7)"; g.fillRect(40, 56, 240, 20); g.fillStyle = "#ff4f5e"; g.fillRect(43, 59, 234 * hpK / 40, 14);
-  g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(43, 59, 234 * hpK / 40, 4);
-  g.fillStyle = "#ffd43b"; g.font = "bold 24px system-ui,sans-serif"; g.fillText("sợ " + (typeof TASK_ICON !== "undefined" ? TASK_ICON[M.T.weak] : ""), 160, 98);
+  g.fillStyle = "rgba(0,0,0,.7)"; g.fillRect(24, 52, 272, 30); g.fillStyle = "#ff4f5e"; g.fillRect(28, 56, 264 * hpK / 40, 22);
+  g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(28, 56, 264 * hpK / 40, 6);
+  g.fillStyle = "#ffd43b"; g.font = "bold 24px system-ui,sans-serif"; g.fillText("sợ " + (typeof TASK_ICON !== "undefined" ? TASK_ICON[M.T.weak] : ""), 160, 102);
   M.tagTex.needsUpdate = true; return M.tag;
 }
 
