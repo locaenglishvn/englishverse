@@ -303,17 +303,19 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 ---
 
-## 6. Việc tiếp theo (theo thứ tự đề xuất)
-0. **Hệ thống chiến đấu bằng giọng nói (đang chốt thiết kế, bản 2):** xem `docs/design/voice-combat.html` (bản xem trên điện thoại: https://claude.ai/artifact/HouMFg33PkkFkRYcmoK6Vu). Đã chốt: khiên −70% khi nói; hết máu → xám 2 giây, về cổng vùng; mô hình 3 lớp (kỹ năng = hiệu ứng, Voice Deck = bài nói, vũ khí = sức mạnh + cộng hưởng); Voice Deck sàn 15%, loại yếu tới 35%, được đổi đề; 4 nhánh Power / Control / Harmony / Rhythm. Chờ chốt bản 2: bản đồ vòng cấp, vũ khí 6 bậc + dòng Maestro, đồ rơi riêng 30 giây, Lv.50 ≈ 360 giờ, an toàn chat.
-1. **Nội thất từng nơi theo ảnh người dùng gửi** (mỗi lần 1 nơi): phòng to (`size`), nhiều khu, ≥ 4 NPC, từ vựng đúng khu. Gợi ý thứ tự: Science Lab, Star Cinema, Fix-It Workshop, My Home (nâng cấp); các ô 🚧.
-2. **Ngoại thất** các nơi còn dùng mẫu nhà phố (Science Lab, Fix-It Workshop, Pho Corner, Star Cinema…) và các ô 🚧 khi người dùng gửi ảnh.
-3. **Trò chơi đồng đội ở Verse Arena** (Quiz Tower, Word Race, Treasure Hunt, Team Battle) – đều bắt buộc giao tiếp tiếng Anh.
-4. **Vùng hoang dã có quái** quanh thành phố (rừng, đồi, đầm lầy, hang, phế tích), càng xa càng mạnh; thêm quái Riddle Bug, Scramble Worm; vũ khí nhạc cụ.
-5. **Đồng bộ quái cho cả cộng đồng:** một con quái, nhiều người cùng đánh, máu chung; mỗi người đề riêng.
-6. **Bảng nhiệm vụ ở Town Hall**; chuỗi nhiệm vụ Pasteur ở bệnh viện.
-7. **Tài khoản (Supabase Auth) + lưu tiến độ lên server.**
-8. Nâng cấp nhà riêng (bỏ xu + điều kiện để xây to hơn); mời bạn vào nhà, sổ khách, chợ trao đổi.
-9. Báo cáo năng lực CEFR cho phụ huynh và nhà trường; an toàn trẻ em.
+## 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 16/11 khi bàn giao sang phiên mới
+**Trạng thái:** `main` = PR #38 (`1250c9b`), QA toàn bộ ✅. Chiến đấu bằng giọng nói giai đoạn A + B + phần lớn C đã xong (mục 33–35 ở trên). Thiết kế đã chốt đầy đủ: `docs/design/voice-combat.html` (bản 3; xem trên điện thoại: https://claude.ai/artifact/HouMFg33PkkFkRYcmoK6Vu).
+**Cần chủ dự án thử trên điện thoại thật:** nói micro khi tung chiêu, lập đội / Duet / đổi đồ (2 người), độ mượt ở vùng hoang dã.
+1. **Chiến đấu – phần còn lại:** vòng 3–4 (Lv.50–100, `parts/world/wilds.js`); rẽ hướng chuyên sâu mỗi nhánh ở Lv.50; **trùm khu vực đánh nhóm** (mỗi người một vai trong hội thoại nhiều lượt); quái Picture Golem (tả tranh); bãi tập hình nộm ở Verse Arena; bán vũ khí ở tiệm (vd Verse Electronics thêm người bán).
+2. **Giao tiếp xã hội thêm:** nhiệm vụ "mỗi người giữ nửa thông tin" (info-gap), vai Guide (người cũ chỉ đường người mới), tặng đồ.
+3. **Trò chơi đồng đội ở Verse Arena** (Quiz Tower, Word Race, Treasure Hunt, Team Battle) – thắng mới có đồ hiếm.
+4. **Nội thất / ngoại thất còn thiếu:** Science Lab, Star Cinema, Fix-It Workshop; ngoại thất Pho Corner; các ô 🚧 (Gift Shop, Bookshop, Toy Store…).
+5. **Bảng nhiệm vụ ở Town Hall**; chuỗi nhiệm vụ Pasteur ở bệnh viện.
+6. **Tài khoản (Supabase Auth) + lưu tiến độ lên server** (🔴 hỏi trước: dữ liệu trẻ em).
+7. Nâng cấp nhà riêng; mời bạn vào nhà, sổ khách.
+8. Báo cáo năng lực CEFR cho phụ huynh và nhà trường (dùng `save.combat.deck`, `save.heart`, `save.spoken`).
+
+**Cách đội làm việc (đã chạy ổn 6 đợt):** CTO (Opus) chốt khung + toạ độ + tên khu trước, rồi giao song song: Sonnet = hình ảnh (nội thất, địa hình, quái, hiệu ứng), Haiku = nội dung (NPC, từ vựng, đề nói). Agent tạo worktree từ `main` nên đề bài luôn có BƯỚC 0 `git merge --ff-only <nhánh làm việc>`. Công cụ thử của CTO (Playwright) để trong scratchpad, không commit.
 
 ### Hạn chế đã biết
 - Quái **chỉ có trên máy mỗi người** (chưa đồng bộ); hiện chỉ ở Misty Park.
