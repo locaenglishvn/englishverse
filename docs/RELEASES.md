@@ -13,3 +13,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-13 | `1f2e25a` | Đợt 4: Home & Cozy, Verse Electronics, 4 tiệm to, tên NPC | ✅ |
 | 2026-11-14 | `10d7c40` | Chiến đấu giai đoạn A | ✅ |
 | 2026-11-14 | `fc48753` | Chiến đấu giai đoạn B | ✅ |
+| 2026-11-16 | `2729187` | Chiến đấu giai đoạn C (vòng 2, quái chung) – mốc trước đợt góp ý chơi thử 16/11 | ✅ |

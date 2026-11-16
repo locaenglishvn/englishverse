@@ -5,12 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>EnglishVerse</title>
 <style>
-:root{--panel:rgba(255,255,255,.95);--ink:#1f2937;--accent:#e8590c;--ok:#2f9e44;--bad:#c92a2a;color-scheme:light dark}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--panel:rgba(32,34,42,.95);--ink:#f1f3f5}}
-:root[data-theme="dark"]{--panel:rgba(32,34,42,.95);--ink:#f1f3f5}
+:root{--panel:#1b2340;--ink:#eef1fb;--accent:#e8590c;--ok:#3fd68c;--bad:#ff6b6b;color-scheme:dark}
 html,body{margin:0;height:100%;overflow:hidden;background:#cfe8ff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
 canvas{display:block}
-.chip{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);padding:6px 14px;border-radius:999px;font-weight:700;font-size:15px}
+/* HUD chân dung (trên trái) – dùng khung parts/ui/theme.js */
+#evHud{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:8px;width:244px;z-index:5;pointer-events:none;color:var(--ev-fg,#eef1fb);font-family:var(--ev-font,system-ui)}
+#evHud .pt{position:absolute;left:0;top:0;width:58px;height:64px}
+#evHud .hex{position:absolute;inset:0;display:grid;place-items:center;font-size:30px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(150deg,#ffe28a,#c9842a 40%,#3a4677 70%,#c9842a);filter:drop-shadow(0 3px 0 rgba(0,0,0,.35))}
+#evHud .hex>span{display:grid;place-items:center;width:calc(100% - 6px);height:calc(100% - 6px);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:radial-gradient(circle at 50% 35%,#4a5a96,#1b2340)}
+#evHud .lvb{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font:700 11px var(--ev-font,system-ui);color:#2a1a00;padding:1px 8px;white-space:nowrap;background:linear-gradient(180deg,#ffe9a8,#ffc94a 50%,#e0a12e);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);filter:drop-shadow(0 2px 0 #8a5a12)}
+#evHud .col{margin-left:64px;display:flex;flex-direction:column;gap:3px;padding-top:2px}
+#evHud .hpRow{display:flex;align-items:center;gap:4px}#evHud .hpRow .ev-bar{flex:1}
+#evHud .ev-bar{height:15px}#evHud .ev-bar>em{line-height:15px}
+#evHud #hMp{display:none}body.cbOn #evHud #hMp{display:block}
+#evHud #hXp{height:12px}#evHud #hXp>em{line-height:12px;font-size:9px}
+#statusIcons{font-size:13px;min-width:0;text-shadow:0 1px 2px #000}
+#evHud .row{margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;font:700 12px var(--ev-font,system-ui);white-space:nowrap;text-shadow:0 1px 2px #000}
+#evHud .row>span{background:rgba(20,26,46,.78);padding:2px 6px;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+#evHud .row>span:empty{display:none}
+#hHm{display:none;background:rgba(112,64,196,.85)!important;color:#f1e4ff}
+#gateChip{position:fixed;left:12px;top:calc(130px + env(safe-area-inset-top,0px));display:none;z-index:5;background:var(--ev-know,#b07cff);color:#fff;font:700 12px var(--ev-font,system-ui);padding:4px 12px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);filter:drop-shadow(0 2px 0 rgba(0,0,0,.4));animation:gatePulse 1.6s ease-in-out infinite}
+@keyframes gatePulse{50%{opacity:.6}}
+#evTut{position:fixed;inset:0;z-index:30;touch-action:none}
+#evTut .spot{position:fixed;border-radius:14px;border:3px solid var(--ev-gold,#ffc94a);box-shadow:0 0 0 9999px rgba(8,12,28,.7),0 0 18px 4px rgba(255,201,74,.6);transition:all .25s;pointer-events:none}
+#evTut .cap{position:fixed;left:16px;right:16px;max-width:380px;margin:0 auto}
+#evTut .en{font:700 16px var(--ev-font,system-ui)}#evTut .vi{font-size:14px;margin-top:4px;color:#d6dcf5}#evTut .nx{font-size:11px;margin-top:8px;color:var(--ev-mut,#a3abc9)}
+#evTut .skip{position:fixed;right:14px;top:calc(12px + env(safe-area-inset-top,0px));padding:6px 14px;font-size:13px}
 #stick{position:fixed;left:24px;bottom:calc(28px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,.2);touch-action:none}
 #knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.9)}
 button{font:inherit;cursor:pointer}
@@ -30,9 +50,7 @@ button{font:inherit;cursor:pointer}
 #askp .q{border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:999px;padding:8px 12px;font-size:15px}
 #askMic{background:#1c7ed6;color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700}
 #guide{position:fixed;top:calc(140px + env(safe-area-inset-top,0px));left:10px;right:10px;max-width:560px;margin:0 auto;display:none;background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:16px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-#bagBtn,#statusChip{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-#bagBtn{left:100px}#statusChip{left:12px;top:calc(94px + env(safe-area-inset-top,0px));font-size:14px}
-#energyBar{display:inline-block;width:60px;height:8px;border-radius:4px;background:rgba(128,128,128,.3);vertical-align:middle;overflow:hidden}#energyBar div{height:100%;background:#e5484d}
+#bagBtn{position:fixed;top:calc(92px + env(safe-area-inset-top,0px));left:100px;border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:15px}
 .over{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 .over .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
 .x{border:0;background:transparent;color:var(--ink);font-size:20px}
@@ -50,7 +68,7 @@ button{font:inherit;cursor:pointer}
 .gal div{border:2px solid rgba(128,128,128,.3);border-radius:12px;padding:6px;text-align:center;font-size:12px}
 .gal .pic{font-size:30px}
 .bar{height:8px;border-radius:4px;background:rgba(128,128,128,.3);overflow:hidden;margin-top:4px}.bar div{height:100%;background:#fab005}
-#albumBtn{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#albumBtn{position:fixed;top:calc(92px + env(safe-area-inset-top,0px));left:12px;background:var(--panel);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 #album{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.45);padding:calc(16px + env(safe-area-inset-top,0px)) 16px 16px;overflow-y:auto}
 #album .box{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;max-width:560px;margin:0 auto}
 .tabs{display:flex;gap:6px;margin-top:8px}.tabs button{flex:1;border:2px solid rgba(128,128,128,.35);background:transparent;color:var(--ink);border-radius:12px;padding:6px 4px;font-weight:700;font-size:13px}.tabs button.on{border-color:var(--accent);background:rgba(232,89,12,.12)}
@@ -104,22 +122,31 @@ button{font:inherit;cursor:pointer}
 #shopMic{display:none;margin:10px auto 0;width:96px;height:96px;border-radius:50%;border:0;background:#e8590c;color:#fff;font-size:14px;font-weight:700;touch-action:none;-webkit-touch-callout:none}
 #shopMic.rec{background:#c92a2a;transform:scale(1.08)}
 #next{display:none;margin-top:10px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700}
+/* ---- Áp bộ khung giao diện (parts/ui/theme.js): nền xanh đêm, viền vàng góc vát, nổi ---- */
+#dlg,.over .box,#album .box,#askp,#guide,#namep .box,#chatp,.panel{border:2px solid transparent;border-radius:0;background:linear-gradient(180deg,#2a3560,#1b2340 40%,#141a2e) padding-box,linear-gradient(150deg,#ffe28a,#c9842a 22%,#3a4677 45%,#3a4677 62%,#c9842a 85%,#ffe28a) border-box;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+#guide{border-radius:0}
+#askp,#guide{z-index:6}
+#bagBtn,#askBtn,#zoomBtn,#albumBtn,#online,#mazeLeave{background:linear-gradient(180deg,#3a4677,#1b2340);color:var(--ev-fg,#eef1fb);box-shadow:inset 0 0 0 2px var(--ev-gold,#ffc94a),0 3px 0 #7a5212,0 5px 10px rgba(0,0,0,.35);font-family:var(--ev-font,system-ui)}
+#bagBtn:active,#askBtn:active,#zoomBtn:active,#albumBtn:active{transform:translateY(2px)}
+.opt,#askp .q,#chatList button,.q2{border:2px solid var(--ev-line,#3a4677);border-radius:6px;background:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 2px 0 rgba(0,0,0,.35)}
+.opt.ok{border-color:var(--ok)}.opt.bad{border-color:var(--bad)}
+#who{color:var(--ev-gold,#ffc94a)}
 </style>
 </head>
 <body>
-<div class="chip"><span id="lvl">Lv.1</span> · ⭐ <span id="score">0</span> · 🪙 <span id="coins">0</span></div>
+<div id="evHud">
+  <div class="pt"><div class="hex"><span>🧑</span></div><b class="lvb" id="lvl">Lv.1</b></div>
+  <div class="col">
+    <div class="hpRow"><div class="ev-bar hp" id="hHp"><i></i><em></em></div><span id="statusIcons"></span></div>
+    <div class="ev-bar mp" id="hMp"><i></i><em></em></div>
+    <div class="ev-bar xp" id="hXp"><i></i><em></em></div>
+    <div class="row"><span>🪙 <span id="coins">0</span></span><span id="hPow"></span><span id="hHm"></span></div>
+  </div>
+  <span id="score" hidden>0</span>
+</div>
+<div id="gateChip"></div>
 <button id="bagBtn">🎒</button>
-<div id="statusChip">❤️ <span id="energyBar"><div style="width:100%"></div></span> <span id="statusIcons"></span></div>
-<div id="bag" class="over"><div class="box">
-  <div style="display:flex;justify-content:space-between;align-items:center"><b>🎒 My Bag</b><button id="bagClose" class="x">✕</button></div>
-  <div id="bagInfo" style="font-size:14px;margin-top:4px"></div>
-  <div style="font-size:13px;font-weight:700;margin-top:10px">Đang mặc / Wearing</div>
-  <div id="bagEquip" class="slots" style="grid-template-columns:repeat(4,1fr);margin-top:4px"></div>
-  <div id="bagStats" style="font-size:13px;margin-top:6px"></div>
-  <div style="font-size:13px;font-weight:700;margin-top:10px" id="bagTitle"></div>
-  <div id="bagItems" class="slots" style="margin-top:4px"></div>
-  <div id="bagDetail" class="detail"></div>
-</div></div>
+<div id="bag" class="over"></div>   <!-- nội dung dựng bởi parts/ui/bag.js -->
 <div id="chest" class="over"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center"><b>🧰 My Chest</b><button id="chestClose" class="x">✕</button></div>
   <div style="font-size:13px;opacity:.8;margin-top:4px">Chạm vào món đồ để chuyển giữa túi 🎒 và rương 🧰. Tap an item to move it.</div>
@@ -223,6 +250,9 @@ button{font:inherit;cursor:pointer}
 <script src="lib/supabase.js"></script>
 <script src="lessons.js"></script>
 <script src="places.js"></script>
+<script src="parts/ui/theme.js"></script>
+<script src="parts/ui/hud.js"></script>
+<script src="parts/ui/bag.js"></script>
 <script src="parts/registry.js"></script>
 <script src="parts/world/wilds.js"></script>
 <script src="parts/combat/models.js"></script>
@@ -230,8 +260,10 @@ button{font:inherit;cursor:pointer}
 <script src="parts/combat/weapons3d.js"></script>
 <script src="deck.js"></script>
 <script src="parts/combat/engine.js"></script>
+<script src="parts/combat/skills-ui.js"></script>
 <script src="parts/social/safechat.js"></script>
 <script src="parts/social/team.js"></script>
+<script src="parts/ui/progress.js"></script>
 <script src="parts/exteriors/furniturebig.js"></script>
 <script src="parts/exteriors/electronics.js"></script>
 <script src="parts/interiors/cafe.js"></script>
@@ -465,6 +497,7 @@ function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương
       rig.add(c); c.bind(new THREE.Skeleton(bones, src.skeleton.boneInverses), src.bindMatrix);
     } else { const bone = root.getObjectByName(src.parent.name); if (bone) bone.add(c); }   // mũ, áo choàng: gắn vào xương đầu/ngực
   });
+  if (typeof addGearExtras === "function") addGearExtras(root, look);   // găng tay / giày / thắt lưng (parts/ui/bag.js)
   root.scale.setScalar(tpl.scale);
   return root;
 }
@@ -501,7 +534,7 @@ function charAct(g, name) {   // hoạt ảnh một lần: reo mừng, niệm ph
   u.cur = name; u.busy = a.getClip().duration - 0.2;
 }
 function setAvatar(g, look) {   // look: tên bộ nhân vật (NPC) hoặc { head, hat, top, legs, cape } (người chơi)
-  if (typeof look === "object" && look) look = { head: look.head, hat: look.hat || null, top: look.top, legs: look.legs, cape: look.cape || null };
+  if (typeof look === "object" && look) look = { head: look.head, hat: look.hat || null, top: look.top, legs: look.legs, cape: look.cape || null, gloves: look.gloves || null, shoes: look.shoes || null, belt: look.belt || null };
   else if (!AVATARS[look]) return;
   g.userData.model = look; attachModel(g);
 }
@@ -565,9 +598,16 @@ if (!save.equip) {   // người chơi cũ (trước khi có trang phục) hoặ
   let old = null; try { old = localStorage.getItem("ev_avatar"); } catch (e) {}
   save.head = FACES[old] ? old : old === "Rogue_Hooded" ? "Rogue" : null;
 }
+{   // chuyển trang phục cũ sang 8 ô: top→armor, legs→pants, ô mới = null (vũ khí không nằm trong equip)
+  const E = save.equip;
+  if ("top" in E) { if (E.armor == null) E.armor = E.top; delete E.top; }
+  if ("legs" in E) { if (E.pants == null) E.pants = E.legs; delete E.legs; }
+  ["hat", "armor", "pants", "shoes", "gloves", "belt", "cape"].forEach(k => { if (!(k in E)) E[k] = null; });
+  delete E.weapon;
+}
 save.chest = save.chest || {}; save.decor = save.decor || []; save.spoken = save.spoken || 0; save.legends = save.legends || [];
 if (!FACES[save.head]) save.head = Object.keys(FACES)[Math.floor(Math.random() * 4)];
-function myLook() { return Object.assign({ head: save.head }, save.equip); }
+function myLook() { const E = save.equip; return { head: save.head, hat: E.hat, top: E.armor, legs: E.pants, cape: E.cape, gloves: E.gloves, shoes: E.shoes, belt: E.belt }; }
 const player = makeChar(0x3b82f6, myLook());
 player.position.set(0, 0, 34);   // xuất hiện trên quảng trường, nhìn về Town Hall
 LESSONS.forEach(L => {
@@ -607,11 +647,22 @@ document.addEventListener("touchend", e => { const now = Date.now(); if (now - l
 document.addEventListener("dblclick", e => e.preventDefault());
 document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 /* Xoay camera: kéo ngón tay (hoặc chuột) trên màn hình; phím Q/E trên máy tính */
-let camAngle = 0, camPitch = 0.75, look = null;   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
+let camAngle = 0, camPitch = 0.75, look = null;
+/* Vùng hoang dã: camera CỐ ĐỊNH nhìn về hướng Bắc (như Liên Quân), chỉ kéo dọc để đổi góc nghiêng 35°–78° (chủ dự án chốt 16/11) */
+const WILD_PITCH = [0.61, 1.36], wildCam = () => typeof CB !== "undefined" && CB.on && !room && !maze;
+let wasWildCam = false;
+function wildCamTick(dt) {
+  const on = wildCam();
+  if (on && !wasWildCam) camPitch = (save.combat && save.combat.camPitch) || 0.96;   // nhớ góc lần trước, mặc định 55°
+  wasWildCam = on; if (!on) return;
+  let a = ((camAngle + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;   // đưa về −π…π rồi quay mượt về 0 (Bắc)
+  camAngle = Math.abs(a) < 0.01 ? 0 : a * Math.max(0, 1 - dt * 6);
+  camPitch = Math.min(WILD_PITCH[1], Math.max(WILD_PITCH[0], camPitch)); if (save.combat) save.combat.camPitch = camPitch;
+}   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
 const cv = renderer.domElement;
 cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener("pointermove", e => {
-  if (look && look.id === e.pointerId) { camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;
+  if (look && look.id === e.pointerId) { if (!wildCam()) camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;   // vùng hoang dã: không xoay ngang
     if (!maze) camPitch = room ? Math.min(1.0, Math.max(-0.7, camPitch + (e.clientY - look.y) * 0.006)) : Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera (trong nhà: ngẩng lên được để nhìn trần)
     look.y = e.clientY; }
 });
@@ -793,7 +844,7 @@ function gainCard(card, type) {   // trả về true nếu nhận được thẻ
 }
 function practice(id) {   // nói đúng câu của thẻ → +1 ⭐ (tối đa 3)
   if (!hasCard(id) || stars(id) >= 3) return;
-  save.mastery[id] = stars(id) + 1; saveNow(); checkLevel();
+  save.mastery[id] = stars(id) + 1; saveNow(); if (typeof onMastery === "function") onMastery(id); checkLevel();
 }
 function masteryRatio() { return owned.length ? owned.filter(id => stars(id) >= 2).length / owned.length : 1; }
 let albumTab = "p";
@@ -801,7 +852,7 @@ function drawAlbum() {
   $("albumTabs").innerHTML = Object.keys(CARD_TYPES).map(t => "<button data-t='" + t + "' class='" + (t === albumTab ? "on" : "") + "'>" + CARD_TYPES[t].icon + " " + CARD_TYPES[t].name + "<br><small>" + ownedOf(t) + "/" + cardCap(t) + "</small></button>").join("");
   $("albumTabs").querySelectorAll("button").forEach(b => b.onclick = () => { albumTab = b.dataset.t; drawAlbum(); });
   const lv = playerLevel(), ratio = Math.round(masteryRatio() * 100);
-  $("albumInfo").innerHTML = "Lv." + lv + " · ⭐⭐ " + ratio + "% thẻ đã thuộc" + (lv >= 5 ? " (cần 70% để lên cấp)" : "") + "<br>Hạn mức: " + CARD_TYPES[albumTab].vi + " " + ownedOf(albumTab) + "/" + cardCap(albumTab) + ". Đầy rồi thì đi đánh quái luyện thẻ để lên cấp.";
+  $("albumInfo").innerHTML = "Lv." + lv + (typeof levelGateText === "function" && levelGateText() ? " · " + levelGateText() : "") + "<br>Hạn mức: " + CARD_TYPES[albumTab].vi + " " + ownedOf(albumTab) + "/" + cardCap(albumTab) + ". Đầy rồi thì đi đánh quái luyện thẻ để lên cấp.";
   $("cards").innerHTML = "";
   allCards().filter(c => c.type === albumTab).sort((a, b) => hasCard(b.id) - hasCard(a.id)).forEach(c => {
     const has = hasCard(c.id), d = document.createElement("button");
@@ -850,8 +901,8 @@ function npcInfo(full) {   // "Ms. Hoa – Teacher" → tên ngắn, nghề, t�
 function safeLook(a) {   // kiểm tra trang phục người khác gửi tới (chỉ nhận món có thật)
   if (typeof a === "string") return AVATARS[a] ? a : "Rogue";
   if (!a || typeof a !== "object") return "Rogue";
-  const ok = (id, slot) => ITEMS[id] && ITEMS[id].slot === slot ? id : null;
-  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "top") || "tee_white", legs: ok(a.legs, "legs") || "pants_plain", cape: ok(a.cape, "cape") };
+  const ok = (id, slot) => ITEMS[id] && slotOf(ITEMS[id]) === slot ? id : null;
+  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_white", legs: ok(a.legs, "pants") || "pants_plain", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
 }
 function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
@@ -1263,21 +1314,17 @@ function flash(html) {   // thông báo nhanh giữa màn hình
   $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
 }
 function renderHud() {
-  checkLevel(); $("score").textContent = score; $("coins").textContent = save.coins; $("lvl").textContent = "Lv." + playerLevel();
-  $("energyBar").firstElementChild.style.width = save.energy + "%";
+  checkLevel(); $("score").textContent = score;
   $("statusIcons").textContent = (isPoisoned() ? "☠️ " : "") + (isProtected() ? "🛡️" : "");
+  if (typeof evHudUpdate === "function") evHudUpdate();
 }
 /* TÚI ĐỒ 🎒 dạng ô (như trong game): mỗi loại đồ chiếm 1 ô, cùng loại thì cộng dồn. Túi đầy → cất bớt vào rương 🧰 ở nhà. */
-const BAG_SIZE = 20, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Hat", top: "👕 Top", legs: "👟 Shoes", cape: "🎒 Cape" };
-const STAT_ICON = { voice: "🗣️ Voice", ears: "👂 Ears", stamina: "💪 Stamina", resist: "🛡️ Resist", luck: "🍀 Luck" };
+const BAG_SIZE = 20, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Nón", armor: "🛡️ Áo giáp", pants: "👖 Quần", shoes: "👟 Giày", gloves: "🧤 Găng tay", belt: "🎗️ Thắt lưng", cape: "🧣 Áo choàng", weapon: "📢 Vũ khí" };
+const STAT_ICON = { voice: "🗣️ Voice", ears: "👂 Ears", stamina: "💪 Stamina", resist: "🛡️ Resist", luck: "🍀 Luck", hp: "❤️ HP", mana: "💧 Mana", hpRegen: "❤️ HP/s", mpRegen: "💧 MP regen", speed: "🏃 Speed" };
 function addItem(store, size, id, n) { if (!store[id] && Object.keys(store).length >= size) return false; store[id] = (store[id] || 0) + (n || 1); return true; }
 function takeItem(store, id) { if (!store[id]) return false; if (--store[id] <= 0) delete store[id]; return true; }
-function gear() {   // tổng chỉ số từ trang phục đang mặc
-  const g = { voice: 0, ears: 0, stamina: 0, resist: 0, luck: 0 };
-  Object.values(save.equip).forEach(id => { const it = ITEMS[id]; if (it && it.stats) for (const k in it.stats) g[k] += it.stats[k]; });
-  return g;
-}
-function statsText(st) { return Object.keys(st || {}).filter(k => st[k]).map(k => STAT_ICON[k].split(" ")[0] + " +" + st[k]).join("  ") || "–"; }
+// gear() (tổng chỉ số 8 ô) nằm trong parts/ui/bag.js
+function statsText(st) { return Object.keys(st || {}).filter(k => st[k]).map(k => (STAT_ICON[k] || k).split(" ")[0] + " +" + st[k]).join("  ") || "–"; }
 function rarityTag(it) { const r = RARITY[it.rarity]; return r ? '<span class="rar" style="color:' + r.color + '">' + r.name + (it.lv > 1 ? " · Lv." + it.lv : "") + "</span>" : ""; }
 function slotBtn(id, count, label) {   // một ô đồ
   const b = document.createElement("button"), it = id && ITEMS[id];
@@ -1312,46 +1359,19 @@ function refreshLook() { setAvatar(player, myLook()); lastSent = ""; saveNow(); 
 function wear(id) {   // mặc đồ: lấy từ túi, đồ cũ cùng ô quay về túi
   const it = ITEMS[id]; if (!it || !it.slot || !save.items[id]) return;
   if (playerLevel() < it.lv) { flash("🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv); return; }
-  const prev = save.equip[it.slot];
+  const sl = slotOf(it), prev = save.equip[sl];
   if (prev && !save.items[prev] && save.items[id] > 1 && Object.keys(save.items).length >= BAG_SIZE) { flash("🎒 Bag is full! / Túi đầy!"); return; }
-  takeItem(save.items, id); save.equip[it.slot] = id;
+  takeItem(save.items, id); save.equip[sl] = id;
   if (prev) addItem(save.items, BAG_SIZE, prev);
   refreshLook(); charAct(player, "Cheer"); speak("You look great in the " + it.name + "!");
   bagSel = null; drawBag();
 }
-function takeOff(slot) {   // cởi mũ / áo choàng (áo và quần thì phải luôn mặc)
+function takeOff(slot) {   // cởi một ô trang bị, trả về túi
   const id = save.equip[slot]; if (!id) return;
-  if (slot === "top" || slot === "legs") { flash("Choose another " + (slot === "top" ? "top" : "pair of shoes") + " to change. / Chọn món khác trong túi để thay."); return; }
   if (!addItem(save.items, BAG_SIZE, id)) { flash("🎒 Bag is full! / Túi đầy!"); return; }
   save.equip[slot] = null; refreshLook(); drawBag();
 }
-let bagSel = null;
-function drawBag() {
-  $("bagInfo").innerHTML = "🪙 " + save.coins + " coins · ⚡ " + Math.round(save.energy) + "/100" + (isPoisoned() ? " · ☠️ Poisoned" : "") + (isProtected() ? " · 🛡️ Protected" : "");
-  $("bagEquip").innerHTML = "";
-  Object.keys(SLOT_NAMES).forEach(sl => {
-    const id = save.equip[sl], b = slotBtn(id, 0, SLOT_NAMES[sl].split(" ")[1]);
-    b.onclick = () => { bagSel = "eq:" + sl; drawBag(); };
-    if (bagSel === "eq:" + sl) b.classList.add("sel");
-    $("bagEquip").appendChild(b);
-  });
-  $("bagStats").textContent = "Stats: " + statsText(gear());
-  $("bagTitle").textContent = "Items " + Object.keys(save.items).length + "/" + BAG_SIZE;
-  drawSlots($("bagItems"), save.items, BAG_SIZE, id => { bagSel = id; drawBag(); }, bagSel);
-  const d = $("bagDetail");
-  let id = bagSel, worn = false;
-  if (id && id.indexOf("eq:") === 0) { worn = id.slice(3); id = save.equip[worn]; }
-  const it = id && ITEMS[id];
-  if (!it || (!worn && !save.items[id])) { d.style.display = "none"; return; }
-  d.style.display = "block";
-  d.innerHTML = "<div style='font-size:17px;font-weight:700'>" + it.icon + " " + it.name + "</div>" + (it.rarity ? rarityTag(it) + "<div style='font-size:13px'>" + SLOT_NAMES[it.slot] + " · " + statsText(it.stats) + "</div>" : "") +
-    "<div style='font-size:13px;opacity:.85;margin-top:4px'>" + it.desc + "</div><div class='acts'></div>";
-  const act = (t, f, bg) => { const b = document.createElement("button"); b.textContent = t; b.onclick = f; if (bg) b.style.background = bg; d.querySelector(".acts").appendChild(b); };
-  if (worn) { if (worn === "hat" || worn === "cape") act("Take off / Cởi ra", () => takeOff(worn), "#868e96"); }
-  else act(it.slot ? "Wear / Mặc" + (playerLevel() < it.lv ? " 🔒 Lv." + it.lv : "") : "Use / Dùng", () => useItem(id));
-}
-$("bagBtn").onclick = () => { bagSel = null; drawBag(); $("bag").style.display = "block"; };
-$("bagClose").onclick = () => $("bag").style.display = "none";
+// drawBag / openBag / closeBag / chi tiết món: parts/ui/bag.js
 function drawChest() {   // rương ở nhà: chạm để chuyển đồ qua lại
   $("chestBagT").textContent = "🎒 Bag " + Object.keys(save.items).length + "/" + BAG_SIZE;
   $("chestT").textContent = "🧰 Chest " + Object.keys(save.chest).length + "/" + CHEST_SIZE;
@@ -1374,7 +1394,9 @@ function checkLegends() {   // đồ huyền thoại: tự trao khi đạt thàn
 }
 let hudT = 0;
 function updateEconomy(dt) {   // năng lượng tự hồi 1 điểm / 15 giây; cập nhật thanh trạng thái
-  save.energy = Math.min(100, save.energy + dt / 15 * (1 + gear().stamina / 30));   // 💪 Stamina: hồi nhanh hơn
+  // Máu KHÔNG tự hồi (chủ dự án chốt 16/11): hồi bằng đồ ăn, thuốc, ngủ giường ở nhà, chiêu Harmony, trang bị có hpRegen.
+  const rg = gear().hpRegen || 0; if (rg && typeof hpMax === "function" && save.energy < 100 && !(typeof CB !== "undefined" && CB.ko)) save.energy = Math.min(100, save.energy + rg * dt / hpMax() * 100);
+  if (typeof clampXp === "function") clampXp();
   if ((hudT += dt) > 1) { hudT = 0; renderHud(); saveNow(); }
 }
 
@@ -1505,8 +1527,10 @@ function checkLevel() {
   if (!save.level) save.level = 1;
   const target = typeof levelForXp === "function" ? levelForXp(score) : 1 + Math.floor(score / 60);   // đường cong mới tới Lv.100 (parts/combat/engine.js)
   while (save.level < target) {
-    if (save.level >= 5 && masteryRatio() < 0.7) {   // chưa thuộc bài → chưa cho lên cấp
-      if (!lvBlockedShown) { lvBlockedShown = true; flash("🔒 Practice your cards to reach Lv." + (save.level + 1) + "!<div style='font-size:13px;font-weight:400'>Cần ≥ 70% thẻ đạt ⭐⭐ (hiện " + Math.round(masteryRatio() * 100) + "%). Đánh Echo Ghost để luyện!</div>"); }
+    const g = typeof levelGate === "function" ? levelGate() : null;   // từ Lv.3: mỗi loại thẻ cần ≥ 70% hạn mức đạt ⭐⭐ (parts/ui/progress.js)
+    if (g && g.missing) {   // chưa đủ thẻ → EXP dừng ở 100%, không tích luỹ
+      clampXp();
+      if (!lvBlockedShown) { lvBlockedShown = true; flash("🔒 EXP full! Collect & practice cards to reach Lv." + g.to + "<div style='font-size:13px;font-weight:400'>Còn thiếu " + g.missing + " thẻ đạt ⭐⭐. Bấm chip tím 🔒 trên góc màn hình để xem cần làm gì.</div>"); }
       return;
     }
     save.level++; lvBlockedShown = false; saveNow();
@@ -2466,7 +2490,7 @@ function furnish(P, g, cx, cz, W, D) {   // nội thất theo loại cửa hàng
     counter(0xf8f0fc);
     [-4, 4].forEach(dx => { addBox(g, 3, 0.08, 0.08, 0x868e96, cx + dx, 1.9, cz); [0xe64980, 0x4dabf7, 0xfab005, 0x51cf66].forEach((c, i) => addBox(g, 0.5, 0.9, 0.12, c, cx + dx - 1.1 + i * 0.73, 1.4, cz)); P.room.solids.push({ x: cx + dx, z: cz, hw: 1.5, hd: 0.2 }); });
     addBox(g, 1.2, 2.2, 0.1, 0xd0ebff, cx + 5.6, 1.3, back + 0.1);   // gương
-    P.room.spots = [{ x: cx + 5.6, z: back + 1.4, label: "🪞 Try on / Mặc thử", fn: () => { bagSel = null; drawBag(); $("bag").style.display = "block"; } }];
+    P.room.spots = [{ x: cx + 5.6, z: back + 1.4, label: "🪞 Try on / Mặc thử", fn: () => { bagSel = null; openBag(); } }];
     fur("cabinet_small_decorated", cx - 5, back + 0.5, 0, 1.1, 1, 0.5);
     fur("armchair", cx + 5.6, cz + 3, -Math.PI / 2, 1, 0.9, 0.8);
   }
@@ -2579,10 +2603,17 @@ function furnishHome(P, g, cx, cz, W, D, fur) {
   const gt = textPlate("MY GALLERY", 3, 0.5, "#fff8e7", "#6c4a2f"); gt.position.set(cx, 3, back + 0.04); g.add(gt);
   P.room.spots = [
     { x: cx + 6.2, z: back + 2, label: "🧰 Open chest", fn: () => { drawChest(); $("chest").style.display = "block"; } },
-    { x: cx - W / 2 + 1.2, z: cz + 1.4, label: "🪞 Wardrobe", fn: () => { bagSel = null; drawBag(); $("bag").style.display = "block"; } },
-    { x: cx, z: back + 1.6, label: "🖼️ My Gallery", fn: openGallery }
+    { x: cx - W / 2 + 1.2, z: cz + 1.4, label: "🪞 Wardrobe", fn: () => { bagSel = null; openBag(); } },
+    { x: cx, z: back + 1.6, label: "🖼️ My Gallery", fn: openGallery },
+    { x: cx - 6, z: back + 3.3, label: "🛏️ Sleep / Ngủ", fn: sleepAtHome }
   ];
   P.dyn = new THREE.Group(); g.add(P.dyn);
+}
+function sleepAtHome() {   // ngủ ở giường nhà riêng: hồi đầy máu, miễn phí (lưới an toàn cho người hết xu)
+  if (save.energy >= 100) { flash("😊 You are full of energy! / Máu đang đầy rồi."); return; }
+  talking = true; const f = document.createElement("div"); f.style.cssText = "position:fixed;inset:0;background:#05081a;opacity:0;transition:opacity .6s;z-index:40;display:flex;align-items:center;justify-content:center;color:#fff;font:700 26px system-ui"; f.textContent = "💤 Zzz…"; document.body.appendChild(f);
+  requestAnimationFrame(() => f.style.opacity = 1);
+  setTimeout(() => { save.energy = 100; saveNow(); renderHud(); f.style.opacity = 0; speak("Good morning!"); setTimeout(() => { f.remove(); talking = false; flash("☀️ Good morning! ❤️ 100%"); }, 650); }, 1600);
 }
 function homeRefresh(P) {   // vẽ lại phần thay đổi: thẻ trên tường, tinh linh, đồ nội thất đã mua
   const R = P.room, back = R.cz - R.d / 2, dyn = P.dyn; if (!dyn) return;
@@ -3144,6 +3175,7 @@ function loop() {
   const len = Math.hypot(mx, mz);
   if (keys["q"]) camAngle -= 1.8 * dt;
   if (keys["e"]) camAngle += 1.8 * dt;
+  wildCamTick(dt);
   if (maze && maze.role === "walker") {   // góc nhìn thứ nhất: trái/phải = xoay người, lên/xuống = đi tới/lùi
     camAngle -= mx * 2.2 * dt;
     if (Math.abs(mz) > 0.1) {
@@ -3153,7 +3185,7 @@ function loop() {
     }
     player.rotation.y = camAngle + Math.PI;
   } else if (!maze && !talking && len > 0.1) {
-    const k = Math.min(len, 1) / len * 6 * dt;   // tốc độ đi: 6 m/giây
+    const k = Math.min(len, 1) / len * 6 * (1 + gear().speed / 100) * dt;   // tốc độ đi: 6 m/giây (+ % chạy nhanh của trang bị)
     const c = Math.cos(camAngle), s = Math.sin(camAngle);
     const wx = (mx * c + mz * s) * k, wz = (-mx * s + mz * c) * k;
     if (!blocked(player.position.x + wx, player.position.z)) player.position.x += wx;

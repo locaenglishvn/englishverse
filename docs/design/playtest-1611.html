@@ -1,0 +1,609 @@
+<title>Góp ý chơi thử 16/11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Bố cục: một cột đọc ~720px, mỗi góp ý là một "khối" có tag trạng thái; ảnh minh hoạ giao diện vẽ bằng CSS, khung góc vát giống HUD mới đề xuất. */
+:root{
+  --bg:#141a2e; --bg2:#1b2340; --panel:#222c4f; --line:#36416b;
+  --fg:#eef1fb; --mut:#a3abc9;
+  --gold:#ffc94a; --gold2:#d9902a; --hp:#ff4f5e; --mp:#3fa3ff; --xp:#ffc94a; --know:#b07cff;
+  --ok:#3fd68c; --warn:#ffb03a; --bad:#ff6b6b;
+  --power:#ff5a5f; --control:#4b8dff; --harmony:#33c172; --rhythm:#ff8a2a;
+  --display:"Chakra Petch", "Be Vietnam Pro", system-ui, sans-serif;
+  --body:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--body);margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:30px;letter-spacing:.01em}
+h2{font-size:21px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+h3{font-size:16px;margin-top:18px}
+p{margin:8px 0}
+.mut{color:var(--mut)}
+.small{font-size:13px}
+b,strong{font-weight:700}
+.eyebrow{font:600 12px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.num{font-family:var(--display);font-variant-numeric:tabular-nums}
+
+/* khung góc vát */
+.ch{--c:12px;clip-path:polygon(var(--c) 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%,0 var(--c))}
+.frame{padding:2px;background:linear-gradient(135deg,var(--gold),var(--line) 40%,var(--line) 60%,var(--gold2))}
+.frame>.in{background:var(--bg2)}
+
+section.item{margin-top:34px;padding-top:22px;border-top:1px solid var(--line)}
+.tag{font:600 11px var(--display);letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:3px;white-space:nowrap}
+.t-go{background:rgba(63,214,140,.15);color:var(--ok)}
+.t-ask{background:rgba(255,176,58,.16);color:var(--warn)}
+.t-info{background:rgba(163,171,201,.16);color:var(--mut)}
+.idx{font:700 13px var(--display);color:var(--bg);background:var(--gold);padding:1px 7px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+
+.rec{margin-top:14px}
+.rec .in{padding:12px 16px}
+.rec .lab{font:600 11px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+
+ul.clean{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
+ul.clean li{padding-left:20px;position:relative}
+ul.clean li::before{content:"";position:absolute;left:4px;top:.62em;width:7px;height:7px;background:var(--gold);transform:rotate(45deg)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:12px}
+.grid2>*{min-width:0}
+.box{background:var(--panel);padding:12px 14px}
+.box h4{margin:0 0 4px;font:700 14px var(--display)}
+
+.tbl{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:460px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+td.n{font-family:var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* tóm tắt */
+.sum{display:grid;gap:6px;margin-top:16px}
+.sum a{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;background:var(--panel);padding:8px 12px;color:var(--fg);text-decoration:none}
+.sum a:hover,.sum a:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.sum .k{font:700 14px var(--display);color:var(--gold)}
+
+/* ===== mockup điện thoại ===== */
+.phone{width:min(100%,340px);margin:16px auto 0;aspect-ratio:9/17;position:relative;border-radius:30px;padding:10px;background:#0b0f1d;box-shadow:0 0 0 2px #3a4370,0 18px 40px rgba(0,0,0,.45)}
+.screen{position:absolute;inset:10px;border-radius:22px;overflow:hidden;background:
+  radial-gradient(ellipse at 50% 58%,rgba(176,124,255,.0) 0,transparent 60%),
+  linear-gradient(180deg,#9fd3ff 0,#cfeaff 18%,#7fbf6a 19%,#5d9e4c 60%,#4c8a3e 100%)}
+.screen .fog{position:absolute;inset:0;background:radial-gradient(ellipse at 80% 30%,rgba(255,255,255,.35),transparent 50%)}
+.tree{position:absolute;width:26px;height:34px;background:#2f6d33;border-radius:50% 50% 40% 40%}
+.hud{position:absolute;font-family:var(--display);color:#fff}
+.portrait{left:10px;top:12px;display:flex;gap:6px;align-items:flex-start}
+.hex{width:44px;height:48px;background:linear-gradient(160deg,var(--gold),var(--gold2));clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);display:grid;place-items:center}
+.hex>span{width:38px;height:42px;background:#2a3460;clip-path:inherit;display:grid;place-items:center;font-size:20px}
+.lvb{position:absolute;left:10px;top:52px;font:700 11px var(--display);background:var(--gold);color:#1b2340;padding:0 6px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.bars{display:grid;gap:3px;width:150px}
+.bar{height:12px;background:rgba(10,14,30,.7);position:relative;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.bar>i{position:absolute;inset:0 auto 0 0;display:block}
+.bar>em{position:absolute;left:8px;top:-1px;font:700 9.5px var(--display);font-style:normal;text-shadow:0 1px 2px #000}
+.bar.hp>i{background:linear-gradient(180deg,#ff7a85,var(--hp))}
+.bar.mp>i{background:linear-gradient(180deg,#7cc2ff,var(--mp))}
+.bar.xp{height:9px}
+.bar.xp>i{background:repeating-linear-gradient(90deg,var(--xp) 0 13px,#e0a92f 13px 15px)}
+.bar.xp.lock>i{filter:saturate(.35) brightness(.85)}
+.lockchip{margin-top:3px;display:inline-flex;gap:4px;align-items:center;font:700 10px var(--display);background:rgba(176,124,255,.92);padding:2px 7px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{filter:brightness(1.25)}}
+@media (prefers-reduced-motion:reduce){.lockchip,.aura{animation:none!important}}
+.topr{right:10px;top:12px;display:grid;gap:3px;justify-items:end}
+.pill{font:700 11px var(--display);background:rgba(10,14,30,.7);padding:2px 9px;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.buff{left:10px;top:86px;font:700 10px var(--display);background:rgba(176,124,255,.85);padding:1px 6px}
+.hero{left:50%;top:50%;transform:translate(-50%,-50%);width:28px;height:44px}
+.hero .bd{position:absolute;inset:0;background:#ffd6a8;border-radius:12px 12px 6px 6px;box-shadow:inset 0 -18px 0 #4562c9}
+.aura{position:absolute;left:50%;top:50%;width:80px;height:80px;transform:translate(-50%,-38%);border-radius:50%;background:radial-gradient(circle,rgba(176,124,255,.65),rgba(176,124,255,0) 68%);animation:pulse 1.2s ease-in-out infinite}
+.mon{position:absolute;font-size:24px}
+.mon b{display:block;font:700 9px var(--display);text-align:center;padding:0 4px;border-radius:2px;white-space:nowrap;margin-bottom:1px}
+.joy{left:18px;bottom:22px;width:86px;height:86px;border-radius:50%;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.joy::after{content:"";position:absolute;left:28px;top:28px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.55)}
+.skills{right:8px;bottom:14px;width:160px;height:160px}
+.sk{position:absolute;width:46px;height:46px;display:grid;place-items:center;font-size:20px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.sk>span{width:40px;height:40px;display:grid;place-items:center;clip-path:inherit}
+.atk{position:absolute;right:4px;bottom:4px;width:66px;height:72px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,#fff,#c9d3f5);display:grid;place-items:center;font-size:28px}
+.quick{right:10px;bottom:184px;display:flex;gap:5px}
+.q{width:38px;height:38px;background:rgba(10,14,30,.72);display:grid;place-items:center;font-size:18px;position:relative;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.q b{position:absolute;right:3px;bottom:0;font:700 9px var(--display)}
+.q i{position:absolute;left:3px;top:1px;font:normal 700 8px var(--display)}
+.callout{font:600 12px var(--body);color:var(--fg)}
+.legend{display:grid;gap:6px;margin-top:12px;font-size:13.5px}
+.legend div{display:grid;grid-template-columns:22px 1fr;gap:8px}
+.legend .dot{font:700 11px var(--display);background:var(--gold);color:#1b2340;width:20px;height:20px;display:grid;place-items:center;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.pin{position:absolute;font:700 10px var(--display);background:var(--gold);color:#1b2340;width:18px;height:18px;display:grid;place-items:center;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);z-index:3}
+
+/* panel trong game */
+.gp{margin:14px auto 0;max-width:420px}
+.gp .in{padding:14px}
+.gp .ttl{font:700 16px var(--display);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.req{display:grid;gap:8px;margin-top:10px}
+.req .r{background:var(--panel);padding:9px 11px;display:grid;gap:5px}
+.req .top{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:14px}
+.meter{height:8px;background:#0e1328;position:relative}
+.meter>i{position:absolute;inset:0 auto 0 0}
+.req .hint{font-size:12.5px;color:var(--mut)}
+.btn{display:inline-flex;gap:6px;align-items:center;font:700 12px var(--display);padding:5px 12px;background:var(--gold);color:#1b2340;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);white-space:nowrap}
+.btn.alt{background:#3a4677;color:var(--fg)}
+
+/* túi đồ */
+.doll{display:grid;grid-template-columns:62px 1fr 62px;gap:8px;align-items:center;margin-top:10px}
+.slots{display:grid;gap:7px}
+.slot{height:56px;background:var(--panel);display:grid;place-items:center;font-size:22px;position:relative;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.slot small{position:absolute;bottom:1px;font:600 9px var(--body);color:var(--mut)}
+.slot.r-rare{box-shadow:inset 0 0 0 2px #4b8dff}.slot.r-epic{box-shadow:inset 0 0 0 2px #b07cff}.slot.r-un{box-shadow:inset 0 0 0 2px #3fd68c}.slot.empty{opacity:.55}
+.stage{height:250px;background:radial-gradient(ellipse at 50% 85%,#3a4677 0,#222c4f 55%,#1b2340 100%);position:relative;display:grid;place-items:center}
+.stage svg{height:200px;width:auto;max-width:100%}
+.stage .rot{position:absolute;bottom:6px;font:600 11px var(--display);color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px;margin-top:10px;font-size:13px}
+.stats div{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dashed var(--line);padding:3px 0}
+.up{color:var(--ok);font-weight:700}.down{color:var(--bad);font-weight:700}
+.cp{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(90deg,rgba(255,201,74,.18),transparent);padding:8px 12px;margin-top:10px}
+.cp .v{font:700 26px var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
+
+/* skill */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px}
+.tabs div{text-align:center;font:700 12px var(--display);padding:6px 2px;background:var(--panel);clip-path:polygon(6px 0,100% 0,100% 100%,0 100%,0 6px)}
+.tabs div.on{background:var(--power);color:#fff}
+.load{display:flex;gap:8px;align-items:center;margin-top:10px;background:var(--panel);padding:8px 10px;flex-wrap:wrap}
+.load .s{width:38px;height:38px;display:grid;place-items:center;font-size:18px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.path{display:grid;gap:0;margin-top:12px;position:relative}
+.node{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:7px 0;position:relative}
+.node::before{content:"";position:absolute;left:25px;top:0;bottom:0;width:2px;background:var(--line);z-index:0}
+.node:first-child::before{top:50%}.node:last-child::before{bottom:50%}
+.node .ic{width:48px;height:48px;display:grid;place-items:center;font-size:22px;position:relative;z-index:1;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.node.got .ic{background:var(--power)}
+.node.next .ic{background:#40324a;box-shadow:inset 0 0 0 3px var(--gold)}
+.node.lock .ic{background:#262d4a;filter:grayscale(1) brightness(.45)}
+.node .nm{font:700 14px var(--display)}
+.node.lock .nm{color:#59618a;letter-spacing:.2em}
+.pips{display:inline-flex;gap:3px;vertical-align:middle;margin-left:6px}
+.pips i{width:9px;height:9px;transform:rotate(45deg);background:#3a4677}.pips i.f{background:var(--gold)}
+.nextcard{background:var(--panel);padding:8px 10px;font-size:12.5px;margin-top:4px;box-shadow:inset 0 0 0 1px var(--gold)}
+.mini{height:110px;background:linear-gradient(180deg,#26305a,#1b2340);margin-top:8px;position:relative;overflow:hidden}
+.mini .dummy{position:absolute;right:30%;bottom:18px;font-size:30px}
+.mini .me{position:absolute;left:24%;bottom:18px;width:16px;height:30px;background:#ffd6a8;border-radius:8px 8px 3px 3px;box-shadow:inset 0 -12px 0 #4562c9}
+.mini .beam{position:absolute;left:calc(24% + 18px);right:calc(30% + 30px);bottom:32px;height:6px;background:linear-gradient(90deg,transparent,var(--power),#fff);border-radius:3px}
+.mini .lbl{position:absolute;left:8px;top:6px;font:600 10px var(--display);color:var(--mut)}
+
+/* camera svg */
+.svgw{overflow-x:auto;margin-top:12px}
+.svgw svg{display:block;width:100%;min-width:480px;height:auto}
+
+/* phong cách */
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+.cmp>div{background:var(--panel);padding:14px;display:grid;gap:10px;justify-items:start;min-width:0}
+.old-btn{width:54px;height:54px;border-radius:50%;background:#e5484d;display:grid;place-items:center;font-size:22px;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.old-bar{width:170px;height:12px;border-radius:6px;background:rgba(0,0,0,.35);overflow:hidden}.old-bar i{display:block;height:100%;width:70%;background:#e5484d}
+.old-panel{background:#fff;color:#1b2340;border-radius:16px;padding:8px 12px;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.dec{display:grid;gap:10px;margin-top:12px}
+.dec .d{background:var(--panel);padding:12px 14px}
+.dec .d .qq{font-weight:700}
+.opt{display:flex;gap:8px;align-items:baseline;margin-top:5px;font-size:14px}
+.opt .k{font:700 12px var(--display);color:#1b2340;background:var(--gold);padding:0 6px;flex:none}
+.opt .k.b{background:#3a4677;color:var(--fg)}
+.phase{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.phase>div{background:var(--panel);padding:10px 12px;font-size:13.5px;min-width:0}
+.phase b{font-family:var(--display);color:var(--gold);display:block}
+a{color:var(--gold)}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">EnglishVerse · bàn thiết kế sau buổi chơi thử</div>
+  <h1 style="margin-top:6px">Góp ý chơi thử 16/11: vùng hoang dã, tiến cấp, túi đồ, kỹ năng</h1>
+  <p><span class="tag t-go">Đã chốt 16/11</span> 1A · 2A · 3A · 4A với <b>70%</b> (thay 60% trong bảng mục 6) · 5A · 6A nhưng không hiện chữ lý do sát thương. Đã làm xong, xem ROADMAP mục 36.</p>
+  <p class="mut">Mỗi mục có: hiện trạng trong code, đề xuất của CTO, và hình minh hoạ. Mục gắn <span class="tag t-ask">Anh chốt</span> là chỗ cần anh chọn trước khi làm. Câu hỏi gom ở cuối trang.</p>
+
+  <div class="sum" aria-label="Tóm tắt 11 góp ý">
+    <a href="#m1"><span class="k">1</span><span>Camera cố định hướng Bắc, chỉ kéo lên xuống</span><span class="tag t-go">Làm được ngay</span></a>
+    <a href="#m2"><span class="k">2</span><span>Bỏ thanh tím → thanh kinh nghiệm (EXP) + báo "bị chặn"</span><span class="tag t-go">Làm được ngay</span></a>
+    <a href="#m3"><span class="k">3</span><span>Thanh đỏ trái tim và ⭐ cạnh xu là gì</span><span class="tag t-info">Giải thích</span></a>
+    <a href="#m4"><span class="k">4</span><span>Người mới chưa có thẻ, gặp câu lạ khi đánh quái</span><span class="tag t-ask">Anh chốt</span></a>
+    <a href="#m5"><span class="k">5</span><span>Máu không tự hồi → phải ăn, mua đồ</span><span class="tag t-ask">Anh chốt</span></a>
+    <a href="#m6"><span class="k">6</span><span>Điều kiện lên cấp tính theo số thẻ 2 ⭐</span><span class="tag t-ask">Anh chốt</span></a>
+    <a href="#m7"><span class="k">7</span><span>Túi đồ có hình nhân vật + 8 ô trang bị</span><span class="tag t-ask">Anh chốt</span></a>
+    <a href="#m8"><span class="k">8</span><span>Ô dùng nhanh chỉ cho máu, mana, đồ dùng 1 lần</span><span class="tag t-go">Làm được ngay</span></a>
+    <a href="#m9"><span class="k">9</span><span>Bảng kỹ năng chia tab, ẩn chiêu xa, sân tập riêng</span><span class="tag t-go">Làm được ngay</span></a>
+    <a href="#m10"><span class="k">10</span><span>Lực chiến: sức mạnh đến từ đâu</span><span class="tag t-ask">Anh chốt</span></a>
+    <a href="#m11"><span class="k">11</span><span>Giao diện góc cạnh, ngầu hơn</span><span class="tag t-go">Làm được ngay</span></a>
+  </div>
+
+  <!-- ===== HUD tổng ===== -->
+  <section class="item" id="hud">
+    <h2>Màn hình chiến đấu mới (gộp mục 2, 3, 8, 10, 11)</h2>
+    <p class="mut">Đây là hình dung tổng thể trước, chi tiết từng mục ở dưới. Ví dụ: nhân vật Lv.12, đã đủ kinh nghiệm nhưng còn thiếu thẻ nên chưa lên cấp, đang trong 5 giây Harmony.</p>
+    <div class="phone" role="img" aria-label="Hình minh hoạ màn hình chiến đấu mới trên điện thoại">
+      <div class="screen">
+        <div class="fog"></div>
+        <div class="tree" style="left:20px;top:36%"></div><div class="tree" style="left:260px;top:30%"></div><div class="tree" style="left:230px;top:48%;transform:scale(1.3)"></div>
+        <div class="hud portrait">
+          <div class="hex"><span>🧑</span></div>
+          <div class="bars">
+            <div class="bar hp"><i style="width:77%"></i><em>❤️ 120 / 155</em></div>
+            <div class="bar mp"><i style="width:80%"></i><em>💧 80 / 100</em></div>
+            <div class="bar xp lock"><i style="width:100%"></i></div>
+            <div><span class="lockchip">🔒 EXP đầy · thiếu 5 thẻ ⭐⭐ ›</span></div>
+          </div>
+        </div>
+        <div class="lvb">Lv.12</div>
+        <div class="hud buff">🎼 ×2 · 4s</div>
+        <div class="hud topr">
+          <div class="pill">🪙 1.250</div>
+          <div class="pill" style="color:var(--gold)">⚔️ 1.240</div>
+        </div>
+        <div class="aura"></div>
+        <div class="hud hero"><div class="bd"></div></div>
+        <div class="mon" style="left:58%;top:34%"><b style="background:var(--ok);color:#10301f">Lv.10</b>🐞</div>
+        <div class="mon" style="left:18%;top:55%"><b style="background:var(--warn);color:#3a2600">Lv.14</b>👻</div>
+        <div class="mon" style="left:66%;top:60%"><b style="background:var(--bad);color:#fff">💀 Lv.22</b>🦇</div>
+        <div class="hud quick"><div class="q"><i style="color:#ff8a94">❤️</i>🍜<b>3</b></div><div class="q"><i style="color:#8cc8ff">💧</i>🧃<b>2</b></div><div class="q"><i>☠️</i>💊<b>1</b></div></div>
+        <div class="hud joy"></div>
+        <div class="hud skills">
+          <div class="sk" style="right:76px;bottom:2px;background:var(--gold)"><span style="background:var(--power)">💥</span></div>
+          <div class="sk" style="right:66px;bottom:58px;background:var(--gold)"><span style="background:var(--rhythm)">🥁</span></div>
+          <div class="sk" style="right:14px;bottom:86px;background:#8b93b8"><span style="background:var(--control)">🏹</span></div>
+          <div class="sk" style="right:112px;bottom:96px;background:#8b93b8"><span style="background:var(--harmony)">💖</span></div>
+          <div class="atk">⚔️</div>
+        </div>
+        <div class="pin" style="left:4px;top:4px">A</div>
+        <div class="pin" style="left:4px;top:66px">B</div>
+        <div class="pin" style="right:4px;top:4px">C</div>
+        <div class="pin" style="left:46%;top:40%">D</div>
+        <div class="pin" style="left:44%;top:22%">E</div>
+        <div class="pin" style="right:4px;bottom:226px">F</div>
+        <div class="pin" style="right:4px;bottom:150px">G</div>
+      </div>
+    </div>
+    <div class="legend">
+      <div><span class="dot">A</span><span><b>Ô chân dung + 3 thanh</b>: ❤️ máu, 💧 mana, thanh vàng <b>EXP</b> ngay dưới. Huy hiệu cấp nằm ở góc chân dung (mục 2).</span></div>
+      <div><span class="dot">B</span><span><b>Chip tím "🔒 thiếu thẻ"</b>: chỉ hiện khi EXP bị chặn, bấm vào mở bảng "Lên cấp cần gì" (mục 6).</span></div>
+      <div><span class="dot">C</span><span>Xu 🪙 và <b>⚔️ Lực chiến</b>. Bỏ hẳn con số ⭐ (mục 3, 10).</span></div>
+      <div><span class="dot">D</span><span><b>Hào quang tím</b> quanh nhân vật khi Harmony kích hoạt, kèm ô nhỏ "🎼 ×2 · 4s" dưới thanh máu. Không còn thanh tím (mục 2).</span></div>
+      <div><span class="dot">E</span><span>Tên quái có <b>màu theo chênh cấp</b>: xanh dễ, vàng ngang sức, đỏ 💀 quá mạnh (mục 10).</span></div>
+      <div><span class="dot">F</span><span><b>Ô dùng nhanh</b>: chỉ đồ hồi máu, mana, giải độc. Bỏ nút đổi vũ khí (mục 8).</span></div>
+      <div><span class="dot">G</span><span>Nút chiêu hình kim cương, nút đánh lục giác, viền vàng (mục 11).</span></div>
+    </div>
+  </section>
+
+  <!-- ===== 1 ===== -->
+  <section class="item" id="m1">
+    <h2><span class="idx">1</span>Camera cố định ở vùng hoang dã <span class="tag t-go">Làm được ngay</span></h2>
+    <p><b>Đề xuất:</b> camera luôn đứng phía Nam nhân vật, nhìn về hướng Bắc. Màn hình "lên trên" luôn là Bắc, khớp với bản đồ nhỏ và bản đồ lớn. Kéo ngón tay dọc màn hình chỉ đổi <b>góc nghiêng</b>; kéo ngang không xoay nữa.</p>
+    <div class="svgw">
+      <svg viewBox="0 0 640 230" role="img" aria-label="Sơ đồ góc camera nhìn từ bên cạnh và từ trên xuống">
+        <rect x="0" y="0" width="640" height="230" fill="#1b2340"/>
+        <text x="16" y="24" fill="#a3abc9" font-family="Chakra Petch, sans-serif" font-size="13">NHÌN NGANG: 3 GÓC NGHIÊNG</text>
+        <line x1="40" y1="190" x2="360" y2="190" stroke="#36416b" stroke-width="2"/>
+        <rect x="190" y="166" width="12" height="24" fill="#ffd6a8"/>
+        <text x="182" y="208" fill="#eef1fb" font-size="12" font-family="Be Vietnam Pro, sans-serif">nhân vật</text>
+        <line x1="196" y1="178" x2="62" y2="104" stroke="#3fa3ff" stroke-width="2" stroke-dasharray="5 4"/>
+        <circle cx="62" cy="104" r="7" fill="#3fa3ff"/>
+        <text x="40" y="92" fill="#3fa3ff" font-size="12" font-family="Chakra Petch, sans-serif">35° nhìn xa</text>
+        <line x1="196" y1="178" x2="110" y2="62" stroke="#ffc94a" stroke-width="2.5"/>
+        <circle cx="110" cy="62" r="8" fill="#ffc94a"/>
+        <text x="78" y="50" fill="#ffc94a" font-size="12" font-family="Chakra Petch, sans-serif">55° mặc định</text>
+        <line x1="196" y1="178" x2="180" y2="40" stroke="#b07cff" stroke-width="2" stroke-dasharray="5 4"/>
+        <circle cx="180" cy="40" r="7" fill="#b07cff"/>
+        <text x="190" y="38" fill="#b07cff" font-size="12" font-family="Chakra Petch, sans-serif">78° bird-eye</text>
+        <text x="420" y="24" fill="#a3abc9" font-family="Chakra Petch, sans-serif" font-size="13">NHÌN TỪ TRÊN</text>
+        <rect x="430" y="40" width="180" height="170" fill="#22304f" stroke="#36416b"/>
+        <text x="512" y="58" fill="#ffc94a" font-size="13" font-family="Chakra Petch, sans-serif">N ▲</text>
+        <rect x="514" y="118" width="10" height="10" fill="#ffd6a8"/>
+        <circle cx="519" cy="186" r="7" fill="#ffc94a"/>
+        <line x1="519" y1="180" x2="519" y2="134" stroke="#ffc94a" stroke-width="2"/>
+        <polygon points="513,138 525,138 519,128" fill="#ffc94a"/>
+        <text x="530" y="190" fill="#eef1fb" font-size="11" font-family="Be Vietnam Pro, sans-serif">camera</text>
+        <path d="M 455 95 q 20 -14 40 0" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+        <text x="444" y="86" fill="#ff6b6b" font-size="11" font-family="Be Vietnam Pro, sans-serif">✕ không xoay</text>
+      </svg>
+    </div>
+    <ul class="clean">
+      <li><b>Vì sao hướng Bắc thẳng, không chéo 45°:</b> Liên Quân (game học sinh Việt Nam chơi nhiều nhất) dùng đúng kiểu này: camera cố định, nhìn từ dưới lên trên. Kiểu chéo 45° (Ragnarok, Albion) nhìn "3D" hơn nhưng cần ghép hướng cần điều khiển với hướng chéo, trẻ nhỏ hay lạc. Bản đồ nhỏ cũng hết phải xoay.</li>
+      <li><b>Khoảng nghiêng:</b> 35° (thấy xa, dễ thấy quái đến) tới 78° (nhìn thẳng từ trên, dễ né vòng đỏ). Mặc định 55°. Game nhớ góc anh chọn lần trước.</li>
+      <li><b>Trong thành phố giữ như cũ</b> (xoay tự do), vì ở đó cần nhìn mặt tiền nhà, NPC.</li>
+      <li>Nhược điểm cần biết: khi đi về phía Nam (vùng Coral Coast) nhân vật đi "xuống" màn hình, thấy phía trước ít hơn. Bù lại bằng cách đặt nhân vật hơi cao hơn tâm màn hình khi đang chạy xuống.</li>
+    </ul>
+  </section>
+
+  <!-- ===== 2 ===== -->
+  <section class="item" id="m2">
+    <h2><span class="idx">2</span>Bỏ thanh tím, thay bằng thanh kinh nghiệm <span class="tag t-go">Làm được ngay</span></h2>
+    <p><b>Thanh tím hiện nay là gì:</b> thanh <b>Harmony</b>. Mỗi lần anh nói đúng một <i>loại bài khác</i> loại vừa nói (nói lại → trả lời → xếp câu → gọi tên), thanh lên 25%. Đầy thì 5 giây sát thương ×2. Cơ chế này tốt cho việc học (khuyến khích luyện đủ kỹ năng), chỉ là thanh tím khó hiểu.</p>
+    <ul class="clean">
+      <li>Bỏ thanh tím. Giữ cơ chế, nhưng khi kích hoạt: <b>hào quang tím quanh nhân vật</b> + ô nhỏ "🎼 ×2 · 4s". Khi đã lên 3/4 thì có thêm 3 nốt nhạc nhỏ bay quanh nhân vật để báo "sắp đầy" (không cần chữ).</li>
+      <li>Chỗ thanh tím → <b>thanh EXP vàng</b>, có vạch chia 10 đoạn. Con số cấp chuyển xuống huy hiệu ở góc chân dung (hình A ở trên).</li>
+      <li>Khi EXP đầy mà <b>chưa đủ thẻ</b>: thanh vàng chuyển màu xám vàng, có ổ khoá 🔒, hiện chip tím "thiếu N thẻ ⭐⭐". Chi tiết ở mục 6.</li>
+    </ul>
+  </section>
+
+  <!-- ===== 3 ===== -->
+  <section class="item" id="m3">
+    <h2><span class="idx">3</span>Thanh đỏ trái tim và ⭐ cạnh xu <span class="tag t-info">Giải thích</span></h2>
+    <div class="grid2">
+      <div class="box ch"><h4>❤️ Thanh đỏ = MÁU</h4><p class="small">Đúng là máu, cũng chính là thanh máu khi đánh quái. Rối vì trong code nó tên là "năng lượng": túi đồ ghi "⚡ năng lượng", đồ ăn ghi "+30 energy", đánh Echo Ghost ở thành phố trừ "năng lượng". Thật ra cả 3 là một.</p><p class="small"><b>Đề xuất:</b> giữ, gọi thống nhất là <b>Máu (HP)</b> ở mọi chỗ. Đồ ăn ghi "+30 ❤️". Đưa thanh này vào ô chân dung, không đứng riêng một chip nữa.</p></div>
+      <div class="box ch"><h4>⭐ cạnh xu = TỔNG ĐIỂM KINH NGHIỆM</h4><p class="small">Con số này là tổng điểm từ trước tới giờ (ví dụ ⭐ 12.480). Nó không cho biết còn bao xa lên cấp, và trùng ký hiệu ⭐ với <b>sao thuộc thẻ</b> (⭐⭐⭐) nên càng rối.</p><p class="small"><b>Đề xuất:</b> bỏ. Thay bằng thanh EXP (mục 2). Từ nay ⭐ chỉ có một nghĩa: <b>độ thuộc của thẻ</b>.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== 4 ===== -->
+  <section class="item" id="m4">
+    <h2><span class="idx">4</span>Người mới ra đánh quái mà chưa có thẻ <span class="tag t-ask">Anh chốt</span></h2>
+    <p><b>Vì sao bị bỡ ngỡ:</b> hiện nay đề "nói lại" lấy 70% từ thẻ của mình, nhưng nếu chưa có thẻ nào thì lấy 100% câu ngẫu nhiên. Đề "trả lời" và "xếp câu" lấy từ ngân hàng đề chung, không liên quan thẻ. Đề "gọi tên" có 30% là đồ vật chưa từng thấy. Nên người mới gặp toàn câu lạ.</p>
+    <p>Theo Krashen (i+1): đầu vào chỉ nên khó hơn trình độ <i>một chút</i>. Câu hoàn toàn lạ, không nghĩa, không mẫu là "i+5", làm trẻ sợ nói, đi ngược thông điệp "The Mute".</p>
+    <div class="rec frame ch"><div class="in ch">
+      <div class="lab">Đề xuất CTO: kết hợp 4 lớp</div>
+      <ul class="clean">
+        <li><b>Bộ thẻ khởi đầu:</b> lúc mới vào, một NPC hướng dẫn ở cổng thành (ví dụ "Captain Echo") nói chuyện 3 bước và tặng ~6 thẻ câu ngắn, dùng được khi đánh quái: <i>Hello! · Let's go! · I can do it! · Help me, please! · Thank you! · Go away, fog!</i> Anh duyệt nội dung (chuyên môn sư phạm).</li>
+        <li><b>Lv.1–4: 100% đề lấy từ thẻ đã có</b> (và bộ khởi đầu). Từ Lv.5: 80% thẻ của mình, 20% câu mới cùng độ khó. Đề "gọi tên" chỉ lấy đồ vật đã có thẻ.</li>
+        <li><b>Câu mới luôn có giàn giáo:</b> máy đọc mẫu trước, hiện nghĩa tiếng Việt nhỏ bên dưới, và câu mới chỉ ra ở dạng "nói lại" (nghe rồi nhắc). Dạng khó (trả lời, xếp câu) chỉ dùng chất liệu đã học.</li>
+        <li><b>Nhắc nhẹ ở cổng:</b> nếu có dưới 6 thẻ, lính gác cổng gợi ý "Nói chuyện với 2 người trong thành trước nhé" kèm nút dẫn đường. Không chặn cứng, vẫn cho ra.</li>
+      </ul>
+    </div></div>
+    <p class="small mut">Phần việc thêm: ngân hàng đề (deck.js, 320 câu) cần thêm nghĩa tiếng Việt cho từng câu. Đây là việc theo khuôn, giao Writer (Haiku) viết, anh soát.</p>
+  </section>
+
+  <!-- ===== 5 ===== -->
+  <section class="item" id="m5">
+    <h2><span class="idx">5</span>Máu không tự hồi <span class="tag t-ask">Anh chốt</span></h2>
+    <p><b>Hiện nay máu hồi 2 đường:</b> ở mọi nơi hồi 1% mỗi 15 giây; ở vùng hoang dã, sau 6 giây không bị đánh thì hồi 1,2% mỗi giây (đầy lại trong ~80 giây). Đường thứ hai là thứ anh thấy "quá lẹ".</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Nguồn hồi máu</th><th>Hiện nay</th><th>Đề xuất</th></tr></thead>
+      <tbody>
+        <tr><td>Tự hồi theo thời gian</td><td>Có, cả 2 đường</td><td><b>Bỏ cả hai</b></td></tr>
+        <tr><td>Đồ ăn, thuốc</td><td>Có</td><td>Giữ. Là cách chính. Ăn được trong trận qua ô dùng nhanh</td></tr>
+        <tr><td>Ngủ ở giường My Home</td><td>Chưa có</td><td><b>Thêm: miễn phí, hồi đầy.</b> Lưới an toàn cho bạn hết xu</td></tr>
+        <tr><td>Hết máu (bị câm)</td><td>Về cổng vùng</td><td>Về cổng vùng với <b>30%</b> máu, không mất đồ</td></tr>
+        <tr><td>Chiêu Harmony Heal, nội tại Kind Words</td><td>Có</td><td>Giữ (người chọn nhánh hồi phục có lợi thế riêng)</td></tr>
+        <tr><td>Trang bị</td><td>Không</td><td><b>Áo choàng:</b> ❤️ hồi máu/giây · <b>Thắt lưng:</b> 💧 hồi mana nhanh hơn. Bậc hiếm càng cao càng nhiều</td></tr>
+        <tr><td>Mana</td><td>Đầy lại sau ~8 giây</td><td>Giữ như cũ</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small mut">Rủi ro cần tránh: trẻ hết xu và hết máu thì kẹt, bỏ game. Giường miễn phí + hồi sinh 30% giải quyết việc này. Giá đồ ăn hiện rẻ (táo 3 xu, bánh mì 8 xu), hợp với đề xuất; có thể chỉnh sau khi xem người chơi thật tiêu xu thế nào.</p>
+  </section>
+
+  <!-- ===== 6 ===== -->
+  <section class="item" id="m6">
+    <h2><span class="idx">6</span>Lên cấp = kinh nghiệm + kiến thức, chặn lẫn nhau <span class="tag t-ask">Anh chốt</span></h2>
+    <p><b>Em đồng ý với ý tưởng của anh</b>, và nó còn sửa được một lỗi thiết kế hiện tại: điều kiện bây giờ là "<i>70% thẻ đang có</i> đạt 2 ⭐". Vì là tỉ lệ, nên <b>càng sưu tầm thẻ mới thì tỉ lệ càng tụt</b> (thẻ mới có 0 ⭐), tức là game đang phạt việc học mới. Đổi sang <b>số lượng cụ thể</b> thì hết lỗi này.</p>
+
+    <h3>Vòng lặp anh muốn</h3>
+    <div class="grid2">
+      <div class="box ch"><h4 style="color:var(--xp)">⚔️ Đánh quái mãi, không học mới</h4><p class="small">EXP đầy thanh thì dừng ở 100%, có khoá 🔒. Đánh tiếp vẫn có xu và đồ, nhưng không thêm EXP. → Phải về thành sưu tầm thẻ.</p></div>
+      <div class="box ch"><h4 style="color:var(--know)">📖 Sưu tầm mãi, không luyện</h4><p class="small">Đã có sẵn: mỗi cấp chỉ cho giữ số thẻ giới hạn (Lv.1–5: 6 câu nói, 2 câu hỏi, 10 từ). Đầy thì NPC không cho thẻ mới. → Phải đi đánh quái lên cấp.</p></div>
+    </div>
+
+    <h3>Bảng "Lên cấp cần gì" (mở khi bấm chip tím, và luôn nằm đầu bảng Skill)</h3>
+    <div class="gp frame ch"><div class="in ch">
+      <div class="ttl"><span>🔒 Để lên Lv.13 bạn cần</span><span class="num" style="color:var(--xp);font-size:13px">EXP 100%</span></div>
+      <div class="req">
+        <div class="r"><div class="top"><span>💬 Câu nói đạt ⭐⭐</span><span class="num up">16 / 16 ✓</span></div><div class="meter"><i style="width:100%;background:var(--ok)"></i></div></div>
+        <div class="r"><div class="top"><span>❓ Câu hỏi đạt ⭐⭐</span><span class="num" style="color:var(--warn)">3 / 5</span></div><div class="meter"><i style="width:60%;background:var(--warn)"></i></div>
+          <div class="hint">Bạn có đủ thẻ, chỉ cần <b>luyện thêm 2 thẻ</b>. Đánh quái: đề sẽ ưu tiên đúng các thẻ này.</div><div><span class="btn alt">⚔️ Ở lại luyện</span></div></div>
+        <div class="r"><div class="top"><span>📦 Từ vựng đạt ⭐⭐</span><span class="num" style="color:var(--bad)">21 / 27</span></div><div class="meter"><i style="width:78%;background:var(--bad)"></i></div>
+          <div class="hint">Bạn mới có 24 thẻ: cần <b>3 thẻ mới</b> rồi luyện lên ⭐⭐. Verse Library còn 9 đồ vật bạn chưa hỏi.</div><div><span class="btn">📍 Dẫn đường về Library</span></div></div>
+      </div>
+    </div></div>
+
+    <h3>Công thức đề xuất</h3>
+    <p>Số thẻ đạt ⭐⭐ cần có để lên cấp tiếp = <b>60% hạn mức thẻ của cấp hiện tại</b>, từng loại riêng. Lv.1 → 3 được miễn để người mới lên nhanh, có hứng.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Từ cấp</th><th>Hạn mức thẻ (💬 / ❓ / 📦)</th><th>Cần ⭐⭐ để lên cấp tiếp</th><th>Thời gian EXP ước tính</th></tr></thead>
+      <tbody>
+        <tr><td class="n">Lv.1–2</td><td class="n">6 / 2 / 10</td><td>Miễn</td><td class="n">~10 phút/cấp</td></tr>
+        <tr><td class="n">Lv.3–5</td><td class="n">6 / 2 / 10</td><td class="n">4 / 1 / 6</td><td class="n">~15–20 phút/cấp</td></tr>
+        <tr><td class="n">Lv.6</td><td class="n">9 / 3 / 15</td><td class="n">5 / 2 / 9</td><td class="n">~25 phút</td></tr>
+        <tr><td class="n">Lv.10</td><td class="n">21 / 7 / 35</td><td class="n">13 / 4 / 21</td><td class="n">~35 phút</td></tr>
+        <tr><td class="n">Lv.20</td><td class="n">51 / 17 / 85</td><td class="n">31 / 10 / 51</td><td class="n">~2 giờ</td></tr>
+        <tr><td class="n">Lv.40</td><td class="n">111 / 37 / 185</td><td class="n">67 / 22 / 111</td><td class="n">~3,5 giờ</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small mut">Kiểm tra đủ nội dung: game đang có 327 câu nói, 145 câu hỏi, 685 từ vựng, đủ cho mốc Lv.100 (cần 175 / 58 / 291). Câu hỏi là loại hiếm nhất, khi thêm NPC mới nên thêm nhiều <code>q</code> hơn.</p>
+
+    <div class="rec frame ch"><div class="in ch">
+      <div class="lab">Em bổ sung thêm</div>
+      <ul class="clean">
+        <li><b>Báo tiến độ khi luyện:</b> mỗi lần một thẻ vừa lên ⭐⭐, nổi chữ nhỏ "📦 apple ⭐⭐ (22/27)". Người chơi thấy mình đang tiến, không thấy "đánh hoài vô ích".</li>
+        <li><b>Báo trước, không đợi bị chặn:</b> khi EXP đạt 80% mà thẻ còn thiếu, chip tím đã hiện sẵn. Người chơi có thời gian chuẩn bị.</li>
+        <li><b>Dẫn đường tới nơi còn thẻ:</b> nút 📍 dùng lại tính năng hỏi đường có sẵn, chọn nơi gần nhất còn NPC / đồ vật chưa học hợp cấp.</li>
+        <li><b>EXP không tích luỹ khi bị chặn</b> (dừng ở 100%). Nếu để tích, người chơi sẽ "cày" trước rồi về học một lần, nhảy liền 3–4 cấp, mất nhịp xen kẽ.</li>
+      </ul>
+    </div></div>
+    <p class="small mut">Lưu ý quyền: đây là thay đổi hệ thống tiến cấp (🔴) nhưng không đổi cấu trúc dữ liệu lưu; dữ liệu cũ (sao từng thẻ) dùng lại nguyên.</p>
+  </section>
+
+  <!-- ===== 7 ===== -->
+  <section class="item" id="m7">
+    <h2><span class="idx">7</span>Túi đồ có hình nhân vật + 8 ô trang bị <span class="tag t-ask">Anh chốt</span></h2>
+    <p>Hiện có 4 ô: mũ, áo, chân (quần + giày chung), phụ kiện / áo choàng. Đề xuất 8 ô như anh nói, <b>mỗi ô một vai rõ ràng</b> để trẻ dễ nhớ "muốn gì thì mặc ô nào":</p>
+    <div class="gp frame ch" style="max-width:460px"><div class="in ch">
+      <div class="ttl"><span>🎒 My Bag</span><span class="btn alt">Trang bị · Đồ dùng · Tất cả</span></div>
+      <div class="doll">
+        <div class="slots">
+          <div class="slot r-un">🧢<small>Nón</small></div>
+          <div class="slot r-rare">🛡️<small>Áo giáp</small></div>
+          <div class="slot">👖<small>Quần</small></div>
+          <div class="slot r-un">👟<small>Giày</small></div>
+        </div>
+        <div class="stage ch">
+          <svg viewBox="0 0 100 200" aria-hidden="true">
+            <path d="M18 92 Q50 70 82 92 L88 168 Q50 178 12 168 Z" fill="#7a3cc8" opacity=".85"/>
+            <circle cx="50" cy="40" r="20" fill="#ffd6a8"/>
+            <path d="M28 34 Q50 4 72 34 L72 28 Q50 10 28 28 Z" fill="#40c057"/>
+            <rect x="30" y="60" width="40" height="52" rx="8" fill="#4b8dff"/>
+            <rect x="30" y="104" width="40" height="7" fill="#8a5a2b"/>
+            <rect x="18" y="62" width="11" height="40" rx="5" fill="#4b8dff"/><rect x="71" y="62" width="11" height="40" rx="5" fill="#4b8dff"/>
+            <circle cx="23" cy="104" r="6" fill="#c92a2a"/><circle cx="77" cy="104" r="6" fill="#c92a2a"/>
+            <rect x="33" y="112" width="15" height="48" rx="5" fill="#495057"/><rect x="52" y="112" width="15" height="48" rx="5" fill="#495057"/>
+            <rect x="30" y="158" width="19" height="10" rx="4" fill="#3fd68c"/><rect x="51" y="158" width="19" height="10" rx="4" fill="#3fd68c"/>
+            <rect x="82" y="78" width="8" height="30" rx="2" fill="#ffc94a"/><path d="M78 72 h16 l-4 8 h-8z" fill="#ffc94a"/>
+          </svg>
+          <span class="rot">⟲ kéo để xoay · 3D thật trong game</span>
+        </div>
+        <div class="slots">
+          <div class="slot">🧤<small>Găng tay</small></div>
+          <div class="slot empty">🎗️<small>Thắt lưng</small></div>
+          <div class="slot r-epic">🧣<small>Áo choàng</small></div>
+          <div class="slot r-un">📢<small>Vũ khí</small></div>
+        </div>
+      </div>
+      <div class="cp ch"><span>⚔️ Lực chiến</span><span class="v">1.240 <span class="up" style="font-size:14px">▲ 85</span></span></div>
+      <div class="stats">
+        <div><span>❤️ Máu tối đa</span><span class="num">155</span></div>
+        <div><span>💧 Mana</span><span class="num">100</span></div>
+        <div><span>🗣️ Sát thương chiêu</span><span class="num up">+18% ▲</span></div>
+        <div><span>👂 Thêm giờ trả lời</span><span class="num">+2 s</span></div>
+        <div><span>🛡️ Kháng độc</span><span class="num down">20% ▼</span></div>
+        <div><span>❤️ Hồi máu</span><span class="num up">+0,3/s ▲</span></div>
+        <div><span>💧 Hồi mana</span><span class="num">+0%</span></div>
+        <div><span>🍀 May mắn (xu)</span><span class="num">+5%</span></div>
+      </div>
+      <p class="small mut" style="margin:8px 0 0">Đang thử <b>Wizard Robe</b>: số xanh ▲ là tăng, đỏ ▼ là giảm so với đồ đang mặc. Hình nhân vật đổi ngay để xem trước, bấm "Mặc" mới áp dụng.</p>
+    </div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Ô</th><th>Vai chính (chỉ số)</th><th>Hiện trên nhân vật</th></tr></thead>
+      <tbody>
+        <tr><td>🧢 Nón</td><td>👂 thêm giờ trả lời</td><td>Mô hình mũ (đã có)</td></tr>
+        <tr><td>🛡️ Áo giáp</td><td>❤️ máu tối đa, 🛡️ kháng độc</td><td>Thân áo (đã có)</td></tr>
+        <tr><td>👖 Quần</td><td>❤️ máu tối đa</td><td>Phần chân, đổi màu / bộ</td></tr>
+        <tr><td>👟 Giày</td><td>🏃 tốc độ chạy</td><td>Bàn chân, đổi màu</td></tr>
+        <tr><td>🧤 Găng tay</td><td>🗣️ sát thương chiêu</td><td>Bàn tay, đổi màu</td></tr>
+        <tr><td>🎗️ Thắt lưng</td><td>💧 mana tối đa, hồi mana</td><td>Dải nhỏ ở eo (vẽ thêm)</td></tr>
+        <tr><td>🧣 Áo choàng</td><td>❤️ hồi máu / giây, 🍀 may mắn</td><td>Áo choàng (đã có)</td></tr>
+        <tr><td>📢 Vũ khí</td><td>Sát thương theo nhánh + loại bài cộng hưởng</td><td>Cầm trên tay (đã có)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small mut">Lưu ý kỹ thuật: bộ nhân vật KayKit có sẵn mũ, áo, áo choàng, chân. Găng tay, giày, thắt lưng sẽ hiện bằng đổi màu hoặc vật nhỏ gắn thêm, không phải mô hình chi tiết. Đây là <b>đổi cấu trúc dữ liệu lưu</b> (🔴): đồ cũ tự chuyển ô (áo → áo giáp, chân → quần, phụ kiện → áo choàng), người chơi không mất gì. Đồ trong cửa hàng cần thêm nón / găng / thắt lưng / giày để bán: giao Writer.</p>
+  </section>
+
+  <!-- ===== 8 ===== -->
+  <section class="item" id="m8">
+    <h2><span class="idx">8</span>Ô dùng nhanh <span class="tag t-go">Làm được ngay</span></h2>
+    <ul class="clean">
+      <li>Bỏ nút 📢 đổi vũ khí khỏi màn hình (đó là nút đổi qua lại 2 vũ khí). Đổi vũ khí chỉ trong túi đồ.</li>
+      <li>3 ô dùng nhanh cố định theo loại: <b>❤️ máu · 💧 mana · ☠️ giải độc</b>. Mỗi ô tự lấy món tốt nhất đang có trong túi; người chơi có thể ghim món khác trong túi. Ô trống thì mờ đi, bấm vào gợi ý "Mua ở Shop 24h".</li>
+      <li>Cần thêm đồ hồi mana (hiện chưa có). Gợi ý đồ uống: trà chanh, nước dừa, nước mía. Thêm vào places.js, không đụng code.</li>
+    </ul>
+  </section>
+
+  <!-- ===== 9 ===== -->
+  <section class="item" id="m9">
+    <h2><span class="idx">9</span>Bảng kỹ năng <span class="tag t-go">Làm được ngay</span></h2>
+    <p><b>Game khác có hiện hết không?</b> Nhiều game nhập vai hiện hết cây kỹ năng (Diablo, Genshin) vì người chơi lớn thích lên kế hoạch. Nhưng game cho tuổi nhỏ hơn (Pokémon, nhiều game mobile Việt) hay để <b>bóng mờ + "???"</b> vì sự tò mò là động lực. Với người chơi của mình em đồng ý với anh: <b>hiện 1 chiêu kế tiếp, còn lại chỉ thấy bóng mờ</b>.</p>
+    <div class="gp frame ch" style="max-width:440px"><div class="in ch">
+      <div class="ttl"><span>🌟 Kỹ năng</span><span class="num" style="font-size:13px">Còn <b style="color:var(--gold)">2</b> điểm · +1 mỗi cấp</span></div>
+      <div class="load"><span class="small mut" style="width:100%">Đang dùng (chạm chiêu bên dưới rồi chạm ô để gắn):</span>
+        <span class="s" style="background:var(--power)">💥</span><span class="s" style="background:var(--rhythm)">🥁</span><span class="s" style="background:var(--power)">🔱</span><span class="s" style="background:#3a4677;color:var(--mut)">+</span></div>
+      <div class="tabs"><div class="on">⚡ Power · 4</div><div>🌀 Control</div><div>💚 Harmony</div><div>🔥 Rhythm · 1</div></div>
+      <p class="small mut" style="margin:8px 0 0">⚡ Power: một đòn rất mạnh vào 1 quái. Hợp người thích nói câu dài, chuẩn.</p>
+      <div class="path">
+        <div class="node got"><div class="ic">💥</div><div><div class="nm">Echo Blast <span class="pips"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></span></div><div class="small mut">Bậc 3/5 · câu 7–8 từ</div><div style="margin-top:4px"><span class="btn">＋ Nâng bậc</span> <span class="btn alt">👁️ Xem</span></div></div></div>
+        <div class="node got"><div class="ic">🔱</div><div><div class="nm">Sonic Spear <span class="pips"><i class="f"></i><i></i><i></i><i></i><i></i></span></div><div class="small mut">Bậc 1/5</div></div></div>
+        <div class="node next"><div class="ic">⚡</div><div><div class="nm">Thunder Clap <span class="tag t-ask">Lv.12 · mở được!</span></div>
+          <div class="nextcard">Sét đánh 1 quái và làm nó choáng 0,8 giây. Tốn 30 💧, chờ 5 giây.
+            <div class="mini"><span class="lbl">SÂN TẬP · chỉ mình bạn thấy</span><div class="me"></div><div class="beam"></div><div class="dummy">🎯</div></div>
+          </div></div></div>
+        <div class="node lock"><div class="ic">📣</div><div><div class="nm">? ? ? ? ?</div><div class="small mut">Mở ở Lv.20</div></div></div>
+        <div class="node lock"><div class="ic">🎯</div><div><div class="nm">? ? ? ? ?</div><div class="small mut">Mở ở Lv.28</div></div></div>
+        <div class="node lock"><div class="ic">🗡️</div><div><div class="nm">? ? ? ? ?</div><div class="small mut">Mở ở Lv.36</div></div></div>
+        <div class="node lock"><div class="ic" style="box-shadow:inset 0 0 0 3px var(--gold2)">🐉</div><div><div class="nm" style="color:var(--gold2)">TUYỆT CHIÊU</div><div class="small mut">Mở ở Lv.40</div></div></div>
+      </div>
+      <p class="small mut" style="margin:8px 0 0">Nội tại (luôn có tác dụng) nằm ở hàng riêng cuối tab, cùng quy tắc: cái kế tiếp thấy rõ, cái xa là bóng mờ.</p>
+    </div></div>
+    <ul class="clean" style="margin-top:12px">
+      <li><b>Chia 4 tab</b> theo nhánh, mỗi tab ghi số điểm đã đầu tư. Không còn cuộn dài 40 chiêu.</li>
+      <li><b>Hàng "Đang dùng"</b> ở trên cùng: 4 ô chiêu đang gắn, nhìn là biết ngay.</li>
+      <li><b>Trạng thái bằng hình:</b> đã học = sáng màu nhánh + chấm bậc (◆◆◆◇◇); kế tiếp = viền vàng; chưa mở = bóng xám + "? ? ?" + cấp mở.</li>
+      <li><b>Sân tập trong bảng:</b> nút 👁️ phát hiệu ứng chiêu trong một khung nhỏ ngay trong bảng (nhân vật + hình nộm). Không bắn ra thế giới thật nữa, người chơi khác không thấy. Đúng như anh lo khi có đông người online.</li>
+      <li>Đầu bảng luôn có dòng tóm tắt "Lên Lv.13 cần…" (mục 6) để người chơi biết làm gì tiếp.</li>
+    </ul>
+  </section>
+
+  <!-- ===== 10 ===== -->
+  <section class="item" id="m10">
+    <h2><span class="idx">10</span>Sức mạnh đến từ đâu <span class="tag t-ask">Anh chốt</span></h2>
+    <p><b>Trả lời câu "vì sao lúc mạnh lúc yếu":</b> sát thương một chiêu được nhân bởi nhiều yếu tố. Yếu tố ảnh hưởng mạnh nhất là <b>nói chuẩn tới đâu</b>, chứ không phải đồ.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Yếu tố</th><th>Tác động</th><th>Người chơi thấy gì (đề xuất)</th></tr></thead>
+      <tbody>
+        <tr><td>Nói chuẩn: Perfect / Good / Weak</td><td class="n">×1 / ×0,7 / ×0,3</td><td>Chữ PERFECT / GOOD / WEAK to trên đầu</td></tr>
+        <tr><td>Đúng loại bài quái sợ (tên quái ghi "sợ 📢")</td><td class="n">×1,5</td><td>Số sát thương vàng + "ĐIỂM YẾU!"</td></tr>
+        <tr><td>Quái mạnh hơn mình 8 cấp trở lên</td><td class="n">×0,3</td><td>Tên quái đỏ 💀, số sát thương xám + "QUÁ MẠNH"</td></tr>
+        <tr><td>Harmony (đổi loại bài liên tục)</td><td class="n">×2</td><td>Hào quang tím</td></tr>
+        <tr><td>Trúng độc ☠️</td><td class="n">×0,5</td><td>Icon ☠️ cạnh thanh máu</td></tr>
+        <tr><td>Vũ khí đúng nhánh chiêu · vũ khí cộng hưởng loại bài</td><td class="n">+8…80% · ×1,3</td><td>Trong túi đồ</td></tr>
+        <tr><td>Cấp nhân vật · bậc chiêu · đồ mặc</td><td class="n">+4%/cấp · +25%/bậc · +%</td><td>Gộp vào ⚔️ Lực chiến</td></tr>
+      </tbody>
+    </table></div>
+    <div class="rec frame ch"><div class="in ch">
+      <div class="lab">Đề xuất CTO</div>
+      <ul class="clean">
+        <li><b>Một con số ⚔️ Lực chiến</b> ở góc màn hình và trong túi đồ. Trẻ Việt Nam rất quen "lực chiến" từ game mobile; mặc đồ mới thấy số tăng ▲ là thích. Số này tính từ cấp + đồ + vũ khí + bậc chiêu, <b>không</b> tính phần nói chuẩn (vì đó là kỹ năng thật, khác nhau mỗi lần).</li>
+        <li><b>Bảng chỉ số chi tiết</b> nằm trong túi đồ (hình ở mục 7), không cần màn riêng.</li>
+        <li><b>Màu tên quái theo chênh cấp</b> + chữ lý do trên số sát thương. Đây là phần trả lời trực tiếp câu hỏi của anh khi đang đánh.</li>
+      </ul>
+    </div></div>
+  </section>
+
+  <!-- ===== 11 ===== -->
+  <section class="item" id="m11">
+    <h2><span class="idx">11</span>Phong cách giao diện góc cạnh <span class="tag t-go">Làm được ngay</span></h2>
+    <p>Chính trang này đang dùng phong cách đề xuất. So sánh nhanh:</p>
+    <div class="cmp">
+      <div><b class="small mut">HIỆN NAY · bo tròn, phẳng</b>
+        <div class="row"><span class="old-btn">💥</span><span class="old-btn" style="background:#e8590c">🥁</span></div>
+        <div class="old-bar"><i></i></div>
+        <div class="old-panel">🌟 Skills · 3 điểm</div>
+      </div>
+      <div><b class="small" style="color:var(--gold)">ĐỀ XUẤT · góc vát, viền kim loại</b>
+        <div class="row"><span class="sk" style="position:static;background:var(--gold)"><span style="background:var(--power)">💥</span></span><span class="sk" style="position:static;background:var(--gold)"><span style="background:var(--rhythm)">🥁</span></span></div>
+        <div class="bar hp" style="width:170px"><i style="width:70%"></i><em>❤️ 108 / 155</em></div>
+        <div class="frame ch" style="width:100%"><div class="in ch" style="padding:6px 10px;font:700 13px var(--display)">🌟 Kỹ năng · 3 điểm</div></div>
+      </div>
+    </div>
+    <ul class="clean" style="margin-top:12px">
+      <li><b>Hình khối:</b> bảng có góc vát chéo; thanh máu / mana dạng xiên có vạch chia; nút chiêu hình kim cương, nút đánh lục giác.</li>
+      <li><b>Màu:</b> nền xanh đêm thay cho nền trắng; viền vàng cho thứ quan trọng; màu viền đồ theo độ hiếm (xanh lá, xanh dương, tím, vàng) như các game mobile.</li>
+      <li><b>Chữ:</b> số và tiêu đề dùng phông chữ kiểu kỹ thuật, có dấu tiếng Việt (Chakra Petch); chữ thường giữ phông dễ đọc.</li>
+      <li><b>Chuyển động nhẹ:</b> nút sáng nhấp nháy khi chiêu hồi xong, số sát thương bật lên. Không làm rối màn hình nhỏ.</li>
+      <li>Làm một lần ở "bộ khung" (màu, viền, nút dùng chung) rồi áp cho cả HUD, túi đồ, bảng kỹ năng, cửa hàng. Mục 7 và 9 sẽ làm luôn bằng phong cách này.</li>
+    </ul>
+  </section>
+
+  <!-- ===== Quyết định ===== -->
+  <section class="item" id="chot">
+    <h2>Anh chốt giúp em 6 điểm</h2>
+    <p class="mut small">Trả lời ngắn kiểu "1A 2A 3A…" là đủ. Phương án A là em gợi ý.</p>
+    <div class="dec">
+      <div class="d"><div class="qq">① Camera vùng hoang dã</div>
+        <div class="opt"><span class="k">A</span><span>Nhìn thẳng hướng Bắc, kéo dọc đổi góc 35°–78° (như Liên Quân)</span></div>
+        <div class="opt"><span class="k b">B</span><span>Nhìn chéo 45° (như Ragnarok), trông 3D hơn</span></div></div>
+      <div class="d"><div class="qq">② Người mới (mục 4)</div>
+        <div class="opt"><span class="k">A</span><span>Đủ 4 lớp: bộ thẻ khởi đầu + Lv.1–4 chỉ ra đề từ thẻ + câu mới có nghĩa tiếng Việt + nhắc ở cổng</span></div>
+        <div class="opt"><span class="k b">B</span><span>Chỉ làm 2 lớp giữa (không thêm NPC hướng dẫn)</span></div></div>
+      <div class="d"><div class="qq">③ Hồi máu (mục 5)</div>
+        <div class="opt"><span class="k">A</span><span>Bỏ tự hồi; thêm ngủ giường nhà miễn phí; hết máu về cổng với 30%</span></div>
+        <div class="opt"><span class="k b">B</span><span>Bỏ tự hồi, không có giường miễn phí (khó hơn, phải có xu)</span></div></div>
+      <div class="d"><div class="qq">④ Điều kiện lên cấp (mục 6)</div>
+        <div class="opt"><span class="k">A</span><span>60% hạn mức mỗi loại đạt ⭐⭐, miễn Lv.1–3, EXP dừng ở 100% khi bị chặn</span></div>
+        <div class="opt"><span class="k b">B</span><span>Như A nhưng 50% (dễ hơn), hoặc anh cho con số khác</span></div></div>
+      <div class="d"><div class="qq">⑤ 8 ô trang bị (mục 7, đổi dữ liệu lưu)</div>
+        <div class="opt"><span class="k">A</span><span>Làm 8 ô, đồ cũ tự chuyển ô; găng / giày / thắt lưng hiện bằng màu + vật nhỏ</span></div>
+        <div class="opt"><span class="k b">B</span><span>Làm 6 ô trước (bỏ găng tay, thắt lưng), thêm sau</span></div></div>
+      <div class="d"><div class="qq">⑥ Lực chiến (mục 10)</div>
+        <div class="opt"><span class="k">A</span><span>Có con số ⚔️ Lực chiến + màu tên quái + chữ lý do sát thương</span></div>
+        <div class="opt"><span class="k b">B</span><span>Không có con số, chỉ màu tên quái + chữ lý do</span></div></div>
+    </div>
+  </section>
+
+  <section class="item">
+    <h2>Thứ tự làm đề xuất</h2>
+    <div class="phase">
+      <div><b>Đợt 1 · Khung & HUD</b>Bộ khung phong cách (11), camera (1), HUD mới: thanh EXP, bỏ ⭐ và thanh tím, hào quang (2, 3), ô dùng nhanh (8), bỏ hồi máu + giường (5).</div>
+      <div><b>Đợt 2 · Tiến cấp</b>Điều kiện lên cấp mới + bảng "Lên cấp cần gì" + dẫn đường (6). Người mới: đề theo thẻ, nghĩa tiếng Việt, bộ thẻ khởi đầu (4).</div>
+      <div><b>Đợt 3 · Bảng lớn</b>Bảng kỹ năng mới + sân tập (9). Túi đồ có nhân vật, 8 ô, chỉ số, Lực chiến (7, 10). Đồ mới để bán.</div>
+    </div>
+    <p class="small mut" style="margin-top:12px">Mỗi đợt là một PR riêng, chạy cổng QA, có ảnh chụp trên khung điện thoại để anh duyệt trước khi gộp. File thiết kế này lưu ở <code>docs/design/playtest-1611.html</code>.</p>
+  </section>
+</div>
