@@ -113,12 +113,14 @@ function registerWeapons() {
   [["Starlight Baton", 40, 25], ["Aurora Baton", 70, 45], ["Baton of the First Voice", 90, 65]].forEach(([nm, lv, pct], i) =>
     ITEMS["w_maestro" + (i + 1)] = { name: nm, icon: "🪄", price: 0, rarity: "legendary", lv, weapon: { line: "all", tier: i + 1, pct, reso: null, maestro: true }, desc: "✨ Maestro · +" + pct + "% cả 4 nhánh · chỉ có từ trùm, nhiệm vụ, đấu trường" });
 }
-function curWeapon() { const id = save.combat.weapons[save.combat.wIdx]; return id && ITEMS[id] ? ITEMS[id] : null; }
+function curWeapon() { const id = save.combat.weapons[0]; return id && ITEMS[id] ? ITEMS[id] : null; }
 function equipWeapon(id) {
   const it = ITEMS[id]; if (!it || !it.weapon) return;
   if (playerLevel() < it.lv) { flash("🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv); return; }
-  const W = save.combat.weapons, slot = W[0] && W[1] ? save.combat.wIdx : (W[0] ? 1 : 0);
-  W[slot] = id; save.combat.wIdx = slot; saveNow(); drawCombatHud(); flash(it.icon + " " + it.name + " equipped!<div style='font-size:13px;font-weight:400'>" + it.desc + "</div>");
+  const C = save.combat, prev = C.weapons[0];   // chỉ 1 vũ khí đang cầm = weapons[0]; lấy từ túi, vũ khí cũ trả về túi (như trang phục)
+  if (!takeItem(save.items, id)) return;
+  if (prev && !addItem(save.items, BAG_SIZE, prev)) { addItem(save.items, BAG_SIZE, id); flash(bagFullMsg(prev)); return; }
+  C.weapons = [id, null]; C.wIdx = 0; saveNow(); drawCombatHud(); flash(it.icon + " " + it.name + " equipped!<div style='font-size:13px;font-weight:400'>" + it.desc + "</div>");
 }
 
 /* ---------- 5. TRẠNG THÁI ---------- */
@@ -132,9 +134,16 @@ function initCombat() {
   C.skills = C.skills || { echo_blast: 1, drum_roll: 1 };   // 2 chiêu khởi đầu (miễn phí)
   C.slots = C.slots || ["echo_blast", "drum_roll", null, null];
   C.weapons = C.weapons || [null, null]; C.wIdx = C.wIdx || 0;
+  if (!C.wOne) {   // chuyển save cũ (2 vũ khí đổi qua lại) sang 1 vũ khí cầm + phần còn lại trong túi
+    C.wOne = true;
+    if (C.starter) { const W = C.weapons, i = C.wIdx || 0, cur = W[i] || W[1 - i] || null, other = W[i] && W[1 - i] ? W[1 - i] : null;
+      if (cur && save.items[cur]) takeItem(save.items, cur);
+      if (other && !save.items[other]) save.items[other] = 1;
+      C.weapons = [cur, null]; C.wIdx = 0; }
+  }
   C.deck = C.deck || {}; RESO.concat(["ask"]).forEach(t => C.deck[t] = C.deck[t] || { n: 0, good: 0 });
   registerWeapons();
-  if (!C.starter) { C.starter = true; addItem(save.items, BAG_SIZE, "w_power1"); addItem(save.items, BAG_SIZE, "w_rhythm1"); C.weapons = ["w_power1", "w_rhythm1"]; }   // quà tân thủ
+  if (!C.starter) { C.starter = true; addItem(save.items, BAG_SIZE, "w_rhythm1"); C.weapons = ["w_power1", null]; C.wIdx = 0; C.wOne = true; }   // quà tân thủ
   buildCombatUi();
 }
 function buildCombatUi() {
@@ -587,7 +596,7 @@ function dropTick(dt, t) {
     if (mine && !CB.ko && D.g.position.distanceTo(player.position) < 1.4) {
       if (D.id === "coins") { addCoins(D.n); popText("+" + D.n + " 🪙", D.g.position, "#e67700"); D.done = true; }
       else if (addItem(save.items, BAG_SIZE, D.id)) { const it = ITEMS[D.id]; popText(it.icon + " " + it.name, D.g.position, "#" + (RCOL[it.rarity || "common"]).toString(16).padStart(6, "0")); D.done = true; saveNow(); drawCombatHud(); }
-      else if (!D.full) { D.full = true; flash("🎒 Bag full! / Túi đầy rồi"); }
+      else if (!D.full) { D.full = true; flash(bagFullMsg(D.id)); }
     }
     if (D.t > 90) D.done = true;
     if (D.done) scene.remove(D.g); });
