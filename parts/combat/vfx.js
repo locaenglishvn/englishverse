@@ -9,7 +9,7 @@
 const SKILL_VFX = (function () {
   const USE_ADD = false, GS = 3, MAX = 60, ADD = THREE.AdditiveBlending, V3 = THREE.Vector3, PI = Math.PI;
   const GEO = {}, TEX = {}, POOL = {}, FX = [];
-  let live = 0, ready = false;
+  let live = 0, ready = false, PS = null;   // PS = scene riêng (sân tập); null = scene toàn cục
   const UP = new V3(0, 1, 0), FWD = new V3(0, 0, 1), _a = new V3(), _b = new V3(), _c = new V3(), _d = new V3();
   const R = (a, b) => a + Math.random() * (b - a), clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
@@ -47,7 +47,7 @@ const SKILL_VFX = (function () {
   }
   const NIL = new Item(new THREE.Object3D(), { opacity: 0, color: new THREE.Color(), rotation: 0 }, "nil");
   function take(kind, key, color, add) {
-    if (live >= MAX || typeof scene === "undefined") return NIL;
+    if (live >= MAX || (!PS && typeof scene === "undefined")) return NIL;
     const pk = kind + key + (add ? 1 : 0), pl = POOL[pk] || (POOL[pk] = []);
     let it = pl.pop();
     if (!it) {
@@ -57,12 +57,12 @@ const SKILL_VFX = (function () {
       it.o.frustumCulled = false; it.o.userData.fxItem = true;
     }
     it.m.color.setHex(color); it.m.opacity = 1; it.m.rotation = 0; it.o.position.set(0, 0, 0); it.o.scale.set(1, 1, 1); it.o.quaternion.set(0, 0, 0, 1); it.o.rotation.set(0, 0, 0);
-    scene.add(it.o); live++; return it;
+    (PS || scene).add(it.o); live++; return it;
   }
-  function give(it) { if (it === NIL) return; scene.remove(it.o); (POOL[it.pk] = POOL[it.pk] || []).push(it); live--; }
+  function give(it) { if (it === NIL) return; if (it.o.parent) it.o.parent.remove(it.o); (POOL[it.pk] = POOL[it.pk] || []).push(it); live--; }
 
   /* ---------- hệ thống hiệu ứng theo thời gian ---------- */
-  function fx(dur, delay, setup) { FX.push({ t: -(delay || 0), dur, items: [], setup, upd: null }); }
+  function fx(dur, delay, setup) { FX.push({ t: -(delay || 0), dur, items: [], setup, upd: null, sc: PS }); }
   function mk(E) {
     E.spr = (key, c, add) => { const i = take("s", key, c, add !== false); E.items.push(i); return i; };
     E.mesh = (key, c, add) => { const i = take("m", key, c, add !== false); E.items.push(i); return i; };
@@ -72,12 +72,13 @@ const SKILL_VFX = (function () {
     dt = Math.min(dt, 0.1);
     for (let i = FX.length - 1; i >= 0; i--) {
       const E = FX[i]; E.t += dt; if (E.t < 0) continue;
+      PS = E.sc || null;
       if (!E.upd) { mk(E); E.upd = E.setup(E) || (() => {}); }
-      const k = Math.min(1, E.t / E.dur); E.upd(k, dt, E);
+      const k = Math.min(1, E.t / E.dur); E.upd(k, dt, E); PS = null;
       if (k >= 1) { E.items.forEach(give); FX.splice(i, 1); }
     }
   }
-  function shake(s) { try { window.CAM_SHAKE = Math.max(window.CAM_SHAKE || 0, s); } catch (e) {} }
+  function shake(s) { if (PS) return; try { window.CAM_SHAKE = Math.max(window.CAM_SHAKE || 0, s); } catch (e) {} }
 
   /* ---------- thành phần dùng lại ---------- */
   const flash = (P, c, size, dur, delay, y, key) => { P = P.clone(); fx(dur, delay, E => { const s = E.spr(key || "glow", c); return k => s.p(P.x, y === undefined ? P.y : y, P.z).s(size * (0.4 + k * 0.8)).a(0.8 * (1 - k * k)); }); };
@@ -430,15 +431,18 @@ const SKILL_VFX = (function () {
   const DEF_RAD = { riddle_trap: 3, mirror_ask: 4, slow_song: 6, silence_zone: 8, shock_wave: 5, beat_dash: 3, echo_rain: 5, spin_beat: 4, chain_beat: 3, festival_frenzy: 9 };
   const ULT = { dragon_roar: 1, silence_zone: 1, grand_chorus: 1, festival_frenzy: 1 };
   function play(id, o) {
-    const f = SK[id]; if (!f || typeof scene === "undefined") return; init(); o = o || {};
+    o = o || {}; const f = SK[id]; if (!f || (!o.scene && typeof scene === "undefined")) return; init();
     const rank = clamp(o.rank || 1, 1, 5), ult = !!ULT[id], T = ult ? 3 : rank >= 5 ? 3 : rank >= 3 ? 2 : 1, br = KIND[id];
     const F = (o.from || new V3()).clone().setY(0), Tg = (o.to ? o.to.clone() : F.clone().add(new V3(0, 0, 6))).setY(0);
     const dir = _a.subVectors(Tg, F); dir.y = 0; if (dir.lengthSq() < 1e-4) dir.set(0, 0, 1); dir.normalize(); const dr = dir.clone();
     const A = F.clone().addScaledVector(dr, 0.7).setY(1.25), B = Tg.clone().setY(0.9), d3 = B.clone().sub(A).normalize();
     const C = { id, T, rank, F, Tg, A, B, dir: d3, col: PAL[br][T - 1], rad: o.radius || DEF_RAD[id] || 4, k: ult ? 1.3 : 1 + (rank - 1) * 0.1 + (o.perfect ? 0.12 : 0) };
+    PS = o.scene || null;
+    try {
     f(C);
     if (T >= 3 && !ult) shake(0.3);
     if (o.perfect) { const pc = C.col[2], at = (id in { harmony_heal: 1, chord_shield: 1, courage_chant: 1, tempo_up: 1, mana_song: 1, cleanse_note: 1, grand_chorus: 1, slow_song: 1, shock_wave: 1, spin_beat: 1, silence_zone: 1, festival_frenzy: 1 }) ? F.clone().setY(1.2) : B; burst(at, 0xffe27a, 8, 5, 0.38, 0.7, 0.05, "star", 3); flash(at, pc, 2.6, 0.4, 0.05, undefined, "star"); }
+    } finally { PS = null; }
   }
   function hit(pos, color) {
     if (typeof scene === "undefined") return; init(); let c = 0xffd43b; try { c = new THREE.Color(color).getHex(); } catch (e) {}

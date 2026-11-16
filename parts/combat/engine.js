@@ -154,19 +154,14 @@ function buildCombatUi() {
 #cbFood{position:fixed;right:14px;bottom:calc(214px + env(safe-area-inset-bottom,0px));display:none;flex-direction:row;gap:6px;z-index:5}
 #cbFood button,#cbWpn{width:46px;height:46px;border-radius:12px;border:0;background:rgba(255,255,255,.85);font-size:22px;position:relative}
 #cbFood b,#cbWpn b{position:absolute;right:2px;bottom:0;font:700 10px system-ui;color:#1b2340}
-#skBtn{position:fixed;left:12px;top:calc(196px + env(safe-area-inset-top,0px));border:0;border-radius:99px;padding:6px 12px;font-weight:700;background:var(--panel);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:5}
-body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important;right:14px!important}
-#skPanel .brh{display:flex;align-items:center;gap:6px;font-weight:800;margin-top:12px}#skPanel .sk{display:flex;gap:8px;align-items:center;border:1px solid rgba(128,128,128,.3);border-radius:12px;padding:8px;margin-top:6px}
-#skPanel .sk .ic{font-size:26px;width:36px;text-align:center}#skPanel .sk .tx{flex:1;font-size:13px}#skPanel .sk button{border:0;border-radius:10px;padding:6px 10px;font-weight:700}`;
+body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important;right:14px!important}`;
   document.head.appendChild(css);
   const d = document.createElement("div"); d.innerHTML = `
 <div id="cbHud"><div class="cbBar"><div id="cbHp" style="background:#e5484d"></div><span id="cbHpT"></span></div><div class="cbBar"><div id="cbMp" style="background:#3b82f6"></div><span id="cbMpT"></span></div><div class="cbBar" style="height:8px;width:120px"><div id="cbHm" style="background:#9b5de5"></div></div><div id="cbZone" style="font:700 12px system-ui;color:#fff;text-shadow:0 1px 3px #000"></div></div>
 <div id="cbBtns"><button id="cbAtk">⚔️</button></div>
 <div id="cbFood"><button id="cbWpn" title="Swap weapon"></button><button id="cbF0"></button><button id="cbF1"></button></div>
 <div id="cbCard"><div class="t"><span id="cbCt"></span><span><button id="cbReroll">🔄 đổi đề</button></span></div><div class="q" id="cbCq"></div><div class="h" id="cbCh"></div><div class="bar"><div id="cbCbar"></div></div></div>
-<div id="cbKo"><div>🤐 You lost your voice…<div style="font:500 14px system-ui;margin-top:8px">Mất giọng! Về cổng vùng sau 2 giây</div></div></div>
-<button id="skBtn">🌟 Skills</button>
-<div id="skPanel" class="over"><div class="box" style="padding:12px;max-height:80vh;overflow:auto"><div style="display:flex;justify-content:space-between;align-items:center"><b>🌟 Skills · <span id="skSp"></span></b><button class="x" id="skClose">✕</button></div><div id="skBody"></div></div></div>`;
+<div id="cbKo"><div>🤐 You lost your voice…<div style="font:500 14px system-ui;margin-top:8px">Mất giọng! Về cổng vùng sau 2 giây</div></div></div>`;
   document.body.appendChild(d);
   const B = $("cbBtns");
   [[0, 98, 4], [1, 66, 68], [2, 8, 100], [3, 120, 128]].forEach(([i, r, b]) => { const e = document.createElement("button"); e.className = "cbSk"; e.id = "cbS" + i; e.style.right = r + "px"; e.style.bottom = b + "px"; B.appendChild(e); skillButton(e, i); });
@@ -174,8 +169,6 @@ body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important
   $("cbWpn").onclick = () => { const W = save.combat.weapons; if (W[0] && W[1]) { save.combat.wIdx = 1 - save.combat.wIdx; saveNow(); drawCombatHud(); const w = curWeapon(); popText(w.icon, player.position, "#9b5de5"); } };
   [0, 1].forEach(i => $("cbF" + i).onclick = () => { const id = $("cbF" + i).dataset.id; if (id) { useItem(id); drawCombatHud(); } });
   $("cbReroll").onclick = reroll;
-  $("skBtn").onclick = () => { drawSkills(); $("skPanel").style.display = "block"; };
-  $("skClose").onclick = () => $("skPanel").style.display = "none";
   drawCombatHud();
 }
 function drawCombatHud() {
@@ -585,30 +578,3 @@ function dropTick(dt, t) {
 }
 
 /* ---------- 11. BẢNG KỸ NĂNG ---------- */
-function drawSkills() {
-  $("skSp").textContent = spLeft() + " điểm · Lv." + (save.level || 1) + " · còn " + xpToNext() + " ⭐ lên cấp";
-  let h = "<div style='font-size:12px;opacity:.8;margin-top:6px'>Bậc càng cao: chiêu mạnh hơn, đẹp hơn (đổi hình ở bậc 3 và 5), và câu phải nói dài hơn (bậc 1 ≈ 3–4 từ · bậc 5 ≈ 11–12 từ). ⭐ = gắn vào ô · 👁️ = xem trước hiệu ứng.</div>";
-  ["power", "control", "harmony", "rhythm"].forEach(br => {
-    const B = BRANCH[br], list = Object.keys(SKILLS).filter(k => SKILLS[k].branch === br).sort((a, b) => ((SKILLS[a].type === "ult") - (SKILLS[b].type === "ult")) || SKILLS[a].lv - SKILLS[b].lv);
-    const pts = list.reduce((a, k) => a + skillRank(k), 0);
-    h += "<div class='brh' style='color:" + B.color + "'>" + B.icon + " " + B.name + " <span style='font-weight:500;font-size:12px;opacity:.8'>· " + pts + " điểm" + (pts >= 10 ? " · danh hiệu " + { power: "Thunder Voice", control: "Sharp Ears", harmony: "Kind Heart", rhythm: "Beat Master" }[br] : "") + "</span></div>";
-    list.forEach(id => { const S = SKILLS[id], r = skillRank(id), lock = (save.level || 1) < S.lv, eq = save.combat.slots.indexOf(id) >= 0, pas = S.type === "passive";
-      h += "<div class='sk' style='" + (S.type === "ult" ? "border-color:#fab005" : "") + "'><div class='ic'>" + S.icon + "</div><div class='tx'><b>" + S.name + "</b>" + (pas ? " · nội tại" : S.type === "ult" ? " · ★ tuyệt chiêu" : "") + " · bậc " + r + "/5<br>" + S.desc + "<br><span style='opacity:.7'>" + (pas ? "" : "💧" + S.mana + " · ⏱" + S.cd + "s") + (lock ? " · 🔒 Lv." + S.lv : "") + "</span></div>" +
-        (!pas ? "<button data-pv='" + id + "' title='Preview'>👁️</button>" : "") +
-        (!lock && r < 5 && spLeft() > 0 ? "<button data-up='" + id + "' style='background:" + B.color + ";color:#fff'>+" + (r ? "" : " Learn") + "</button>" : "") +
-        (r && !pas ? "<button data-eq='" + id + "' style='background:" + (eq ? "#ffd43b" : "#e9ecef") + "'>" + (eq ? "⭐" : "☆") + "</button>" : "") + "</div>"; });
-  });
-  $("skBody").innerHTML = h;
-  $("skBody").querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const id = b.dataset.up; if (spLeft() <= 0) return; save.combat.skills[id] = skillRank(id) + 1;
-    if (isActive(id) && save.combat.slots.indexOf(id) < 0) { const k = save.combat.slots.indexOf(null); if (k >= 0) save.combat.slots[k] = id; } saveNow(); drawSkills(); drawCombatHud(); });
-  $("skBody").querySelectorAll("[data-eq]").forEach(b => b.onclick = () => { const id = b.dataset.eq, S = save.combat.slots, k = S.indexOf(id);
-    if (k >= 0) S[k] = null; else { const e = S.indexOf(null); if (e >= 0) S[e] = id; else S[3] = id; } saveNow(); drawSkills(); drawCombatHud(); });
-  $("skBody").querySelectorAll("[data-pv]").forEach(b => b.onclick = () => previewSkill(b.dataset.pv));
-}
-function previewSkill(id) {   // xem trước: hiệu ứng ở bậc hiện tại rồi bậc 5, ngay trước mặt nhân vật
-  $("skPanel").style.display = "none";
-  const S = SKILLS[id], P = player.position.clone(), to = P.clone().add(new THREE.Vector3(Math.sin(player.rotation.y) * 5, 0, Math.cos(player.rotation.y) * 5));
-  const show = (rank, delay) => setTimeout(() => { popText(S.icon + " " + S.name + " · bậc " + rank, P.clone().setY(1), BRANCH[S.branch].color);
-    if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.play(id, { rank, from: player.position.clone(), to: S.kind === "self" || S.kind === "aoe" ? null : to, radius: S.radius, perfect: true }); else vfx(to, BRANCH[S.branch].color, S.radius || 1.2, rank); }, delay);
-  show(Math.max(1, skillRank(id)), 200); show(3, 1700); show(5, 3200);
-}
