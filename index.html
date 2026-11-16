@@ -649,7 +649,7 @@ document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preven
 /* Xoay camera: kéo ngón tay (hoặc chuột) trên màn hình; phím Q/E trên máy tính */
 let camAngle = 0, camPitch = 0.75, look = null;
 /* Vùng hoang dã: camera CỐ ĐỊNH nhìn về hướng Bắc (như Liên Quân), chỉ kéo dọc để đổi góc nghiêng 35°–78° (chủ dự án chốt 16/11) */
-const WILD_PITCH = [0.61, 1.36], wildCam = () => typeof CB !== "undefined" && CB.on && !room && !maze;
+const WILD_PITCH = [0.52, 1.36], wildCam = () => typeof CB !== "undefined" && CB.on && !room && !maze;
 let wasWildCam = false;
 function wildCamTick(dt) {
   const on = wildCam();
@@ -1309,7 +1309,18 @@ function addCoins(n) { save.coins += n; saveNow(); renderHud(); }
 function useEnergy(n) { save.energy = Math.max(0, save.energy - n); saveNow(); renderHud(); }
 const isPoisoned = () => Date.now() < save.poisonUntil;
 const isProtected = () => Date.now() < save.protectUntil;
+/* Tiếng Việt trong thông báo là giàn giáo tạm: mỗi thông báo hiện kèm tiếng Việt 3 lần đầu, sau đó chỉ còn tiếng Anh
+   (người học nhớ câu tiếng Anh gắn với tình huống, không gắn với bản dịch). Thông báo quan trọng thêm "<!--vi-->" để luôn giữ tiếng Việt. */
+const VI_RE = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+function fadeVi(html) {
+  if (html.indexOf("<!--vi-->") >= 0 || !VI_RE.test(html)) return html;
+  const en = html.replace(/ \/ [^<]*/g, m => VI_RE.test(m) ? "" : m).replace(/<div[^>]*>([^<]*)<\/div>/g, (m, t) => VI_RE.test(t) ? "" : m);
+  const key = en.replace(/[0-9]+/g, "#").slice(0, 80), seen = save.viSeen = save.viSeen || {};
+  if ((seen[key] = (seen[key] || 0) + 1) <= 3) return html;
+  return en.trim() ? en : html;
+}
 function flash(html) {   // thông báo nhanh giữa màn hình
+  html = fadeVi(html);
   $("toast").innerHTML = '<div style="font-size:16px;font-weight:700;max-width:260px">' + html + "</div>";
   $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
 }

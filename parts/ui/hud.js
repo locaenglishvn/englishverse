@@ -17,10 +17,10 @@ function evHudUpdate() {   // gọi từ renderHud() (thành phố) và hudTick(
   const xb = evEl("hXp"); xb.classList.toggle("lock", blocked); xb.firstElementChild.style.width = k * 100 + "%";
   xb.lastElementChild.textContent = (blocked ? "🔒 " : "") + "EXP " + Math.floor(k * 100) + "%";
   const gc = evEl("gateChip");
-  if (near && gate.missing > 0) { gc.style.display = "block"; gc.textContent = "🔒 Thiếu " + gate.missing + " thẻ ⭐⭐ ›"; } else gc.style.display = "none";
+  if (near && gate.missing > 0) { gc.style.display = "block"; gc.textContent = "🔒 Need " + gate.missing + " more ⭐⭐ card" + (gate.missing > 1 ? "s" : "") + " ›"; } else gc.style.display = "none";
   // xu, sức mạnh, cấp
   evEl("coins").textContent = save.coins;
-  evEl("hPow").textContent = typeof powerScore === "function" ? "⚔️ " + powerScore() : "";
+  evEl("hPow").textContent = "";   // Lực chiến chỉ hiện trong túi đồ (chủ dự án 16/11)
   evEl("lvl").textContent = "Lv." + L;
   // Harmony
   const hm = evEl("hHm"), now = performance.now();
@@ -70,15 +70,15 @@ function evLvColor(ml) {
 function evMonTag(M) {   // tạo lần đầu rồi chỉ vẽ lại khi máu / cấp đổi
   const hpK = Math.max(0, Math.min(40, Math.round(M.hp / (M.hpMax || 1) * 40))), key = hpK + "|" + M.lv + "|" + (save.level || 1);
   if (M.tagKey === key) return M.tag; M.tagKey = key;
-  if (!M.tagC) { M.tagC = document.createElement("canvas"); M.tagC.width = 320; M.tagC.height = 120; M.tagTex = new THREE.CanvasTexture(M.tagC); M.tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: M.tagTex, depthTest: false })); M.tag.scale.set(4.4, 4.4 * 120 / 320, 1); M.tag.position.y = 2.9; }
+  if (!M.tagC) { M.tagC = document.createElement("canvas"); M.tagC.width = 320; M.tagC.height = 120; M.tagTex = new THREE.CanvasTexture(M.tagC); M.tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: M.tagTex, depthTest: false })); M.tag.scale.set(2.2, 2.2 * 120 / 320, 1); M.tag.position.y = 2.5; }
   const g = M.tagC.getContext("2d"), [col, skull] = evLvColor(M.lv);
   g.clearRect(0, 0, 320, 120);
-  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0, 4, 320, 44);
+  g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(20, 8, 280, 40);
   g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = col; let sz = 32; const txt = M.T.icon + " " + M.T.name + " Lv." + M.lv + skull;
   do { g.font = "bold " + sz + "px system-ui,sans-serif"; sz -= 2; } while (g.measureText(txt).width > 304 && sz > 14); g.fillText(txt, 160, 27);
-  g.fillStyle = "rgba(0,0,0,.7)"; g.fillRect(24, 52, 272, 30); g.fillStyle = "#ff4f5e"; g.fillRect(28, 56, 264 * hpK / 40, 22);
-  g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(28, 56, 264 * hpK / 40, 6);
-  g.fillStyle = "#ffd43b"; g.font = "bold 24px system-ui,sans-serif"; g.fillText("sợ " + (typeof TASK_ICON !== "undefined" ? TASK_ICON[M.T.weak] : ""), 160, 102);
+  g.fillStyle = "rgba(0,0,0,.7)"; g.fillRect(50, 58, 220, 12); g.fillStyle = "#ff4f5e"; g.fillRect(52, 60, 216 * hpK / 40, 8);
+  g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(52, 60, 216 * hpK / 40, 2);
+  g.fillStyle = "#ffd43b"; g.font = "bold 24px system-ui,sans-serif"; g.fillText("weak: " + (typeof TASK_ICON !== "undefined" ? TASK_ICON[M.T.weak] : ""), 160, 102);
   M.tagTex.needsUpdate = true; return M.tag;
 }
 
@@ -86,7 +86,7 @@ function evMonTag(M) {   // tạo lần đầu rồi chỉ vẽ lại khi máu /
 const EV_TUT = [
   ["#stick", "Move with the stick.", "Cần điều khiển để đi lại."],
   ["#cbAtk", "Tap ⚔️ to hit.", "Chạm ⚔️ để đánh thường."],
-  ["#cbBtns", "Tap a skill to see the card. HOLD it and speak. Let go to score.", "Chạm chiêu để xem đề, GIỮ nút để nói, thả tay là chấm."],
+  ["#cbBtns", "HOLD a skill: read the card and speak. Let go to cast. A quick tap only shows the card and reads it to you.", "GIỮ nút chiêu: đọc đề và nói luôn, thả tay là ra chiêu. Chạm nhanh chỉ để xem đề và nghe đọc mẫu."],
   ["#evHud", "Watch your ❤️ health and 💧 mana.", "Theo dõi máu ❤️ và mana 💧."],
   ["#cbFood", "Quick slots: food, mana drinks, antidote.", "Ô dùng nhanh: đồ ăn, nước mana, thuốc giải."]
 ];
