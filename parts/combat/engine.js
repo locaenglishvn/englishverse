@@ -210,10 +210,9 @@ function updateCombat(dt, t) {
   dayTick(dt);
   const sec = (!room && !maze) ? WILDS.sectorAt(player.position.x, player.position.z) : null;
   if (!!sec !== CB.on || (sec && CB.sec && (sec.dir !== CB.sec.dir || sec.ring !== CB.sec.ring))) setCombatOn(!!sec, sec);
-  CB.mp = Math.min(100, CB.mp + dt * 12.5);
+  CB.mp = Math.min(typeof mpMax === "function" ? mpMax() : 100, CB.mp + dt * 12.5 * (1 + ((typeof gear === "function" && gear().mpRegen) || 0) / 100));   // mana đầy lại ~8 giây; thắt lưng (mpRegen) hồi nhanh hơn. Máu KHÔNG tự hồi.
   for (const k in CB.cd) CB.cd[k] = Math.max(0, CB.cd[k] - dt);
   CB.atkCd = Math.max(0, CB.atkCd - dt);
-  if (CB.on && !CB.ko && performance.now() - CB.lastHurt > 6000 && save.energy < 100) save.energy = Math.min(100, save.energy + dt * 1.2);   // ngoài trận: hồi máu chậm
   if (CB.on) { spawnTick(); netTick(dt); }
   CB.mons.forEach(M => monTick(M, dt, t));
   CB.mons = CB.mons.filter(M => !M.gone);
@@ -350,7 +349,7 @@ function knockOut() {   // hết máu: xám 2 giây rồi về cổng vùng
   setTimeout(() => {
     const G2 = CB.sec && CB.sec.ring >= 2 && WILDS.gates2 ? WILDS.gates2 : WILDS.gates, g = (G2 || []).find(G => CB.sec && G.dir === CB.sec.dir) || WILDS.gates[0];
     if (g) { player.position.set(g.x, 0, g.z); camSnap = true; }
-    setHp(hpMax() * 0.5); CB.ko = false; talking = false; $("cbKo").style.display = "none"; saveNow(); renderHud();
+    setHp(hpMax() * 0.3); CB.ko = false; talking = false; $("cbKo").style.display = "none"; saveNow(); renderHud();
   }, 2000);
 }
 let saveT = null; function saveSoon() { if (!saveT) saveT = setTimeout(() => { saveT = null; saveNow(); renderHud(); }, 1500); }
@@ -405,7 +404,9 @@ function endCast(silent) { CB.cast = null; $("cbCard") && ($("cbCard").style.dis
 function resoOn(type) { const w = curWeapon(); return !!(w && w.weapon.reso === type); }
 
 /* Voice Deck: chọn loại bài (sàn 15%, loại yếu tới 35%) rồi lấy nội dung (ưu tiên thẻ của người chơi) */
+const NEWBIE_LV = 4;   // Lv.1–4: đề chỉ lấy từ thẻ đã có + bộ thẻ khởi đầu (STARTER_DECK), chỉ dạng REPEAT / NAME
 function drawTask(band, avoid) {
+  if ((save.level || 1) <= NEWBIE_LV) { const hasV = owned.some(id => id[0] === "v"); return makeTask(hasV && avoid !== "name" && Math.random() < 0.35 ? "name" : "repeat", band); }
   const T = deckTypes(), st = save.combat.deck, rate = t => (st[t].good + 1) / (st[t].n + 2), avg = T.reduce((a, t) => a + rate(t), 0) / T.length, base = 1 / T.length;
   let w = T.map(t => Math.max(0.15, Math.min(0.35, base + (avg - rate(t)) * 0.6)) * (t === avoid ? 0.3 : 1)), sum = w.reduce((a, b) => a + b, 0), r = Math.random() * sum, type = T[0];
   for (let i = 0; i < T.length; i++) { r -= w[i]; if (r <= 0) { type = T[i]; break; } }
@@ -418,26 +419,30 @@ function bandOk(s, band) { const n = wc(s), [a, b] = BAND_WORDS[band]; return n 
 function makeTask(type, band) {
   const season = CB.sec ? CB.sec.season : "city";
   if (type === "repeat") {
-    const mine = allCards().filter(c => hasCard(c.id) && c.ex && bandOk(c.ex, band)).sort((a, b) => stars(a.id) - stars(b.id));
-    let line = mine.length && Math.random() < 0.7 ? mine[Math.floor(Math.random() * Math.min(5, mine.length))] : null;
-    const text = line ? line.ex : (cbPick((VOICE_DECK.build || []).filter(b => b.band === band)) || { say: cbPick(ECHO_LINES)[1] }).say;
-    return { type, show: "“" + text + "”", speak: text, target: text, card: line && line.id, hint: "nói lại câu này" };
+    const newbie = (save.level || 1) <= NEWBIE_LV, have = allCards().filter(c => hasCard(c.id) && c.ex);
+    let mine = have.filter(c => bandOk(c.ex, band)); if (newbie && !mine.length) mine = have;
+    mine.sort((a, b) => stars(a.id) - stars(b.id));
+    const line = mine.length && (newbie || Math.random() < 0.8) ? mine[Math.floor(Math.random() * Math.min(5, mine.length))] : null;   // 80% từ thẻ của mình (người mới: 100%)
+    if (line) { const text = newbie && line.type === "p" && Math.random() < 0.5 ? line.w : line.ex; return { type, show: "“" + text + "”", speak: text, target: text, card: line.id, hint: "nói lại câu này" }; }
+    const st = typeof STARTER_DECK !== "undefined" && (newbie || Math.random() < 0.3) ? cbPick(STARTER_DECK) : null;   // câu mới luôn có nghĩa tiếng Việt
+    const b = st || cbPick((VOICE_DECK.build || []).filter(b => b.band === band)) || { say: cbPick(ECHO_LINES)[1] };
+    return { type, show: "“" + b.say + "”", speak: b.say, target: b.say, vi: b.vi, card: null, hint: "nói lại câu này" };
   }
   if (type === "build") {
     const pool = (VOICE_DECK.build || []).filter(b => b.band === band && (b.topic === season || b.topic === "city" || Math.random() < 0.3)); const b = cbPick(pool.length ? pool : (VOICE_DECK.build || [])); if (!b) return null;
     const words = b.say.replace(/[.!?]$/, "").split(" "); let sh = words.slice(); for (let k = 0; k < 6 && sh.join(" ") === words.join(" "); k++) sh.sort(() => Math.random() - 0.5);
-    return { type, show: (b.pic || "") + " " + sh.join(" / "), speak: "", target: b.say, hint: "nói cả câu đúng thứ tự" };
+    return { type, show: (b.pic || "") + " " + sh.join(" / "), speak: "", target: b.say, vi: b.vi, hint: "nói cả câu đúng thứ tự" };
   }
   if (type === "answer") {
     const pool = (VOICE_DECK.answer || []).filter(a => a.band <= band && a.band >= band - 1 && (a.topic === season || a.topic === "city" || Math.random() < 0.3)); const a = cbPick(pool.length ? pool : (VOICE_DECK.answer || [])); if (!a) return null;
-    return { type, show: (a.pic || "") + " " + a.q, speak: a.q, keys: a.keys, target: a.full, hint: "trả lời đủ câu được thưởng" };
+    return { type, show: (a.pic || "") + " " + a.q, speak: a.q, keys: a.keys, target: a.full, vi: a.vi, hint: "trả lời đủ câu được thưởng" };
   }
   if (type === "ask") {
     const pool = (VOICE_DECK.ask || []).filter(a => a.band <= Math.max(3, band) && (a.topic === season || a.topic === "city" || Math.random() < 0.3)); const a = cbPick(pool.length ? pool : (VOICE_DECK.ask || [])); if (!a) return null;
-    return { type, show: (a.pic || "") + " “" + a.say + "”", speak: a.say, keys: a.keys, target: a.full, hint: "hỏi lại 1 câu hỏi" };
+    return { type, show: (a.pic || "") + " “" + a.say + "”", speak: a.say, keys: a.keys, target: a.full, vi: a.vi, hint: "hỏi lại 1 câu hỏi" };
   }
   if (type === "name") {
-    const all = Object.values(VOCAB).flat(), mine = all.filter(v => hasCard("v:" + v.w)), v = cbPick(mine.length && Math.random() < 0.7 ? mine : all); if (!v) return null;
+    const all = Object.values(VOCAB).flat(), mine = all.filter(v => hasCard("v:" + v.w)), v = cbPick(mine.length && ((save.level || 1) <= NEWBIE_LV || Math.random() < 0.8) ? mine : all);   // người mới: chỉ đồ vật đã có thẻ if (!v) return null;
     return { type, show: v.pic + "  What is this?", speak: "What is this?", keys: [v.w.toLowerCase()], target: v.say, card: hasCard("v:" + v.w) ? "v:" + v.w : null, hint: band >= 3 ? "nói đủ: " + v.say.replace(v.w, "…") : "gọi tên" };
   }
   return null;

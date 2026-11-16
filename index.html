@@ -233,6 +233,7 @@ button{font:inherit;cursor:pointer}
 <script src="parts/combat/engine.js"></script>
 <script src="parts/social/safechat.js"></script>
 <script src="parts/social/team.js"></script>
+<script src="parts/ui/progress.js"></script>
 <script src="parts/exteriors/furniturebig.js"></script>
 <script src="parts/exteriors/electronics.js"></script>
 <script src="parts/interiors/cafe.js"></script>
@@ -608,11 +609,22 @@ document.addEventListener("touchend", e => { const now = Date.now(); if (now - l
 document.addEventListener("dblclick", e => e.preventDefault());
 document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 /* Xoay camera: kéo ngón tay (hoặc chuột) trên màn hình; phím Q/E trên máy tính */
-let camAngle = 0, camPitch = 0.75, look = null;   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
+let camAngle = 0, camPitch = 0.75, look = null;
+/* Vùng hoang dã: camera CỐ ĐỊNH nhìn về hướng Bắc (như Liên Quân), chỉ kéo dọc để đổi góc nghiêng 35°–78° (chủ dự án chốt 16/11) */
+const WILD_PITCH = [0.61, 1.36], wildCam = () => typeof CB !== "undefined" && CB.on && !room && !maze;
+let wasWildCam = false;
+function wildCamTick(dt) {
+  const on = wildCam();
+  if (on && !wasWildCam) camPitch = (save.combat && save.combat.camPitch) || 0.96;   // nhớ góc lần trước, mặc định 55°
+  wasWildCam = on; if (!on) return;
+  let a = ((camAngle + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;   // đưa về −π…π rồi quay mượt về 0 (Bắc)
+  camAngle = Math.abs(a) < 0.01 ? 0 : a * Math.max(0, 1 - dt * 6);
+  camPitch = Math.min(WILD_PITCH[1], Math.max(WILD_PITCH[0], camPitch)); if (save.combat) save.combat.camPitch = camPitch;
+}   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
 const cv = renderer.domElement;
 cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener("pointermove", e => {
-  if (look && look.id === e.pointerId) { camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;
+  if (look && look.id === e.pointerId) { if (!wildCam()) camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;   // vùng hoang dã: không xoay ngang
     if (!maze) camPitch = room ? Math.min(1.0, Math.max(-0.7, camPitch + (e.clientY - look.y) * 0.006)) : Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera (trong nhà: ngẩng lên được để nhìn trần)
     look.y = e.clientY; }
 });
@@ -794,7 +806,7 @@ function gainCard(card, type) {   // trả về true nếu nhận được thẻ
 }
 function practice(id) {   // nói đúng câu của thẻ → +1 ⭐ (tối đa 3)
   if (!hasCard(id) || stars(id) >= 3) return;
-  save.mastery[id] = stars(id) + 1; saveNow(); checkLevel();
+  save.mastery[id] = stars(id) + 1; saveNow(); if (typeof onMastery === "function") onMastery(id); checkLevel();
 }
 function masteryRatio() { return owned.length ? owned.filter(id => stars(id) >= 2).length / owned.length : 1; }
 let albumTab = "p";
@@ -802,7 +814,7 @@ function drawAlbum() {
   $("albumTabs").innerHTML = Object.keys(CARD_TYPES).map(t => "<button data-t='" + t + "' class='" + (t === albumTab ? "on" : "") + "'>" + CARD_TYPES[t].icon + " " + CARD_TYPES[t].name + "<br><small>" + ownedOf(t) + "/" + cardCap(t) + "</small></button>").join("");
   $("albumTabs").querySelectorAll("button").forEach(b => b.onclick = () => { albumTab = b.dataset.t; drawAlbum(); });
   const lv = playerLevel(), ratio = Math.round(masteryRatio() * 100);
-  $("albumInfo").innerHTML = "Lv." + lv + " · ⭐⭐ " + ratio + "% thẻ đã thuộc" + (lv >= 5 ? " (cần 70% để lên cấp)" : "") + "<br>Hạn mức: " + CARD_TYPES[albumTab].vi + " " + ownedOf(albumTab) + "/" + cardCap(albumTab) + ". Đầy rồi thì đi đánh quái luyện thẻ để lên cấp.";
+  $("albumInfo").innerHTML = "Lv." + lv + (typeof levelGateText === "function" && levelGateText() ? " · " + levelGateText() : "") + "<br>Hạn mức: " + CARD_TYPES[albumTab].vi + " " + ownedOf(albumTab) + "/" + cardCap(albumTab) + ". Đầy rồi thì đi đánh quái luyện thẻ để lên cấp.";
   $("cards").innerHTML = "";
   allCards().filter(c => c.type === albumTab).sort((a, b) => hasCard(b.id) - hasCard(a.id)).forEach(c => {
     const has = hasCard(c.id), d = document.createElement("button");
@@ -1375,7 +1387,9 @@ function checkLegends() {   // đồ huyền thoại: tự trao khi đạt thàn
 }
 let hudT = 0;
 function updateEconomy(dt) {   // năng lượng tự hồi 1 điểm / 15 giây; cập nhật thanh trạng thái
-  save.energy = Math.min(100, save.energy + dt / 15 * (1 + gear().stamina / 30));   // 💪 Stamina: hồi nhanh hơn
+  // Máu KHÔNG tự hồi (chủ dự án chốt 16/11): hồi bằng đồ ăn, thuốc, ngủ giường ở nhà, chiêu Harmony, trang bị có hpRegen.
+  const rg = gear().hpRegen || 0; if (rg && typeof hpMax === "function" && save.energy < 100 && !(typeof CB !== "undefined" && CB.ko)) save.energy = Math.min(100, save.energy + rg * dt / hpMax() * 100);
+  if (typeof clampXp === "function") clampXp();
   if ((hudT += dt) > 1) { hudT = 0; renderHud(); saveNow(); }
 }
 
@@ -1506,8 +1520,10 @@ function checkLevel() {
   if (!save.level) save.level = 1;
   const target = typeof levelForXp === "function" ? levelForXp(score) : 1 + Math.floor(score / 60);   // đường cong mới tới Lv.100 (parts/combat/engine.js)
   while (save.level < target) {
-    if (save.level >= 5 && masteryRatio() < 0.7) {   // chưa thuộc bài → chưa cho lên cấp
-      if (!lvBlockedShown) { lvBlockedShown = true; flash("🔒 Practice your cards to reach Lv." + (save.level + 1) + "!<div style='font-size:13px;font-weight:400'>Cần ≥ 70% thẻ đạt ⭐⭐ (hiện " + Math.round(masteryRatio() * 100) + "%). Đánh Echo Ghost để luyện!</div>"); }
+    const g = typeof levelGate === "function" ? levelGate() : null;   // từ Lv.3: mỗi loại thẻ cần ≥ 70% hạn mức đạt ⭐⭐ (parts/ui/progress.js)
+    if (g && g.missing) {   // chưa đủ thẻ → EXP dừng ở 100%, không tích luỹ
+      clampXp();
+      if (!lvBlockedShown) { lvBlockedShown = true; flash("🔒 EXP full! Collect & practice cards to reach Lv." + g.to + "<div style='font-size:13px;font-weight:400'>Còn thiếu " + g.missing + " thẻ đạt ⭐⭐. Bấm chip tím 🔒 trên góc màn hình để xem cần làm gì.</div>"); }
       return;
     }
     save.level++; lvBlockedShown = false; saveNow();
@@ -2581,9 +2597,16 @@ function furnishHome(P, g, cx, cz, W, D, fur) {
   P.room.spots = [
     { x: cx + 6.2, z: back + 2, label: "🧰 Open chest", fn: () => { drawChest(); $("chest").style.display = "block"; } },
     { x: cx - W / 2 + 1.2, z: cz + 1.4, label: "🪞 Wardrobe", fn: () => { bagSel = null; drawBag(); $("bag").style.display = "block"; } },
-    { x: cx, z: back + 1.6, label: "🖼️ My Gallery", fn: openGallery }
+    { x: cx, z: back + 1.6, label: "🖼️ My Gallery", fn: openGallery },
+    { x: cx - 6, z: back + 3.3, label: "🛏️ Sleep / Ngủ", fn: sleepAtHome }
   ];
   P.dyn = new THREE.Group(); g.add(P.dyn);
+}
+function sleepAtHome() {   // ngủ ở giường nhà riêng: hồi đầy máu, miễn phí (lưới an toàn cho người hết xu)
+  if (save.energy >= 100) { flash("😊 You are full of energy! / Máu đang đầy rồi."); return; }
+  talking = true; const f = document.createElement("div"); f.style.cssText = "position:fixed;inset:0;background:#05081a;opacity:0;transition:opacity .6s;z-index:40;display:flex;align-items:center;justify-content:center;color:#fff;font:700 26px system-ui"; f.textContent = "💤 Zzz…"; document.body.appendChild(f);
+  requestAnimationFrame(() => f.style.opacity = 1);
+  setTimeout(() => { save.energy = 100; saveNow(); renderHud(); f.style.opacity = 0; speak("Good morning!"); setTimeout(() => { f.remove(); talking = false; flash("☀️ Good morning! ❤️ 100%"); }, 650); }, 1600);
 }
 function homeRefresh(P) {   // vẽ lại phần thay đổi: thẻ trên tường, tinh linh, đồ nội thất đã mua
   const R = P.room, back = R.cz - R.d / 2, dyn = P.dyn; if (!dyn) return;
@@ -3145,6 +3168,7 @@ function loop() {
   const len = Math.hypot(mx, mz);
   if (keys["q"]) camAngle -= 1.8 * dt;
   if (keys["e"]) camAngle += 1.8 * dt;
+  wildCamTick(dt);
   if (maze && maze.role === "walker") {   // góc nhìn thứ nhất: trái/phải = xoay người, lên/xuống = đi tới/lùi
     camAngle -= mx * 2.2 * dt;
     if (Math.abs(mz) > 0.1) {
