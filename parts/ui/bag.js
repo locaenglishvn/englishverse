@@ -5,7 +5,7 @@
                  slotOf(item) (đổi tên ô cũ top→armor, legs→pants) · addGearExtras(root, look) (găng / giày / thắt lưng gắn vào xương, index.html gọi)
    Renderer 3D riêng chỉ chạy khi bảng mở; đóng bảng là dọn sạch (dispose). */
 const SLOT_ORDER_L = ["hat", "armor", "pants", "shoes"], SLOT_ORDER_R = ["gloves", "belt", "cape", "weapon"];
-const SLOT_INFO = { hat: ["🧢", "Nón"], armor: ["🛡️", "Áo giáp"], pants: ["👖", "Quần"], shoes: ["👟", "Giày"], gloves: ["🧤", "Găng tay"], belt: ["🎗️", "Thắt lưng"], cape: ["🧣", "Áo choàng"], weapon: ["📢", "Vũ khí"] };
+const SLOT_INFO = { hat: ["🧢", "Hat"], armor: ["🛡️", "Armor"], pants: ["👖", "Pants"], shoes: ["👟", "Shoes"], gloves: ["🧤", "Gloves"], belt: ["🎗️", "Belt"], cape: ["🧣", "Cape"], weapon: ["📢", "Weapon"] };
 const SLOT_ALIAS = { top: "armor", legs: "pants" };   // tên cũ → tên mới
 const LOOK_KEY = { hat: "hat", armor: "top", pants: "legs", shoes: "shoes", gloves: "gloves", belt: "belt", cape: "cape" };   // ô trang bị → khoá trong "look" (đưa cho buildComposite)
 function slotOf(it) { return it && it.slot ? (SLOT_ALIAS[it.slot] || it.slot) : null; }
@@ -106,8 +106,8 @@ function bgStop() {
 
 /* ---------- bảng ---------- */
 let bagSel = null;   // món đang chọn: id món trong túi, hoặc "eq:<ô>" khi chạm ô đang mặc
-const BG_STATS = [["hp", "❤️", "Máu tối đa", ""], ["mp", "💧", "Mana tối đa", ""], ["voice", "🗣️", "Sát thương chiêu", "%"], ["ears", "👂", "Thêm giờ trả lời", "s"], ["resist", "🛡️", "Kháng độc", "%"],
-  ["hpRegen", "❤️", "Hồi máu/giây", ""], ["mpRegen", "💧", "Hồi mana", "%"], ["speed", "🏃", "Tốc chạy", "%"], ["luck", "🍀", "May mắn", "%"]];
+const BG_STATS = [["hp", "❤️", "Max HP", ""], ["mp", "💧", "Max Mana", ""], ["voice", "🗣️", "Skill damage", "%"], ["ears", "👂", "Answer time", "s"], ["resist", "🛡️", "Poison resist", "%"],
+  ["hpRegen", "❤️", "HP regen /s", ""], ["mpRegen", "💧", "Mana regen", "%"], ["speed", "🏃", "Run speed", "%"], ["luck", "🍀", "Luck", "%"]];
 function bgCss() {
   if (_q("bgCss")) return;
   const s = document.createElement("style"); s.id = "bgCss";
@@ -137,8 +137,8 @@ function bgCss() {
 }
 function bgShell() {
   const b = _q("bag");
-  b.innerHTML = '<div class="ev-panel"><div class="ev-in"><div class="bg-head"><span class="ev-title">🎒 Túi đồ</span><span id="bgCoins" style="font:600 13px var(--ev-font)"></span><button class="ev-btn alt" id="bagClose">✕</button></div>' +
-    '<div class="bg-stage"><div class="bg-col" id="bgL"></div><div class="bg-view"><canvas id="bgCv"></canvas><span class="try" id="bgTry" style="display:none">Mặc thử</span><div class="hint">↔ kéo để xoay</div></div><div class="bg-col" id="bgR"></div></div>' +
+  b.innerHTML = '<div class="ev-panel"><div class="ev-in"><div class="bg-head"><span class="ev-title">🎒 Bag</span><span id="bgCoins" style="font:600 13px var(--ev-font)"></span><button class="ev-btn alt" id="bagClose">✕</button></div>' +
+    '<div class="bg-stage"><div class="bg-col" id="bgL"></div><div class="bg-view"><canvas id="bgCv"></canvas><span class="try" id="bgTry" style="display:none">Try on</span><div class="hint">↔ drag to rotate</div></div><div class="bg-col" id="bgR"></div></div>' +
     '<div class="bg-pow" id="bgPow"></div><div class="bg-stats" id="bgStats"></div><div class="bg-tabs" id="bgTabs"></div><div class="bg-grid" id="bgGrid"></div><div id="bgDet"></div></div></div>';
   _q("bagClose").onclick = closeBag;
 }
@@ -180,21 +180,22 @@ function drawBag() {
   _q("bgTry").style.display = trying ? "block" : "none";
   // Lực chiến + chỉ số
   const p0 = powerScore(), p1 = trying ? powerScoreWith(ov) : p0, s0 = calcStats(null), s1 = trying ? calcStats(ov) : s0;
-  _q("bgPow").innerHTML = "⚔️ Lực chiến " + p1 + (trying && p1 !== p0 ? '<small class="' + (p1 > p0 ? "up" : "dn") + '">' + (p1 > p0 ? "▲ " : "▼ ") + Math.abs(p1 - p0) + "</small>" : "");
+  _q("bgPow").innerHTML = "⚔️ Power " + p1 + (trying && p1 !== p0 ? '<small class="' + (p1 > p0 ? "up" : "dn") + '">' + (p1 > p0 ? "▲ " : "▼ ") + Math.abs(p1 - p0) + "</small>" : "");
   _q("bgStats").innerHTML = BG_STATS.map(([k, ic, nm, u]) => {
     const v = s1[k], dec = k === "hpRegen";
     return "<div><span>" + ic + " " + nm + "</span><b>" + (u === "%" && v ? "+" : "") + (dec ? Math.round(v * 10) / 10 : Math.round(v)) + u + bgDiff(s0[k], s1[k], u, dec) + "</b></div>";
   }).join("");
   // tab + lưới túi
-  const tabs = [["gear", "Trang bị"], ["use", "Đồ dùng"], ["all", "Tất cả"]];
+  if (BG.tab !== "gear" && BG.tab !== "use") BG.tab = "gear";
+  const tabs = [["gear", "Gear"], ["use", "Items"]];
   _q("bgTabs").innerHTML = ""; tabs.forEach(([t, nm]) => { const b = document.createElement("button"); b.className = "ev-btn" + (BG.tab === t ? "" : " alt"); b.textContent = nm; b.onclick = () => { BG.tab = t; drawBag(); }; _q("bgTabs").appendChild(b); });
   const isGear = id => ITEMS[id] && (slotOf(ITEMS[id]) || ITEMS[id].weapon);
-  const ids = Object.keys(save.items).filter(id => ITEMS[id] && (BG.tab === "all" || (BG.tab === "gear") === !!isGear(id)));
-  const cells = Math.max(BG.tab === "all" ? BAG_SIZE : 10, Math.ceil(ids.length / 5) * 5), grid = _q("bgGrid"); grid.innerHTML = "";
+  const ids = Object.keys(save.items).filter(id => ITEMS[id] && (BG.tab === "gear") === !!isGear(id));
+  const cells = BAG_KIND_SIZE, grid = _q("bgGrid"); grid.innerHTML = "";
   for (let i = 0; i < cells; i++) {
     const id = ids[i], x = id && ITEMS[id], b = document.createElement("button");
     b.className = "ev-slot" + (x && x.rarity ? " r-" + x.rarity : "") + (x ? "" : " empty") + (id && id === sel ? " sel" : "");
-    if (x) { b.innerHTML = x.icon + (save.items[id] > 1 ? '<span class="c">' + save.items[id] + "</span>" : "") + (x.lv > playerLevel() ? '<span class="lk">🔒' + x.lv + "</span>" : ""); b.onclick = () => { bagSel = bagSel === id ? null : id; drawBag(); }; }
+    if (x) { b.innerHTML = x.icon + (save.items[id] > 1 ? '<span class="c">×' + save.items[id] + "</span>" : "") + (x.lv > playerLevel() ? '<span class="lk">🔒' + x.lv + "</span>" : ""); b.onclick = () => { bagSel = bagSel === id ? null : id; drawBag(); }; }
     grid.appendChild(b);
   }
   // chi tiết + nút
@@ -202,16 +203,16 @@ function drawBag() {
   if (!it || (!worn && !inBag)) return;
   const sl = slotOf(it);
   d.innerHTML = '<div class="bg-det"><div class="nm">' + it.icon + " " + it.name + "</div>" + (it.rarity ? rarityTag(it) : "") +
-    "<div>" + (sl ? SLOT_INFO[sl][0] + " " + SLOT_INFO[sl][1] + " · " : it.weapon ? "📢 Vũ khí · " : "") + (it.stats && it.rarity ? statsText(it.stats) : "") + "</div>" +
+    "<div>" + (sl ? SLOT_INFO[sl][0] + " " + SLOT_INFO[sl][1] + " · " : it.weapon ? "📢 Weapon · " : "") + (it.stats && it.rarity ? statsText(it.stats) : "") + "</div>" +
     '<div style="opacity:.85;margin-top:4px">' + (it.desc || "") + '</div><div class="acts"></div></div>';
   const act = (t, f, cls) => { const b = document.createElement("button"); b.className = "ev-btn " + (cls || ""); b.textContent = t; b.onclick = f; d.querySelector(".acts").appendChild(b); };
   if (worn) {
-    if (worn === "weapon") act("Cất / Cởi", () => { save.combat.weapons[save.combat.wIdx] = null; saveNow(); if (typeof drawCombatHud === "function") drawCombatHud(); bagSel = null; drawBag(); }, "alt");
-    else act("Cởi", () => { takeOff(worn); bagSel = null; drawBag(); }, "alt");
+    if (worn === "weapon") act("Take off", () => { if (!addItem(save.items, BAG_SIZE, selId)) { flash(bagFullMsg(selId)); return; } save.combat.weapons = [null, null]; save.combat.wIdx = 0; saveNow(); if (typeof drawCombatHud === "function") drawCombatHud(); bagSel = null; drawBag(); }, "alt");
+    else act("Take off", () => { takeOff(worn); bagSel = null; drawBag(); }, "alt");
   } else if (sl) {
-    act("Mặc" + (playerLevel() < it.lv ? " 🔒 Lv." + it.lv : ""), () => wear(selId), "ok"); act("Huỷ", () => { bagSel = null; drawBag(); }, "alt");
+    act("Equip" + (playerLevel() < it.lv ? " 🔒 Lv." + it.lv : ""), () => wear(selId), "ok"); act("Cancel", () => { bagSel = null; drawBag(); }, "alt");
   } else if (it.weapon) {
-    act("Cầm" + (playerLevel() < it.lv ? " 🔒 Lv." + it.lv : ""), () => { equipWeapon(selId); bagSel = null; drawBag(); }, "ok"); act("Huỷ", () => { bagSel = null; drawBag(); }, "alt");
-  } else { act("Dùng", () => useItem(selId)); act("Huỷ", () => { bagSel = null; drawBag(); }, "alt"); }
+    act("Equip" + (playerLevel() < it.lv ? " 🔒 Lv." + it.lv : ""), () => { equipWeapon(selId); bagSel = null; drawBag(); }, "ok"); act("Cancel", () => { bagSel = null; drawBag(); }, "alt");
+  } else { act("Use", () => useItem(selId)); act("Cancel", () => { bagSel = null; drawBag(); }, "alt"); }
 }
 _q("bagBtn").onclick = () => { bagSel = null; openBag(); };

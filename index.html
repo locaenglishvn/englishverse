@@ -649,7 +649,7 @@ document.addEventListener("touchmove", e => { if (e.touches.length > 1) e.preven
 /* Xoay camera: kéo ngón tay (hoặc chuột) trên màn hình; phím Q/E trên máy tính */
 let camAngle = 0, camPitch = 0.75, look = null;
 /* Vùng hoang dã: camera CỐ ĐỊNH nhìn về hướng Bắc (như Liên Quân), chỉ kéo dọc để đổi góc nghiêng 35°–78° (chủ dự án chốt 16/11) */
-const WILD_PITCH = [0.61, 1.36], wildCam = () => typeof CB !== "undefined" && CB.on && !room && !maze;
+const WILD_PITCH = [0.52, 1.36], wildCam = () => typeof CB !== "undefined" && CB.on && !room && !maze;
 let wasWildCam = false;
 function wildCamTick(dt) {
   const on = wildCam();
@@ -1309,7 +1309,18 @@ function addCoins(n) { save.coins += n; saveNow(); renderHud(); }
 function useEnergy(n) { save.energy = Math.max(0, save.energy - n); saveNow(); renderHud(); }
 const isPoisoned = () => Date.now() < save.poisonUntil;
 const isProtected = () => Date.now() < save.protectUntil;
+/* Tiếng Việt trong thông báo là giàn giáo tạm: mỗi thông báo hiện kèm tiếng Việt 3 lần đầu, sau đó chỉ còn tiếng Anh
+   (người học nhớ câu tiếng Anh gắn với tình huống, không gắn với bản dịch). Thông báo quan trọng thêm "<!--vi-->" để luôn giữ tiếng Việt. */
+const VI_RE = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
+function fadeVi(html) {
+  if (html.indexOf("<!--vi-->") >= 0 || !VI_RE.test(html)) return html;
+  const en = html.replace(/ \/ [^<]*/g, m => VI_RE.test(m) ? "" : m).replace(/<div[^>]*>([^<]*)<\/div>/g, (m, t) => VI_RE.test(t) ? "" : m);
+  const key = en.replace(/[0-9]+/g, "#").slice(0, 80), seen = save.viSeen = save.viSeen || {};
+  if ((seen[key] = (seen[key] || 0) + 1) <= 3) return html;
+  return en.trim() ? en : html;
+}
 function flash(html) {   // thông báo nhanh giữa màn hình
+  html = fadeVi(html);
   $("toast").innerHTML = '<div style="font-size:16px;font-weight:700;max-width:260px">' + html + "</div>";
   $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
 }
@@ -1319,9 +1330,17 @@ function renderHud() {
   if (typeof evHudUpdate === "function") evHudUpdate();
 }
 /* TÚI ĐỒ 🎒 dạng ô (như trong game): mỗi loại đồ chiếm 1 ô, cùng loại thì cộng dồn. Túi đầy → cất bớt vào rương 🧰 ở nhà. */
-const BAG_SIZE = 20, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Nón", armor: "🛡️ Áo giáp", pants: "👖 Quần", shoes: "👟 Giày", gloves: "🧤 Găng tay", belt: "🎗️ Thắt lưng", cape: "🧣 Áo choàng", weapon: "📢 Vũ khí" };
+const BAG_SIZE = 30, BAG_KIND_SIZE = 15, CHEST_SIZE = 60, SLOT_NAMES = { hat: "🧢 Hat", armor: "🛡️ Armor", pants: "👖 Pants", shoes: "👟 Shoes", gloves: "🧤 Gloves", belt: "🎗️ Belt", cape: "🧣 Cape", weapon: "📢 Weapon" };
 const STAT_ICON = { voice: "🗣️ Voice", ears: "👂 Ears", stamina: "💪 Stamina", resist: "🛡️ Resist", luck: "🍀 Luck", hp: "❤️ HP", mana: "💧 Mana", hpRegen: "❤️ HP/s", mpRegen: "💧 MP regen", speed: "🏃 Speed" };
-function addItem(store, size, id, n) { if (!store[id] && Object.keys(store).length >= size) return false; store[id] = (store[id] || 0) + (n || 1); return true; }
+function bagKind(id) { const it = ITEMS[id]; return it && (it.slot || it.weapon) ? "gear" : "items"; }   // túi chia 2 loại: Gear (đồ mặc + vũ khí) và Items (còn lại), mỗi loại 15 ô
+function bagFullMsg(id) { return bagKind(id) === "gear" ? "🎒 Gear bag is full (15/15)" : "🎒 Item bag is full (15/15)"; }
+function addItem(store, size, id, n) {
+  if (!store[id]) {
+    if (store === save.items) { if (Object.keys(store).filter(k => bagKind(k) === bagKind(id)).length >= BAG_KIND_SIZE) return false; }
+    else if (Object.keys(store).length >= size) return false;
+  }
+  store[id] = (store[id] || 0) + (n || 1); return true;
+}
 function takeItem(store, id) { if (!store[id]) return false; if (--store[id] <= 0) delete store[id]; return true; }
 // gear() (tổng chỉ số 8 ô) nằm trong parts/ui/bag.js
 function statsText(st) { return Object.keys(st || {}).filter(k => st[k]).map(k => (STAT_ICON[k] || k).split(" ")[0] + " +" + st[k]).join("  ") || "–"; }
@@ -1360,15 +1379,15 @@ function wear(id) {   // mặc đồ: lấy từ túi, đồ cũ cùng ô quay v
   const it = ITEMS[id]; if (!it || !it.slot || !save.items[id]) return;
   if (playerLevel() < it.lv) { flash("🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv); return; }
   const sl = slotOf(it), prev = save.equip[sl];
-  if (prev && !save.items[prev] && save.items[id] > 1 && Object.keys(save.items).length >= BAG_SIZE) { flash("🎒 Bag is full! / Túi đầy!"); return; }
-  takeItem(save.items, id); save.equip[sl] = id;
-  if (prev) addItem(save.items, BAG_SIZE, prev);
+  takeItem(save.items, id);
+  if (prev && !addItem(save.items, BAG_SIZE, prev)) { addItem(save.items, BAG_SIZE, id); flash(bagFullMsg(prev)); return; }
+  save.equip[sl] = id;
   refreshLook(); charAct(player, "Cheer"); speak("You look great in the " + it.name + "!");
   bagSel = null; drawBag();
 }
 function takeOff(slot) {   // cởi một ô trang bị, trả về túi
   const id = save.equip[slot]; if (!id) return;
-  if (!addItem(save.items, BAG_SIZE, id)) { flash("🎒 Bag is full! / Túi đầy!"); return; }
+  if (!addItem(save.items, BAG_SIZE, id)) { flash(bagFullMsg(id)); return; }
   save.equip[slot] = null; refreshLook(); drawBag();
 }
 // drawBag / openBag / closeBag / chi tiết món: parts/ui/bag.js
@@ -2957,7 +2976,7 @@ function buy(id, voice, polite) {
   } else if (it.decor) {   // đồ nội thất: chuyển thẳng về nhà
     if (save.decor.length >= DECOR_SPOTS.length) { $("shopFb").textContent = "🏠 Your home is full! / Nhà đã đầy đồ."; return; }
     save.decor.push(id);
-  } else if (!addItem(save.items, BAG_SIZE, id)) { $("shopFb").textContent = "🎒 Bag is full! Store things in your chest at home. / Túi đầy, hãy cất bớt vào rương ở nhà."; $("shopFb").style.color = "var(--bad)"; speak("Your bag is full."); return; }
+  } else if (!addItem(save.items, BAG_SIZE, id)) { $("shopFb").textContent = bagFullMsg(id) + ". Store things in your chest at home."; $("shopFb").style.color = "var(--bad)"; speak("Your bag is full."); return; }
   save.coins -= cost;
   if (voice) score += polite ? 4 : 2;
   charAct(room.P.keeperMesh, "Interact");
@@ -2993,7 +3012,6 @@ function drawShop(first) {
 function sellPrice(id) { return Math.max(1, Math.floor(ITEMS[id].price * 0.4)); }
 function sellItem(id, polite) {
   const it = ITEMS[id], c = sellPrice(id) + (polite ? 1 : 0); takeItem(save.items, id); addCoins(c);
-  if (save.combat && save.combat.weapons) save.combat.weapons = save.combat.weapons.map(w => w === id && !save.items[id] ? null : w);
   $("shopFb").innerHTML = "💰 Sold " + it.icon + " " + it.name + " +" + c + " 🪙" + (polite ? " (polite +1)" : ""); $("shopFb").style.color = "var(--ok)";
   speak("Thank you! Here is " + c + " coins."); drawShop(false);
 }
