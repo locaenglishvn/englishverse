@@ -2679,5 +2679,29 @@ const LESSONS = [
         { t: "Blades the check first fan, unplug.",          ok: false, fb: "Word order: “Unplug the fan first, then check the blades.”" },
         { t: "Fan is my tall orange dinosaur.",              ok: false, fb: "Ha! A fan is not a dinosaur :) Try “Unplug the fan first…”" } ] }
   ]
+},
+{
+  name: "Captain Echo – Gate Guide", color: 0x7048e8, x: 4, z: 40,
+  steps: [
+    { say: "Hello, new friend! I am Captain Echo, the gate guide. Beyond our walls, the grey fog of The Mute is waiting. Do you want to go out there?",
+      card: { w: "Let’s go!", pic: "🚀", ex: "Let’s go! The wild is waiting." },
+      choices: [
+        { t: "Yes, let’s go!",    ok: true,  fb: "Brave! The wild lands are waiting. +10" },
+        { t: "No, I am scared.",  ok: false, fb: "Không sao, ai cũng hơi sợ lúc đầu. Thử nói “Yes, let’s go!” nhé." },
+        { t: "Yes, go let’s!",    ok: false, fb: "Gần đúng rồi! Thứ tự đúng là “Yes, let’s go!”." } ] },
+    { say: "Great courage! In the wild, English is your power. Are you ready?",
+      card: { w: "I can do it!", pic: "💪", ex: "I can do it! I am brave." },
+      q: { w: "Are you ready?", pic: "❓", ex: "Are you ready for the wild?" },
+      choices: [
+        { t: "Yes, I can do it!", ok: true,  fb: "Yes! You are strong. +10" },
+        { t: "Yesterday, I can.", ok: false, fb: "Câu này nói về hôm qua rồi. Thử “Yes, I can do it!” nhé." },
+        { t: "Ready I am do.",    ok: false, fb: "Gần đúng! Thứ tự đúng là “Yes, I can do it!”." } ] },
+    { say: "Oh no! The fog is coming fast. What do you say when you need help?",
+      card: { w: "Help me, please!", pic: "🆘", ex: "Help me, please! The fog is big." },
+      choices: [
+        { t: "Help me, please!", ok: true,  fb: "Perfect! Welcome to the wild lands. +10" },
+        { t: "I like the fog.",  ok: false, fb: "Sương mù không phải bạn đâu! Thử “Help me, please!” nhé." },
+        { t: "Please help, me.", ok: false, fb: "Gần đúng rồi! Thứ tự đúng là “Help me, please!”." } ] }
+  ]
 }
 ];
