@@ -4,24 +4,29 @@
 
 /* VẬT PHẨM
    price  = giá (xu 🪙)
-   energy = hồi bao nhiêu năng lượng ⚡ khi dùng
+   energy = hồi bao nhiêu máu ❤️ khi dùng (đồ ăn)
+   mana   = hồi bao nhiêu mana 💧 khi dùng (đồ uống)
    cure   = true: chữa trúng độc "Mute poison" ☠️
    protect = số giây miễn nhiễm độc sau khi dùng */
 const ITEMS = {
-  banhmi:     { name: "Banh mi",       icon: "🥖", price: 8,  energy: 30, desc: "A Vietnamese sandwich. +30 energy." },
-  donut:      { name: "Donut",         icon: "🍩", price: 5,  energy: 15, desc: "Sweet and soft. +15 energy." },
-  milk:       { name: "Milk",          icon: "🥛", price: 4,  energy: 10, desc: "A glass of fresh milk. +10 energy." },
-  icedcoffee: { name: "Iced coffee",   icon: "🧋", price: 6,  energy: 20, desc: "Cold and strong. +20 energy." },
+  banhmi:     { name: "Banh mi",       icon: "🥖", price: 8,  energy: 30, desc: "A Vietnamese sandwich. +30 HP ❤️." },
+  donut:      { name: "Donut",         icon: "🍩", price: 5,  energy: 15, desc: "Sweet and soft. +15 HP ❤️." },
+  milk:       { name: "Milk",          icon: "🥛", price: 4,  energy: 10, desc: "A glass of fresh milk. +10 HP ❤️." },
+  icedcoffee: { name: "Iced coffee",   icon: "🧋", price: 6,  energy: 20, desc: "Cold and strong. +20 HP ❤️." },
   syrup:      { name: "Throat syrup",  icon: "🧴", price: 12, cure: true, desc: "Cures Mute poison." },
   vaccine:    { name: "Voice vaccine", icon: "💉", price: 25, cure: true, protect: 300, desc: "Cures poison and protects you for 5 minutes." },
-  apple:      { name: "Apple",         icon: "🍎", price: 3,  energy: 8,  desc: "A red, crunchy apple. +8 energy." },
-  banana:     { name: "Banana",        icon: "🍌", price: 3,  energy: 8,  desc: "Yellow and sweet. +8 energy." },
-  water:      { name: "Water",         icon: "💧", price: 2,  energy: 5,  desc: "A bottle of water. +5 energy." },
-  riceball:   { name: "Rice ball",     icon: "🍙", price: 6,  energy: 20, desc: "Rice with a little salt. +20 energy." },
-  pho:        { name: "Pho",           icon: "🍜", price: 15, energy: 50, desc: "Hot beef noodle soup. +50 energy." },
-  springroll: { name: "Spring rolls",  icon: "🌯", price: 10, energy: 30, desc: "Fresh rolls with shrimp. +30 energy." },
-  lemontea:   { name: "Lemon tea",     icon: "🍹", price: 5,  energy: 12, desc: "Cold lemon tea. +12 energy." },
-  popcorn:    { name: "Popcorn",       icon: "🍿", price: 6,  energy: 15, desc: "Salty popcorn for the movie. +15 energy." },
+  apple:      { name: "Apple",         icon: "🍎", price: 3,  energy: 8,  desc: "A red, crunchy apple. +8 HP ❤️." },
+  banana:     { name: "Banana",        icon: "🍌", price: 3,  energy: 8,  desc: "Yellow and sweet. +8 HP ❤️." },
+  water:      { name: "Water",         icon: "💧", price: 2,  energy: 5,  desc: "A bottle of water. +5 HP ❤️." },
+  riceball:   { name: "Rice ball",     icon: "🍙", price: 6,  energy: 20, desc: "Rice with a little salt. +20 HP ❤️." },
+  pho:        { name: "Pho",           icon: "🍜", price: 15, energy: 50, desc: "Hot beef noodle soup. +50 HP ❤️." },
+  springroll: { name: "Spring rolls",  icon: "🌯", price: 10, energy: 30, desc: "Fresh rolls with shrimp. +30 HP ❤️." },
+  lemontea:   { name: "Lemon tea",     icon: "🍹", price: 5,  energy: 12, desc: "Cold lemon tea. +12 HP ❤️." },
+  popcorn:    { name: "Popcorn",       icon: "🍿", price: 6,  energy: 15, desc: "Salty popcorn for the movie. +15 HP ❤️." },
+  // 🥤 Đồ uống hồi mana (Shop 24h)
+  lemon_tea:  { name: "Lemon tea",     icon: "🍋", price: 5,  mana: 30, desc: "Fresh and cool. +30 mana 💧." },
+  coconut:    { name: "Coconut water", icon: "🥥", price: 8,  mana: 50, desc: "Fresh and cool. +50 mana 💧." },
+  sugarcane:  { name: "Sugarcane juice", icon: "🧃", price: 12, mana: 80, desc: "Fresh and cool. +80 mana 💧." },
   // 💇 Dịch vụ cắt tóc (Saigon Barber): đổi khuôn mặt + kiểu tóc ngay, không vào túi
   hair_Rogue:     { name: "Long hair",   icon: "👩", price: 12, head: "Rogue",     desc: "Long red hair (Alex style)." },
   hair_Knight:    { name: "Short hair",  icon: "👱", price: 12, head: "Knight",    desc: "Short blond hair (Sam style)." },
@@ -39,11 +44,12 @@ const ITEMS = {
 };
 
 /* TRANG PHỤC (mặc vào nhân vật, bán ở Clothes Shop)
-   slot   = ô trang bị: hat (🧢 mũ), top (👕 áo), legs (👟 quần + giày), cape (🎒 phụ kiện: áo choàng)
+   slot   = ô trang bị: hat (🧢 nón), armor (🛡️ áo giáp/áo), pants (👖 quần), shoes (👟 giày), gloves (🧤 găng tay), belt (🎗️ thắt lưng), cape (🧣 áo choàng)
    model  = lấy bộ phận từ nhân vật nào: Rogue, Knight, Mage, Barbarian (hat thì thêm part = tên mũ; hood = mũ trùm thay cả đầu)
    plain  = true: bản vải trơn (đen trắng) để nhuộm màu bằng tint; tint = màu nhuộm (0xRRGGBB)
    rarity = common | uncommon | rare | epic | legendary;  lv = cấp cần có để mặc
-   stats  = voice (sát thương), ears (thêm giây trả lời), stamina (tốn ít năng lượng, hồi nhanh), resist (khó trúng độc), luck (thêm xu)
+   stats  = voice (sát thương), ears (thêm giây trả lời), stamina (tốn ít năng lượng, hồi nhanh), resist (khó trúng độc), luck (thêm xu),
+            hp (máu tối đa +), mana (mana tối đa +), hpRegen (hồi máu mỗi giây), mpRegen (% hồi mana nhanh hơn), speed (% chạy nhanh hơn)
    Legendary KHÔNG bán: chỉ nhận được bằng thành tích tiếng Anh (xem LEGENDS bên dưới). */
 const RARITY = {
   common:    { name: "Common",    color: "#adb5bd" },
@@ -54,22 +60,22 @@ const RARITY = {
 };
 Object.assign(ITEMS, {
   // 👕 Áo
-  tee_white:   { name: "White T-shirt",   icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0xffffff, rarity: "common", lv: 1, price: 15, stats: {}, desc: "A simple white T-shirt." },
-  tee_red:     { name: "Red T-shirt",     icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0xff8787, rarity: "common", lv: 1, price: 20, stats: { stamina: 2 }, desc: "A bright red T-shirt." },
-  tee_blue:    { name: "Blue T-shirt",    icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0x74c0fc, rarity: "common", lv: 1, price: 20, stats: { ears: 1 }, desc: "A cool blue T-shirt." },
-  tee_yellow:  { name: "Yellow T-shirt",  icon: "👕", slot: "top", model: "Rogue", plain: true, tint: 0xffe066, rarity: "common", lv: 1, price: 25, stats: { luck: 2 }, desc: "A sunny yellow T-shirt." },
-  jacket:      { name: "Explorer Jacket", icon: "🧥", slot: "top", model: "Rogue", rarity: "uncommon", lv: 3, price: 90, stats: { stamina: 5, luck: 3 }, desc: "A jacket with many pockets." },
-  vest:        { name: "Viking Vest",     icon: "🦺", slot: "top", model: "Barbarian", rarity: "uncommon", lv: 3, price: 80, stats: { stamina: 8 }, desc: "Warm and strong." },
-  robe:        { name: "Wizard Robe",     icon: "🥻", slot: "top", model: "Mage", rarity: "rare", lv: 5, price: 280, stats: { voice: 10, ears: 2 }, desc: "Your words sound more powerful." },
-  armor:       { name: "Knight Armor",    icon: "🛡️", slot: "top", model: "Knight", rarity: "rare", lv: 5, price: 340, stats: { resist: 20 }, desc: "The Mute can’t poison you easily." },
-  royal:       { name: "Royal Armor",     icon: "👑", slot: "top", model: "Knight", tint: 0xd0b8ff, rarity: "epic", lv: 10, price: 900, stats: { voice: 15, resist: 25 }, desc: "Shiny purple armor for heroes." },
+  tee_white:   { name: "White T-shirt",   icon: "👕", slot: "armor", model: "Rogue", plain: true, tint: 0xffffff, rarity: "common", lv: 1, price: 15, stats: {}, desc: "A simple white T-shirt." },
+  tee_red:     { name: "Red T-shirt",     icon: "👕", slot: "armor", model: "Rogue", plain: true, tint: 0xff8787, rarity: "common", lv: 1, price: 20, stats: { stamina: 2 }, desc: "A bright red T-shirt." },
+  tee_blue:    { name: "Blue T-shirt",    icon: "👕", slot: "armor", model: "Rogue", plain: true, tint: 0x74c0fc, rarity: "common", lv: 1, price: 20, stats: { ears: 1 }, desc: "A cool blue T-shirt." },
+  tee_yellow:  { name: "Yellow T-shirt",  icon: "👕", slot: "armor", model: "Rogue", plain: true, tint: 0xffe066, rarity: "common", lv: 1, price: 25, stats: { luck: 2 }, desc: "A sunny yellow T-shirt." },
+  jacket:      { name: "Explorer Jacket", icon: "🧥", slot: "armor", model: "Rogue", rarity: "uncommon", lv: 3, price: 90, stats: { stamina: 5, luck: 3 }, desc: "A jacket with many pockets." },
+  vest:        { name: "Viking Vest",     icon: "🦺", slot: "armor", model: "Barbarian", rarity: "uncommon", lv: 3, price: 80, stats: { stamina: 8 }, desc: "Warm and strong." },
+  robe:        { name: "Wizard Robe",     icon: "🥻", slot: "armor", model: "Mage", rarity: "rare", lv: 5, price: 280, stats: { voice: 10, ears: 2 }, desc: "Your words sound more powerful." },
+  armor:       { name: "Knight Armor",    icon: "🛡️", slot: "armor", model: "Knight", rarity: "rare", lv: 5, price: 340, stats: { resist: 20 }, desc: "The Mute can’t poison you easily." },
+  royal:       { name: "Royal Armor",     icon: "👑", slot: "armor", model: "Knight", tint: 0xd0b8ff, rarity: "epic", lv: 10, price: 900, stats: { voice: 15, resist: 25 }, desc: "Shiny purple armor for heroes." },
   // 👟 Quần + giày
-  pants_plain: { name: "Grey Pants",      icon: "👖", slot: "legs", model: "Rogue", plain: true, tint: 0xb0bccb, rarity: "common", lv: 1, price: 15, stats: {}, desc: "Simple grey pants and shoes." },
-  jeans:       { name: "Blue Jeans",      icon: "👖", slot: "legs", model: "Rogue", plain: true, tint: 0x74a9e8, rarity: "common", lv: 1, price: 20, stats: { stamina: 1 }, desc: "Everyone loves jeans." },
-  boots_exp:   { name: "Explorer Boots",  icon: "🥾", slot: "legs", model: "Rogue", rarity: "uncommon", lv: 3, price: 60, stats: { stamina: 4 }, desc: "Good for long walks." },
-  boots_vik:   { name: "Viking Boots",    icon: "👢", slot: "legs", model: "Barbarian", rarity: "uncommon", lv: 3, price: 70, stats: { stamina: 5, resist: 3 }, desc: "Fur boots for cold days." },
-  boots_wiz:   { name: "Wizard Boots",    icon: "👞", slot: "legs", model: "Mage", rarity: "rare", lv: 5, price: 220, stats: { ears: 2, luck: 3 }, desc: "Quiet boots. You hear better." },
-  boots_kn:    { name: "Knight Boots",    icon: "🦿", slot: "legs", model: "Knight", rarity: "rare", lv: 5, price: 250, stats: { resist: 10 }, desc: "Heavy metal boots." },
+  pants_plain: { name: "Grey Pants",      icon: "👖", slot: "pants", model: "Rogue", plain: true, tint: 0xb0bccb, rarity: "common", lv: 1, price: 15, stats: {}, desc: "Simple grey pants and shoes." },
+  jeans:       { name: "Blue Jeans",      icon: "👖", slot: "pants", model: "Rogue", plain: true, tint: 0x74a9e8, rarity: "common", lv: 1, price: 20, stats: { stamina: 1 }, desc: "Everyone loves jeans." },
+  boots_exp:   { name: "Explorer Boots",  icon: "🥾", slot: "pants", model: "Rogue", rarity: "uncommon", lv: 3, price: 60, stats: { stamina: 4 }, desc: "Good for long walks." },
+  boots_vik:   { name: "Viking Boots",    icon: "👢", slot: "pants", model: "Barbarian", rarity: "uncommon", lv: 3, price: 70, stats: { stamina: 5, resist: 3 }, desc: "Fur boots for cold days." },
+  boots_wiz:   { name: "Wizard Boots",    icon: "👞", slot: "pants", model: "Mage", rarity: "rare", lv: 5, price: 220, stats: { ears: 2, luck: 3 }, desc: "Quiet boots. You hear better." },
+  boots_kn:    { name: "Knight Boots",    icon: "🦿", slot: "pants", model: "Knight", rarity: "rare", lv: 5, price: 250, stats: { resist: 10 }, desc: "Heavy metal boots." },
   // 🧢 Mũ
   straw_hat:   { name: "Straw Hat",       icon: "👒", slot: "hat", model: "Barbarian", part: "Barbarian_Hat", tint: 0xffe8a3, rarity: "common", lv: 1, price: 25, stats: { luck: 2 }, desc: "A sunny summer hat." },
   viking_hat:  { name: "Viking Hat",      icon: "🪖", slot: "hat", model: "Barbarian", part: "Barbarian_Hat", rarity: "uncommon", lv: 3, price: 80, stats: { resist: 5 }, desc: "A hat with horns!" },
@@ -82,7 +88,29 @@ Object.assign(ITEMS, {
   cape_vik:    { name: "Viking Cape",     icon: "🧣", slot: "cape", model: "Barbarian", rarity: "uncommon", lv: 3, price: 80, stats: { stamina: 5 }, desc: "A warm fur cape." },
   cape_wiz:    { name: "Wizard Cape",     icon: "🧣", slot: "cape", model: "Mage", rarity: "rare", lv: 5, price: 240, stats: { voice: 8 }, desc: "A long magic cape." },
   cape_kn:     { name: "Knight Cape",     icon: "🧣", slot: "cape", model: "Knight", rarity: "rare", lv: 5, price: 260, stats: { resist: 8 }, desc: "A red cape for brave knights." },
-  cape_star:   { name: "Star Cape",       icon: "🌟", slot: "cape", model: "Mage", tint: 0xffe066, rarity: "epic", lv: 10, price: 850, stats: { voice: 12, luck: 12 }, desc: "It shines like the stars." }
+  cape_star:   { name: "Star Cape",       icon: "🌟", slot: "cape", model: "Mage", tint: 0xffe066, rarity: "epic", lv: 10, price: 850, stats: { voice: 12, luck: 12 }, desc: "It shines like the stars." },
+  // 👟 Giày (không có model, chỉ có màu tint)
+  shoes_run:    { name: "Running Shoes",   icon: "👟", slot: "shoes", tint: 0xa5d8ff, rarity: "common", lv: 1, price: 20, stats: { speed: 3 }, desc: "Light shoes for quick steps." },
+  shoes_hike:   { name: "Hiking Shoes",    icon: "👟", slot: "shoes", tint: 0x8ce99a, rarity: "uncommon", lv: 3, price: 75, stats: { speed: 6 }, desc: "Strong shoes for long trails." },
+  shoes_jet:    { name: "Jet Shoes",       icon: "👟", slot: "shoes", tint: 0x4dabf7, rarity: "rare", lv: 5, price: 250, stats: { speed: 10, hp: 10 }, desc: "Fast and comfy. Your heart is strong." },
+  shoes_rocket: { name: "Rocket Shoes",    icon: "👟", slot: "shoes", tint: 0xffa94d, rarity: "epic", lv: 10, price: 900, stats: { speed: 15, hp: 20 }, desc: "Fly across the wild lands!" },
+  // 🧤 Găng tay (không có model, chỉ có màu tint)
+  gloves_cloth:   { name: "Cloth Gloves",    icon: "🧤", slot: "gloves", tint: 0xdee2e6, rarity: "common", lv: 1, price: 18, stats: { voice: 3 }, desc: "Soft gloves for little hands." },
+  gloves_leather: { name: "Leather Gloves",  icon: "🧤", slot: "gloves", tint: 0x9c6b3c, rarity: "uncommon", lv: 3, price: 80, stats: { voice: 6 }, desc: "Strong gloves for brave speakers." },
+  gloves_steel:   { name: "Steel Gloves",    icon: "🧤", slot: "gloves", tint: 0x868e96, rarity: "rare", lv: 5, price: 280, stats: { voice: 10 }, desc: "Shiny gloves. Your words hit hard." },
+  gloves_power:   { name: "Power Gloves",    icon: "🧤", slot: "gloves", tint: 0x9775fa, rarity: "epic", lv: 10, price: 950, stats: { voice: 15, luck: 5 }, desc: "Glowing gloves full of luck." },
+  // 🎗️ Thắt lưng (không có model, chỉ có màu tint)
+  belt_cloth:   { name: "Cloth Belt",      icon: "🎗️", slot: "belt", tint: 0xe9ecef, rarity: "common", lv: 1, price: 22, stats: { mana: 5 }, desc: "A simple belt with a small pouch." },
+  belt_leather: { name: "Leather Belt",    icon: "🎗️", slot: "belt", tint: 0x8d5a2b, rarity: "uncommon", lv: 3, price: 90, stats: { mana: 10, mpRegen: 10 }, desc: "Holds more mana and refills it faster." },
+  belt_silver:  { name: "Silver Belt",     icon: "🎗️", slot: "belt", tint: 0xc0c0c0, rarity: "rare", lv: 5, price: 300, stats: { mana: 15, mpRegen: 20 }, desc: "A shiny belt full of magic." },
+  belt_magic:   { name: "Magic Belt",      icon: "🎗️", slot: "belt", tint: 0x3bc9db, rarity: "epic", lv: 10, price: 1000, stats: { mana: 25, mpRegen: 30 }, desc: "Mana flows through it like a river." },
+  // 🧢 Nón thêm (dùng lại mô hình nón có sẵn)
+  ear_hat:  { name: "Big Ear Hat",   icon: "🧢", slot: "hat", model: "Barbarian", part: "Barbarian_Hat", tint: 0x74c0fc, rarity: "uncommon", lv: 3, price: 85, stats: { ears: 2 }, desc: "A cap with big listening ears." },
+  ear_helm: { name: "Listening Helm", icon: "⛑️", slot: "hat", model: "Knight", part: "Knight_Helmet", tint: 0xffa94d, rarity: "rare", lv: 5, price: 300, stats: { ears: 3, resist: 10 }, desc: "A helmet that hears every word." },
+  // 🧣 Áo choàng hồi máu (dùng lại mô hình áo choàng có sẵn, khác màu)
+  cape_mend: { name: "Mending Cape",  icon: "🧣", slot: "cape", model: "Rogue", tint: 0x69db7c, rarity: "uncommon", lv: 3, price: 85, stats: { hpRegen: 0.2 }, desc: "A green cape that slowly heals you." },
+  cape_aid:  { name: "Healer Cape",   icon: "🧣", slot: "cape", model: "Knight", tint: 0x51cf66, rarity: "rare", lv: 5, price: 320, stats: { hpRegen: 0.4, luck: 5 }, desc: "Warm healing cape for brave friends." },
+  cape_life: { name: "Life Cape",     icon: "🧣", slot: "cape", model: "Mage", tint: 0xf783ac, rarity: "epic", lv: 10, price: 880, stats: { hpRegen: 0.7, hp: 20 }, desc: "Heals you as you walk and talk." }
 });
 
 /* ĐỒ HUYỀN THOẠI: chỉ nhận bằng thành tích tiếng Anh (không mua được)
@@ -92,7 +120,7 @@ const LEGENDS = [
 ];
 
 /* Quà cho người chơi mới: chỉ có áo thun trắng + quần xám. Muốn đẹp hơn thì đi mua! */
-const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { top: "tee_white", legs: "pants_plain", hat: null, cape: null } };
+const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { armor: "tee_white", pants: "pants_plain", hat: null, cape: null } };
 
 /* ĐỊA ĐIỂM TRONG THÀNH PHỐ (nhà có mái, đi vào được)
    x, z   = vị trí giữa tòa nhà trên bản đồ;  w, d = rộng, sâu (mét)
@@ -114,7 +142,7 @@ const CITY = [
   { id: "clothes", name: "Clothes Shop", type: "clothes", x: 80, z: -10, w: 10, d: 10, door: "south", exterior: "clothes", layout: "clothesshop", size: { w: 32, d: 36, h: 6 },
     color: 0xfff0f6, roof: 0x9c36b5, awning: 0xe64980, floor: 0xf1e3d3, wall: 0xfff5f9,
     keeper: { name: "Kim – Designer", color: 0xe64980, greet: "Hi! Welcome to the Clothes Shop. Do you like hats, T-shirts or capes?", hint: "Can I have the red T-shirt, please?" },
-    sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star"] },
+    sells: ["tee_red", "tee_blue", "tee_yellow", "jeans", "straw_hat", "jacket", "vest", "boots_exp", "boots_vik", "viking_hat", "hood", "cape_exp", "cape_vik", "robe", "armor", "boots_wiz", "boots_kn", "wizard_hat", "helmet", "cape_wiz", "cape_kn", "royal", "cape_star", "shoes_run", "shoes_hike", "shoes_jet", "shoes_rocket", "gloves_cloth", "gloves_leather", "gloves_steel", "gloves_power", "belt_cloth", "belt_leather", "belt_silver", "belt_magic", "ear_hat", "ear_helm", "cape_mend", "cape_aid", "cape_life"] },
   { id: "townhall", name: "Town Hall", type: "townhall", x: 0, z: -44, w: 32, d: 13, door: "south", exterior: "townhall", layout: "cityhall", size: { w: 32, d: 40, h: 10 },
     color: 0xf1f3f5, roof: 0x495057, awning: 0x1c7ed6, floor: 0xc9a27e, wall: 0xf8f0e3,
     keeper: { name: "Mr. Lee – Mayor", color: 0x343a40, greet: "Welcome to Town Hall! The quest board will open soon.", hint: "I'd like to take a quest." },
@@ -159,7 +187,7 @@ const CITY = [
   { id: "supermarket", name: "Shop 24h", type: "convenience store", x: 134, z: -11, w: 12, d: 12, door: "south", exterior: "shop24", layout: "martshop", size: { w: 20, d: 48, h: 8 },
     color: 0xebfbee, roof: 0x2f9e44, awning: 0x40c057, floor: 0xf1f3f5, wall: 0xf8f9fa, goods: ["🍎", "🍌", "🥛", "🍙", "💧", "🥕"],
     keeper: { name: "Nam – Cashier", color: 0x40c057, greet: "Hi! Shop 24h is open all day and all night. Can I help you?", hint: "Can I have an apple and some water, please?" },
-    sells: ["apple", "banana", "water", "riceball", "milk"] },
+    sells: ["apple", "banana", "water", "riceball", "milk", "lemon_tea", "coconut", "sugarcane"] },
   { id: "workshop", name: "Fix-It Workshop", type: "workshop", x: 75, z: -86, w: 10, d: 10, door: "north", model: "building_B", layout: "lab",
     color: 0xf1f3f5, roof: 0x495057, awning: 0xfab005, floor: 0xadb5bd, wall: 0xe9ecef, goods: ["🔧", "🔨", "🪛", "🚲", "⚙️", "🪚"], keeper: null, sells: [] },
   { id: "police", name: "Police Station", type: "police station", x: -62, z: 12, w: 16, d: 12, door: "north", exterior: "police", layout: "policehall", size: { w: 24, d: 30, h: 5 },
