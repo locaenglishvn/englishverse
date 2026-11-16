@@ -95,6 +95,8 @@ KHÔNG ĐƯỢC: sửa index.html (trừ khi đề bài cho phép), đổi dữ 
 - Tấm tường trên cửa giữa 2 khu thò sang mái khu bên cạnh → lùi tấm đó vào trong khu mình.
 - Chạy 2 Writer song song → dễ trùng tên NPC và trùng từ vựng giữa 2 phần (QA chỉ bắt được trùng từ sau khi ghép). CTO: ghép xong chạy `--data`, rà tên; đề bài nên chia sẵn chữ cái đầu tên / nhóm từ cho mỗi Writer.
 - Agent tạo worktree từ `main`, không phải nhánh làm việc → đề bài phải có BƯỚC 0: `git merge --ff-only <nhánh làm việc>`.
+- Nhiều agent chạy thử cùng lúc tranh cổng 8765 → mỗi đề bài ghi một cổng riêng cho `python3 -m http.server`.
+- Giao diện mới: dùng lớp `.ev-*` trong `parts/ui/theme.js`, không tự chế màu / nút riêng.
 - Nhãn tên NPC xuyên tường: nơi nhiều khu dùng `P.zones` để chỉ hiện tên trong khu đang đứng.
 
 ## 8. Backup & khôi phục
