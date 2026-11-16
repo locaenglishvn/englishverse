@@ -108,15 +108,15 @@ function registerWeapons() {
   Object.keys(W_LINES).forEach((line, li) => W_LINES[line].names.forEach((nm, t) => {
     const T = W_TIER[t], id = "w_" + line + (t + 1), reso = RESO[(li + t) % 4];
     ITEMS[id] = { name: nm, icon: W_LINES[line].icon, price: Math.round(20 * Math.pow(1.9, t)), rarity: T.r, lv: T.lv, weapon: { line, tier: t + 1, pct: T.pct, reso },
-      desc: "Bậc " + (t + 1) + " · +" + T.pct + "% " + BRANCH[line].name + " · 🎵 " + TASK_ICON[reso] + " " + reso + " +30%" };
+      desc: "Tier " + (t + 1) + " · +" + T.pct + "% " + BRANCH[line].name + " · 🎵 " + TASK_ICON[reso] + " " + reso + " +30%" };
   }));
   [["Starlight Baton", 40, 25], ["Aurora Baton", 70, 45], ["Baton of the First Voice", 90, 65]].forEach(([nm, lv, pct], i) =>
-    ITEMS["w_maestro" + (i + 1)] = { name: nm, icon: "🪄", price: 0, rarity: "legendary", lv, weapon: { line: "all", tier: i + 1, pct, reso: null, maestro: true }, desc: "✨ Maestro · +" + pct + "% cả 4 nhánh · chỉ có từ trùm, nhiệm vụ, đấu trường" });
+    ITEMS["w_maestro" + (i + 1)] = { name: nm, icon: "🪄", price: 0, rarity: "legendary", lv, weapon: { line: "all", tier: i + 1, pct, reso: null, maestro: true }, desc: "✨ Maestro · +" + pct + "% all 4 branches · only from bosses, quests and the Arena" });
 }
 function curWeapon() { const id = save.combat.weapons[0]; return id && ITEMS[id] ? ITEMS[id] : null; }
 function equipWeapon(id) {
   const it = ITEMS[id]; if (!it || !it.weapon) return;
-  if (playerLevel() < it.lv) { flash("🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv); return; }
+  if (playerLevel() < it.lv) { flash("🔒 Need Lv." + it.lv); return; }
   const C = save.combat, prev = C.weapons[0];   // chỉ 1 vũ khí đang cầm = weapons[0]; lấy từ túi, vũ khí cũ trả về túi (như trang phục)
   if (!takeItem(save.items, id)) return;
   if (prev && !addItem(save.items, BAG_SIZE, prev)) { addItem(save.items, BAG_SIZE, id); flash(bagFullMsg(prev)); return; }
