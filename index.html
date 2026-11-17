@@ -251,6 +251,7 @@ button{font:inherit;cursor:pointer}
 <script src="lessons.js"></script>
 <script src="places.js"></script>
 <script src="parts/ui/theme.js"></script>
+<script src="parts/ui/invite.js"></script>
 <script src="parts/ui/hud.js"></script>
 <script src="parts/ui/bag.js"></script>
 <script src="parts/registry.js"></script>
@@ -451,9 +452,9 @@ function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật
 }
 function lookParts(look) {   // danh sách bộ phận cần ghép: { file, mesh, tint, plain }
   const it = id => (typeof ITEMS !== "undefined" && ITEMS[id] && ITEMS[id].slot) ? ITEMS[id] : null;
-  const top = it(look.top) || ITEMS.tee_white, legs = it(look.legs) || ITEMS.pants_plain, hat = it(look.hat), cape = it(look.cape);
+  const top = it(look.top) || ITEMS.tee_basic || ITEMS.tee_white, legs = it(look.legs) || ITEMS.shorts_basic || ITEMS.pants_plain, hat = it(look.hat), cape = it(look.cape);
   const head = FACES[look.head] ? look.head : "Rogue", parts = [];
-  const add = (I, names) => names.forEach(n => parts.push({ file: I.model, mesh: I.model.replace("_Hooded", "") + "_" + n, tint: I.tint, plain: I.plain }));
+  const add = (I, names) => names.forEach(n => parts.push({ file: I.model, mesh: I.model.replace("_Hooded", "") + "_" + n, tint: I.tint, plain: I.plain, flat: I.flat, cut: I.shorts && /Leg/.test(n) ? "legs" : I.sleeves && /Arm/.test(n) ? "arms" : null }));
   if (hat && hat.hood) parts.push({ file: "Rogue_Hooded", mesh: "Rogue_Head_Hooded", tint: hat.tint });   // mũ trùm thay cả đầu
   else parts.push({ file: head, mesh: head + "_Head" });
   add(top, ["Body", "ArmLeft", "ArmRight"]); add(legs, ["LegLeft", "LegRight"]);
@@ -462,24 +463,40 @@ function lookParts(look) {   // danh sách bộ phận cần ghép: { file, mesh
   return parts;
 }
 const matCache = {}, grayCache = {};
-function grayMap(t) {   // bản đen trắng của vải (giữ màu da) → nhuộm màu tùy ý cho áo trơn
-  if (grayCache[t.uuid]) return grayCache[t.uuid];
+function grayMap(t, flat) {   // bản đen trắng của vải (giữ màu da) → nhuộm màu tùy ý cho áo trơn
+  const gk = t.uuid + (flat ? "f" : ""); if (grayCache[gk]) return grayCache[gk];
   const img = t.image, c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
   const x = c.getContext("2d"); x.drawImage(img, 0, 0);
   const d = x.getImageData(0, 0, c.width, c.height), a = d.data;
   for (let i = 0; i < a.length; i += 4) {
     const r = a[i], g = a[i + 1], b = a[i + 2];
-    if (r > 175 && r > g + 15 && g > b + 5 && r - b > 40 && r - b < 130) continue;   // màu da: giữ nguyên
-    const v = 170 + (0.3 * r + 0.59 * g + 0.11 * b) * 0.33; a[i] = a[i + 1] = a[i + 2] = v;
+    if (flat ? (r > 225 && g > 175 && b > 140 && r - b > 55 && r - b < 100) : (r > 175 && r > g + 15 && g > b + 5 && r - b > 40 && r - b < 130)) continue;   // màu da: giữ nguyên (flat: ngưỡng chặt để đai / dây da nâu không lọt)
+    // flat = vải trơn 1 màu (bỏ chi tiết giáp / thắt lưng)
+    const v = flat ? 255 : 170 + (0.3 * r + 0.59 * g + 0.11 * b) * 0.33; a[i] = a[i + 1] = a[i + 2] = v;
   }
   x.putImageData(d, 0, 0);
   const n = new THREE.CanvasTexture(c); n.flipY = t.flipY; n.encoding = t.encoding; n.wrapS = t.wrapS; n.wrapT = t.wrapT; n.magFilter = t.magFilter;
-  return grayCache[t.uuid] = n;
+  return grayCache[gk] = n;
 }
-function partMat(src, tint, plain) {
+const SKIN_SHORTS = new THREE.Color(0xf1c8a0);
+function partMat(src, tint, plain, flat, cut) {
   if (tint == null && !plain) return src.material;
-  const key = src.material.uuid + "|" + tint + "|" + !!plain;
-  if (!matCache[key]) { const m = src.material.clone(); if (plain && m.map) try { m.map = grayMap(m.map); } catch (e) {} if (tint != null) m.color = new THREE.Color(tint); matCache[key] = m; }
+  const key = src.material.uuid + "|" + tint + "|" + !!plain + "|" + !!flat + "|" + (cut || "");
+  if (!matCache[key]) {
+    const m = src.material.clone(); if (plain && m.map) try { m.map = grayMap(m.map, flat); } catch (e) {} if (tint != null) m.color = new THREE.Color(tint);
+    if (cut && src.geometry) {   // quần đùi / áo cộc tay: đổi màu theo vị trí đỉnh (trước khi gắn xương). legs: nửa dưới (y thấp) = da; arms: nửa ngoài (|x| lớn, tay dang ngang) = da
+      src.geometry.computeBoundingBox(); const bb = src.geometry.boundingBox, A = cut === "legs" ? "y" : "x";
+      const lo = cut === "legs" ? bb.min.y : Math.min(Math.abs(bb.min.x), Math.abs(bb.max.x)), hi = cut === "legs" ? bb.max.y : Math.max(Math.abs(bb.min.x), Math.abs(bb.max.x)), c0 = cut === "legs" ? lo + (hi - lo) * 0.5 : lo + (hi - lo) * 0.38;
+      const test = cut === "legs" ? "vLY < uCut" : "vLY > uCut";
+      m.map = null; m.onBeforeCompile = sh => {
+        sh.uniforms.uCut = { value: c0 }; sh.uniforms.uSkin = { value: SKIN_SHORTS };
+        sh.vertexShader = "varying float vLY;\n" + sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvLY = " + (cut === "legs" ? "position.y" : "abs(position.x)") + ";");
+        sh.fragmentShader = "varying float vLY; uniform float uCut; uniform vec3 uSkin;\n" + sh.fragmentShader.replace("#include <color_fragment>", "#include <color_fragment>\nif (" + test + ") diffuseColor.rgb = uSkin;");
+      };
+      m.customProgramCacheKey = () => cut + c0.toFixed(3);
+    }
+    matCache[key] = m;
+  }
   return matCache[key];
 }
 function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương của Rogue
@@ -490,7 +507,7 @@ function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương
   lookParts(look).forEach(P => {
     const T = modelTpl[P.file]; if (!T) return;
     const src = T.scene.getObjectByName(P.mesh); if (!src) return;
-    const c = src.clone(); c.material = partMat(src, P.tint, P.plain);
+    const c = src.clone(); c.material = partMat(src, P.tint, P.plain, P.flat, P.cut);
     if (src.isSkinnedMesh) {   // gắn vào bộ xương mới theo tên xương
       const bones = src.skeleton.bones.map(b => root.getObjectByName(b.name));
       if (bones.some(b => !b)) return;
@@ -742,6 +759,8 @@ $("talk").onclick = () => {
     $("mic").style.display = "none"; $("heard").textContent = ""; $("next").textContent = "Close ✕"; $("next").style.display = "inline-block";
     $("talk").style.display = "none"; $("dlg").style.display = "block"; speak($("say").textContent); return;
   }
+  { const full = [["p", "card"], ["q", "q"]].filter(([t, f]) => NPC.steps.some(st => st[f] && !hasCard(t + ":" + st[f].w)) && ownedOf(t) >= cardCap(t));   // báo TRƯỚC khi nói chuyện
+    if (full.length) setTimeout(() => flash("📕 " + full.map(([t]) => CARD_TYPES[t].icon + " " + CARD_TYPES[t].name + " " + ownedOf(t) + "/" + cardCap(t)).join(" · ") + " – full!<div style='font-size:13px;font-weight:400'>You can talk, but no new cards now. Level up first! / Thẻ đã đầy: vẫn nói chuyện được nhưng chưa nhận thẻ mới, lên cấp trước nhé.</div>", 5000), 400); }
   if (NPC.mesh) charAct(NPC.mesh, "Interact");
   $("next").textContent = "Next ▶";
   $("talk").style.display = "none";
@@ -804,9 +823,13 @@ holdMic($("mic"), t => $("heard").textContent = "🎙️ " + t, (alts, conf, err
    Mỗi thẻ có 0–3 ⭐ "độ thuộc": tăng khi nói đúng câu của thẻ lúc đánh quái hoặc gặp lại NPC.
    Hạn mức theo cấp (CARD_CAP): học tới hạn mức thì phải ra luyện (đánh quái) để lên cấp mới mở thêm. */
 const CARD_TYPES = { p: { icon: "💬", name: "Phrases", vi: "Câu nói" }, q: { icon: "❓", name: "Questions", vi: "Câu hỏi" }, v: { icon: "📦", name: "Vocab", vi: "Từ vựng" } };
-function cardCap(type, lv) {   // cấp 1–5: 6 câu nói, 2 câu hỏi, 10 từ vựng; từ cấp 6 mỗi cấp thêm 3 / 1 / 5
-  const L = Math.max(0, (lv || playerLevel()) - 5);
-  return { p: 6 + 3 * L, q: 2 + L, v: 10 + 5 * L }[type];
+/* Hạn mức thẻ theo cấp – TĂNG DẦN theo thời gian chơi mỗi cấp (chủ dự án 17/11): mỗi cấp thêm (a + b × số giờ của cấp đó).
+   Cấp đầu nhanh → thêm ít thẻ; cấp sau lâu → thêm nhiều thẻ. Lv.1: 6 / 2 / 10 · Lv.20: 31 / 12 / 61 · Lv.50: ~107 / 43 / 220 · Lv.100: ~338 / 142 / 711. */
+const CAP_BASE = { p: 6, q: 2, v: 10 }, CAP_ADD = { p: [1, 0.65], q: [0.4, 0.28], v: [2, 1.4] }, CAP_TABLE = { p: [], q: [], v: [] };
+function cardCap(type, lv) {
+  const L = Math.max(1, Math.min(100, lv || playerLevel())), T = CAP_TABLE[type];
+  if (!T.length) { const hr = typeof hoursForLevel === "function" ? hoursForLevel : (() => 0.5); let acc = 0; T[1] = CAP_BASE[type]; for (let k = 1; k < 100; k++) { acc += CAP_ADD[type][0] + CAP_ADD[type][1] * hr(k); T[k + 1] = CAP_BASE[type] + Math.floor(acc); } }
+  return T[L];
 }
 let owned = [];
 try { owned = JSON.parse(localStorage.getItem("ev_cards") || "[]"); } catch (e) {}
@@ -833,7 +856,7 @@ function gainCard(card, type) {   // trả về true nếu nhận được thẻ
   const id = type + ":" + card.w;
   if (hasCard(id)) { practice(id); return false; }   // gặp lại: tính là luyện tập
   if (ownedOf(type) >= cardCap(type)) {   // đầy hạn mức → phải đi luyện để lên cấp
-    flash("📕 " + CARD_TYPES[type].icon + " " + CARD_TYPES[type].name + " full (" + ownedOf(type) + "/" + cardCap(type) + ")<div style='font-size:13px;font-weight:400'>Practice with Echo Ghosts and level up to collect more! / Đi đánh quái luyện thẻ để lên cấp rồi quay lại nhé.</div>");
+    flash("📕 " + CARD_TYPES[type].icon + " " + CARD_TYPES[type].name + " full (" + ownedOf(type) + "/" + cardCap(type) + ")<div style='font-size:13px;font-weight:400'>Practice with Echo Ghosts and level up to collect more! / Đi đánh quái luyện thẻ để lên cấp rồi quay lại nhé.</div>", 5000);
     return false;
   }
   owned.push(id); saveCards(); updateCardCount();
@@ -880,6 +903,11 @@ let myName = "";
 try { myName = localStorage.getItem("ev_name") || ""; } catch (e) {}
 const others = {};   // người chơi khác: id → { g, tx, tz, ry, last }
 let sb = null, chan = null, online = false, sendT = 0, beatT = 0, lastSent = "";
+function setLvTag(obj, name, lv) {   // tên + cấp trên đầu người chơi (cả người khác online) – để nhìn nhau mà cố gắng
+  lv = lv || 1; if (obj.userData.lvTag && obj.userData.tagLv === lv) return;
+  if (obj.userData.lvTag) obj.remove(obj.userData.lvTag);
+  const t = nameTag(name + "  Lv." + lv); obj.add(t); obj.userData.lvTag = t; obj.userData.tagLv = lv;
+}
 function nameTag(text, job) {   // bảng tên nổi trên đầu nhân vật; NPC có thêm dòng nghề nghiệp (job)
   const c = document.createElement("canvas"); c.width = 320; c.height = job ? 112 : 64;
   const g = c.getContext("2d");
@@ -902,7 +930,7 @@ function safeLook(a) {   // kiểm tra trang phục người khác gửi tới (
   if (typeof a === "string") return AVATARS[a] ? a : "Rogue";
   if (!a || typeof a !== "object") return "Rogue";
   const ok = (id, slot) => ITEMS[id] && slotOf(ITEMS[id]) === slot ? id : null;
-  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_white", legs: ok(a.legs, "pants") || "pants_plain", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
+  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_basic", legs: ok(a.legs, "pants") || "shorts_basic", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
 }
 function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
@@ -914,11 +942,11 @@ function goOnline() {
     let o = others[m.id];
     if (!o) {
       o = others[m.id] = { g: makeChar(m.c, safeLook(m.a)), n: String(m.n).slice(0, 12) };
-      o.g.add(nameTag(String(m.n).slice(0, 12)));
+      setLvTag(o.g, String(m.n).slice(0, 12), +m.l || 1);
       o.g.position.set(m.x, 0, m.z);
       countOnline();
     }
-    o.tx = m.x; o.tz = m.z; o.ry = m.r; o.last = performance.now();
+    o.tx = m.x; o.tz = m.z; o.ry = m.r; o.last = performance.now(); setLvTag(o.g, o.n, Math.max(1, Math.min(100, +m.l || 1)));
     const lk = safeLook(m.a); if (!sameLook(lk, o.g.userData.model)) setAvatar(o.g, lk);   // người kia vừa thay đồ
   });
   chan.on("broadcast", { event: "bye" }, ({ payload: m }) => removeOther(m.id));
@@ -947,7 +975,7 @@ function updateOnline(dt) {
   sendT += dt; beatT += dt;
   const p = player.position, key = p.x.toFixed(1) + "," + p.z.toFixed(1) + "," + player.rotation.y.toFixed(1);
   if (sendT > 0.2 && (key !== lastSent || beatT > 3)) {   // tối đa 5 lần/giây, chỉ gửi khi di chuyển (hoặc 3 giây/lần để báo "vẫn ở đây")
-    chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, c: myColor, a: myLook(), x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
+    chan.send({ type: "broadcast", event: "pos", payload: { id: myId, n: myName, l: save.level || 1, c: myColor, a: myLook(), x: +p.x.toFixed(2), z: +p.z.toFixed(2), r: +player.rotation.y.toFixed(2) } });
     sendT = 0; beatT = 0; lastSent = key;
   }
 }
@@ -1276,7 +1304,7 @@ holdMic($("chatMic"), t => $("chatHeard").textContent = "🎙️ " + t, (alts, c
 
 addEventListener("pagehide", () => { if (online) chan.send({ type: "broadcast", event: "bye", payload: { id: myId } }); });
 function startWithName() {
-  player.add(nameTag(myName));
+  setLvTag(player, myName, save.level || 1);
   $("namep").style.display = "none"; creating = false;
   goOnline();
 }
@@ -1319,10 +1347,10 @@ function fadeVi(html) {
   if ((seen[key] = (seen[key] || 0) + 1) <= 3) return html;
   return en.trim() ? en : html;
 }
-function flash(html) {   // thông báo nhanh giữa màn hình
+function flash(html, ms) {   // thông báo nhanh giữa màn hình (ms: thời gian hiện, mặc định 2,6 giây)
   html = fadeVi(html);
   $("toast").innerHTML = '<div style="font-size:16px;font-weight:700;max-width:260px">' + html + "</div>";
-  $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 2600);
+  $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), ms || 2600);
 }
 function renderHud() {
   checkLevel(); $("score").textContent = score;
@@ -1416,6 +1444,7 @@ function updateEconomy(dt) {   // năng lượng tự hồi 1 điểm / 15 giây
   // Máu KHÔNG tự hồi (chủ dự án chốt 16/11): hồi bằng đồ ăn, thuốc, ngủ giường ở nhà, chiêu Harmony, trang bị có hpRegen.
   const rg = gear().hpRegen || 0; if (rg && typeof hpMax === "function" && save.energy < 100 && !(typeof CB !== "undefined" && CB.ko)) save.energy = Math.min(100, save.energy + rg * dt / hpMax() * 100);
   if (typeof clampXp === "function") clampXp();
+  if (player.userData.lvTag) setLvTag(player, myName, save.level || 1);   // lên cấp: cập nhật bảng tên
   if ((hudT += dt) > 1) { hudT = 0; renderHud(); saveNow(); }
 }
 
