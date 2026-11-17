@@ -48,7 +48,7 @@ server.listen(0, async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
   const p = await b.newPage({ viewport: { width: 900, height: 600 } }); const errs = [];
   p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error' && !/supabase|websocket|realtime|Failed to load resource/i.test(m.text())) errs.push(m.text()); });
-  await p.addInitScript(() => { try { localStorage.setItem('ev_name', 'QA'); } catch (e) {} });
+  await p.addInitScript(() => { try { localStorage.setItem('ev_name', 'QA'); localStorage.setItem('ev_qa', '1'); } catch (e) {} });
   await p.goto('http://localhost:' + port + '/index.html'); await p.waitForTimeout(5000);
   console.log('2. CHẠY GAME');
   const base = await p.evaluate(`(async () => { const fr = () => new Promise(r => requestAnimationFrame(r)); await fr(); await fr(); renderer.info.autoReset = false; renderer.info.reset(); await fr(); const calls = renderer.info.render.calls; renderer.info.autoReset = true;

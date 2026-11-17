@@ -102,7 +102,7 @@ function onMastery(id) {
     if (typeof save === "undefined" || !save || save.metEcho) return;
     const E = LESSONS.find(L => /^Captain Echo/.test(L.name));
     if (!E || owned.some(id => E.steps.some(s => s.card && id === "p:" + s.card.w))) { save.metEcho = 1; return; }
-    if (creating || room || maze || talking || !document.getElementById("talk")) return setTimeout(tryStart, 1500);
+    if (window.EV_LOCKED || creating || room || maze || talking || !document.getElementById("talk")) return setTimeout(tryStart, 1500);
     save.metEcho = 1; saveNow();
     player.position.set(E.x - 0.5, 0, E.z + 2.6); camAngle = 0; camSnap = true;
     near = E; document.getElementById("talk").onclick();

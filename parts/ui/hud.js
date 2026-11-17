@@ -63,22 +63,27 @@ function evHarmonyFx() {   // gọi mỗi khung hình từ hudTick
 function evHarmonyOff() { if (evAura) evAura.visible = false; }
 
 /* ---------- thanh máu + nhãn tên quái (1 sprite, vẽ lại khi máu đổi) ---------- */
-function evLvColor(ml) {
+function evLvColor(ml) {   // trắng: thấp hơn / ngang / hơn chút (≤ +4) · cam: +5…+7 · đỏ 💀: ≥ +8 (đánh chỉ còn 30%)
   const d = ml - (save.level || 1);
-  if (d <= -3) return ["#5fe08a", ""]; if (Math.abs(d) <= 2) return ["#ffd43b", ""]; if (d <= 7) return ["#ff9a3c", ""]; return ["#ff5a5f", " 💀"];
+  if (d <= 4) return ["#ffffff", ""]; if (d <= 7) return ["#ff9a3c", ""]; return ["#ff5a5f", " 💀"];
 }
-function evMonTag(M) {   // tạo lần đầu rồi chỉ vẽ lại khi máu / cấp đổi
+function evMonTag(M) {   // tạo lần đầu rồi chỉ vẽ lại khi máu / cấp đổi. Dòng 1: [icon loại bài quái sợ] tên nhỏ + Lv to · dòng 2: thanh máu
   const hpK = Math.max(0, Math.min(40, Math.round(M.hp / (M.hpMax || 1) * 40))), key = hpK + "|" + M.lv + "|" + (save.level || 1);
   if (M.tagKey === key) return M.tag; M.tagKey = key;
   if (!M.tagC) { M.tagC = document.createElement("canvas"); M.tagC.width = 320; M.tagC.height = 120; M.tagTex = new THREE.CanvasTexture(M.tagC); M.tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: M.tagTex, depthTest: false })); M.tag.scale.set(2.2, 2.2 * 120 / 320, 1); M.tag.position.y = 2.5; }
-  const g = M.tagC.getContext("2d"), [col, skull] = evLvColor(M.lv);
-  g.clearRect(0, 0, 320, 120);
-  g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(20, 8, 280, 40);
-  g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = col; let sz = 32; const txt = M.T.icon + " " + M.T.name + " Lv." + M.lv + skull;
-  do { g.font = "bold " + sz + "px system-ui,sans-serif"; sz -= 2; } while (g.measureText(txt).width > 304 && sz > 14); g.fillText(txt, 160, 27);
-  g.fillStyle = "rgba(0,0,0,.7)"; g.fillRect(50, 58, 220, 12); g.fillStyle = "#ff4f5e"; g.fillRect(52, 60, 216 * hpK / 40, 8);
-  g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(52, 60, 216 * hpK / 40, 2);
-  g.fillStyle = "#ffd43b"; g.font = "bold 24px system-ui,sans-serif"; g.fillText("weak: " + (typeof TASK_ICON !== "undefined" ? TASK_ICON[M.T.weak] : ""), 160, 102);
+  const g = M.tagC.getContext("2d"), [col, skull] = evLvColor(M.lv), weak = typeof TASK_ICON !== "undefined" ? TASK_ICON[M.T.weak] : "";
+  g.clearRect(0, 0, 320, 120); g.textBaseline = "middle"; g.textAlign = "left";
+  const F1 = "bold 34px system-ui,sans-serif", F2 = "600 22px system-ui,sans-serif", F3 = "900 40px system-ui,sans-serif";
+  const a = weak + " ", b = M.T.name + " ", c = "Lv." + M.lv + skull;
+  g.font = F1; const wa = g.measureText(a).width; g.font = F2; const wb = g.measureText(b).width; g.font = F3; const wc = g.measureText(c).width;
+  let x = Math.max(4, 160 - (wa + wb + wc) / 2);
+  g.shadowColor = "rgba(0,0,0,.9)"; g.shadowBlur = 6; g.lineWidth = 5; g.strokeStyle = "rgba(0,0,0,.75)";
+  g.font = F1; g.fillText(a, x, 40); x += wa;
+  g.font = F2; g.strokeText(b, x, 42); g.fillStyle = col; g.fillText(b, x, 42); x += wb;
+  g.font = F3; g.strokeText(c, x, 40); g.fillStyle = col; g.fillText(c, x, 40);
+  g.shadowBlur = 0;
+  g.fillStyle = "rgba(0,0,0,.7)"; g.fillRect(50, 70, 220, 16); g.fillStyle = "#ff4f5e"; g.fillRect(52, 72, 216 * hpK / 40, 12);
+  g.fillStyle = "rgba(255,255,255,.35)"; g.fillRect(52, 72, 216 * hpK / 40, 3);
   M.tagTex.needsUpdate = true; return M.tag;
 }
 
