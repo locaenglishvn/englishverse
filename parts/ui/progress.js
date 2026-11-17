@@ -109,3 +109,29 @@ function onMastery(id) {
   };
   window.addEventListener("load", () => setTimeout(tryStart, 2500));
 })();
+
+/* ---- 📚 BẢNG DẠNG BÀI (chủ dự án 17/11): dạng đã mở sáng, dạng chưa mở mờ + điều kiện mở khoá. Mở từ 🌟 Skills ---- */
+function openChallenges() {
+  let o = document.getElementById("chPanel");
+  if (!o) { o = document.createElement("div"); o.id = "chPanel"; o.style.cssText = "position:fixed;inset:0;z-index:31;display:flex;align-items:center;justify-content:center;background:rgba(5,8,20,.55);padding:16px";
+    o.innerHTML = "<div class='ev-panel' style='width:min(420px,100%)'><div class='ev-in' style='max-height:82vh;overflow:auto'><div id='chBody'></div><div style='text-align:right;margin-top:10px'><button class='ev-btn alt' id='chClose'>Close</button></div></div></div>";
+    document.body.appendChild(o); o.addEventListener("pointerdown", e => { if (e.target === o) o.style.display = "none"; }); o.querySelector("#chClose").onclick = () => o.style.display = "none"; }
+  const L = save.level || 1, st = (save.combat && save.combat.deck) || {};
+  const open = CHALLENGES.filter(c => challengeOpen(c.t)).length;
+  let h = "<div class='ev-title'>📚 Challenges · " + open + "/" + CHALLENGES.length + "</div><div style='font-size:12.5px;color:var(--ev-mut);margin:2px 0 8px'>Monsters ask you these. New ones open as you level up.</div>";
+  CHALLENGES.forEach(c => {
+    const on = challengeOpen(c.t), col = TASK_COL[c.t], s = st[c.t] || { n: 0, good: 0 }, nm = TASK_NAME[c.t].split(" · ")[0];
+    const lock = c.need === "v" && L >= c.lv ? "Get a 📦 vocab card first (ask about a thing in the city)" : "Unlocks at Lv." + c.lv;
+    h += "<div style='display:flex;gap:10px;align-items:center;background:var(--ev-panel);padding:9px 10px;margin-top:6px;" + (on ? "box-shadow:inset 3px 0 0 " + col : "opacity:.55;filter:grayscale(1)") + "'>" +
+      "<div style='font-size:26px;width:34px;text-align:center'>" + (on ? TASK_ICON[c.t] : "🔒") + "</div><div style='flex:1;min-width:0'>" +
+      "<span class='ev-tag' style='--c:" + (on ? col : "#3a4677") + "'>" + nm + "</span>" +
+      (on ? "<div style='font-size:13px;margin-top:4px'>" + c.do + "</div><div style='font-size:12px;color:var(--ev-mut)'>" + c.ex + "</div>" +
+            (s.n ? "<div style='font-size:11.5px;color:var(--ev-mut);margin-top:2px'>Good " + s.good + " / " + s.n + " times</div>" : "")
+          : "<div style='font-size:12.5px;margin-top:4px;color:var(--ev-mut)'>🔒 " + lock + "</div>") + "</div></div>";
+  });
+  o.querySelector("#chBody").innerHTML = h; o.style.display = "flex";
+}
+function onLevelUp(L) {   // gọi từ checkLevel (index.html) mỗi khi lên cấp: báo dạng bài mới mở
+  if (typeof CHALLENGES === "undefined") return;
+  CHALLENGES.filter(c => c.lv === L && challengeOpen(c.t)).forEach((c, i) => setTimeout(() => flash("📚 New challenge: " + TASK_ICON[c.t] + " " + TASK_NAME[c.t].split(" · ")[0] + "<div style='font-size:13px;font-weight:400'>" + c.do + "</div>", 4000), 3200 + i * 4200));
+}
