@@ -30,6 +30,8 @@ insert into public.invites (code_hash, note) values
   ('9397753d8749ce49fde7e83137fa8bbd22a4153bf7d4029e76b888b00118f7f9', 'Chu du an')
 on conflict (code_hash) do nothing;
 
+-- SAU BẢN 17/11 (mã gắn theo dấu vân tay máy thay vì số ngẫu nhiên): chạy 1 lần dòng dưới để gỡ các lần gắn cũ:
+-- update public.invites set device = null, claimed_at = null;
 -- MỞ KHOÁ 1 mã (bé đổi máy / xoá dữ liệu trình duyệt) – chạy riêng dòng này, đổi tên ghi chú cho đúng:
 -- update public.invites set device = null, claimed_at = null where note = 'Hoc sinh 1';
 -- XEM mã nào đã dùng:

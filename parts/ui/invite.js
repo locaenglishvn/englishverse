@@ -1,5 +1,7 @@
 /* EnglishVerse – MÃ MỜI (giai đoạn thử nghiệm kín, chủ dự án chốt 17/11, phương án B).
-   - Mỗi người được 1 mã riêng. Lần đầu nhập, mã được GẮN vào máy đó (số ngẫu nhiên ev_device, không phải thông tin cá nhân).
+   - Mỗi người được 1 mã riêng. Lần đầu nhập, mã được GẮN vào máy đó bằng "dấu vân tay máy" (băm từ loại máy, trình duyệt
+     không kèm số phiên bản, kích thước màn hình, múi giờ, ngôn ngữ, số nhân CPU – không phải thông tin cá nhân). Trình duyệt có xoá
+     dữ liệu khi tắt thì mở lại vẫn nhận ra đúng máy. KHÔNG dùng địa chỉ IP: IP đổi khi chuyển wifi ↔ 4G, và cả nhà / cả trường dùng chung 1 IP.
      Máy khác nhập lại mã đó sẽ bị từ chối → bé có gửi link + mã cho bạn thì bạn cũng không vào được.
    - Kiểm tra trên Supabase bằng hàm claim_invite (cài bằng docs/setup/invites.sql). Khi hàm CHƯA được cài, game chỉ kiểm tra mã
      trên máy (vẫn chặn người không có mã, nhưng chưa chặn được việc 1 mã dùng trên 2 máy).
@@ -16,7 +18,14 @@ window.EV_LOCKED = false;
   if (get("ev_qa") === "1") return;
   if (INVITE_HASHES[get("ev_invite")]) return;   // máy này đã được cấp mã
   window.EV_LOCKED = true;
-  let dev = get("ev_device"); if (!dev) { dev = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); set("ev_device", dev); }
+  const OWNER = "Chu du an";   // mã của chủ dự án: không khoá máy (thử trên nhiều máy)
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}   // xin trình duyệt đừng tự xoá dữ liệu game
+  const fingerprint = () => [
+    (navigator.userAgent || "").replace(/[\d._]+/g, ""),   // bỏ số phiên bản → cập nhật trình duyệt không đổi dấu vân tay
+    navigator.platform || "", screen.width * screen.height, Math.round((devicePixelRatio || 1) * 10), Math.min(screen.width, screen.height),
+    (Intl.DateTimeFormat().resolvedOptions().timeZone || ""), navigator.language || "", navigator.hardwareConcurrency || 0, navigator.deviceMemory || 0, navigator.maxTouchPoints || 0
+  ].join("|");
+  let dev = null;
   const sha = async t => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))).map(b => b.toString(16).padStart(2, "0")).join("");
   async function claim(h) {   // → "ok" | "taken" | "unknown" | "offline" (chưa cài hàm / mất mạng)
     try {
@@ -40,9 +49,9 @@ window.EV_LOCKED = false;
     go.onclick = async () => {
       const code = inp.value.trim().toUpperCase().replace(/\s+/g, ""); if (!code) return;
       go.disabled = true; msg.style.color = "var(--ev-mut)"; msg.textContent = "Checking…";
-      const h = await sha(code);
+      const h = await sha(code); if (!dev) dev = "fp-" + (await sha(fingerprint())).slice(0, 32);
       if (!INVITE_HASHES[h]) { go.disabled = false; msg.style.color = "var(--ev-bad)"; msg.innerHTML = "This code is not right. / Mã chưa đúng, em kiểm tra lại nhé."; return; }
-      const r = await claim(h);
+      const r = INVITE_HASHES[h] === OWNER ? "ok" : await claim(h);
       if (r === "taken" || r === "unknown") { go.disabled = false; msg.style.color = "var(--ev-bad)"; msg.innerHTML = "This code is already used on another device. / Mã này đã dùng trên máy khác. Em nhờ thầy/cô hỗ trợ nhé."; return; }
       set("ev_invite", h); window.EV_LOCKED = false; o.remove();
     };
