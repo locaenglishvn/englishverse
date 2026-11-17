@@ -60,6 +60,7 @@ const RARITY = {
 };
 Object.assign(ITEMS, {
   // 👕 Áo
+  tee_basic:   { name: "Basic T-shirt",   icon: "👕", slot: "armor", model: "Rogue", plain: true, flat: true, sleeves: true, tint: 0xeceff4, rarity: "common", lv: 1, price: 10, stats: {}, desc: "A plain T-shirt. Everyone starts here." },
   tee_white:   { name: "White T-shirt",   icon: "👕", slot: "armor", model: "Rogue", plain: true, tint: 0xffffff, rarity: "common", lv: 1, price: 15, stats: {}, desc: "A simple white T-shirt." },
   tee_red:     { name: "Red T-shirt",     icon: "👕", slot: "armor", model: "Rogue", plain: true, tint: 0xff8787, rarity: "common", lv: 1, price: 20, stats: { stamina: 2 }, desc: "A bright red T-shirt." },
   tee_blue:    { name: "Blue T-shirt",    icon: "👕", slot: "armor", model: "Rogue", plain: true, tint: 0x74c0fc, rarity: "common", lv: 1, price: 20, stats: { ears: 1 }, desc: "A cool blue T-shirt." },
@@ -70,6 +71,7 @@ Object.assign(ITEMS, {
   armor:       { name: "Knight Armor",    icon: "🛡️", slot: "armor", model: "Knight", rarity: "rare", lv: 5, price: 340, stats: { resist: 20 }, desc: "The Mute can’t poison you easily." },
   royal:       { name: "Royal Armor",     icon: "👑", slot: "armor", model: "Knight", tint: 0xd0b8ff, rarity: "epic", lv: 10, price: 900, stats: { voice: 15, resist: 25 }, desc: "Shiny purple armor for heroes." },
   // 👟 Quần + giày
+  shorts_basic: { name: "Basic shorts",   icon: "🩳", slot: "pants", model: "Rogue", plain: true, flat: true, shorts: true, tint: 0x3a4a6b, rarity: "common", lv: 1, price: 10, stats: {}, desc: "Plain shorts. Bare legs, ready to run." },
   pants_plain: { name: "Grey Pants",      icon: "👖", slot: "pants", model: "Rogue", plain: true, tint: 0xb0bccb, rarity: "common", lv: 1, price: 15, stats: {}, desc: "Simple grey pants and shoes." },
   jeans:       { name: "Blue Jeans",      icon: "👖", slot: "pants", model: "Rogue", plain: true, tint: 0x74a9e8, rarity: "common", lv: 1, price: 20, stats: { stamina: 1 }, desc: "Everyone loves jeans." },
   boots_exp:   { name: "Explorer Boots",  icon: "🥾", slot: "pants", model: "Rogue", rarity: "uncommon", lv: 3, price: 60, stats: { stamina: 4 }, desc: "Good for long walks." },
@@ -120,7 +122,7 @@ const LEGENDS = [
 ];
 
 /* Quà cho người chơi mới: chỉ có áo thun trắng + quần xám. Muốn đẹp hơn thì đi mua! */
-const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { armor: "tee_white", pants: "pants_plain", hat: null, cape: null } };
+const STARTER = { coins: 20, items: { banhmi: 1 }, equip: { armor: "tee_basic", pants: "shorts_basic", hat: null, cape: null } };
 
 /* ĐỊA ĐIỂM TRONG THÀNH PHỐ (nhà có mái, đi vào được)
    x, z   = vị trí giữa tòa nhà trên bản đồ;  w, d = rộng, sâu (mét)

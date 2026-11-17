@@ -452,9 +452,9 @@ function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật
 }
 function lookParts(look) {   // danh sách bộ phận cần ghép: { file, mesh, tint, plain }
   const it = id => (typeof ITEMS !== "undefined" && ITEMS[id] && ITEMS[id].slot) ? ITEMS[id] : null;
-  const top = it(look.top) || ITEMS.tee_white, legs = it(look.legs) || ITEMS.pants_plain, hat = it(look.hat), cape = it(look.cape);
+  const top = it(look.top) || ITEMS.tee_basic || ITEMS.tee_white, legs = it(look.legs) || ITEMS.shorts_basic || ITEMS.pants_plain, hat = it(look.hat), cape = it(look.cape);
   const head = FACES[look.head] ? look.head : "Rogue", parts = [];
-  const add = (I, names) => names.forEach(n => parts.push({ file: I.model, mesh: I.model.replace("_Hooded", "") + "_" + n, tint: I.tint, plain: I.plain }));
+  const add = (I, names) => names.forEach(n => parts.push({ file: I.model, mesh: I.model.replace("_Hooded", "") + "_" + n, tint: I.tint, plain: I.plain, flat: I.flat, cut: I.shorts && /Leg/.test(n) ? "legs" : I.sleeves && /Arm/.test(n) ? "arms" : null }));
   if (hat && hat.hood) parts.push({ file: "Rogue_Hooded", mesh: "Rogue_Head_Hooded", tint: hat.tint });   // mũ trùm thay cả đầu
   else parts.push({ file: head, mesh: head + "_Head" });
   add(top, ["Body", "ArmLeft", "ArmRight"]); add(legs, ["LegLeft", "LegRight"]);
@@ -463,24 +463,40 @@ function lookParts(look) {   // danh sách bộ phận cần ghép: { file, mesh
   return parts;
 }
 const matCache = {}, grayCache = {};
-function grayMap(t) {   // bản đen trắng của vải (giữ màu da) → nhuộm màu tùy ý cho áo trơn
-  if (grayCache[t.uuid]) return grayCache[t.uuid];
+function grayMap(t, flat) {   // bản đen trắng của vải (giữ màu da) → nhuộm màu tùy ý cho áo trơn
+  const gk = t.uuid + (flat ? "f" : ""); if (grayCache[gk]) return grayCache[gk];
   const img = t.image, c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
   const x = c.getContext("2d"); x.drawImage(img, 0, 0);
   const d = x.getImageData(0, 0, c.width, c.height), a = d.data;
   for (let i = 0; i < a.length; i += 4) {
     const r = a[i], g = a[i + 1], b = a[i + 2];
-    if (r > 175 && r > g + 15 && g > b + 5 && r - b > 40 && r - b < 130) continue;   // màu da: giữ nguyên
-    const v = 170 + (0.3 * r + 0.59 * g + 0.11 * b) * 0.33; a[i] = a[i + 1] = a[i + 2] = v;
+    if (flat ? (r > 225 && g > 175 && b > 140 && r - b > 55 && r - b < 100) : (r > 175 && r > g + 15 && g > b + 5 && r - b > 40 && r - b < 130)) continue;   // màu da: giữ nguyên (flat: ngưỡng chặt để đai / dây da nâu không lọt)
+    // flat = vải trơn 1 màu (bỏ chi tiết giáp / thắt lưng)
+    const v = flat ? 255 : 170 + (0.3 * r + 0.59 * g + 0.11 * b) * 0.33; a[i] = a[i + 1] = a[i + 2] = v;
   }
   x.putImageData(d, 0, 0);
   const n = new THREE.CanvasTexture(c); n.flipY = t.flipY; n.encoding = t.encoding; n.wrapS = t.wrapS; n.wrapT = t.wrapT; n.magFilter = t.magFilter;
-  return grayCache[t.uuid] = n;
+  return grayCache[gk] = n;
 }
-function partMat(src, tint, plain) {
+const SKIN_SHORTS = new THREE.Color(0xf1c8a0);
+function partMat(src, tint, plain, flat, cut) {
   if (tint == null && !plain) return src.material;
-  const key = src.material.uuid + "|" + tint + "|" + !!plain;
-  if (!matCache[key]) { const m = src.material.clone(); if (plain && m.map) try { m.map = grayMap(m.map); } catch (e) {} if (tint != null) m.color = new THREE.Color(tint); matCache[key] = m; }
+  const key = src.material.uuid + "|" + tint + "|" + !!plain + "|" + !!flat + "|" + (cut || "");
+  if (!matCache[key]) {
+    const m = src.material.clone(); if (plain && m.map) try { m.map = grayMap(m.map, flat); } catch (e) {} if (tint != null) m.color = new THREE.Color(tint);
+    if (cut && src.geometry) {   // quần đùi / áo cộc tay: đổi màu theo vị trí đỉnh (trước khi gắn xương). legs: nửa dưới (y thấp) = da; arms: nửa ngoài (|x| lớn, tay dang ngang) = da
+      src.geometry.computeBoundingBox(); const bb = src.geometry.boundingBox, A = cut === "legs" ? "y" : "x";
+      const lo = cut === "legs" ? bb.min.y : Math.min(Math.abs(bb.min.x), Math.abs(bb.max.x)), hi = cut === "legs" ? bb.max.y : Math.max(Math.abs(bb.min.x), Math.abs(bb.max.x)), c0 = cut === "legs" ? lo + (hi - lo) * 0.5 : lo + (hi - lo) * 0.38;
+      const test = cut === "legs" ? "vLY < uCut" : "vLY > uCut";
+      m.map = null; m.onBeforeCompile = sh => {
+        sh.uniforms.uCut = { value: c0 }; sh.uniforms.uSkin = { value: SKIN_SHORTS };
+        sh.vertexShader = "varying float vLY;\n" + sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvLY = " + (cut === "legs" ? "position.y" : "abs(position.x)") + ";");
+        sh.fragmentShader = "varying float vLY; uniform float uCut; uniform vec3 uSkin;\n" + sh.fragmentShader.replace("#include <color_fragment>", "#include <color_fragment>\nif (" + test + ") diffuseColor.rgb = uSkin;");
+      };
+      m.customProgramCacheKey = () => cut + c0.toFixed(3);
+    }
+    matCache[key] = m;
+  }
   return matCache[key];
 }
 function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương của Rogue
@@ -491,7 +507,7 @@ function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương
   lookParts(look).forEach(P => {
     const T = modelTpl[P.file]; if (!T) return;
     const src = T.scene.getObjectByName(P.mesh); if (!src) return;
-    const c = src.clone(); c.material = partMat(src, P.tint, P.plain);
+    const c = src.clone(); c.material = partMat(src, P.tint, P.plain, P.flat, P.cut);
     if (src.isSkinnedMesh) {   // gắn vào bộ xương mới theo tên xương
       const bones = src.skeleton.bones.map(b => root.getObjectByName(b.name));
       if (bones.some(b => !b)) return;
@@ -914,7 +930,7 @@ function safeLook(a) {   // kiểm tra trang phục người khác gửi tới (
   if (typeof a === "string") return AVATARS[a] ? a : "Rogue";
   if (!a || typeof a !== "object") return "Rogue";
   const ok = (id, slot) => ITEMS[id] && slotOf(ITEMS[id]) === slot ? id : null;
-  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_white", legs: ok(a.legs, "pants") || "pants_plain", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
+  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_basic", legs: ok(a.legs, "pants") || "shorts_basic", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
 }
 function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }

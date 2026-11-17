@@ -204,7 +204,9 @@
   function openArena() {
     if (arena) return arena;
     const box = $("skArena"); box.style.display = "block";
-    const cv = box.querySelector("canvas"), w = Math.max(200, box.clientWidth - 4);
+    // canvas cũ đã bị forceContextLoss khi đóng (không dùng lại được) → luôn thay canvas mới mỗi lần mở
+    const old = box.querySelector("canvas"), cv = document.createElement("canvas"); box.replaceChild(cv, old);
+    const w = Math.max(200, box.clientWidth - 4);
     let rd; try { rd = new THREE.WebGLRenderer({ canvas: cv, antialias: true }); } catch (e) { box.style.display = "none"; return null; }
     rd.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); rd.setSize(w, AR_H, false);
     const sc = new THREE.Scene(); sc.background = new THREE.Color(0x0c1226);
