@@ -458,3 +458,96 @@ const STARTER_DECK = [
   { say: "Look at me!", vi: "Nhìn tôi này!", pic: "👀" },
   { say: "You can do it!", vi: "Bạn làm được mà!", pic: "🌟" }
 ];
+
+/* SOUNDS_DECK – luyện âm khó cho người Việt (Writer viết).
+   Mỗi mục: người chơi nói câu "say"; máy phải nghe ra đúng "key", không phải "avoid".
+   band 1: 2–4 từ · 2: 5–6 · 3: 7–8. 9 mục mỗi nhóm focus. */
+const SOUNDS_DECK = [
+  /* ---------- long-short-i ---------- */
+  { band: 1, focus: "long-short-i", say: "I see a ship.", key: "ship", avoid: "sheep", tip: "Short i: quick and relaxed, not long ee.", vi: "Tôi thấy một chiếc tàu.", pic: "🚢" },
+  { band: 1, focus: "long-short-i", say: "Sit on the chair.", key: "sit", avoid: "seat", tip: "Short i: tongue low, sound quick.", vi: "Ngồi xuống ghế đi.", pic: "🪑" },
+  { band: 1, focus: "long-short-i", say: "I live here.", key: "live", avoid: "leave", tip: "Short i: quick sound, not long ee.", vi: "Tôi sống ở đây.", pic: "🏠" },
+  { band: 2, focus: "long-short-i", say: "Please fill the glass with water.", key: "fill", avoid: "feel", tip: "Short i: fill, a quick small sound.", vi: "Làm ơn đổ đầy ly nước.", pic: "🥛" },
+  { band: 2, focus: "long-short-i", say: "Put the rubbish in the bin.", key: "bin", avoid: "bean", tip: "Short i: bin is quick, bean is long.", vi: "Bỏ rác vào thùng đi.", pic: "🗑️" },
+  { band: 2, focus: "long-short-i", say: "I will hit the ball hard.", key: "hit", avoid: "heat", tip: "Short i: hit is quick, not heat.", vi: "Tôi sẽ đánh bóng thật mạnh.", pic: "🏏" },
+  { band: 3, focus: "long-short-i", say: "Be careful not to slip on the floor.", key: "slip", avoid: "sleep", tip: "Short i: slip is quick, sleep long.", vi: "Cẩn thận đừng trượt ngã trên sàn.", pic: "⚠️" },
+  { band: 3, focus: "long-short-i", say: "This old shirt will not fit me now.", key: "fit", avoid: "feet", tip: "Short i: fit is quick, feet long.", vi: "Chiếc áo cũ này giờ không vừa với tôi nữa.", pic: "👕" },
+  { band: 3, focus: "long-short-i", say: "The cheap toy broke after one day.", key: "cheap", avoid: "chip", tip: "Long ee: hold the sound, do not shorten.", vi: "Món đồ chơi rẻ tiền này hỏng sau một ngày.", pic: "🧸" },
+
+  /* ---------- long-short-u ---------- */
+  { band: 1, focus: "long-short-u", say: "Pull the rope.", key: "pull", avoid: "pool", tip: "Short oo: lips loose, not tense.", vi: "Kéo sợi dây.", pic: "🪢" },
+  { band: 1, focus: "long-short-u", say: "Look at me.", key: "look", avoid: "loop", tip: "Short oo: relaxed lips, quick sound.", vi: "Nhìn tôi này.", pic: "👀" },
+  { band: 1, focus: "long-short-u", say: "I like food.", key: "food", avoid: "good", tip: "Long oo: round lips, hold the sound.", vi: "Tôi thích đồ ăn.", pic: "🍲" },
+  { band: 2, focus: "long-short-u", say: "I swim in the pool.", key: "pool", avoid: "pull", tip: "Long oo: round lips, longer sound.", vi: "Tôi bơi trong hồ bơi.", pic: "🏊" },
+  { band: 2, focus: "long-short-u", say: "The glass is full of milk.", key: "full", avoid: "fool", tip: "Short oo: full, not long fool.", vi: "Chiếc ly đầy sữa.", pic: "🥛" },
+  { band: 2, focus: "long-short-u", say: "I read a good book.", key: "book", avoid: "boot", tip: "Short oo: book, lips loose.", vi: "Tôi đọc một cuốn sách hay.", pic: "📖" },
+  { band: 3, focus: "long-short-u", say: "Put your muddy boot on the mat, please.", key: "boot", avoid: "book", tip: "Long oo: boot, round lips.", vi: "Làm ơn đặt đôi ủng bẩn lên thảm.", pic: "👢" },
+  { band: 3, focus: "long-short-u", say: "Can you pass me the cool water, please?", key: "cool", avoid: "could", tip: "Long oo: cool, round lips.", vi: "Bạn đưa cho tôi cốc nước mát được không?", pic: "💧" },
+  { band: 3, focus: "long-short-u", say: "Tie the rope in a loop, please.", key: "loop", avoid: "look", tip: "Long oo: loop, round lips.", vi: "Làm ơn buộc sợi dây thành vòng.", pic: "➰" },
+
+  /* ---------- final-t-d-k ---------- */
+  { band: 1, focus: "final-t-d-k", say: "Sit on the bed.", key: "bed", avoid: "bet", tip: "Finish the d sound, do not drop it.", vi: "Ngồi lên giường đi.", pic: "🛏️" },
+  { band: 1, focus: "final-t-d-k", say: "I have a bag.", key: "bag", avoid: "back", tip: "Final g: voice it, then stop cleanly.", vi: "Tôi có một cái túi.", pic: "👜" },
+  { band: 1, focus: "final-t-d-k", say: "Look at the cap.", key: "cap", avoid: "cat", tip: "Final p: lips close, no vowel after.", vi: "Nhìn cái mũ lưỡi trai kia.", pic: "🧢" },
+  { band: 2, focus: "final-t-d-k", say: "My cat sleeps on the mat.", key: "cat", avoid: "cap", tip: "Final t: tongue touches top, stop.", vi: "Con mèo của tôi ngủ trên tấm thảm.", pic: "🐱" },
+  { band: 2, focus: "final-t-d-k", say: "I wait for the bus at six.", key: "wait", avoid: "way", tip: "Final t: a small stop, no extra sound.", vi: "Tôi đợi xe buýt lúc sáu giờ.", pic: "🚌" },
+  { band: 2, focus: "final-t-d-k", say: "The sad boy lost his toy.", key: "sad", avoid: "sat", tip: "Final d: tongue on ridge, voice on.", vi: "Cậu bé buồn đã làm mất món đồ chơi.", pic: "😢" },
+  { band: 3, focus: "final-t-d-k", say: "Please turn on the light on your bike.", key: "bike", avoid: "bite", tip: "Final k: back of tongue, sharp stop.", vi: "Làm ơn bật đèn trên xe đạp của bạn.", pic: "🚲" },
+  { band: 3, focus: "final-t-d-k", say: "Put the book back on the shelf.", key: "back", avoid: "bag", tip: "Final k: sharp stop, no extra vowel.", vi: "Hãy đặt cuốn sách lại lên kệ.", pic: "📚" },
+  { band: 3, focus: "final-t-d-k", say: "Please lock the door before you go.", key: "lock", avoid: "log", tip: "Final k: clip it short, no uh.", vi: "Làm ơn khóa cửa trước khi đi.", pic: "🔒" },
+
+  /* ---------- final-s ---------- */
+  { band: 1, focus: "final-s", say: "Two cats are sleeping.", key: "cats", avoid: "cat", tip: "End with a clear s sound.", vi: "Hai con mèo đang ngủ.", pic: "🐈" },
+  { band: 1, focus: "final-s", say: "I like books.", key: "books", avoid: "book", tip: "Hiss the s at the end.", vi: "Tôi thích sách.", pic: "📚" },
+  { band: 1, focus: "final-s", say: "My bags are red.", key: "bags", avoid: "bag", tip: "Add a clear s, do not skip it.", vi: "Mấy cái túi của tôi màu đỏ.", pic: "🎒" },
+  { band: 2, focus: "final-s", say: "The buses are big and yellow.", key: "buses", avoid: "bus", tip: "Say the final s, do not drop it.", vi: "Những chiếc xe buýt to và màu vàng.", pic: "🚌" },
+  { band: 2, focus: "final-s", say: "My sister likes green apples.", key: "likes", avoid: "like", tip: "Final s: sound it, do not drop it.", vi: "Chị gái tôi thích táo xanh.", pic: "🍏" },
+  { band: 2, focus: "final-s", say: "Mom buys pens for school.", key: "pens", avoid: "pen", tip: "Final s: a soft buzz, clear end.", vi: "Mẹ mua bút cho con đi học.", pic: "🖊️" },
+  { band: 3, focus: "final-s", say: "The big trucks drive down the road fast.", key: "trucks", avoid: "truck", tip: "Two sounds: ck, then s. Say both.", vi: "Những chiếc xe tải lớn chạy nhanh trên đường.", pic: "🚚" },
+  { band: 3, focus: "final-s", say: "We clean our rooms every Saturday morning.", key: "rooms", avoid: "room", tip: "Keep the s at the end, clearly.", vi: "Chúng tôi dọn phòng mỗi sáng thứ Bảy.", pic: "🧹" },
+  { band: 3, focus: "final-s", say: "The girls pick red flowers in the garden.", key: "flowers", avoid: "flower", tip: "Do not skip the final s sound.", vi: "Các bạn gái hái hoa đỏ trong vườn.", pic: "🌹" },
+
+  /* ---------- final-ed ---------- */
+  { band: 1, focus: "final-ed", say: "I walked home.", key: "walked", avoid: "walk", tip: "Walked ends with a t sound.", vi: "Tôi đã đi bộ về nhà.", pic: "🚶" },
+  { band: 1, focus: "final-ed", say: "I played games.", key: "played", avoid: "play", tip: "Played ends with a d sound.", vi: "Tôi đã chơi trò chơi.", pic: "🎮" },
+  { band: 1, focus: "final-ed", say: "He asked me.", key: "asked", avoid: "ask", tip: "Asked ends with a t sound.", vi: "Anh ấy đã hỏi tôi.", pic: "❓" },
+  { band: 2, focus: "final-ed", say: "Yesterday I cleaned my room.", key: "cleaned", avoid: "clean", tip: "Cleaned ends with a d sound.", vi: "Hôm qua tôi đã dọn phòng.", pic: "🧽" },
+  { band: 2, focus: "final-ed", say: "The dog jumped over the fence.", key: "jumped", avoid: "jump", tip: "Jumped ends with a t sound.", vi: "Con chó đã nhảy qua hàng rào.", pic: "🐶" },
+  { band: 2, focus: "final-ed", say: "I opened the box today.", key: "opened", avoid: "open", tip: "Opened: final d sound, voice on.", vi: "Hôm nay tôi đã mở cái hộp.", pic: "📦" },
+  { band: 3, focus: "final-ed", say: "Last night we watched a funny film.", key: "watched", avoid: "watch", tip: "Watched ends with a t sound.", vi: "Tối qua chúng tôi đã xem một bộ phim vui.", pic: "🎬" },
+  { band: 3, focus: "final-ed", say: "My friend wanted to play outside after school.", key: "wanted", avoid: "want", tip: "Wanted: a clear id sound at end.", vi: "Bạn tôi muốn chơi ngoài trời sau giờ học.", pic: "⚽" },
+  { band: 3, focus: "final-ed", say: "The bus stopped at the big green station.", key: "stopped", avoid: "stop", tip: "Stopped ends with a t sound.", vi: "Xe buýt đã dừng ở trạm lớn màu xanh.", pic: "🚏" },
+
+  /* ---------- th ---------- */
+  { band: 1, focus: "th", say: "Three birds sing.", key: "three", avoid: "tree", tip: "Th: tongue tip between your teeth.", vi: "Ba con chim hót.", pic: "🐦" },
+  { band: 1, focus: "th", say: "Thank you, Mom.", key: "thank", avoid: "tank", tip: "Th: tongue tip out, blow air softly.", vi: "Cảm ơn mẹ.", pic: "🙏" },
+  { band: 1, focus: "th", say: "Open your mouth.", key: "mouth", avoid: "mouse", tip: "Th: tongue tip out, soft air.", vi: "Hãy há miệng ra.", pic: "👄" },
+  { band: 2, focus: "th", say: "I think the sun is hot.", key: "think", avoid: "sink", tip: "Th: tongue out, not t or s.", vi: "Tôi nghĩ mặt trời nóng.", pic: "☀️" },
+  { band: 2, focus: "th", say: "The fish is in the tank.", key: "tank", avoid: "thank", tip: "Tank: plain t, no th sound.", vi: "Con cá ở trong bể.", pic: "🐟" },
+  { band: 2, focus: "th", say: "Look at the tall tree.", key: "tree", avoid: "three", tip: "Tree starts with t, not th.", vi: "Nhìn cái cây cao kia.", pic: "🌳" },
+  { band: 3, focus: "th", say: "The thin cat sleeps under the bed.", key: "thin", avoid: "tin", tip: "Thin: tongue out, soft air, no s.", vi: "Chú mèo gầy ngủ dưới giường.", pic: "🐈" },
+  { band: 3, focus: "th", say: "The thick bread is on the table.", key: "thick", avoid: "tick", tip: "Thick: tongue between teeth, hold it.", vi: "Miếng bánh mì dày để trên bàn.", pic: "🍞" },
+  { band: 3, focus: "th", say: "I take a warm bath at night.", key: "bath", avoid: "bat", tip: "Bath: end with a soft th sound.", vi: "Tối nào tôi cũng tắm nước ấm.", pic: "🛁" },
+
+  /* ---------- l-n ---------- */
+  { band: 1, focus: "l-n", say: "Turn on the light.", key: "light", avoid: "night", tip: "L: tongue tip touches the top ridge.", vi: "Hãy bật đèn lên.", pic: "💡" },
+  { band: 1, focus: "l-n", say: "I take a nap.", key: "nap", avoid: "lap", tip: "N: tongue on ridge, voice through nose.", vi: "Tôi chợp mắt một lát.", pic: "😴" },
+  { band: 1, focus: "l-n", say: "No, thank you.", key: "no", avoid: "low", tip: "N: hum through your nose, no l.", vi: "Không, cảm ơn bạn.", pic: "🙅" },
+  { band: 2, focus: "l-n", say: "I read a book at night.", key: "night", avoid: "light", tip: "N: nose hum, tongue on ridge.", vi: "Tôi đọc sách vào ban đêm.", pic: "🌙" },
+  { band: 2, focus: "l-n", say: "We have a lot of toys.", key: "lot", avoid: "not", tip: "L: tongue tip up, light sound.", vi: "Chúng tôi có rất nhiều đồ chơi.", pic: "🧸" },
+  { band: 2, focus: "l-n", say: "Stand in a line, please.", key: "line", avoid: "nine", tip: "L: tongue tip up, not n.", vi: "Làm ơn xếp hàng nhé.", pic: "🧍" },
+  { band: 3, focus: "l-n", say: "I have nine green apples in my bag.", key: "nine", avoid: "line", tip: "N: nose hum, tongue on ridge.", vi: "Tôi có chín quả táo xanh trong túi.", pic: "🍏" },
+  { band: 3, focus: "l-n", say: "Our cat sleeps on my lap every night.", key: "lap", avoid: "nap", tip: "L: tongue tip up, a light touch.", vi: "Con mèo của chúng tôi ngủ trên đùi tôi mỗi đêm.", pic: "🐱" },
+  { band: 3, focus: "l-n", say: "Please do not touch the hot pan.", key: "not", avoid: "lot", tip: "N: nose hum, not an l sound.", vi: "Làm ơn đừng chạm vào cái chảo nóng.", pic: "🍳" },
+
+  /* ---------- s-sh ---------- */
+  { band: 1, focus: "s-sh", say: "The sea is blue.", key: "sea", avoid: "she", tip: "S: hiss with teeth close, no sh.", vi: "Biển màu xanh.", pic: "🌊" },
+  { band: 1, focus: "s-sh", say: "She is my friend.", key: "she", avoid: "sea", tip: "Sh: lips round a little, air out.", vi: "Cô ấy là bạn tôi.", pic: "👧" },
+  { band: 1, focus: "s-sh", say: "Wash your hands.", key: "wash", avoid: "was", tip: "Sh: round lips, soft hiss.", vi: "Hãy rửa tay đi.", pic: "🧼" },
+  { band: 2, focus: "s-sh", say: "Please sip your hot soup slowly.", key: "sip", avoid: "ship", tip: "S: a thin hiss, not a sh.", vi: "Làm ơn nhấp từng ngụm canh nóng nhé.", pic: "🥣" },
+  { band: 2, focus: "s-sh", say: "Sort the socks by colour.", key: "sort", avoid: "short", tip: "S: thin hiss, no sh sound.", vi: "Hãy phân loại tất theo màu.", pic: "🧦" },
+  { band: 2, focus: "s-sh", say: "We sell hot bread here.", key: "sell", avoid: "shell", tip: "S: thin hiss, not sh.", vi: "Ở đây chúng tôi bán bánh mì nóng.", pic: "🥖" },
+  { band: 3, focus: "s-sh", say: "The little ship sails across the bay.", key: "ship", avoid: "sip", tip: "Sh: round lips, longer air flow.", vi: "Chiếc tàu nhỏ đang lướt qua vịnh.", pic: "🚢" },
+  { band: 3, focus: "s-sh", say: "This coat is too short for me.", key: "short", avoid: "sort", tip: "Sh: round lips, not a plain s.", vi: "Chiếc áo khoác này quá ngắn với tôi.", pic: "🧥" },
+  { band: 3, focus: "s-sh", say: "I found a pretty shell on the beach.", key: "shell", avoid: "sell", tip: "Sh: round lips, soft hiss.", vi: "Tôi nhặt được một vỏ sò đẹp trên bãi biển.", pic: "🐚" }
+];
