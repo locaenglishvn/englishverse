@@ -164,7 +164,7 @@
     let gate = ""; try { if (typeof levelGateText === "function") gate = levelGateText() || ""; } catch (e) {}
     let top = "<div class='hd'><span class='ev-title'>🌟 Skills</span><button class='ev-btn alt' style='padding:4px 12px' id='skX'>✕</button></div>" +
       "<div class='sub'><b style='color:var(--ev-gold)'>" + spLeft() + "</b> points left · +1 point per level (+1 more every 10 levels)</div>" +
-      (typeof openChallenges === "function" ? "<button class='ev-btn alt' id='skCh' style='font-size:12px;padding:4px 12px;margin:6px 0 2px'>📚 Challenges · " + CHALLENGES.filter(c => challengeOpen(c.t)).length + "/" + CHALLENGES.length + " open</button>" : "") +
+      (typeof openChallenges === "function" ? "<button class='ev-btn alt' id='skCh' style='font-size:12px;padding:4px 12px;margin:6px 0 2px'>📚 Challenges · " + CHALLENGES.filter(c => challengeOpen(c.t)).length + "/" + CHALLENGES.filter(c => !c.soon).length + " open</button>" : "") +
       (gate ? "<div class='gate' " + (typeof openLevelPanel === "function" ? "id='skGate' style='cursor:pointer'" : "") + ">" + gate + "</div>" : "") +
       "<div class='lab'>In use</div><div class='slots'>";
     for (let k = 0; k < 4; k++) {
