@@ -9,7 +9,7 @@
    - Mở khoá 1 mã (bé đổi máy / xoá dữ liệu trình duyệt): chạy câu "update invites set device = null where note = '...';" trong Supabase.
    - Tắt hẳn cổng mã mời (khi mở công khai): INVITE_ON = false. Kiểm thử tự động (QA): localStorage.ev_qa = "1". */
 const INVITE_ON = true;
-const INVITE_HASHES = { "21bb0956ba5adbe5b9a5ff017c28ff06fb347e9bde80d7864c5e77a4879fdde5": "Hoc sinh 1", "80b62c4eb31d03fdd2ed55c155e6f679a9b0300b13d45664afeae97aa466162d": "Hoc sinh 2", "9397753d8749ce49fde7e83137fa8bbd22a4153bf7d4029e76b888b00118f7f9": "Chu du an" };
+const INVITE_HASHES = { "21bb0956ba5adbe5b9a5ff017c28ff06fb347e9bde80d7864c5e77a4879fdde5": "Hoc sinh 1", "80b62c4eb31d03fdd2ed55c155e6f679a9b0300b13d45664afeae97aa466162d": "Hoc sinh 2", "9397753d8749ce49fde7e83137fa8bbd22a4153bf7d4029e76b888b00118f7f9": "Chu du an", "e6d63c8c41ec94e1b46e0b6b589af285cfa42ccbe0061a2aeaf0390e329e1ed0": "Hoc sinh 3", "dd289c91f6ccd068bb89b1e6a16c359bb074b13a6c40d3000cee1e96ce5c2135": "Hoc sinh 4", "11693daa41f9685ab4bce38fe259baa9da89b8790ac19f1f75c2778e1bbec026": "Hoc sinh 5", "c2e5320d71396ef36e94bee141c235cfd700d198a489f2d19e0308743c1137e0": "Hoc sinh 6", "14f585aa69dd38f1d1d5816056cc242180a74d5829dc3f81deb3635a28f2546f": "Hoc sinh 7", "ed81bea1651de38cdc9948e1a1eba2b37cf0704be9090e306fe4c8c1873dca97": "Hoc sinh 8", "f8f2031c096289540fb96c2f7c5a4194f304f433692039574497746bf8def110": "Hoc sinh 9", "b4bae713ac01354a2799b24c22c890e4d2e5a32517b1d381c26b81c74a1748da": "Hoc sinh 10" };
 window.EV_LOCKED = false;
 (function () {
   if (!INVITE_ON) return;
