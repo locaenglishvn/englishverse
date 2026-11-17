@@ -33,8 +33,8 @@ const MON = {
 };
 const SEASON_MON2 = { spring: ["owl", "slime", "bug"], tropic: ["parrot", "crab", "turtle"], desert: ["turtle", "bat", "owl"], autumn: ["owl", "parrot", "slime"], winter: ["turtle", "slime", "ghost"] };
 const SEASON_MON = { spring: ["ghost", "bug", "bug"], tropic: ["crab", "worm", "bug"], desert: ["bat", "worm", "crab"], autumn: ["bug", "bat", "ghost"], winter: ["ghost", "bat", "crab"] };
-const TASK_ICON = { repeat: "📢", answer: "🎺", build: "🎸", name: "🥁", ask: "💬", listen: "🎧", fill: "🧩", sounds: "👄" };
-const TASK_NAME = { repeat: "REPEAT · nói lại", answer: "ANSWER · trả lời", build: "BUILD · xếp câu", name: "NAME · gọi tên", ask: "ASK · đặt câu hỏi", listen: "LISTEN · nghe rồi nói", fill: "FILL · điền từ", sounds: "SOUNDS · âm khó" };
+const TASK_ICON = { repeat: "📢", answer: "🎺", build: "🎸", name: "🥁", ask: "💬", listen: "🎧", fill: "🧩", sounds: "👄", reply: "🗨️", mistake: "🔁", grammar: "📐", describe: "🖼️" };
+const TASK_NAME = { repeat: "REPEAT · nói lại", answer: "ANSWER · trả lời", build: "BUILD · xếp câu", name: "NAME · gọi tên", ask: "ASK · đặt câu hỏi", listen: "LISTEN · nghe rồi nói", fill: "FILL · điền từ", sounds: "SOUNDS · âm khó", reply: "REPLY · đáp lời", mistake: "MY MISTAKES · lỗi của mình", grammar: "GRAMMAR · ngữ pháp", describe: "DESCRIBE · tả tranh" };
 /* DẠNG BÀI (chủ dự án chốt 17/11): mở dần theo cấp. Bảng xem ở 🌟 Skills → "📚 Challenges" (parts/ui/progress.js).
    why = lý do sư phạm (ghi cho đội, không hiện cho trẻ). need: "v" = cần ít nhất 1 thẻ từ vựng. */
 const CHALLENGES = [
@@ -45,9 +45,14 @@ const CHALLENGES = [
   { t: "build",  lv: 5,  do: "The words are mixed up. Say them in order.", ex: "school / I / to / go", why: "Trật tự từ (ngữ pháp ngầm)" },
   { t: "fill",   lv: 8,  do: "One word is missing. Say the whole sentence.", ex: "“I ___ to school.” → “I go to school.”", why: "Nhớ lại chủ động (retrieval practice) từ chính thẻ đã có" },
   { t: "sounds", lv: 12, do: "Say the tricky sound clearly.", ex: "“I see a big SHIP.” (not sheep)", why: "Âm khó do tiếng Việt: âm cuối, -s, -ed, i dài/ngắn, th, l/n, s/sh" },
-  { t: "ask",    lv: 40, do: "Ask a question back.", ex: "“I like cats.” → “Do you like cats?”", why: "Chủ động đặt câu hỏi (tương tác, Long)" }
+  { t: "ask",    lv: 40, do: "Ask a question back.", ex: "“I like cats.” → “Do you like cats?”", why: "Chủ động đặt câu hỏi (tương tác, Long)" },
+  /* ----- 🔜 SẮP LÀM (soon: true = chỉ hiện trong bảng, chưa ra đề). Chủ dự án duyệt ý tưởng 17/11, xem ROADMAP mục 6 ----- */
+  { t: "reply",    lv: 15, soon: true, lock: "Unlocks at Lv.15", do: "Reply to what someone says.", ex: "“Can I help you?” → “Yes, I need a map.”", why: "Giao tiếp theo chức năng (CLT/TBLT)" },
+  { t: "mistake",  lv: 10, soon: true, lock: "Unlocks at Lv.10, after you make a few small mistakes", do: "Fix YOUR OWN mistakes from earlier fights.", ex: "You said “He go to school.” → “He goes to school.”", why: "Lỗi thật của chính người chơi (Swain: nhận ra lỗ hổng; Long: focus on form)" },
+  { t: "grammar",  lv: 20, soon: true, lock: "Unlocks at Lv.20 · grammar for your English level (A1 → A2 → B1)", do: "Use a grammar pattern for your level.", ex: "A2: “I have never …” → “I have never seen snow.”", why: "Ngữ pháp theo khung CEFR, chọn theo trình độ ước lượng của người chơi" },
+  { t: "describe", lv: 25, soon: true, lock: "Only vs ✨ Golden monsters and bosses (from Lv.25)", do: "Look at a picture. Say 2–3 sentences about it.", ex: "🏖️ → “Two kids play on the beach. It is sunny.”", why: "Nói dài, tự do (pushed output)" }
 ];
-function challengeOpen(t, L) { const C = CHALLENGES.find(c => c.t === t); if (!C) return false; L = L || save.level || 1;
+function challengeOpen(t, L) { const C = CHALLENGES.find(c => c.t === t); if (!C || C.soon) return false; L = L || save.level || 1;
   if (L < C.lv) return false; if (C.need === "v" && !owned.some(id => id[0] === "v")) return false;
   if (t === "sounds" && typeof SOUNDS_DECK === "undefined") return false; if (t === "ask" && !(VOICE_DECK.ask || []).length) return false; return true; }
 
@@ -441,7 +446,7 @@ function startCast(id, btn, silent) {   // silent: đang giữ nút để nói �
   CB.cast = { id, S, task, target, limit: 10, left: 10, rec: false };
   showCard(); if (!silent) speak(task.speak);
 }
-const TASK_COL = { repeat: "#3fa3ff", answer: "#3fd68c", build: "#ff8a2a", name: "#ff5a5f", ask: "#b07cff", listen: "#22b8cf", fill: "#e64980", sounds: "#f59f00" };
+const TASK_COL = { repeat: "#3fa3ff", answer: "#3fd68c", build: "#ff8a2a", name: "#ff5a5f", ask: "#b07cff", listen: "#22b8cf", fill: "#e64980", sounds: "#f59f00", reply: "#20c997", mistake: "#fa5252", grammar: "#4c6ef5", describe: "#fab005" };
 function showCard() {
   const c = CB.cast, k = c.task, nm = TASK_NAME[k.type].split(" · ")[0];
   $("cbCt").innerHTML = '<span class="ev-tag" style="--c:' + TASK_COL[k.type] + '">' + TASK_ICON[k.type] + " " + nm + "</span><small>" + c.S.name + (resoOn(k.type) ? " · 🎵 Resonance!" : "") + "</small>";
