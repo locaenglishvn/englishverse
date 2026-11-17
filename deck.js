@@ -477,7 +477,7 @@ const SOUNDS_DECK = [
   /* ---------- long-short-u ---------- */
   { band: 1, focus: "long-short-u", say: "Pull the rope.", key: "pull", avoid: "pool", tip: "Short oo: lips loose, not tense.", vi: "Kéo sợi dây.", pic: "🪢" },
   { band: 1, focus: "long-short-u", say: "Look at me.", key: "look", avoid: "loop", tip: "Short oo: relaxed lips, quick sound.", vi: "Nhìn tôi này.", pic: "👀" },
-  { band: 1, focus: "long-short-u", say: "I like food.", key: "food", avoid: "good", tip: "Long oo: round lips, hold the sound.", vi: "Tôi thích đồ ăn.", pic: "🍲" },
+  { band: 1, focus: "long-short-u", say: "I like food.", key: "food", avoid: "foot", tip: "Long oo: round lips, hold the sound.", vi: "Tôi thích đồ ăn.", pic: "🍲" },
   { band: 2, focus: "long-short-u", say: "I swim in the pool.", key: "pool", avoid: "pull", tip: "Long oo: round lips, longer sound.", vi: "Tôi bơi trong hồ bơi.", pic: "🏊" },
   { band: 2, focus: "long-short-u", say: "The glass is full of milk.", key: "full", avoid: "fool", tip: "Short oo: full, not long fool.", vi: "Chiếc ly đầy sữa.", pic: "🥛" },
   { band: 2, focus: "long-short-u", say: "I read a good book.", key: "book", avoid: "boot", tip: "Short oo: book, lips loose.", vi: "Tôi đọc một cuốn sách hay.", pic: "📖" },
