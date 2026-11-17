@@ -14,7 +14,7 @@
     silence_bubble: "A monster cannot attack for 5 seconds.", slow_song: "Slows every monster near you by 50%.", mirror_ask: "Pulls monsters together and stuns them.",
     sharp_ears: "Control effects last 10% longer per rank.", echo_chain: "Stun jumps to 1 nearby monster (2 at rank 4).", calm_mind: "Each time you control a monster: gain 3 mana per rank.",
     silence_zone: "ULTIMATE: a silent zone. The whole group is stunned and cannot attack.",
-    harmony_heal: "Heal 25% of your HP.", chord_shield: "A shield cuts damage by 50% for 6 seconds.", courage_chant: "+35% damage for 8 seconds.",
+    harmony_heal: "Heal 12% of your HP. Wait 30 seconds to use it again.", chord_shield: "A shield cuts damage by 50% for 6 seconds.", courage_chant: "+35% damage for 8 seconds.",
     tempo_up: "Skills recharge twice as fast for 8 seconds.", mana_song: "Gain 60 mana right now.", cleanse_note: "Removes silence and heals 15% HP.",
     kind_words: "Each Perfect heals 2% HP per rank.", team_spirit: "All skills +3% damage per rank.", warm_heart: "Max HP +6% per rank.",
     grand_chorus: "ULTIMATE: full heal, 60% shield and +50% damage for 8 seconds.",
