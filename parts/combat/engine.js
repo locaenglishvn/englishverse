@@ -33,8 +33,23 @@ const MON = {
 };
 const SEASON_MON2 = { spring: ["owl", "slime", "bug"], tropic: ["parrot", "crab", "turtle"], desert: ["turtle", "bat", "owl"], autumn: ["owl", "parrot", "slime"], winter: ["turtle", "slime", "ghost"] };
 const SEASON_MON = { spring: ["ghost", "bug", "bug"], tropic: ["crab", "worm", "bug"], desert: ["bat", "worm", "crab"], autumn: ["bug", "bat", "ghost"], winter: ["ghost", "bat", "crab"] };
-const TASK_ICON = { repeat: "📢", answer: "🎺", build: "🎸", name: "🥁", ask: "💬" };
-const TASK_NAME = { repeat: "REPEAT · nói lại", answer: "ANSWER · trả lời", build: "BUILD · xếp câu", name: "NAME · gọi tên", ask: "ASK · đặt câu hỏi" };
+const TASK_ICON = { repeat: "📢", answer: "🎺", build: "🎸", name: "🥁", ask: "💬", listen: "🎧", fill: "🧩", sounds: "👄" };
+const TASK_NAME = { repeat: "REPEAT · nói lại", answer: "ANSWER · trả lời", build: "BUILD · xếp câu", name: "NAME · gọi tên", ask: "ASK · đặt câu hỏi", listen: "LISTEN · nghe rồi nói", fill: "FILL · điền từ", sounds: "SOUNDS · âm khó" };
+/* DẠNG BÀI (chủ dự án chốt 17/11): mở dần theo cấp. Bảng xem ở 🌟 Skills → "📚 Challenges" (parts/ui/progress.js).
+   why = lý do sư phạm (ghi cho đội, không hiện cho trẻ). need: "v" = cần ít nhất 1 thẻ từ vựng. */
+const CHALLENGES = [
+  { t: "repeat", lv: 1,  do: "Read the sentence and say it.", ex: "“I can do it!”", why: "Output (Swain), phát âm, nhớ khối câu" },
+  { t: "name",   lv: 1,  need: "v", do: "Look at the picture. Say its name.", ex: "🍎 → “apple”", why: "Truy xuất từ vựng nhanh" },
+  { t: "listen", lv: 3,  do: "No text! Listen, then say what you hear.", ex: "🔊 … → “Let's go to school.”", why: "Input nghe thật (Krashen), shadowing; không đọc chữ" },
+  { t: "answer", lv: 5,  do: "Listen to the question. Answer it.", ex: "“What falls in winter?” → “Snow.”", why: "Nghe hiểu + phản hồi có nghĩa" },
+  { t: "build",  lv: 5,  do: "The words are mixed up. Say them in order.", ex: "school / I / to / go", why: "Trật tự từ (ngữ pháp ngầm)" },
+  { t: "fill",   lv: 8,  do: "One word is missing. Say the whole sentence.", ex: "“I ___ to school.” → “I go to school.”", why: "Nhớ lại chủ động (retrieval practice) từ chính thẻ đã có" },
+  { t: "sounds", lv: 12, do: "Say the tricky sound clearly.", ex: "“I see a big SHIP.” (not sheep)", why: "Âm khó do tiếng Việt: âm cuối, -s, -ed, i dài/ngắn, th, l/n, s/sh" },
+  { t: "ask",    lv: 40, do: "Ask a question back.", ex: "“I like cats.” → “Do you like cats?”", why: "Chủ động đặt câu hỏi (tương tác, Long)" }
+];
+function challengeOpen(t, L) { const C = CHALLENGES.find(c => c.t === t); if (!C) return false; L = L || save.level || 1;
+  if (L < C.lv) return false; if (C.need === "v" && !owned.some(id => id[0] === "v")) return false;
+  if (t === "sounds" && typeof SOUNDS_DECK === "undefined") return false; if (t === "ask" && !(VOICE_DECK.ask || []).length) return false; return true; }
 
 /* ---------- 3. KỸ NĂNG (giai đoạn A: Power + Rhythm, mỗi nhánh 3 chiêu; Control, Harmony mở ở giai đoạn B) ---------- */
 /* kind: single (1 mục tiêu) · multi (nhiều đòn nảy) · aoe (vòng quanh mình) · zone (vòng quanh mục tiêu) · dash (lướt) · self (lên bản thân/đội)
@@ -103,7 +118,7 @@ const W_LINES = {
 };
 const RESO = ["repeat", "answer", "build", "name"];
 const ASK_LV = 40;   // loại bài Ask (đặt câu hỏi) mở từ Lv.40
-function deckTypes() { return (save.level || 1) >= ASK_LV && (VOICE_DECK.ask || []).length ? RESO.concat(["ask"]) : RESO; }
+function deckTypes() { return CHALLENGES.map(c => c.t).filter(t => challengeOpen(t)); }
 function registerWeapons() {
   Object.keys(W_LINES).forEach((line, li) => W_LINES[line].names.forEach((nm, t) => {
     const T = W_TIER[t], id = "w_" + line + (t + 1), reso = RESO[(li + t) % 4];
@@ -141,7 +156,7 @@ function initCombat() {
       if (other && !save.items[other]) save.items[other] = 1;
       C.weapons = [cur, null]; C.wIdx = 0; }
   }
-  C.deck = C.deck || {}; RESO.concat(["ask"]).forEach(t => C.deck[t] = C.deck[t] || { n: 0, good: 0 });
+  C.deck = C.deck || {}; CHALLENGES.forEach(c => C.deck[c.t] = C.deck[c.t] || { n: 0, good: 0 });
   registerWeapons();
   if (!C.starter) { C.starter = true; addItem(save.items, BAG_SIZE, "w_rhythm1"); C.weapons = ["w_power1", null]; C.wIdx = 0; C.wOne = true; }   // quà tân thủ
   buildCombatUi();
@@ -210,7 +225,7 @@ function setCombatOn(on, sec) {
   ["cbHud", "cbFood"].forEach(id => $(id).style.display = on ? "flex" : "none"); $("cbBtns").style.display = on ? "block" : "none";
   if (on) { if (!wasOn) CB.wideBefore = camWide; if (!camWide) setWide(true); $("cbZone").textContent = "📍 " + sec.name + " · Ring " + sec.ring; drawCombatHud();
     if (!wasOn) { if (!save.combat.tut && typeof evTutorial === "function") evTutorial(); if (typeof gateHint === "function") gateHint(); }
-    flash("🌿 " + sec.name + "<div style='font-size:13px;font-weight:400'>Monster zone! Tap ⚔️ to hit, tap a skill and SPEAK to cast. / Vùng quái: bấm ⚔️ đánh thường, bấm chiêu rồi NÓI để tung chiêu.</div>"); }
+    flash("🌿 " + sec.name + "<div style='font-size:13px;font-weight:400'>Monster zone! Tap ⚔️ to hit. HOLD a skill and speak to cast. / Vùng quái: chạm ⚔️ để đánh, GIỮ nút chiêu và nói để ra chiêu.</div>"); }
   else { if (!CB.wideBefore && camWide) setWide(false); endCast(true); if (typeof evHarmonyOff === "function") evHarmonyOff(); }
   if (typeof evHudUpdate === "function") evHudUpdate();
   showWeaponInHand();
@@ -397,7 +412,8 @@ function skillButton(btn, i) {   // GIỮ nút: hiện đề và nói luôn, th�
   let rec = null, downAt = 0, heard = false;
   btn.addEventListener("pointerdown", e => {
     e.preventDefault(); const id = save.combat.slots[i], S = SKILLS[id]; if (!S || !CB.on || CB.ko) return;
-    if (!CB.cast) { startCast(id, btn, true); if (!CB.cast) return; }
+    if (!CB.cast) { startCast(id, btn, true); if (!CB.cast) return;
+      if (CB.cast.task.listen) { speak(CB.cast.task.speak); return; } }   // LISTEN: lần bấm đầu chỉ để nghe; giữ lần sau để nói
     else if (CB.cast.id !== id || rec) return;
     if (!SR) { flash("🎤 A microphone is needed (Chrome / Safari)"); return; }
     try { btn.setPointerCapture(e.pointerId); } catch (x) {}
@@ -425,7 +441,7 @@ function startCast(id, btn, silent) {   // silent: đang giữ nút để nói �
   CB.cast = { id, S, task, target, limit: 10, left: 10, rec: false };
   showCard(); if (!silent) speak(task.speak);
 }
-const TASK_COL = { repeat: "#3fa3ff", answer: "#3fd68c", build: "#ff8a2a", name: "#ff5a5f", ask: "#b07cff" };
+const TASK_COL = { repeat: "#3fa3ff", answer: "#3fd68c", build: "#ff8a2a", name: "#ff5a5f", ask: "#b07cff", listen: "#22b8cf", fill: "#e64980", sounds: "#f59f00" };
 function showCard() {
   const c = CB.cast, k = c.task, nm = TASK_NAME[k.type].split(" · ")[0];
   $("cbCt").innerHTML = '<span class="ev-tag" style="--c:' + TASK_COL[k.type] + '">' + TASK_ICON[k.type] + " " + nm + "</span><small>" + c.S.name + (resoOn(k.type) ? " · 🎵 Resonance!" : "") + "</small>";
@@ -439,7 +455,9 @@ function showCard() {
    nghĩa tiếng Việt hiện ở 2 lần đầu gặp một câu MỚI; từ lần 3 ẩn đi, còn nút nhỏ "VI" để xem khi thật cần (không tính lượt). */
 const VI_SHOW = 2;
 function viLine(k) {
-  const el = $("cbVi"); if (!el) return; el.innerHTML = ""; if (!k.vi) return;
+  const el = $("cbVi"); if (!el) return; el.innerHTML = "";
+  if (k.listen) { const b = document.createElement("button"); b.className = "ev-btn alt"; b.style.cssText = "font-size:12px;padding:2px 10px"; b.textContent = "🔊 Again"; b.onpointerdown = e => { e.stopPropagation(); speak(k.speak); }; el.appendChild(b); return; }
+  if (!k.vi) return;
   const seen = save.combat.viSeen = save.combat.viSeen || {}, key = k.target, n = seen[key] || 0;
   if (n < VI_SHOW) { if (!k.viCounted) { seen[key] = n + 1; k.viCounted = true; } el.textContent = k.vi; return; }
   const b = document.createElement("button"); b.className = "ev-btn alt"; b.style.cssText = "font-size:11px;padding:1px 8px"; b.textContent = "VI";
@@ -452,8 +470,8 @@ function resoOn(type) { const w = curWeapon(); return !!(w && w.weapon.reso === 
 /* Voice Deck: chọn loại bài (sàn 15%, loại yếu tới 35%) rồi lấy nội dung (ưu tiên thẻ của người chơi) */
 const NEWBIE_LV = 4;   // Lv.1–4: đề chỉ lấy từ thẻ đã có + bộ thẻ khởi đầu (STARTER_DECK), chỉ dạng REPEAT / NAME
 function drawTask(band, avoid) {
-  if ((save.level || 1) <= NEWBIE_LV) { const hasV = owned.some(id => id[0] === "v"); return makeTask(hasV && avoid !== "name" && Math.random() < 0.35 ? "name" : "repeat", band); }
-  const T = deckTypes(), st = save.combat.deck, rate = t => (st[t].good + 1) / (st[t].n + 2), avg = T.reduce((a, t) => a + rate(t), 0) / T.length, base = 1 / T.length;
+  if ((save.level || 1) <= NEWBIE_LV) { const T = ["name", "listen"].filter(t => t !== avoid && challengeOpen(t)); return makeTask(T.length && Math.random() < 0.2 * T.length ? cbPick(T) : "repeat", band); }
+  const T = deckTypes(), st = save.combat.deck; T.forEach(t => st[t] = st[t] || { n: 0, good: 0 }); const rate = t => (st[t].good + 1) / (st[t].n + 2), avg = T.reduce((a, t) => a + rate(t), 0) / T.length, base = 1 / T.length;
   let w = T.map(t => Math.max(0.15, Math.min(0.35, base + (avg - rate(t)) * 0.6)) * (t === avoid ? 0.3 : 1)), sum = w.reduce((a, b) => a + b, 0), r = Math.random() * sum, type = T[0];
   for (let i = 0; i < T.length; i++) { r -= w[i]; if (r <= 0) { type = T[i]; break; } }
   return makeTask(type, band) || makeTask("repeat", band);
@@ -469,6 +487,11 @@ function cbPick(a) { return a[Math.floor(Math.random() * a.length)]; }
 function wc(s) { return s.split(/\s+/).filter(Boolean).length; }
 const BAND_WORDS = [0, [2, 4], [5, 6], [7, 8], [9, 10], [11, 12]];
 function bandOk(s, band) { const n = wc(s), [a, b] = BAND_WORDS[band]; return n >= a - 1 && n <= b + 1; }
+const FILL_SKIP = ["the", "and", "you", "are", "was", "this", "that", "with", "have", "has", "for", "can", "not", "your", "very"];
+function ownLine() {   // 1 câu từ thẻ của mình (ưu tiên thẻ ít sao), không có thì lấy bộ thẻ khởi đầu
+  const have = allCards().filter(c => hasCard(c.id) && c.ex); if (have.length) { const c = pickByStars(have, null); return { text: c.type === "p" && Math.random() < 0.3 ? c.w : c.ex, card: c.id, pic: c.pic }; }
+  const st = typeof STARTER_DECK !== "undefined" ? cbPick(STARTER_DECK) : { say: "Let's go!" }; return { text: st.say, card: null, pic: st.pic, vi: st.vi };
+}
 function makeTask(type, band) {
   const season = CB.sec ? CB.sec.season : "city";
   if (type === "repeat") {
@@ -492,6 +515,21 @@ function makeTask(type, band) {
     const pool = (VOICE_DECK.ask || []).filter(a => a.band <= Math.max(3, band) && (a.topic === season || a.topic === "city" || Math.random() < 0.3)); const a = cbPick(pool.length ? pool : (VOICE_DECK.ask || [])); if (!a) return null;
     return { type, show: (a.pic || "") + " “" + a.say + "”", speak: a.say, keys: a.keys, target: a.full, vi: a.vi, hint: "Ask a question back." };
   }
+  if (type === "listen") {   // không có chữ: nghe máy đọc rồi nói lại. Chỉ dùng câu đã học → nghe được, hiểu được (i+1)
+    const L = ownLine(), n = wc(L.text);
+    return { type, show: "🎧 " + "▁ ".repeat(n).trim() + "  (" + n + " words)", speak: L.text, target: L.text, card: L.card, listen: true, hint: "Listen. Tap 🔊 to hear again." };
+  }
+  if (type === "fill") {   // che 1 từ trong câu của thẻ đã có → nhớ lại chủ động (retrieval practice)
+    const have = allCards().filter(c => hasCard(c.id) && c.ex && wc(c.ex) >= 3); if (!have.length) return null;
+    const c = pickByStars(have, null), words = c.ex.split(" "), cand = words.map((w, i) => [w.replace(/[^A-Za-z']/g, ""), i]).filter(([w]) => w.length >= 3 && FILL_SKIP.indexOf(w.toLowerCase()) < 0);
+    if (!cand.length) return null; const [w, i] = cand.sort((a, b) => b[0].length - a[0].length)[Math.floor(Math.random() * Math.min(2, cand.length))];
+    const blank = band <= 2 ? w[0] + "_".repeat(Math.max(2, w.length - 1)) : "_____"; words[i] = words[i].replace(w, blank);
+    return { type, show: (c.pic || "") + " “" + words.join(" ") + "”", speak: "", target: c.ex, keys: [w.toLowerCase()], card: c.id, hint: "Say the whole sentence." };
+  }
+  if (type === "sounds") {   // âm khó với người Việt: máy phải nghe ra đúng từ đích, không phải từ dễ nhầm
+    const pool = SOUNDS_DECK.filter(x => x.band <= Math.min(3, band)), x = cbPick(pool.length ? pool : SOUNDS_DECK); if (!x) return null;
+    return { type, show: (x.pic || "") + " “" + x.say.replace(new RegExp("\\b" + x.key + "\\b", "i"), m => m.toUpperCase()) + "”", speak: x.say, target: x.say, sound: x, vi: x.vi, hint: "👄 " + x.tip + " (not “" + x.avoid + "”)" };
+  }
   if (type === "name") {
     const all = Object.values(VOCAB).flat(), mine = all.filter(v => hasCard("v:" + v.w)), v = mine.length && ((save.level || 1) <= NEWBIE_LV || Math.random() < 0.8) ? pickByStars(mine.map(v => ({ id: "v:" + v.w, v })), null).v : cbPick(all);   // người mới: chỉ đồ vật đã có thẻ if (!v) return null;
     return { type, show: v.pic + "  What is this?", speak: "What is this?", keys: [v.w.toLowerCase()], target: v.say, card: hasCard("v:" + v.w) ? "v:" + v.w : null, hint: band >= 3 ? "Say: " + v.say.replace(v.w, "…") : "Name it." };
@@ -500,6 +538,12 @@ function makeTask(type, band) {
 }
 function grade(task, alts) {   // → 1 (Perfect) · 0.7 (Good) · 0.3 (Weak) · 0 (Miss)
   if (!alts.length) return 0;
+  if (task.sound) {
+    const x = task.sound, has = (h, w) => norm(h).indexOf(w.toLowerCase()) >= 0, best = Math.max(...alts.map(h => match(task.target, h)));
+    if (!has(alts[0], x.key) && alts.some(h => has(h, x.avoid))) return best >= 0.3 ? 0.3 : 0;   // nghe thành từ dễ nhầm
+    if (!alts.some(h => has(h, x.key))) return best >= 0.3 ? 0.3 : 0;
+    return best >= 0.85 ? 1 : 0.7;
+  }
   if (task.keys) {
     const has = (T, o) => { const O = norm(o); if (O.length > 1) return (" " + T.join(" ") + " ").indexOf(" " + O.join(" ") + " ") >= 0; return T.some(t => t === O[0] || (O[0].length >= 3 && t.indexOf(O[0]) === 0)); };   // slow → slowly, apple → apples
     const ok = alts.some(h => { const T = norm(h); return task.keys.every(k => k.split("|").some(o => has(T, o))); });
@@ -515,7 +559,8 @@ function resolveCast(alts, err) {
   endCast();
   if (err === "not-allowed" || err === "service-not-allowed") { CB.mp += c.S.mana; flash("🎤 Hãy cho phép micro để tung chiêu"); return; }
   if (!alts.length && err !== "timeout") { CB.mp += c.S.mana; popText("🔇", player.position, "#868e96"); return; }   // không nghe thấy gì: không phạt
-  const acc = grade(c.task, alts), st = save.combat.deck[c.task.type]; st.n++; if (acc >= 0.7) st.good++;
+  const acc = grade(c.task, alts), st = save.combat.deck[c.task.type] = save.combat.deck[c.task.type] || { n: 0, good: 0 }; st.n++;
+  if (c.task.listen || c.task.type === "fill") setTimeout(() => flash("📝 " + c.task.target, 2200), 300);   // cho thấy câu đúng sau khi nói (noticing) if (acc >= 0.7) st.good++;
   if (acc === 0) { CB.mp += c.S.mana / 2; popText("Miss", player.position, "#868e96"); CB.cd[c.id] = 1; return; }
   popText(acc === 1 ? "Perfect!" : acc >= 0.7 ? "Good!" : "Weak", player.position, acc === 1 ? "#f08c00" : acc >= 0.7 ? "#2f9e44" : "#868e96");
   if (acc >= 0.7) { spokeOk(); if (c.task.card) practice(c.task.card); gainXp(4); harmonyStep(c.task.type); }

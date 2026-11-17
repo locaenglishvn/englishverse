@@ -1584,6 +1584,7 @@ function checkLevel() {
     save.level++; lvBlockedShown = false; saveNow();
     flash("🎉 LEVEL UP! Lv." + save.level + "<div style='font-size:13px;font-weight:400'>New cards unlocked: +" + (cardCap("p") - cardCap("p", save.level - 1)) + " 💬 +" + (cardCap("q") - cardCap("q", save.level - 1)) + " ❓ +" + (cardCap("v") - cardCap("v", save.level - 1)) + " 📦</div>");
     charAct(player, "Cheer"); speak("Level up! You are now level " + save.level + "!");
+    if (typeof onLevelUp === "function") onLevelUp(save.level);
   }
 }
 function pickLine(G) {   // chọn đề riêng: ưu tiên thẻ đã có mà còn ít sao (cả 3 loại), thỉnh thoảng câu mới i+1
