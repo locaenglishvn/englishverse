@@ -17,7 +17,9 @@ const NATURE = (function () {
     pine: () => [pick(["PineTree_Snow_1", "PineTree_Snow_3", "PineTree_Snow_5"]), null],   // đông
     cactus: () => [pick(["Cactus_1", "Cactus_2", "Cactus_3", "CactusFlowers_2"]), null],   // sa mạc
     palm: () => [pick(["PalmTree_1", "PalmTree_3", "PalmTree_4"]), null],   // biển
-    city: () => [pick(TREES), null]   // thành phố
+    city: () => [pick(TREES), null],   // thành phố
+    cpalm: () => [pick(["PalmTree_1", "PalmTree_3", "PalmTree_4"]), null],   // cây quanh toà nhà (bigTree trong ngoại thất)
+    cbush: () => [pick(["Bush_1", "Bush_2", "BushBerries_1"]), null], cflower: () => ["Flowers", null]   // bồn hoa quảng trường
   };
   const NOPUFF = /^Cactus/;   // xương rồng giữ dáng gai, không làm mềm
   const GROUND = { flower: ["Flowers"], plant: ["TreeStump_Moss"] };   // bỏ cây con màu sẫm: thành đốm tối khi nhìn từ trên
@@ -29,7 +31,7 @@ const NATURE = (function () {
   let seed = 911; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
   const pick = a => a[(rnd() * a.length) | 0];
   function tree(x, z, s, cherry) { Q.push([pick(TREES), x, z, s, cherry ? "pink" : null, "t"]); }
-  function place(kind, x, z, s) { const [n, v] = KIND[kind](); Q.push([n, x, z, s, v, kind === "city" ? "c" : "t"]); }
+  function place(kind, x, z, s) { const [n, v] = KIND[kind](); Q.push([n, x, z, s, v, kind[0] === "c" ? "c" : "t"]); }
   function bush(x, z, s) { Q.push([pick(["Bush_1", "Bush_2", "BushBerries_1"]), x, z, s || 1, null, "g"]); }
   function ground(x, z, kind) { Q.push([pick(GROUND[kind] || GROUND.flower), x, z, 0.8 + rnd() * 0.45, null, "g"]); }
 
@@ -86,7 +88,7 @@ const NATURE = (function () {
     const B = new Map();
     Q.forEach(([name, x, z, s, variant, layer]) => {
       const T = TPL[name]; if (!T) return;
-      if (layer === "c") DEC.push([x + 0.6, z + 0.5, 2.3 * s]);
+      if (layer === "c" && /Tree/.test(name)) DEC.push([x + 0.6, z + 0.5, 2.3 * s]);
       const ck = Math.floor(x / CH) + "," + Math.floor(z / CH) + "," + layer; let C = B.get(ck); if (!C) B.set(ck, C = { layer, mats: new Map() });
       _E.set(0, rnd() * 6.283, 0); _Q.setFromEuler(_E); _M.compose(_P.set(x, 0, z), _Q, _S.set(s, s * (0.9 + rnd() * 0.2), s)); _N.getNormalMatrix(_M);
       T.forEach(P => { const mt = material(P.key, P.mesh, variant); let L = C.mats.get(mt); if (!L) C.mats.set(mt, L = []); L.push([P.g, _M.clone(), _N.clone()]); });
@@ -125,7 +127,9 @@ const NATURE = (function () {
   }
   let started = false;
   function build() {   // gọi sau khi wilds.js ghi xong chỗ đặt
-    if (started || !Q.length || typeof THREE.GLTFLoader === "undefined") return; started = true;
+    if (started || typeof THREE.GLTFLoader === "undefined") return; started = true;
+    try { scene.updateMatrixWorld(true); const v = new THREE.Vector3(); scene.traverse(o => { if (o.userData.npalm) { o.getWorldPosition(v); place("cpalm", v.x, v.z, o.userData.npalm * 1.05); } }); } catch (e) {}   // chỗ cây quanh toà nhà
+    if (!Q.length) return;
     const names = [...new Set(Q.map(q => q[0]))], L = new THREE.GLTFLoader();
     Promise.all(names.map(n => new Promise(ok => L.load(DIR + n + ".glb", g => { try { prep(n, g.scene); } catch (e) {} ok(); }, undefined, () => ok()))))
       .then(() => { buildChunks(); updateVis(); setInterval(updateVis, 250); });

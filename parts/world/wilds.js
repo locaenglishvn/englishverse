@@ -83,7 +83,7 @@ const WILDS = (function () {
   const C = h => [(h >> 16) & 255, (h >> 8) & 255, h & 255];
   const mixc = (o, a, b, t) => { o[0] = a[0] + (b[0] - a[0]) * t; o[1] = a[1] + (b[1] - a[1]) * t; o[2] = a[2] + (b[2] - a[2]) * t; };
   const K = {
-    cityGrass: C(0x8fd17a),
+    cityGrass: C(0x6fa448),
     w1: C(0xf4f8fc), w2: C(0xdde8f3), ice1: C(0xb2e1f4), ice2: C(0xe4f5fd), rim: C(0xc4d2de), rockW: C(0xc3ccd6),
     a1: C(0xdcaa45), a2: C(0xcf7b2b), a3: C(0xb4431f), a4: C(0xeac95e),
     d1: C(0xe7cb92), d2: C(0xd8ab68), d3: C(0xc8704a),
