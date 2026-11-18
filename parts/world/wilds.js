@@ -88,7 +88,7 @@ const WILDS = (function () {
     a1: C(0xdcaa45), a2: C(0xcf7b2b), a3: C(0xb4431f), a4: C(0xeac95e),
     d1: C(0xe7cb92), d2: C(0xd8ab68), d3: C(0xc8704a),
     g1: C(0x6cb64c), g2: C(0x58a24a), sand: C(0xf4e4b0), wet: C(0xd9c78f), sea1: C(0x6dd7ea), sea2: C(0x2fa9de), foam: C(0xffffff),
-    s1: C(0x88da60), s2: C(0x6cc94c), s3: C(0xa8ea7c), water1: C(0x6ec6ff), water2: C(0x9ad8ff), bank: C(0x4f9a3a),
+    s1: C(0x82b955), s2: C(0x6ba545), s3: C(0x98c867), water1: C(0x6ec6ff), water2: C(0x9ad8ff), bank: C(0x4f9a3a),
     fl: [C(0xff7eb6), C(0xffd43b), C(0xffffff), C(0xb197fc)],
     stone: C(0xd9c9a3), ice3: C(0x8fd0ee), deep: C(0x1f8fc4)
   };
@@ -117,7 +117,7 @@ const WILDS = (function () {
       default: { mixc(o, K.s1, K.s2, n1); if (n2 > 0.64) mixc(o, o, K.s3, Math.min(1, (n2 - 0.64) * 3));
         if (z > 148) { const dd = Math.abs(x - streamX(z)), w = streamW(z); if (dd < w) mixc(o, K.water1, K.water2, n2); else if (dd < w + 1.3) mixc(o, o, K.bank, 0.55); }
         if (m > R1) mixc(o, o, K.s2, 0.25);
-        if (hash(Math.floor(x * 1.7), Math.floor(z * 1.7)) > (m > R1 ? 0.935 : 0.965)) mixc(o, o, K.fl[Math.floor(hash(Math.floor(z), Math.floor(x)) * 4)], 0.85); }
+        if (hash(Math.floor(x * 1.7), Math.floor(z * 1.7)) > (m > R1 ? 0.96 : 0.985)) mixc(o, o, K.fl[Math.floor(hash(Math.floor(z), Math.floor(x)) * 4)], 0.6); }
     }
   }
   function paintGround(X0, X1, Z0, Z1, mLo, mHi) {
@@ -146,6 +146,38 @@ const WILDS = (function () {
     cx.putImageData(img, 0, 0);
     const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 4; return tex;
   }
+  /* Vân cỏ mịn: 1 ảnh nhỏ 128 px (đốm sáng/tối như ngọn cỏ) lặp lại mỗi ~3 m, nhân lên màu nền lớn → gần nhìn không còn mờ nhòe. Chỉ tốn 1 phép đọc ảnh/điểm ảnh. */
+  let DETAIL = null;
+  function detailTex() {
+    if (DETAIL) return DETAIL;
+    const N = 128, cv = document.createElement("canvas"); cv.width = cv.height = N; const g = cv.getContext("2d");
+    g.fillStyle = "rgb(235,235,235)"; g.fillRect(0, 0, N, N);
+    let sd = 7; const r = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
+    for (let i = 0; i < 900; i++) { const x = r() * N, y = r() * N, l = 3 + r() * 5, v = r() < 0.55 ? 200 + r() * 25 : 250 + r() * 5;   // nét cỏ ngắn, tối/sáng
+      g.strokeStyle = "rgb(" + v + "," + v + "," + v + ")"; g.lineWidth = 1 + r() * 1.2; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - 0.5) * 2, y - l); g.stroke();
+      if (x < l || y < l) { g.beginPath(); g.moveTo(x + N, y + N); g.lineTo(x + N + (r() - 0.5) * 2, y + N - l); g.stroke(); } }
+    const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return DETAIL = t;
+  }
+  function detailed(mt, rx, rz) {
+    const dt = detailTex();
+    mt.onBeforeCompile = sh => {
+      sh.uniforms.dMap = { value: dt }; sh.uniforms.dRep = { value: new THREE.Vector2(rx, rz) };
+      sh.fragmentShader = "uniform sampler2D dMap; uniform vec2 dRep;\n" + sh.fragmentShader.replace("#include <map_fragment>",
+        "#include <map_fragment>\n  { vec3 c = diffuseColor.rgb; float gm = clamp((c.g - max(c.r, c.b)) * 6.0, 0.0, 1.0) * 0.8 + 0.2; if (c.b > c.g + 0.04) gm = 0.0;   // cỏ: vân rõ · đất/tuyết: nhẹ · nước: không\n    diffuseColor.rgb *= mix(vec3(1.0), texture2D(dMap, vUv * dRep).rgb * 1.09, gm); }");
+    };
+    return mt;
+  }
+  function shadeGround(m) {   // vẽ bóng râm mềm (lệch theo hướng nắng) lên ảnh nền đã có
+    const [X0, X1, Z0, Z1] = m.userData.box, cv = m.material.map.image, g = cv.getContext("2d"), kx = cv.width / (X1 - X0), kz = cv.height / (Z1 - Z0);
+    g.globalCompositeOperation = "multiply";
+    for (let i = 0; i < SHADE.length; i += 3) {
+      const x = (SHADE[i] - 0.9 - X0) * kx, z = (SHADE[i + 1] - 0.7 - Z0) * kz, r = SHADE[i + 2] * kx * 1.15;
+      if (x < -r || z < -r || x > cv.width + r || z > cv.height + r) continue;
+      const gr = g.createRadialGradient(x, z, 0, x, z, r); gr.addColorStop(0, "rgba(60,80,50,0.55)"); gr.addColorStop(0.6, "rgba(90,110,80,0.35)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = gr; g.fillRect(x - r, z - r, 2 * r, 2 * r);
+    }
+    g.globalCompositeOperation = "source-over"; m.material.map.needsUpdate = true;
+  }
   function groundMesh(X0, X1, Z0, Z1, Q, y, mLo, mHi) {
     // 3 mảng: phía bắc, phía đông (giữa), phía nam — phủ khung hình chữ C (vòng 1: chồng 1 m vào thành phố; vòng 2: nối liền vòng 1 ở 241 m)
     const pos = [], uv = [], idx = [];
@@ -154,7 +186,8 @@ const WILDS = (function () {
       idx.push(b, b + 3, b + 1, b + 1, b + 3, b + 2); });
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
     g.setAttribute("normal", new THREE.Float32BufferAttribute(pos.map((v, i) => i % 3 === 1 ? 1 : 0), 3)); g.setIndex(idx);
-    const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ map: paintGround(X0, X1, Z0, Z1, mLo, mHi) })); m.position.y = y; m.userData.flat = true; m.userData.flag = true; m.receiveShadow = true;
+    const m = new THREE.Mesh(g, detailed(new THREE.MeshLambertMaterial({ map: paintGround(X0, X1, Z0, Z1, mLo, mHi) }), (X1 - X0) / 3.2, (Z1 - Z0) / 3.2)); m.position.y = y; m.userData.flat = true; m.userData.flag = true; m.receiveShadow = true;
+    m.userData.box = [X0, X1, Z0, Z1];
     return m;
   }
 
@@ -170,6 +203,20 @@ const WILDS = (function () {
     TP.leaf = tpl(new THREE.BoxGeometry(1, 1, 1), 0.5, 0.5);   // từ gốc kéo dài ra +z (lá cọ)
     TP.ico = tpl(new THREE.IcosahedronGeometry(1, 0));
     TP.sph = tpl(new THREE.SphereGeometry(1, 7, 5));
+    TP.blob = tpl(new THREE.IcosahedronGeometry(1, 1));   // khối tròn mịn (tán cây, đá): pháp tuyến hướng tâm → bóng mượt, không lộ mặt tam giác
+  }
+  const _nm = new THREE.Matrix3(), _v = new THREE.Vector3();
+  function putBlob(col, x, y, z, sx, sy, sz, ry, ao) {   // như put("blob"), nhưng tô mượt + đáy sẫm (giả bóng khuất – "AO"), đỉnh sáng
+    const P = TP.blob, C = chunkAt(x, z), cp = C.p, cc = C.c, cn = C.n;
+    _e.set(0, ry || 0, 0, "YXZ"); _q.setFromEuler(_e); _m.compose(_p.set(x, y, z), _q, _s.set(sx, sy, sz)); _nm.getNormalMatrix(_m);
+    const j = 1 + (rnd() - 0.5) * 0.12, r = ((col >> 16) & 255) / 255 * j, g = ((col >> 8) & 255) / 255 * j, b = (col & 255) / 255 * j, a = ao === undefined ? 0.45 : ao;
+    for (let i = 0; i < P.length; i += 3) {
+      const ly = P[i + 1], wob = 1 + (hash((x * 7 + P[i] * 3) | 0, (z * 7 + P[i + 2] * 3 + ly * 5) | 0) - 0.5) * 0.14;   // gồ ghề nhẹ như chùm lá
+      _a.set(P[i] * wob, ly * wob, P[i + 2] * wob).applyMatrix4(_m); cp.push(_a.x, _a.y, _a.z);
+      _v.set(P[i], ly, P[i + 2]).applyMatrix3(_nm).normalize(); cn.push(_v.x, _v.y, _v.z);
+      const k = Math.min(1.12, 1 - a + a * (ly + 1) / 2 + (ly > 0.6 ? 0.08 : 0));   // dưới tối, trên sáng
+      cc.push(Math.min(1, r * k), Math.min(1, g * k), Math.min(1, b * k));
+    }
   }
   function chunkAt(x, z) { const k = Math.floor(x / CH) + "," + Math.floor(z / CH); let c = chunks.get(k); if (!c) { c = { p: [], c: [], n: [] }; chunks.set(k, c); } return c; }
   function put(tn, col, x, y, z, sx, sy, sz, ry, rx, rz, jit) {   // đặt 1 khối mẫu (cone6 / cyl5 / box / ico / sph / leaf) vào ô gộp
@@ -189,17 +236,20 @@ const WILDS = (function () {
   const taken = (x, z, r) => occ.some(o => (o.x - x) * (o.x - x) + (o.z - z) * (o.z - z) < (o.r + r) * (o.r + r));
   const reserve = (x, z, r) => occ.push({ x, z, r });
   function pine(x, z, s, sol) {
+    SHADE.push(x, z, 1.7 * s);
     put("cyl5", 0x6d4b33, x, 0, z, 0.22 * s, 0.9 * s, 0.22 * s);
     for (let i = 0; i < 3; i++) { const r = (1.55 - 0.42 * i) * s, y = (0.7 + 0.85 * i) * s, h = 1.35 * s, ry = rnd() * 6;
       put("cone6", 0x3f7a5c, x, y, z, r, h, r, ry); put("cone6", 0xffffff, x, y + 0.42 * s, z, r * 0.74, h * 0.72, r * 0.74, ry, 0, 0, 0.04); }
     if (sol) solid(x, z, 0.5 * s, 0.5 * s);
   }
   function maple(x, z, s, sol) {
+    SHADE.push(x, z, 2 * s);
     const cols = [0xd9481f, 0xf08a24, 0xe9b82f, 0xc23a1c];
     put("cyl5", 0x7a5236, x, 0, z, 0.26 * s, 1.7 * s, 0.26 * s);
-    put("ico", cols[(rnd() * 4) | 0], x, 2.5 * s, z, 1.5 * s, 1.2 * s, 1.5 * s, rnd() * 6);
-    put("ico", cols[(rnd() * 4) | 0], x + 0.8 * s, 2.0 * s, z + 0.3 * s, s, 0.85 * s, s, rnd() * 6);
-    put("ico", cols[(rnd() * 4) | 0], x - 0.7 * s, 2.1 * s, z - 0.4 * s, 0.95 * s, 0.8 * s, 0.95 * s, rnd() * 6);
+    putBlob(cols[(rnd() * 4) | 0], x, 2.5 * s, z, 1.5 * s, 1.2 * s, 1.5 * s, rnd() * 6);
+    putBlob(cols[(rnd() * 4) | 0], x + 0.8 * s, 2.0 * s, z + 0.3 * s, s, 0.85 * s, s, rnd() * 6);
+    putBlob(cols[(rnd() * 4) | 0], x - 0.7 * s, 2.1 * s, z - 0.4 * s, 0.95 * s, 0.8 * s, 0.95 * s, rnd() * 6);
+    putBlob(cols[(rnd() * 4) | 0], x + 0.1 * s, 3.25 * s, z, 0.8 * s, 0.65 * s, 0.8 * s, rnd() * 6, 0.25);
     if (sol) solid(x, z, 0.45 * s, 0.45 * s);
   }
   function cactus(x, z, s, sol) {
@@ -215,7 +265,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, w / 2, d / 2);
   }
   function rock(x, z, r, col, cap, sol) {
-    put("ico", col, x, r * 0.45, z, r, r * 0.7, r * 0.85, rnd() * 6); if (cap) put("ico", 0xffffff, x, r * 0.78, z, r * 0.7, r * 0.4, r * 0.6, rnd() * 6, 0, 0, 0.03);
+    putBlob(col, x, r * 0.3, z, r, r * 0.68, r * 0.85, rnd() * 6, 0.4); if (cap) put("ico", 0xffffff, x, r * 0.78, z, r * 0.7, r * 0.4, r * 0.6, rnd() * 6, 0, 0, 0.03);
     if (sol && r >= 1.1) solid(x, z, r * 0.8, r * 0.8);
   }
   function column(x, z, h, sol) {
@@ -241,10 +291,16 @@ const WILDS = (function () {
       put("cyl5", i % 2 ? 0x7bc558 : 0x5da843, x + dx, 0, z + dz, 0.1, h, 0.1, 0, 0, 0, 0.1); put("ico", 0x4e9e3a, x + dx, h, z + dz, 0.55, 0.25, 0.55, rnd() * 6); }
     if (sol) solid(x, z, 1.0, 1.0);
   }
-  function lushTree(x, z, s, cherry, sol) {
-    const cs = cherry ? [0xf7a8c4, 0xffc2d8, 0xf48fb1] : [0x62c24a, 0x7edb5a, 0x4fb046];
-    put("cyl5", 0x7b5a3a, x, 0, z, 0.25 * s, 1.6 * s, 0.25 * s);
-    put("ico", cs[(rnd() * 3) | 0], x, 2.4 * s, z, 1.4 * s, 1.1 * s, 1.4 * s, rnd() * 6); put("ico", cs[(rnd() * 3) | 0], x + 0.7 * s, 1.9 * s, z + 0.3 * s, 0.9 * s, 0.75 * s, 0.9 * s, rnd() * 6);
+  const SHADE = [];   // bóng râm dưới tán cây [x, z, bán kính] → vẽ thẳng vào ảnh nền sau khi rải cây (miễn phí khi chơi)
+  function lushTree(x, z, s, cherry, sol) {   // cây tán tròn kiểu "bông": 1 chùm lớn + 3–4 chùm nhỏ quanh, tô mượt
+    SHADE.push(x, z, 2.1 * s);
+    const cs = cherry ? [0xf2a3c0, 0xf8b8cf, 0xe98fb0] : [0x4f9a3c, 0x5daa45, 0x468f37], pick = () => cs[(rnd() * 3) | 0];
+    put("tcyl8", 0x6e4f34, x, 0, z, 0.24 * s, 1.7 * s, 0.24 * s);
+    putBlob(pick(), x, 2.55 * s, z, 1.45 * s, 1.2 * s, 1.45 * s, rnd() * 6);
+    const n = 2 + (rnd() < 0.6 ? 1 : 0), a0 = rnd() * 6;
+    for (let i = 0; i < n; i++) { const a = a0 + i * 6.283 / n + (rnd() - 0.5) * 0.6, d = (0.85 + rnd() * 0.3) * s, r = (0.75 + rnd() * 0.3) * s;
+      putBlob(pick(), x + Math.cos(a) * d, (2.0 + rnd() * 0.7) * s, z + Math.sin(a) * d, r, r * 0.85, r, rnd() * 6); }
+    putBlob(pick(), x + (rnd() - 0.5) * 0.4 * s, 3.4 * s, z + (rnd() - 0.5) * 0.4 * s, 0.8 * s, 0.65 * s, 0.8 * s, rnd() * 6, 0.25);   // chùm đỉnh
     if (sol) solid(x, z, 0.45 * s, 0.45 * s);
   }
   function flowers(x, z) { const cs = [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc, 0xff922b]; const c = cs[(rnd() * 5) | 0]; for (let i = 0; i < 5; i++) { const dx = (rnd() - 0.5) * 1.6, dz = (rnd() - 0.5) * 1.6; put("cone6", 0x4e9e3a, x + dx, 0, z + dz, 0.05, 0.3, 0.05); put("ico", i === 0 ? 0xffd43b : c, x + dx, 0.34, z + dz, 0.13); } }
@@ -571,7 +627,7 @@ const WILDS = (function () {
     ground = groundMesh(TX0, TX1, TZ0, TZ1, [[TX0, -R1 - 1, R1 + 1, -CITY + 1], [CITY - 1, -CITY + 1, R1 + 1, CITY - 1], [TX0, CITY - 1, R1 + 1, R1 + 1]], -0.02, CITY - 1.5, R1 + 5); scene.add(ground);
     ground2 = groundMesh(UX0, UX1, UZ0, UZ1, [[UX0, UZ0, UX1, -R1 - 1], [R1 + 1, -R1 - 1, UX1, R1 + 1], [UX0, R1 + 1, UX1, UZ1]], -0.01, R1 - 4, 1e9); scene.add(ground2);
     GATES.forEach(buildGate); landmarks(); scatter();
-    GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); finalize();
+    GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); shadeGround(ground); shadeGround(ground2); finalize();
     updateVis(); setInterval(updateVis, 250);
   } };
   return api;
