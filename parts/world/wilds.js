@@ -167,16 +167,6 @@ const WILDS = (function () {
     };
     return mt;
   }
-  function carpet() {   // thảm cỏ, hoa, bụi cây mô hình thật ở Blossom Valley vòng 1 (nature.js); tránh đường mòn, suối, vật cản
-    if (!(typeof NATURE !== "undefined")) return;
-    for (let gx = -150; gx < R1; gx += 2.6) for (let gz = CITY; gz < R1; gz += 2.6) {
-      const x = gx + rnd() * 2.6, z = gz + rnd() * 2.6, sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== 1) continue;
-      const f = fbm(x, z), r = rnd(); if (r > 0.12 + f * 0.3) continue;
-      if (pathDist(x, z) < 1.9 || taken(x, z, 0.9) || blocked(x, z)) continue;
-      if (z > 148 && Math.abs(x - streamX(z)) < streamW(z) + 1.6) continue;
-      const k = rnd(); if (k < 0.04) NATURE.bush(x, z, 0.8 + rnd() * 0.5); else if (k < 0.1) NATURE.ground(x, z, "flower"); else if (k < 0.13) NATURE.ground(x, z, "plant"); else NATURE.ground(x, z, "grass");
-    }
-  }
   function shadeGround(m) {   // vẽ bóng râm mềm (lệch theo hướng nắng) lên ảnh nền đã có
     const [X0, X1, Z0, Z1] = m.userData.box, cv = m.material.map.image, g = cv.getContext("2d"), kx = cv.width / (X1 - X0), kz = cv.height / (Z1 - Z0);
     g.globalCompositeOperation = "multiply";
@@ -313,8 +303,7 @@ const WILDS = (function () {
     putBlob(pick(), x + (rnd() - 0.5) * 0.4 * s, 3.4 * s, z + (rnd() - 0.5) * 0.4 * s, 0.8 * s, 0.65 * s, 0.8 * s, rnd() * 6, 0.25);   // chùm đỉnh
     if (sol) solid(x, z, 0.45 * s, 0.45 * s);
   }
-  function flowers(x, z) {
-    if (typeof NATURE !== "undefined") { NATURE.ground(x, z, "flower"); if (rnd() < 0.5) NATURE.ground(x + (rnd() - 0.5) * 2, z + (rnd() - 0.5) * 2, "plant"); return; } const cs = [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc, 0xff922b]; const c = cs[(rnd() * 5) | 0]; for (let i = 0; i < 5; i++) { const dx = (rnd() - 0.5) * 1.6, dz = (rnd() - 0.5) * 1.6; put("cone6", 0x4e9e3a, x + dx, 0, z + dz, 0.05, 0.3, 0.05); put("ico", i === 0 ? 0xffd43b : c, x + dx, 0.34, z + dz, 0.13); } }
+  function flowers(x, z) { const cs = [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc, 0xff922b]; const c = cs[(rnd() * 5) | 0]; for (let i = 0; i < 5; i++) { const dx = (rnd() - 0.5) * 1.6, dz = (rnd() - 0.5) * 1.6; put("cone6", 0x4e9e3a, x + dx, 0, z + dz, 0.05, 0.3, 0.05); put("ico", i === 0 ? 0xffd43b : c, x + dx, 0.34, z + dz, 0.13); } }
   function mound(x, z, s) { put("sph", 0xffffff, x, 0, z, 1.4 * s, 0.6 * s, 1.2 * s, rnd() * 3, 0, 0, 0.04); }
   function crystals(x, z) { for (let i = 0; i < 4; i++) put("cone6", 0x9fe0ff, x + (rnd() - 0.5) * 1.4, 0, z + (rnd() - 0.5) * 1.4, 0.3, 1.0 + rnd() * 1.2, 0.3, 0, (rnd() - 0.5) * 0.4, (rnd() - 0.5) * 0.4, 0.05); }
   function dune(x, z) { put("sph", 0xe9cf98, x, -0.2, z, 5 + rnd() * 4, 1.2 + rnd(), 4 + rnd() * 3, rnd() * 3, 0, 0, 0.05); }
@@ -638,8 +627,7 @@ const WILDS = (function () {
     ground = groundMesh(TX0, TX1, TZ0, TZ1, [[TX0, -R1 - 1, R1 + 1, -CITY + 1], [CITY - 1, -CITY + 1, R1 + 1, CITY - 1], [TX0, CITY - 1, R1 + 1, R1 + 1]], -0.02, CITY - 1.5, R1 + 5); scene.add(ground);
     ground2 = groundMesh(UX0, UX1, UZ0, UZ1, [[UX0, UZ0, UX1, -R1 - 1], [R1 + 1, -R1 - 1, UX1, R1 + 1], [UX0, R1 + 1, UX1, UZ1]], -0.01, R1 - 4, 1e9); scene.add(ground2);
     GATES.forEach(buildGate); landmarks(); scatter();
-    GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); carpet(); shadeGround(ground); shadeGround(ground2); finalize();
-    if (typeof NATURE !== "undefined") NATURE.build();
+    GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); shadeGround(ground); shadeGround(ground2); finalize();
     updateVis(); setInterval(updateVis, 250);
   } };
   return api;
