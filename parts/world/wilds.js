@@ -286,6 +286,7 @@ const WILDS = (function () {
   const taken = (x, z, r) => occ.some(o => (o.x - x) * (o.x - x) + (o.z - z) * (o.z - z) < (o.r + r) * (o.r + r));
   const reserve = (x, z, r) => occ.push({ x, z, r });
   function pine(x, z, s, sol) {
+    if (typeof NATURE !== "undefined") { SHADE.push(x, z, 1.7 * s); NATURE.place("pine", x, z, s); if (sol) solid(x, z, 0.5 * s, 0.5 * s); return; }   // mô hình (nature.js)
     SHADE.push(x, z, 1.7 * s);
     put("cyl5", 0x6d4b33, x, 0, z, 0.22 * s, 0.9 * s, 0.22 * s);
     for (let i = 0; i < 3; i++) { const r = (1.55 - 0.42 * i) * s, y = (0.7 + 0.85 * i) * s, h = 1.35 * s, ry = rnd() * 6;
@@ -293,6 +294,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, 0.5 * s, 0.5 * s);
   }
   function maple(x, z, s, sol) {
+    if (typeof NATURE !== "undefined") { SHADE.push(x, z, 2 * s); NATURE.place("maple", x, z, s); if (sol) solid(x, z, 0.45 * s, 0.45 * s); return; }   // mô hình (nature.js)
     SHADE.push(x, z, 2 * s);
     const cols = [0xd9481f, 0xf08a24, 0xe9b82f, 0xc23a1c];
     put("cyl5", 0x7a5236, x, 0, z, 0.26 * s, 1.7 * s, 0.26 * s);
@@ -303,6 +305,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, 0.45 * s, 0.45 * s);
   }
   function cactus(x, z, s, sol) {
+    if (typeof NATURE !== "undefined") { SHADE.push(x, z, 0.9 * s); NATURE.place("cactus", x, z, s); if (sol) solid(x, z, 0.4 * s, 0.4 * s); return; }   // mô hình (nature.js)
     const c = 0x4f9d4e;
     put("box", c, x, 0, z, 0.5 * s, 2.3 * s, 0.5 * s, rnd() * 3);
     put("box", c, x + 0.5 * s, 0.95 * s, z, 0.55 * s, 0.3 * s, 0.3 * s); put("box", c, x + 0.7 * s, 0.95 * s, z, 0.3 * s, 0.9 * s, 0.3 * s);
@@ -324,6 +327,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, 0.6, 0.6);
   }
   function palm(x, z, s, sol) {
+    if (typeof NATURE !== "undefined") { SHADE.push(x, z, 1.6 * s); NATURE.place("palm", x, z, s); if (sol) solid(x, z, 0.3 * s, 0.3 * s); return; }   // mô hình (nature.js)
     const lx = (rnd() - 0.5) * 0.5, lz = (rnd() - 0.5) * 0.5;
     for (let i = 0; i < 4; i++) put("cyl5", 0x9c7448, x + lx * i * s * 0.6, i * 1.2 * s, z + lz * i * s * 0.6, (0.26 - i * 0.03) * s, 1.25 * s, (0.26 - i * 0.03) * s, 0, 0, 0, 0.1);
     const cx = x + lx * 3.6 * s * 0.6, cz = z + lz * 3.6 * s * 0.6, cy = 4.8 * s;
@@ -341,6 +345,7 @@ const WILDS = (function () {
       put("cyl5", i % 2 ? 0x7bc558 : 0x5da843, x + dx, 0, z + dz, 0.1, h, 0.1, 0, 0, 0, 0.1); put("ico", 0x4e9e3a, x + dx, h, z + dz, 0.55, 0.25, 0.55, rnd() * 6); }
     if (sol) solid(x, z, 1.0, 1.0);
   }
+  const bambooZone = (x, z, ring) => vnoise(x * 0.022 + 300, z * 0.022 + 300) > (ring === 2 ? 0.5 : 0.62);   // rừng trúc mọc thành vùng riêng, không lẫn cây lá
   const SHADE = [];   // bóng râm dưới tán cây [x, z, bán kính] → vẽ thẳng vào ảnh nền sau khi rải cây (miễn phí khi chơi)
   function lushTree(x, z, s, cherry, sol) {   // cây tán tròn kiểu "bông": 1 chùm lớn + 3–4 chùm nhỏ quanh, tô mượt
     SHADE.push(x, z, 2.1 * s);
@@ -492,7 +497,7 @@ const WILDS = (function () {
       const x = gx + rnd() * 3.6, z = gz + rnd() * 3.6, sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== ring) continue;
       const f = fbm(x, z); if (f < 0.56 || rnd() > 0.5 + (f - 0.56) * 2.5) continue;
       if (!clear(x, z, 1.7, ring === 2)) continue;
-      if (ring === 2 && rnd() < 0.3) bambooTall(x, z, true); else lushTree(x, z, 0.95 + rnd() * 0.75, rnd() < 0.2, true); reserve(x, z, 1.7);
+      if (bambooZone(x, z, ring)) { if (ring === 2) bambooTall(x, z, true); else bamboo(x, z, true); } else lushTree(x, z, 0.95 + rnd() * 0.75, rnd() < 0.2, true); reserve(x, z, 1.7);
     }
   }
   function boulders() {   // tảng đá xám to (2–3 tảng một cụm, đỉnh phủ rêu) làm điểm nhấn ở trảng trống
@@ -536,7 +541,7 @@ const WILDS = (function () {
         if (d === "N") pine(x, z, s, sol); else if (d === "NE") maple(x, z, s, sol);
         else if (d === "E") { if (rnd() < 0.7) cactus(x, z, 0.8 + rnd() * 0.6, sol); else rock(x, z, 1.3 + rnd(), 0xb86a46, false, sol); }
         else if (d === "SE") { if (cheb(x, z) > 214) mangrove(x, z, 0.9 + rnd() * 0.5, sol); else palm(x, z, 0.8 + rnd() * 0.6, sol); }
-        else { if (rnd() < 0.3) bamboo(x, z, sol); else lushTree(x, z, s, rnd() < 0.4, sol); }
+        else { if (bambooZone(x, z, 1)) bamboo(x, z, sol); else lushTree(x, z, s, rnd() < 0.4, sol); }
         reserve(x, z, 2.2);
       } else if (rnd() < 0.5) {   // đồ nhỏ, đi xuyên qua được
         const sx = x + (rnd() - 0.5) * 3, sz = z + (rnd() - 0.5) * 3; if (!clear(sx, sz, 0.8)) continue;
@@ -579,7 +584,7 @@ const WILDS = (function () {
         else if (d === "NE") { if (rnd() < 0.9) maple(x, z, s + 0.2, true); else rock(x, z, 1.6 + rnd(), 0x8d7355, false, true); }
         else if (d === "E") { const k = rnd(); if (k < 0.3) cactus(x, z, 0.9 + rnd() * 0.7, true); else if (k < 0.7) rock(x, z, 1.6 + rnd() * 1.6, 0xb86a46, false, true); else mesa(x, z, 4 + rnd() * 3, 5 + rnd() * 4, 4 + rnd() * 3, true); }
         else if (d === "SE") { if (rnd() < 0.75) palm(x, z, 0.9 + rnd() * 0.6, true); else rock(x, z, 1.3 + rnd() * 0.6, 0xc9c1ab, false, true); }
-        else { if (rnd() < 0.62) bambooTall(x, z, true); else lushTree(x, z, s + 0.2, rnd() < 0.5, true); }
+        else { if (bambooZone(x, z, 2)) bambooTall(x, z, true); else lushTree(x, z, s + 0.2, rnd() < 0.5, true); }
         reserve(x, z, 2.2);
       } else if (rnd() < 0.5) {
         const sx = x + (rnd() - 0.5) * 3, sz = z + (rnd() - 0.5) * 3; if (!clear(sx, sz, 0.8, true)) continue;
