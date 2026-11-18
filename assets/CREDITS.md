@@ -16,3 +16,10 @@ Nguồn: https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0 (dùng 
 |---|---|---|
 | `three.min.js`, `GLTFLoader.js`, `SkeletonUtils.js` | three.js r128 (npm `three@0.128.0`) | MIT |
 | `supabase.js` | npm `@supabase/supabase-js@2.89.0` (bản UMD) | MIT |
+
+## Thiên nhiên (thư mục `assets/nature/`, đang thử nghiệm)
+| Bộ gốc | Tác giả | Giấy phép |
+|---|---|---|
+| Stylized Nature MegaKit (bản miễn phí) | Quaternius (quaternius.com) | CC0 1.0 |
+
+Đã chỉnh sửa: chỉ giữ 21 mô hình nhẹ, bỏ ảnh pháp tuyến, thu nhỏ ảnh (256–512 px), ảnh lá đổi sang trắng (chỉ dùng để cắt hình lá, màu tô bằng code).
