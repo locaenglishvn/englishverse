@@ -20,7 +20,7 @@ Nguồn: https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0 (dùng 
 ## Thiên nhiên (thư mục `assets/nature/`)
 | Bộ gốc | Tác giả | Giấy phép | Dùng |
 |---|---|---|---|
-| Textured Stylized Trees (May 2020) | Quaternius (quaternius.com) | CC0 1.0 | Cây tán lá (Tree_1/7/9/10), ảnh lá xanh + lá hồng, vỏ cây |
-| Ultimate Nature Pack | Quaternius (quaternius.com) | CC0 1.0 | Bụi cây, hoa, gốc cây rêu |
+| Textured Stylized Trees (May 2020) | Quaternius (quaternius.com) | CC0 1.0 | Cây tán lá (Tree_1/7/9/10, Birch_2/4), ảnh lá xanh / hồng / cam / đỏ / vàng, vỏ cây |
+| Ultimate Nature Pack | Quaternius (quaternius.com) | CC0 1.0 | Bụi cây, hoa, gốc cây rêu, thông tuyết, xương rồng, cọ |
 
 Đã chỉnh sửa: chuyển OBJ → GLB (trimesh), thu nhỏ ảnh (256–512 px). Màu lá / pháp tuyến chỉnh bằng code trong `parts/world/nature.js`.
