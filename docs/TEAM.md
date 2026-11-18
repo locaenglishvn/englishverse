@@ -97,6 +97,9 @@ KHÔNG ĐƯỢC: sửa index.html (trừ khi đề bài cho phép), đổi dữ 
 - Agent tạo worktree từ `main`, không phải nhánh làm việc → đề bài phải có BƯỚC 0: `git merge --ff-only <nhánh làm việc>`.
 - Nhiều agent chạy thử cùng lúc tranh cổng 8765 → mỗi đề bài ghi một cổng riêng cho `python3 -m http.server`.
 - Giao diện mới: dùng lớp `.ev-*` trong `parts/ui/theme.js`, không tự chế màu / nút riêng.
+- Kiểm thử tự động phải đặt `localStorage.ev_qa = "1"` (bỏ qua cổng mã mời) và `save.metEcho = 1` (bỏ qua Captain Echo tự chào) nếu không muốn hộp thoại che màn hình.
+- Không gọi hàm Supabase `claim_invite` bằng mã thật khi thử (sẽ gắn mã vào máy thử) → chặn bằng `page.route`.
+- Chạy nhiều agent: chia rõ vùng file (hàm nào, file nào) trong đề bài; ghép xong luôn chạy lại `node tools/qa/run.js` + 1 lượt Playwright.
 - Nhãn tên NPC xuyên tường: nơi nhiều khu dùng `P.zones` để chỉ hiện tên trong khu đang đứng.
 
 ## 8. Backup & khôi phục

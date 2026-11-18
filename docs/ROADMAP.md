@@ -310,9 +310,18 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 ---
 
-## 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 16/11 khi bàn giao sang phiên mới
-**Trạng thái:** `main` = PR #38 (`1250c9b`), QA toàn bộ ✅. Chiến đấu bằng giọng nói giai đoạn A + B + phần lớn C đã xong (mục 33–35 ở trên). Thiết kế đã chốt đầy đủ: `docs/design/voice-combat.html` (bản 3; xem trên điện thoại: https://claude.ai/artifact/HouMFg33PkkFkRYcmoK6Vu).
-**Cần chủ dự án thử trên điện thoại thật:** nói micro khi tung chiêu, lập đội / Duet / đổi đồ (2 người), độ mượt ở vùng hoang dã.
+## 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 18/11 khi bàn giao sang phiên mới
+**Trạng thái:** `main` = PR #48 (`7336d8b`), QA toàn bộ ✅. Đợt góp ý chơi thử 16–18/11 đã xong (mục 36–42 ở trên): HUD + bộ khung giao diện `parts/ui/theme.js`, camera vùng hoang dã, lên cấp cần thẻ, túi đồ 8 ô, bảng kỹ năng, 8 dạng bài + bảng 📚 Challenges, mã mời, nhạc nền, bộ đàm đội. Thiết kế đợt này: `docs/design/playtest-1611.html`.
+
+**👉 TRỌNG TÂM PHIÊN MỚI: HOÀN THIỆN HÌNH ẢNH (VISUAL)** – chủ dự án chốt 18/11. Hỏi chủ dự án muốn ưu tiên phần nào trước (gợi ý: giao diện còn lại chưa theo `theme.js` – cửa hàng, hội thoại NPC, sổ thẻ, bản đồ lớn, màn tạo nhân vật; hiệu ứng / vùng hoang dã; nhân vật & trang phục – áo mặc định vẫn hơi dáng áo dài vì mô hình thân Rogue; mô hình quái; nội thất/ngoại thất còn thiếu). Dùng lại lớp `.ev-*` trong `parts/ui/theme.js`, không tự chế màu.
+
+**Việc treo / chờ chủ dự án:**
+- **Giọng đọc AI tạo sẵn** (chốt: Azure trước, sau này đổi ElevenLabs; KHÔNG gọi AI mỗi lần đọc): chủ dự án đăng ký Azure bị lỗi (email trường không xác minh được; tài khoản cá nhân pay-as-you-go báo "couldn't complete sign-up" – có thể do thẻ). Phương án dự phòng: OpenAI TTS (~2 USD). Có khoá thì: `request_credential` cho host dịch vụ, viết công cụ tạo file giọng cho ~4.830 câu / 122.000 ký tự (gán giọng theo NPC, đọc chậm cho trẻ, chỉ tạo câu chưa có), lưu `assets/voice/`, game phát file, thiếu thì dùng giọng máy.
+- **Mã mời:** 11 mã (Hoc sinh 1–10 + Chu du an; mã gốc chỉ chủ dự án giữ, code chỉ có mã băm). Supabase đã cài `docs/setup/invites.sql`; nhắc chủ dự án chạy khối "THÊM 8 MÃ" nếu chưa. **Bảng báo cáo** `docs/setup/reports.sql` – chủ dự án cần chạy để nút ⚠️ Report của bộ đàm hoạt động.
+- **Cần thử trên điện thoại thật:** bộ đàm đội trên iPhone (có tự chuyển bộ đàm chữ không), lag khi ra chiêu (đã chống bằng `warmSkillFx` + chấm sau khi tắt micro), độ to nhạc nền, chấm điểm SOUNDS (máy nhận dạng hay tự sửa từ).
+- **Gọi chiêu cho đồng đội** (Harmony chỉ hồi máu / khiên khi đồng đội nói "Heal me!", "Shield now!" qua bộ đàm) – chủ dự án hoãn, làm sau visual.
+- **Lưu tiến độ lên server theo tài khoản** (🔴 dữ liệu trẻ em): hiện trình duyệt xoá dữ liệu là mất tiến độ.
+
 0. **4 dạng bài đã duyệt ý tưởng (17/11), đã có trong bảng 📚 Challenges với nhãn "Coming soon" (`soon: true` trong `CHALLENGES`, engine.js):**
    - **REPLY (Lv.15):** đáp lại câu tình huống ("Can I help you?" → "Yes, I need a map."). Cần ngân hàng ~120 cặp câu – câu đáp theo `keys` như ANSWER. Writer viết.
    - **MY MISTAKES (Lv.10):** lấy LỖI THẬT của người chơi. Mỗi lần chấm Good/Weak ở REPEAT/LISTEN/FILL/BUILD: so từng từ câu đích với câu máy nghe được (thiếu từ, thiếu -s/-ed, sai trật tự) → lưu tối đa ~30 câu vào `save.combat.mistakes` (câu đích + phần sai). Đề: hiện câu người chơi đã nói, tô phần sai, người chơi nói lại câu đúng; làm đúng 2 lần thì xoá khỏi danh sách. Lưu ý: máy nhận dạng giọng nói hay tự sửa ngữ pháp → chủ yếu bắt được lỗi THIẾU từ / đuôi và sai trật tự, khó bắt lỗi chia động từ.
