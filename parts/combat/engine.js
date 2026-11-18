@@ -342,6 +342,7 @@ function monTick(M, dt, t) {
   const p = M.g.position, P = player.position, dist = Math.hypot(P.x - p.x, P.z - p.z);
   if (M.dead) { if (!M.fxDone) { M.fxDone = 1; if (typeof FEEL !== "undefined") FEEL.death(M); } M.deadT += dt; M.model.update(dt, t, "die"); M.g.scale.setScalar(Math.max(0.01, 1 - Math.max(0, M.deadT - 0.7) / 0.3)); if (M.deadT > 1) { scene.remove(M.g); M.gone = true; } return; }
   if (!CB.on || CB.sec.dir !== M.dir) { if (dist > 120 || M.remote) { scene.remove(M.g); M.gone = true; } return; }
+  if (!M.remote && dist > 75 && M.hp >= M.hpMax && (() => { const q = monTarget(M).pos; return Math.hypot(q.x - p.x, q.z - p.z) > 75; })()) { scene.remove(M.g); M.gone = true; return; }   // quái lành lặn ở quá xa: dọn đi để quái mới sinh gần người chơi
   if (M.remote) {   // quái của "chủ phòng": chỉ nội suy vị trí nhận qua mạng
     if (performance.now() - M.seen > 2500) { scene.remove(M.g); M.gone = true; return; }
     const dx = M.nx - p.x, dz = M.nz - p.z, d = Math.hypot(dx, dz); if (d > 0.05) { p.x += dx * Math.min(1, dt * 6); p.z += dz * Math.min(1, dt * 6); M.g.rotation.y = Math.atan2(dx, dz); }
