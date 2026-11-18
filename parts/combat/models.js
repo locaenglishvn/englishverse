@@ -221,18 +221,26 @@ const MONSTER_MODELS = (function () {
     const letters = X.tiles || [];
     let cur = "idle", st = 0, flashOn = false, lastAlpha = 1, dead = false;
     function setAlpha(a) { if (a === lastAlpha) return; lastAlpha = a; ctx.mats.forEach(o => { const t = a < 1; if (o.m.transparent !== (t || o.base < 1)) o.m.transparent = t || o.base < 1; o.m.opacity = o.base * a; }); }
-    function setFlash(on) { if (on === flashOn) return; flashOn = on; ctx.mats.forEach(o => { if (o.m.emissive) o.m.emissive.setHex(on ? 0x999999 : 0); }); }
+    function setFlash(on) { if (on === flashOn) return; flashOn = on; ctx.mats.forEach(o => { if (o.m.emissive) o.m.emissive.setHex(on ? 0xcccccc : 0); }); }
     function update(dt, t, state) {
       state = state || "idle";
       if (state !== cur) { cur = state; st = 0; if (state !== "die" && dead) { dead = false; body.visible = true; setAlpha(1); letters.forEach(l => l.visible = true); } }
       st += dt;
-      const ph = t * 2.2 + phase; let bx = 0, by = X.float || 0, bz = 0, rx = 0, rz = 0, sx = 1, sy = 1, alpha = 1, flash = false, lunge = 0, wave = 1;
+      const ph = t * 2.2 + phase; let bx = 0, by = X.float || 0, bz = 0, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, alpha = 1, flash = false, lunge = 0, wave = 1;
       if (state === "idle") { by += Math.sin(ph) * (X.bob || 0.03); sy = 1 + Math.sin(ph) * 0.025 * (X.jelly || 1); sx = 1 - Math.sin(ph) * 0.012 * (X.jelly || 1); }
       else if (state === "walk") { const w = t * 8 + phase; rz = Math.sin(w) * 0.12; by += Math.abs(Math.sin(w)) * 0.08; sy = 1 + Math.sin(w * 2) * 0.03; wave = 2.2; }
-      else if (state === "attack") { const p = Math.min(1, st / 0.5); lunge = Math.sin(p * Math.PI); bz = lunge * 0.75; rx = lunge * 0.3; by += lunge * 0.1; sy = 1 - lunge * 0.06; wave = 3; }
-      else if (state === "hit") { const f = Math.max(0, 1 - st / 0.35); bx = Math.sin(st * 55) * 0.07 * f; rz = Math.sin(st * 40) * 0.08 * f; flash = st < 0.4 && Math.floor(st * 16) % 2 === 0; sy = 1 - 0.08 * f; }
-      else if (state === "die") { const p = Math.min(1, st / 0.8); sy = 1 - 0.8 * p; sx = 1 + 0.4 * p; alpha = 1 - p * p; by = 0; if (p >= 1 && !dead) { dead = true; body.visible = false; } letters.forEach(l => l.visible = p < 0.3); }
-      body.position.set(bx, by, bz); body.rotation.set(rx, 0, rz); body.scale.set(k0 * sx, k0 * sy, k0 * sx);
+      else if (state === "attack") {   // 0–0,5 s: lùi lấy đà, phồng lên, rung (báo trước cho người chơi né) · 0,5–0,8 s: lao tới mạnh
+        if (st < 0.5) { const w = Math.sin(Math.min(1, st / 0.5) * Math.PI / 2); bz = -0.4 * w; rx = -0.3 * w; sy = 1 + 0.14 * w; sx = 1 - 0.06 * w; bx = Math.sin(st * 60) * 0.03 * w; flash = st > 0.3 && Math.floor(st * 20) % 2 === 0; }
+        else { const p = Math.min(1, (st - 0.5) / 0.3); lunge = Math.sin(p * Math.PI); bz = -0.4 * (1 - p) + lunge * 1.1; rx = lunge * 0.45; by += lunge * 0.15; sy = 1 - lunge * 0.15; sx = 1 + lunge * 0.1; }
+        wave = 3; }
+      else if (state === "hit") {   // trúng đòn: nhá trắng, bẹp rồi nảy như thạch, ngả ra sau, rung
+        const f = Math.max(0, 1 - st / 0.4), j = Math.cos(st * 32) * f;
+        bx = Math.sin(st * 55) * 0.12 * f; rz = Math.sin(st * 40) * 0.12 * f; rx = -0.35 * f; flash = st < 0.09; sy = 1 - 0.22 * j; sx = 1 + 0.14 * j; }
+      else if (state === "die") {   // nảy lên + xoay, rồi bẹp xuống và mờ dần
+        const p = Math.min(1, st / 0.8), up = Math.min(1, p / 0.3), dn = Math.max(0, (p - 0.3) / 0.7);
+        by = Math.sin(up * Math.PI / 2) * 0.7 * (1 - dn) ; ry = p * 7; sy = p < 0.3 ? 1 + 0.2 * up : 1.2 - 1.0 * dn; sx = p < 0.3 ? 1 - 0.1 * up : 0.9 + 0.5 * dn; flash = p < 0.12; alpha = 1 - dn * dn;
+        if (p >= 1 && !dead) { dead = true; body.visible = false; } letters.forEach(l => l.visible = p < 0.3); }
+      body.position.set(bx, by, bz); body.rotation.set(rx, ry, rz); body.scale.set(k0 * sx, k0 * sy, k0 * sx);
       setAlpha(alpha); setFlash(flash);
       // phần riêng từng loài
       if (X.ant) { X.ant.rotation.z = Math.sin(t * 5 * wave + phase) * 0.14; X.ant.rotation.x = Math.sin(t * 3 + phase) * 0.1 + lunge * 0.3; }

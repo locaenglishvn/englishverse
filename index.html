@@ -261,6 +261,7 @@ button{font:inherit;cursor:pointer}
 <script src="parts/combat/weapons3d.js"></script>
 <script src="deck.js"></script>
 <script src="parts/combat/engine.js"></script>
+<script src="parts/combat/feel.js"></script>
 <script src="parts/combat/skills-ui.js"></script>
 <script src="parts/social/safechat.js"></script>
 <script src="parts/social/team.js"></script>
@@ -1626,7 +1627,9 @@ function updateGhosts(dt, t) {
   }
   waves.forEach(w => { w.t += dt; const k = w.t / 0.45; w.m.position.lerpVectors(w.a, w.b, Math.min(1, k)); w.m.scale.setScalar(1 + k * 2); w.m.material.opacity = 1 - k; if (k >= 1) { scene.remove(w.m); w.done = true; } });
   waves = waves.filter(w => !w.done);
-  pops.forEach(q => { q.t += dt; q.s.position.y += dt * 1.2; q.s.material.opacity = 1 - q.t; if (q.t >= 1) { scene.remove(q.s); q.done = true; } });
+  pops.forEach(q => { q.t += dt; const k = (q.k || 1) * (q.t < 0.1 ? 1.7 - q.t * 7 : 1);   // nảy: to gấp 1,7 rồi về cỡ thật trong 0,1 giây
+    q.s.scale.set(1.8 * k, 0.68 * k, 1); q.s.position.y += dt * (q.t < 0.3 ? 2.6 : 0.6); q.s.position.x += dt * (q.vx || 0);
+    q.s.material.opacity = q.t < 0.65 ? 1 : 1 - (q.t - 0.65) / 0.35; if (q.t >= 1) { scene.remove(q.s); q.s.material.map.dispose(); q.s.material.dispose(); q.done = true; } });
   pops = pops.filter(q => !q.done);
 }
 function nextLine() {
@@ -1667,12 +1670,13 @@ function soundWave(to) {   // sóng âm từ loa bay vào quái
   const a = player.position.clone().setY(1.2), b = to.clone().setY(1.5);
   m.lookAt(b); scene.add(m); waves.push({ m, a, b, t: 0 });
 }
-function popText(text, pos, color) {   // số sát thương bay lên
-  const c = document.createElement("canvas"); c.width = 256; c.height = 96;
-  const x = c.getContext("2d"); x.font = "bold 64px system-ui, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle";
-  x.lineWidth = 8; x.strokeStyle = "#fff"; x.strokeText(text, 128, 50); x.fillStyle = color; x.fillText(text, 128, 50);
+function popText(text, pos, color, o) {   // số sát thương bay lên: nảy to ra rồi thu lại, trôi chéo, mờ dần. o = { stroke, big }
+  o = o || {}; const c = document.createElement("canvas"); c.width = 256; c.height = 96;
+  const x = c.getContext("2d"); x.font = "900 64px system-ui, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.lineJoin = "round";
+  x.lineWidth = 10; x.strokeStyle = o.stroke || "#fff"; x.strokeText(text, 128, 50); x.fillStyle = color; x.fillText(text, 128, 50);
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
-  s.scale.set(1.8, 0.68, 1); s.position.copy(pos).setY(2.6); scene.add(s); pops.push({ s, t: 0 });
+  const k = o.big ? 1.45 : 1; s.scale.set(1.8 * k, 0.68 * k, 1); s.position.copy(pos).setY(2.6); s.renderOrder = 10; scene.add(s);
+  pops.push({ s, t: 0, k, vx: (Math.random() - 0.5) * 1.6 });
 }
 function hitGhost(acc) {
   charAct(player, "Spellcast_Shoot");   // tung chiêu

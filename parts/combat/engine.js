@@ -247,7 +247,8 @@ function updateCombat(dt, t) {
   CB.atkCd = Math.max(0, CB.atkCd - dt);
   if (CB.on) { spawnTick(); netTick(dt); warmSkillFx(); }
   warmTick(dt);
-  CB.mons.forEach(M => monTick(M, dt, t));
+  const mdt = typeof FEEL !== "undefined" ? FEEL.scaleDt(dt) : dt;   // khựng hình khi trúng đòn (parts/combat/feel.js)
+  CB.mons.forEach(M => monTick(M, mdt, t));
   CB.mons = CB.mons.filter(M => !M.gone);
   dropTick(dt, t);
   if (CB.cast) { CB.cast.left -= dt; $("cbCbar").style.width = Math.max(0, CB.cast.left / CB.cast.limit * 100) + "%"; if (CB.cast.left <= 0 && !CB.cast.rec) resolveCast([], "timeout"); }
@@ -339,7 +340,7 @@ function makeMon(type, sec, x, z) {
 function monTick(M, dt, t) {
   if (M.tag && !M.dead) evMonTag(M);   // cập nhật thanh máu khi M.hp đổi (cả quái remote)
   const p = M.g.position, P = player.position, dist = Math.hypot(P.x - p.x, P.z - p.z);
-  if (M.dead) { M.deadT += dt; M.model.update(dt, t, "die"); M.g.scale.setScalar(Math.max(0.01, 1 - M.deadT)); if (M.deadT > 1) { scene.remove(M.g); M.gone = true; } return; }
+  if (M.dead) { if (!M.fxDone) { M.fxDone = 1; if (typeof FEEL !== "undefined") FEEL.death(M); } M.deadT += dt; M.model.update(dt, t, "die"); M.g.scale.setScalar(Math.max(0.01, 1 - Math.max(0, M.deadT - 0.7) / 0.3)); if (M.deadT > 1) { scene.remove(M.g); M.gone = true; } return; }
   if (!CB.on || CB.sec.dir !== M.dir) { if (dist > 120 || M.remote) { scene.remove(M.g); M.gone = true; } return; }
   if (M.remote) {   // quái của "chủ phòng": chỉ nội suy vị trí nhận qua mạng
     if (performance.now() - M.seen > 2500) { scene.remove(M.g); M.gone = true; return; }
@@ -348,6 +349,7 @@ function monTick(M, dt, t) {
     if (M.tele) { M.tele.t += dt; M.tele.ring.scale.setScalar(0.4 + Math.min(1, M.tele.t / 0.8) * 0.6); if (M.tele.t >= 0.8) { scene.remove(M.tele.ring); M.tele = null; M.ntele = null; } }
     M.model.update(dt, t, M.hurtT > 0 ? (M.hurtT -= dt, "hit") : M.nst || "idle"); return;
   }
+  if (M.kb && typeof FEEL !== "undefined") FEEL.kbTick(M, dt);   // văng lùi khi trúng đòn
   if (M.stun > 0) { M.stun -= dt; M.model.update(dt, t, "hit"); return; }
   M.root = Math.max(0, (M.root || 0) - dt); M.silence = Math.max(0, (M.silence || 0) - dt); M.slowT = Math.max(0, (M.slowT || 0) - dt);
   const spd = M.slowT > 0 ? 1 - (M.slow || 0) : 1;
@@ -360,7 +362,7 @@ function monTick(M, dt, t) {
       else netSend("mhit", { to: M.tele.who, x: M.tele.x, z: M.tele.z, r: M.T.range, lv: M.lv, d: M.T.dmg }); scene.remove(M.tele.ring); M.tele = null; M.atkT = 2.2; }
   } else if (aggro) {
     M.g.rotation.y = Math.atan2(P2.x - p.x, P2.z - p.z);
-    if (dist2 > M.T.range * 0.8 && !M.root) { const s = 2.3 * M.T.speed * spd * dt; movMon(M, (P2.x - p.x) / dist2 * s, (P2.z - p.z) / dist2 * s); state = "walk"; }
+    if (dist2 > M.T.range * 0.8 && !M.root && !M.kb) { const s = 2.3 * M.T.speed * spd * dt; movMon(M, (P2.x - p.x) / dist2 * s, (P2.z - p.z) / dist2 * s); state = "walk"; }
     M.atkT -= dt;
     if (dist2 < M.T.range + 0.6 && M.atkT <= 0 && !M.silence) { const ring = teleRing(M); ring.position.set(P2.x, 0.06, P2.z); M.tele = { t: 0, ring, x: P2.x, z: P2.z, who: tg.id }; }
   } else {   // đi tuần quanh nhà
@@ -388,7 +390,7 @@ function hurtPlayer(M) {
   let dmg = (5 + M.lv * 1.3) * M.T.dmg * (1 - Math.min(60, gear().resist || 0) / 100);
   if (CB.cast) dmg *= Math.max(0.1, 0.3 - 0.04 * pr("steady_voice"));   // 🛡️ khiên giọng nói khi đang nói (Steady Voice dày thêm)
   if (performance.now() < CB.buff.shieldUntil) dmg *= 1 - CB.buff.shield;   // Chord Shield / Grand Chorus
-  setHp(hpNow() - dmg); CB.lastHurt = performance.now(); charAct(player, "Hit_A");
+  setHp(hpNow() - dmg); CB.lastHurt = performance.now(); charAct(player, "Hit_A"); if (typeof FEEL !== "undefined") FEEL.hurt(dmg > hpMax() * 0.15);
   popText("-" + Math.round(dmg), player.position, CB.cast ? "#35c9c4" : "#e5484d");
   if (hpNow() <= 0) knockOut();
   saveSoon();
@@ -408,7 +410,9 @@ function nearestMon(r) { let best = null, bd = r; CB.mons.forEach(M => { if (M.d
 function normalAttack() {
   if (!CB.on || CB.ko || CB.atkCd > 0) return;
   const M = nearestMon(3.2); CB.atkCd = 0.7; charAct(player, "1H_Melee_Attack_Chop");
-  if (!M) return; player.rotation.y = Math.atan2(M.g.position.x - player.position.x, M.g.position.z - player.position.z);
+  if (M) player.rotation.y = Math.atan2(M.g.position.x - player.position.x, M.g.position.z - player.position.z);
+  if (typeof FEEL !== "undefined") FEEL.slash();   // vệt chém sáng (cả khi đánh trượt)
+  if (!M) return;
   CB.mp = Math.min(100, CB.mp + 3);
   if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.hit(M.g.position.clone(), "#ffffff");
   dealDamage(M, Math.round(4 + (save.level || 1) * 0.6), false);
@@ -633,8 +637,9 @@ function vfx(pos, color, size, rank) {   // hiệu ứng chiêu: bậc càng cao
 }
 function vfxTick(dt) { VFX.forEach(f => { f.t += dt; if (f.t < 0) return; const k = f.t / 0.5; if (f.spark) { f.m.position.addScaledVector(f.m.userData.v, dt); f.m.userData.v.y -= 9 * dt; } else f.m.scale.setScalar(1 + k * f.size); f.m.material.opacity = Math.max(0, 1 - k); if (k >= 1) { scene.remove(f.m); f.m.geometry.dispose(); f.m.material.dispose(); f.done = true; } }); for (let i = VFX.length - 1; i >= 0; i--) if (VFX[i].done) VFX.splice(i, 1); }
 function dealDamage(M, dmg, bySkill, who) {
-  if (M.dead) return; who = who || myId; M.hurtT = 0.25;
-  if (who === myId) popText("-" + dmg, M.g.position, bySkill ? "#7048e8" : "#495057");
+  if (M.dead) return; who = who || myId; M.hurtT = 0.3;
+  if (who === myId) popText(String(dmg), M.g.position, bySkill ? "#ffd43b" : "#ffffff", { stroke: bySkill ? "#7a4a00" : "#343a40", big: bySkill });   // số vàng to = chiêu nói, trắng = đánh thường
+  if (typeof FEEL !== "undefined") FEEL.onHit(M, dmg, bySkill, who === myId);
   if (M.remote) { netSend("mdmg", { k: M.key, d: dmg, s: bySkill ? 1 : 0, fx: M.pendFx || null }); M.pendFx = null; M.hp = Math.max(1, M.hp - dmg); return; }   // gửi về chủ phòng
   const c = M.contrib[who] = M.contrib[who] || { s: 0, a: 0 }; c.a += dmg; if (bySkill) c.s += dmg;
   M.hp -= dmg; M.dmgAll += dmg; if (bySkill) M.dmgSkill += dmg;
@@ -677,7 +682,8 @@ function dropAt(x, z, id, n) {
 function cbOwnerId() { return myId; }
 function dropTick(dt, t) {
   vfxTick(dt); if (typeof SKILL_VFX !== "undefined" && SKILL_VFX) SKILL_VFX.tick(dt); if (typeof WEAPON_MODELS !== "undefined" && WEAPON_MODELS && WEAPON_MODELS.tick) WEAPON_MODELS.tick(dt, t);
-  if (window.CAM_SHAKE > 0) { window.CAM_SHAKE -= dt; scene.position.set((Math.random() - 0.5) * 0.25, 0, (Math.random() - 0.5) * 0.25); } else if (scene.position.x || scene.position.z) scene.position.set(0, 0, 0);
+  if (typeof FEEL !== "undefined") FEEL.slTick(dt);
+  if (window.CAM_SHAKE > 0) { window.CAM_SHAKE -= dt; const a = Math.min(1, window.CAM_SHAKE / 0.25) * 0.28; scene.position.set((Math.random() - 0.5) * a, (Math.random() - 0.5) * a * 0.4, (Math.random() - 0.5) * a); }   // rung giảm dần else if (scene.position.x || scene.position.z) scene.position.set(0, 0, 0);
   CB.drops.forEach(D => { D.t += dt; D.g.children[0].position.y = 0.6 + Math.sin(t * 3 + D.t) * 0.1;
     const mine = D.owner === cbOwnerId() || D.t > 20;   // 20 giây đầu chỉ người hạ quái nhặt được
     if (mine && !CB.ko && D.g.position.distanceTo(player.position) < 1.4) {
