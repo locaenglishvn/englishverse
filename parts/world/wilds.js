@@ -115,13 +115,13 @@ const WILDS = (function () {
               if (q < 1) { mixc(tmp, K.g1, K.g2, n1); mixc(tmp, tmp, K.sand, sm(0.7, 0.86, q)); mixc(tmp, tmp, K.wet, sm(0.9, 0.97, q)); mixc(o, o, tmp, 1 - sm(0.97, 1.0, q)); }
               const ff = Math.max(0, 1 - Math.abs(q - 1.02) / 0.07) * 0.7; if (ff > 0) mixc(o, o, K.foam, ff); } } } break; }
       default: { mixc(o, K.s1, K.s2, n1); if (n2 > 0.64) mixc(o, o, K.s3, Math.min(1, (n2 - 0.64) * 3));
-        if (z > 148) { const dd = Math.abs(x - streamX(z)), w = streamW(z); if (dd < w) mixc(o, K.water1, K.water2, n2); else if (dd < w + 1.3) mixc(o, o, K.bank, 0.55); }
+        // suối: dựng bằng dải hình ở ribbons(), không vẽ vào ảnh nền
         if (m > R1) mixc(o, o, K.s2, 0.25);
         else {   // vòng 1: nền rừng sẫm dưới các cụm cây + mảng đất trống (như video tham khảo)
           const fo = fbm(x, z); if (fo > 0.5) mixc(o, o, K.sF, sm(0.5, 0.64, fo) * 0.55);
           const dn = vnoise(x * 0.045 + 50, z * 0.045 + 20) * 0.75 + n2 * 0.25; if (dn > 0.66 && fo < 0.55) mixc(o, o, K.dirt, sm(0.66, 0.74, dn) * 0.7);
         }
-        if (hash(Math.floor(x * 1.7), Math.floor(z * 1.7)) > (m > R1 ? 0.96 : 0.985)) mixc(o, o, K.fl[Math.floor(hash(Math.floor(z), Math.floor(x)) * 4)], 0.6); }
+      }
     }
   }
   function paintGround(X0, X1, Z0, Z1, mLo, mHi) {
@@ -139,10 +139,7 @@ const WILDS = (function () {
         if (sum === 0) { for (let k = 0; k < 5; k++) tmpW[k] = ORDER[k] === bi ? 1 : 0; sum = 1; }
         o[0] = o[1] = o[2] = 0; let dom = bi, dw = 0;
         for (let k = 0; k < 5; k++) { const w = tmpW[k] / sum; if (w < 0.004) continue; if (w > dw) { dw = w; dom = ORDER[k]; } paintSector(ORDER[k], x, z, n1, n2, m, o2); o[0] += o2[0] * w; o[1] += o2[1] * w; o[2] += o2[2] * w; }
-        const pd = pathDist(x, z);   // đường mòn
-        if (dom === "S" && m <= R1 && pd < 4) mixc(o, o, K.dirt, (1 - sm(1.6, 4, pd + (n2 - 0.5) * 1.6)) * 0.55);   // mép đường mòn mùa xuân: đất lẫn cỏ
-        if (pd < 2.2 && !(dom === "SE" && m > SEA - 4)) { const t = 1 - sm(1.3, 2.2, pd + (n2 - 0.5) * 0.7); if (t > 0) { mixc(o, o, PATHC[dom], t * 0.92); } }
-        const g = GATE_OF[dom]; if (g) { const dd = Math.hypot(x - g.x, z - g.z); if (dd < 9) mixc(o, o, PATHC[dom], (1 - sm(6, 9, dd)) * 0.9); }
+        // đường mòn, sân cổng, suối: KHÔNG vẽ vào ảnh nền (ảnh thô → mép nhòe, răng cưa); dựng thành dải hình mép sắc ở ribbons()
         o[0] *= 0.86; o[1] *= 0.86; o[2] *= 0.86;   // đèn trong game sáng hơn màu thật nên tô sậm lại một chút
         const t = sm(0, 9, m - CITY); if (t < 1) { mixc(o, K.cityGrass, o, t); }   // chuyển tiếp mép thành phố
         const q = (j * TS + i) * 4; px[q] = o[0]; px[q + 1] = o[1]; px[q + 2] = o[2]; px[q + 3] = 255;
@@ -182,6 +179,45 @@ const WILDS = (function () {
       g.fillStyle = gr; g.fillRect(x - r, z - r, 2 * r, 2 * r);
     }
     g.globalCompositeOperation = "source-over"; m.material.map.needsUpdate = true;
+  }
+  /* Dải hình mép sắc nằm trên nền: đường mòn (5 hướng), sân trước cổng, suối mùa xuân (nước + bờ). Màu theo đỉnh, vân mịn như nền. */
+  const RIB = [];
+  function ribbon(pts, cMid, cEdge, y, mt) {   // pts: [tâm x, tâm z, pháp tuyến ngang x, z, nửa bề rộng]; 3 cột đỉnh: trái – giữa – phải
+    const pos = [], col = [], uv = [], idx = [], A = new THREE.Color(cEdge), B = new THREE.Color(cMid), t = new THREE.Color();
+    pts.forEach(([cx, cz, px, pz, hw], i) => {
+      [[1, A], [0, B], [-1, A]].forEach(([k, c]) => { const x = cx + px * hw * k, z = cz + pz * hw * k, j = 0.94 + vnoise(x * 0.4, z * 0.4) * 0.12;
+        pos.push(x, y, z); t.copy(c).multiplyScalar(j); col.push(t.r, t.g, t.b); uv.push(x / 3.2, z / 3.2); });
+      if (i) { const a = (i - 1) * 3, b = i * 3; idx.push(a, b, a + 1, a + 1, b, b + 1, a + 1, b + 1, a + 2, a + 2, b + 1, b + 2); }
+    });
+    if (idx.length) {   // mặt phải ngửa lên (nếu úp thì đảo thứ tự đỉnh) – không dùng 2 mặt vì Lambert tô mặt sau tối
+      const P = i => new THREE.Vector3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]), a = P(idx[0]), n = new THREE.Vector3().subVectors(P(idx[1]), a).cross(new THREE.Vector3().subVectors(P(idx[2]), a));
+      if (n.y < 0) for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute("normal", new THREE.Float32BufferAttribute(pos.map((v, i) => i % 3 === 1 ? 1 : 0), 3)); g.setIndex(idx); g.computeBoundingSphere();
+    const m = new THREE.Mesh(g, mt); m.userData.flat = true; m.userData.flag = true; m.receiveShadow = true; scene.add(m); RIB.push(m);
+  }
+  function ribbons() {
+    const W1 = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1); W1.needsUpdate = true;   // ảnh trắng 1 điểm: để shader có vUv cho vân mịn (detailed)
+    const dirtM = detailed(new THREE.MeshLambertMaterial({ vertexColors: true, map: W1 }), 1, 1), waterM = new THREE.MeshLambertMaterial({ vertexColors: true });
+    const hex = c => (c[0] * 0.86) << 16 | (c[1] * 0.86) << 8 | (c[2] * 0.86);
+    PATHS.forEach((p, i) => {   // đường mòn: bề rộng ~3,4 m, mép hơi lượn
+      const dir = GATES[i].dir, pts = [];
+      for (let al = -1; al <= p.len; al += 1.5) { const o = pathOff(p, al), x = p.x0 + p.dx * al - p.dz * o, z = p.z0 + p.dz * al + p.dx * o;
+        if (p.se && cheb(x, z) > SEA - 4) break; pts.push([x, z, -p.dz, p.dx, 1.7 + (vnoise(al * 0.25, i * 9) - 0.5) * 0.5]); }
+      const c = hex(PATHC[dir]); ribbon(pts, c, new THREE.Color(c).multiplyScalar(0.9).getHex(), 0.012, dirtM);
+    });
+    GATES.forEach(g => {   // sân trước cổng: hình tròn mép lượn (dải vòng quanh tâm)
+      const c = hex(PATHC[g.dir]), pts = [];
+      for (let a = 0; a <= 48; a++) { const t = a / 48 * Math.PI * 2, r = 6.5 + (vnoise(Math.cos(t) * 2 + 9, Math.sin(t) * 2) - 0.5) * 1.6; pts.push([g.x + Math.cos(t) * r / 2, g.z + Math.sin(t) * r / 2, Math.cos(t), Math.sin(t), r / 2]); }
+      ribbon(pts, c, c, 0.013, dirtM);
+    });
+    const bank = [], water = [];   // suối mùa xuân (từ mép thành phố ra hết vòng 2)
+    for (let z = 149; z <= R2 + 30; z += 1.2) { const d = 14 * 0.08 * Math.cos((z - 150) * 0.08), L = Math.hypot(1, d), px = 1 / L, pz = -d / L, x = streamX(z);
+      bank.push([x, z, px, pz, streamW(z) + 1.1]); water.push([x, z, px, pz, streamW(z)]); }
+    ribbon(bank, hex(K.bank), hex(K.bank), 0.008, dirtM);
+    ribbon(water, 0x3f9fe0, 0x8fd0ff, 0.016, waterM);
+    RIB.forEach(m => managed.push({ o: m, x: m.geometry.boundingSphere.center.x, z: m.geometry.boundingSphere.center.z, r: m.geometry.boundingSphere.radius }));
   }
   function groundMesh(X0, X1, Z0, Z1, Q, y, mLo, mHi) {
     // 3 mảng: phía bắc, phía đông (giữa), phía nam — phủ khung hình chữ C (vòng 1: chồng 1 m vào thành phố; vòng 2: nối liền vòng 1 ở 241 m)
@@ -439,12 +475,13 @@ const WILDS = (function () {
     if (z > 148 && Math.abs(x - streamX(z)) < streamW(z) + 2.5 + r) return false;
     return !taken(x, z, r);
   }
-  function groves() {   // Blossom Valley vòng 1: cây mọc thành cụm rừng dày (chỗ nhiễu fbm cao), chừa trảng trống + đường mòn để đánh quái
-    for (let gx = -150; gx < R1; gx += 3.6) for (let gz = CITY; gz < R1; gz += 3.6) {
-      const x = gx + rnd() * 3.6, z = gz + rnd() * 3.6, sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== 1) continue;
+  function groves(ring) {   // mùa xuân (Blossom Valley / Bamboo Hills): cây mọc thành cụm rừng dày (chỗ nhiễu fbm cao), chừa trảng trống + đường mòn để đánh quái
+    ring = ring || 1; const Z0 = ring === 2 ? R1 : CITY, Z1 = ring === 2 ? R2 : R1;
+    for (let gx = -150; gx < (ring === 2 ? R2 : R1); gx += 3.6) for (let gz = Z0; gz < Z1; gz += 3.6) {
+      const x = gx + rnd() * 3.6, z = gz + rnd() * 3.6, sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== ring) continue;
       const f = fbm(x, z); if (f < 0.56 || rnd() > 0.5 + (f - 0.56) * 2.5) continue;
-      if (!clear(x, z, 1.7)) continue;
-      lushTree(x, z, 0.95 + rnd() * 0.75, rnd() < 0.2, true); reserve(x, z, 1.7);
+      if (!clear(x, z, 1.7, ring === 2)) continue;
+      if (ring === 2 && rnd() < 0.3) bambooTall(x, z, true); else lushTree(x, z, 0.95 + rnd() * 0.75, rnd() < 0.2, true); reserve(x, z, 1.7);
     }
   }
   function boulders() {   // tảng đá xám to (2–3 tảng một cụm, đỉnh phủ rêu) làm điểm nhấn ở trảng trống
@@ -656,7 +693,7 @@ const WILDS = (function () {
     initTpl();
     ground = groundMesh(TX0, TX1, TZ0, TZ1, [[TX0, -R1 - 1, R1 + 1, -CITY + 1], [CITY - 1, -CITY + 1, R1 + 1, CITY - 1], [TX0, CITY - 1, R1 + 1, R1 + 1]], -0.02, CITY - 1.5, R1 + 5); scene.add(ground);
     ground2 = groundMesh(UX0, UX1, UZ0, UZ1, [[UX0, UZ0, UX1, -R1 - 1], [R1 + 1, -R1 - 1, UX1, R1 + 1], [UX0, R1 + 1, UX1, UZ1]], -0.01, R1 - 4, 1e9); scene.add(ground2);
-    GATES.forEach(buildGate); landmarks(); scatter(); groves(); boulders();
+    ribbons(); GATES.forEach(buildGate); landmarks(); scatter(); groves(); groves(2); boulders();
     GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); shadeGround(ground); shadeGround(ground2); finalize();
     updateVis(); setInterval(updateVis, 250);
   } };
