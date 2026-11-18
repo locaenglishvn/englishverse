@@ -3297,7 +3297,7 @@ function loop() {
       if (up) camera.lookAt(p.x - Math.sin(camAngle) * 3, 1.4 - Math.sin(camPitch) * 6, p.z - Math.cos(camAngle) * 3); else camera.lookAt(p.x, 1.4 - Math.sin(camPitch) * 1.6, p.z);
       sky.position.set(camera.position.x, 0, camera.position.z); renderer.render(scene, camera); return;
     }
-    camD += ((creating ? 5.5 : room ? (room.P.layout === "greenhouse" ? 7.5 : 9) : camWide && !talking ? 26 : 11) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
+    camD += ((creating ? 5.5 : room ? (room.P.layout === "greenhouse" ? 7.5 : 9) : camWide && !talking ? 26 : wildCam() && !talking ? 15 : 11) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
     const D = camD, ch = Math.cos(creating ? 0.25 : camPitch) * D;
     const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(creating ? 0.25 : camPitch) * D, p.z + Math.cos(camAngle) * ch);
     if (!room && !camWide) {   // góc gần: có tường/nhà chắn giữa nhân vật và camera → kéo camera lại gần (góc rộng thì bỏ qua, camera ở trên cao)
