@@ -12,6 +12,7 @@ function teamWire(ch) {
   });
   ch.on("broadcast", { event: "cast" }, ({ payload: m }) => { if (TEAM.mates.has(m.id)) TEAM.mateCastAt = performance.now(); });
   tradeWire(ch);
+  if (typeof radioWire === "function") radioWire(ch);   // 📻 bộ đàm đội (parts/social/radio.js)
   if (typeof combatWire === "function") combatWire(ch);   // quái chung nhiều người (parts/combat/engine.js)
 }
 function nameOf(id) { return (others[id] && others[id].n) || "Friend"; }

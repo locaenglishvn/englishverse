@@ -42,6 +42,7 @@
   function busy() {   // đang đọc câu hoặc đang thu micro → hạ nhạc
     try { if (speechSynthesis.speaking) return true; } catch (e) {}
     if (typeof CB !== "undefined" && CB.cast && CB.cast.rec) return true;
+    if (window.EV_AUDIO_BUSY) return true;   // bộ đàm đang thu / đang phát
     return !!document.querySelector(".rec");
   }
   function tick() {
