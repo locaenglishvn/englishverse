@@ -169,6 +169,15 @@ const WILDS = (function () {
     };
     return mt;
   }
+  function carpet() {   // mùa xuân vòng 1: rải thưa bụi cây, hoa, cây nhỏ mô hình (nature.js); tránh đường mòn, suối, vật cản
+    if (!(typeof NATURE !== "undefined")) return;
+    for (let gx = -150; gx < R1; gx += 2.8) for (let gz = CITY; gz < R1; gz += 2.8) {
+      const x = gx + rnd() * 2.8, z = gz + rnd() * 2.8, sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== 1) continue;
+      if (rnd() > 0.05 + fbm(x, z) * 0.08) continue;
+      if (pathDist(x, z) < 2.2 || taken(x, z, 0.8) || blocked(x, z) || (z > 148 && Math.abs(x - streamX(z)) < streamW(z) + 1.6)) continue;
+      const k = rnd(); if (k < 0.45) NATURE.bush(x, z, 0.8 + rnd() * 0.5); else if (k < 0.92) NATURE.ground(x, z, "flower"); else NATURE.ground(x, z, "plant");
+    }
+  }
   function shadeGround(m) {   // vẽ bóng râm mềm (lệch theo hướng nắng) lên ảnh nền đã có
     const [X0, X1, Z0, Z1] = m.userData.box, cv = m.material.map.image, g = cv.getContext("2d"), kx = cv.width / (X1 - X0), kz = cv.height / (Z1 - Z0);
     g.globalCompositeOperation = "multiply";
@@ -335,6 +344,7 @@ const WILDS = (function () {
   const SHADE = [];   // bóng râm dưới tán cây [x, z, bán kính] → vẽ thẳng vào ảnh nền sau khi rải cây (miễn phí khi chơi)
   function lushTree(x, z, s, cherry, sol) {   // cây tán tròn kiểu "bông": 1 chùm lớn + 3–4 chùm nhỏ quanh, tô mượt
     SHADE.push(x, z, 2.1 * s);
+    if (typeof NATURE !== "undefined") { NATURE.tree(x, z, s, cherry); if (sol) solid(x, z, 0.45 * s, 0.45 * s); return; }   // có mô hình (parts/world/nature.js) thì dùng mô hình
     const cs = cherry ? [0xf2a3c0, 0xf8b8cf, 0xe98fb0] : [0x4f9a3c, 0x5daa45, 0x468f37], pick = () => cs[(rnd() * 3) | 0];
     put("tcyl8", 0x6e4f34, x, 0, z, 0.24 * s, 1.7 * s, 0.24 * s);
     putBlob(pick(), x, 2.55 * s, z, 1.45 * s, 1.2 * s, 1.45 * s, rnd() * 6);
@@ -344,7 +354,8 @@ const WILDS = (function () {
     putBlob(pick(), x + (rnd() - 0.5) * 0.4 * s, 3.4 * s, z + (rnd() - 0.5) * 0.4 * s, 0.8 * s, 0.65 * s, 0.8 * s, rnd() * 6, 0.25);   // chùm đỉnh
     if (sol) solid(x, z, 0.45 * s, 0.45 * s);
   }
-  function flowers(x, z) { const cs = [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc, 0xff922b]; const c = cs[(rnd() * 5) | 0]; for (let i = 0; i < 5; i++) { const dx = (rnd() - 0.5) * 1.6, dz = (rnd() - 0.5) * 1.6; put("cone6", 0x4e9e3a, x + dx, 0, z + dz, 0.05, 0.3, 0.05); put("ico", i === 0 ? 0xffd43b : c, x + dx, 0.34, z + dz, 0.13); } }
+  function flowers(x, z) {
+    if (typeof NATURE !== "undefined") { NATURE.ground(x, z, "flower"); return; } const cs = [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc, 0xff922b]; const c = cs[(rnd() * 5) | 0]; for (let i = 0; i < 5; i++) { const dx = (rnd() - 0.5) * 1.6, dz = (rnd() - 0.5) * 1.6; put("cone6", 0x4e9e3a, x + dx, 0, z + dz, 0.05, 0.3, 0.05); put("ico", i === 0 ? 0xffd43b : c, x + dx, 0.34, z + dz, 0.13); } }
   function mound(x, z, s) { put("sph", 0xffffff, x, 0, z, 1.4 * s, 0.6 * s, 1.2 * s, rnd() * 3, 0, 0, 0.04); }
   function crystals(x, z) { for (let i = 0; i < 4; i++) put("cone6", 0x9fe0ff, x + (rnd() - 0.5) * 1.4, 0, z + (rnd() - 0.5) * 1.4, 0.3, 1.0 + rnd() * 1.2, 0.3, 0, (rnd() - 0.5) * 0.4, (rnd() - 0.5) * 0.4, 0.05); }
   function dune(x, z) { put("sph", 0xe9cf98, x, -0.2, z, 5 + rnd() * 4, 1.2 + rnd(), 4 + rnd() * 3, rnd() * 3, 0, 0, 0.05); }
@@ -694,7 +705,8 @@ const WILDS = (function () {
     ground = groundMesh(TX0, TX1, TZ0, TZ1, [[TX0, -R1 - 1, R1 + 1, -CITY + 1], [CITY - 1, -CITY + 1, R1 + 1, CITY - 1], [TX0, CITY - 1, R1 + 1, R1 + 1]], -0.02, CITY - 1.5, R1 + 5); scene.add(ground);
     ground2 = groundMesh(UX0, UX1, UZ0, UZ1, [[UX0, UZ0, UX1, -R1 - 1], [R1 + 1, -R1 - 1, UX1, R1 + 1], [UX0, R1 + 1, UX1, UZ1]], -0.01, R1 - 4, 1e9); scene.add(ground2);
     ribbons(); GATES.forEach(buildGate); landmarks(); scatter(); groves(); groves(2); boulders();
-    GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); shadeGround(ground); shadeGround(ground2); finalize();
+    GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); carpet(); shadeGround(ground); shadeGround(ground2); finalize();
+    if (typeof NATURE !== "undefined") NATURE.build();
     updateVis(); setInterval(updateVis, 250);
   } };
   return api;
