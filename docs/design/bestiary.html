@@ -1,0 +1,286 @@
+<title>Mute Bestiary</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze:wght@500;700;800&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Bố cục: một cột "trang sổ" ~720px; mỗi quái là một tấm "tiêu bản" có đĩa màu tròn, chữ, bảng màu, câu lệnh vẽ. Một giao diện tối (Mute Realm) có chủ đích. */
+:root{
+  --void:#14111c; --mist:#1f1a2b; --mist2:#2a2338; --line:#3a3150;
+  --ink:#efeaf6; --fog:#b4abc6; --mute:#9b6dff; --mute-soft:#2c2142;
+  --spirit:#f5c451; --spirit-soft:#3a2f17;
+  --distortia:#38e1f2; --oblivia:#eae6dc; --vorax:#e0465c; --tremora:#cfc547;
+  --display:"Grenze", Georgia, "Times New Roman", serif;
+  --body:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+body{background:var(--void);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--void)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px}
+h1,h2,h3{font-family:var(--display);line-height:1.05;text-wrap:balance;margin:0;letter-spacing:.01em}
+h1{font-size:clamp(2.6rem,11vw,4.2rem);font-weight:800}
+h2{font-size:clamp(1.6rem,6vw,2.1rem);font-weight:700;margin-top:48px}
+p{margin:0;max-width:66ch}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.lead{color:var(--fog);font-size:1.05rem;margin-top:12px}
+header{display:grid;gap:6px;padding-bottom:8px;position:relative}
+header h1 span{color:var(--mute)}
+.note{margin-top:18px;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;color:var(--fog);font-size:.92rem;display:grid;gap:6px}
+.note b{color:var(--ink)}
+
+/* Dấu ấn chung */
+.marks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:16px}
+.mark{background:var(--mist);border-radius:10px;padding:12px 14px;min-width:0;font-size:.92rem;color:var(--fog)}
+.mark b{display:block;color:var(--ink);font-family:var(--display);font-size:1.2rem;font-weight:700;margin-bottom:2px}
+.gens{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:12px}
+.gen{display:flex;gap:10px;align-items:center;background:var(--mist);border-radius:10px;padding:10px 12px;font-size:.88rem;color:var(--fog);min-width:0}
+.gen i{flex:none;width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:0 0 12px var(--c)}
+.gen b{color:var(--ink);display:block;font-family:var(--display);font-size:1.1rem}
+
+/* Bộ lọc */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--void);padding-block:10px;z-index:5}
+.filters button{font:500 .88rem var(--body);color:var(--fog);background:var(--mist);border:1px solid var(--line);border-radius:99px;padding:6px 14px;cursor:pointer}
+.filters button[aria-pressed="true"]{color:var(--void);background:var(--ink);border-color:var(--ink)}
+.filters button:focus-visible,.copy:focus-visible{outline:2px solid var(--spirit);outline-offset:2px}
+
+/* Tiêu bản */
+.list{display:grid;gap:22px;margin-top:8px}
+.card{background:var(--mist);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:14px;min-width:0}
+.card.boss{border-color:color-mix(in srgb,var(--gc) 55%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 9%,var(--mist)),var(--mist) 40%)}
+.top{display:flex;gap:16px;align-items:center}
+.plate{flex:none;width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:44px;position:relative;
+  background:radial-gradient(circle at 35% 30%,var(--p1),var(--p2) 55%,var(--void) 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 0 28px -6px var(--mute)}
+.plate::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px dashed color-mix(in srgb,var(--mute) 60%,transparent)}
+.boss .plate{width:112px;height:112px;font-size:54px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 0 34px -4px var(--gc)}
+.boss .plate::after{border-color:var(--gc)}
+.id{min-width:0;display:grid;gap:4px}
+.id h3{font-size:clamp(1.7rem,7vw,2.2rem);font-weight:800}
+.id .vn{color:var(--fog);font-size:.92rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;padding:3px 8px;border-radius:99px;background:var(--mist2);color:var(--fog);white-space:nowrap}
+.tag.tier{background:var(--mute-soft);color:var(--mute)}
+.tag.gen{background:color-mix(in srgb,var(--gc) 18%,var(--mist2));color:var(--gc)}
+.lore{font-size:1rem}
+.mean{background:var(--spirit-soft);color:var(--spirit);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.blk{min-width:0}
+.blk h4{margin:0 0 4px;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fog);font-weight:500}
+.blk ul{margin:0;padding-left:18px;font-size:.93rem}
+.blk li{margin:2px 0}
+.blk p{font-size:.93rem}
+.sw{display:flex;flex-wrap:wrap;gap:8px}
+.sw span{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;color:var(--fog)}
+.sw i{width:22px;height:22px;border-radius:6px;background:var(--c);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.prompt{background:var(--void);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px}
+.prompt pre{margin:0;font-family:var(--mono);font-size:.76rem;line-height:1.55;color:var(--fog);white-space:pre-wrap;word-break:break-word}
+.prompt .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.copy{font:600 .82rem var(--body);background:var(--spirit);color:#231a05;border:0;border-radius:8px;padding:6px 12px;cursor:pointer}
+.copy.done{background:var(--ink)}
+footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
+@media (prefers-reduced-motion:no-preference){
+  .plate{animation:breathe 5s ease-in-out infinite}
+  @keyframes breathe{50%{transform:scale(1.04)}}
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">EnglishVerse · sổ tay nhân vật · bản thử 1 · 20/11</div>
+    <h1>Mute <span>Bestiary</span></h1>
+    <p class="lead">13 thần quái của vòng trong quanh The Last Echo City: 8 quái thường và 5 trùm. Silentium nặn chúng từ nỗi sợ trong chính truyện kể và đời sống của vùng đất này. Mỗi con đang giam Word Spirits trong người.</p>
+    <div class="note">
+      <span><b>Phong cách:</b> surreal fantasy, hoạt hình 3D dáng to khỏe, hơi rợn nhưng vẫn vui mắt. Vật và thú hòa vào nhau, tỉ lệ phi lý, có bộ phận lơ lửng.</span>
+      <span><b>Cách dùng câu lệnh vẽ:</b> bấm Copy, dán vào ChatGPT hoặc Gemini, tạo 3–4 ảnh, chọn 1 ảnh rồi đưa vào Tripo (Image to 3D). Câu lệnh đã có sẵn nền xám trơn và dáng đứng thẳng để Tripo dựng mô hình dễ.</span>
+      <span><b>Loại đề khi đánh không phụ thuộc quái.</b> Dòng "Ý nghĩa" chỉ là chất truyện để kể với phụ huynh và nhà trường.</span>
+    </div>
+  </header>
+
+  <h2>Dấu ấn của phe The Mute</h2>
+  <p class="lead">Con nào cũng có 3 dấu hiệu này, để người chơi nhìn là biết đó là thần quái.</p>
+  <div class="marks">
+    <div class="mark"><b>Miệng bị niêm</b>Khâu chỉ, kéo khóa kéo, hoặc không có miệng. The Mute lấy đi tiếng nói.</div>
+    <div class="mark"><b>Vết nứt tím</b>Phát sáng, bên trong lấp lánh chữ cái nhỏ. Đó là Word Spirits bị nhốt.</div>
+    <div class="mark"><b>Mắt phát sáng</b>To, tròn, sáng rực. Giữ biểu cảm rõ khi nhìn từ xa trên điện thoại.</div>
+  </div>
+  <p class="lead" style="margin-top:18px">Trùm mang thêm màu của vị tướng chỉ huy nó:</p>
+  <div class="gens">
+    <div class="gen" style="--c:var(--distortia)"><i></i><div><b>Distortia</b>nhiễu sóng · vệt glitch xanh lơ</div></div>
+    <div class="gen" style="--c:var(--oblivia)"><i></i><div><b>Oblivia</b>xoá tri thức · mảng trắng như bị tẩy</div></div>
+    <div class="gen" style="--c:var(--vorax)"><i></i><div><b>Vorax</b>nuốt linh hồn chữ · miệng, túi đỏ thẫm</div></div>
+    <div class="gen" style="--c:var(--tremora)"><i></i><div><b>Tremora</b>gieo nỗi sợ · vàng bệnh, đường run</div></div>
+  </div>
+
+  <div class="filters" role="group" aria-label="Lọc quái">
+    <button id="f-all" data-f="all" aria-pressed="true">Tất cả · 13</button>
+    <button id="f-common" data-f="common" aria-pressed="false">Quái thường · 8</button>
+    <button id="f-boss" data-f="boss" aria-pressed="false">Trùm · 5</button>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <footer>
+    <span>Cân đối vùng: 🏝️ Đông Nam có 3 quái thường, 🌸 Nam 2, 🍁 Đông Bắc 2, ❄️ Bắc 1, 🏜️ Đông chưa có quái thường. Có thể dời bớt một con sang vùng thiếu.</span>
+    <span>Nguồn cảm hứng: đời sống và truyện dân gian Việt Nam (Thạch Sanh, Sơn Tinh – Thủy Tinh, truyền thuyết Hồ Tây), không có bản quyền. File gốc: docs/design/bestiary.html.</span>
+  </footer>
+</div>
+
+<script>
+const STYLE = "Surreal dark-fantasy creature for a stylized 3D mobile game: chunky cartoon proportions, soft clay-like materials, bold readable silhouette, eerie yet playful, oversized glowing eyes. Mute-faction markings: its mouth is sealed (stitched shut or zipped), glowing violet cracks on the body with tiny luminous letters trapped inside. Full body, single character, front three-quarter view, neutral standing pose, centered, plain light grey background, no text, no logo, no ground shadow.";
+const BOSS = " Epic boss character, three times the size of normal monsters, more ornate details.";
+const GEN = {
+  Distortia: { c: "var(--distortia)", p: " Accent: cyan glitch streaks and distorted sound-wave rings around it." },
+  Oblivia:   { c: "var(--oblivia)",   p: " Accent: smooth blank white patches on its body, as if parts were erased by a giant eraser." },
+  Vorax:     { c: "var(--vorax)",     p: " Accent: deep crimson mouths and pouches that hunger to swallow." },
+  Tremora:   { c: "var(--tremora)",   p: " Accent: sickly yellow glow and trembling, wavy outlines." }
+};
+const M = [
+  { id:"mud-buffalo", tier:"common", name:"Mud Buffalo", vn:"Trâu Bùn", emo:"🐃", zone:"🍁 Đông Bắc · ruộng bậc thang",
+    lore:"Con trâu từng cày ruộng cạnh người nông dân, nghe họ trò chuyện suốt ngày. Khi The Great Silence ập tới, nó hoá thành tượng bùn khô biết đi. Trên lưng mọc cả một sườn đồi ruộng bậc thang thu nhỏ.",
+    mean:"Nói chậm, ngại người nghe sốt ruột.",
+    shape:["Khổng lồ, nặng, đầu cúi thấp","Lưng là ruộng bậc thang mini, lúa vàng","Sừng cong thành lưỡi cày gỗ","Một con cò giấy trắng đậu trên sừng","Dây xỏ mũi biến thành đường khâu kín miệng"],
+    pal:[["#6B4A2F","bùn"],["#E3B341","lúa"],["#5B5566","đá"],["#9B6DFF","Mute"]],
+    pers:"Hiền, ì, nhưng nổi khùng thì không ai cản nổi.",
+    fight:"Quái lì: máu nhiều, đi chậm. Cào móng 1 giây rồi húc thẳng một đường dài (vòng đỏ dài báo trước).",
+    p:"A giant water buffalo made of cracked dry mud, tiny golden rice terraces growing on its back like a little hillside, curved horns shaped like wooden plow blades, a paper-white egret perched on one horn, its nose rope turned into stitches that seal its mouth shut, heavy and slow, head lowered." },
+  { id:"tacke-gecko", tier:"common", name:"Tacke Gecko", vn:"Tắc Kè", emo:"🦎", zone:"🌸 Nam · rừng tre, tường đá",
+    lore:"Tắc kè chỉ biết gọi tên chính mình. The Mute khoá tiếng kêu ấy thành một vòng lặp không bao giờ dứt: nó kêu mãi một âm mà không nói được điều gì khác.",
+    mean:"Chỉ dám nói đi nói lại một câu quen, sợ thử câu mới.",
+    shape:["Dài, dẹt, 6 chân bám tường","Da men gốm rạn, xanh ngọc đốm cam","Đuôi cuộn thành vòng xoắn ốc vô tận","Túi cổ phồng to như cái loa đá","Mắt vàng có vòng xoáy, miệng là khoá kéo"],
+    pal:[["#2FA58C","ngọc"],["#F08A3C","đốm"],["#F7D046","mắt"],["#9B6DFF","Mute"]],
+    pers:"Lắm chuyện mà chẳng nói được gì, hay rình.",
+    fight:"Nhanh, bò lên đá, đổi màu ẩn mình rồi phóng ra từ bên hông.",
+    p:"A six-legged gecko with crackled ceramic-glaze skin in jade green with orange spots, its tail curling into an endless spiral loop, a huge inflated throat pouch shaped like a stone loudspeaker, spiral-patterned golden eyes, a zipper for a mouth, clinging pose." },
+  { id:"hermit-crab", tier:"common", name:"Hermit Crab", vn:"Ốc Mượn Hồn", emo:"🦀", zone:"🏝️ Đông Nam · bãi biển",
+    lore:"Ốc mượn hồn đi mượn vỏ để trốn. The Mute cho nó mượn một chiếc chum gốm men lam vỡ miệng. Nhìn vào miệng chum thấy cả một vùng biển đêm thu nhỏ, có trăng.",
+    mean:"Ngại hỏi, gặp chuyện là rụt vào vỏ.",
+    shape:["Vỏ là chum gốm men lam, sứt mẻ","Trong vỏ là biển đêm và trăng tí hon","Chân dài ngoẵng như cà kheo","Hai càng không cân, một càng to bằng thân","Mắt trên cuống sáng như đèn lồng"],
+    pal:[["#2F5DA8","men lam"],["#E9EEF5","sứ"],["#E5653A","cua"],["#9B6DFF","Mute"]],
+    pers:"Nhút nhát, cáu bẳn khi bị làm phiền.",
+    fight:"Bị đánh liên tục thì rụt vào vỏ 2 giây (giảm sát thương), sau đó bật ra kẹp mạnh.",
+    p:"A hermit crab living inside a chipped blue-and-white glazed ceramic jar instead of a shell, inside the jar opening a tiny night sea with a glowing moon, very long stilt-like legs, one claw as big as its body, eyes on stalks glowing like little lanterns." },
+  { id:"puffer-pop", tier:"common", name:"Puffer Pop", vn:"Cá Nóc", emo:"🐡", zone:"🏝️ Đông Nam · bờ biển",
+    lore:"Cá nóc phồng lên khi sợ. The Mute nhồi vào bụng nó những lời không ai dám nói, nên nó cứ phình mãi như quả bóng sắp nổ, bơi lơ lửng giữa không trung.",
+    mean:"Hồi hộp, chữ nghẹn trong cổ không ra được.",
+    shape:["Tròn, trong suốt như bong bóng thuỷ tinh","Chữ cái phát sáng trôi bên trong bụng","Gai mềm như kẹo, màu hồng","Vây nhỏ xíu, bơi trong không khí","Miệng khâu chặt, má phồng"],
+    pal:[["#F2E25C","chanh"],["#3CC2D9","biển"],["#F27BA0","gai"],["#9B6DFF","Mute"]],
+    pers:"Lo âu, lúc nào cũng như sắp khóc.",
+    fight:"Bay lơ lửng, phình to dần rồi nổ ra sóng âm hình tròn (vòng đỏ tròn), sau đó xẹp và mềm, dễ đánh.",
+    p:"A floating pufferfish with a round transparent glass-bubble body, glowing letters drifting inside its belly, soft candy-like pink spikes, tiny fins swimming through the air, puffed cheeks with its mouth stitched tightly shut, anxious watery eyes." },
+  { id:"mudskipper", tier:"common", name:"Mudskipper", vn:"Cá Thòi Lòi", emo:"🐟", zone:"🏝️ Đông Nam · rừng đước",
+    lore:"Con cá muốn lên bờ, cứ mắc kẹt giữa nước và đất. The Mute giữ nó mãi ở chỗ lưng chừng ấy: không thuộc về bên nào.",
+    mean:"Nghĩ bằng tiếng Việt rồi dịch, lưỡng lự giữa hai thứ tiếng.",
+    shape:["Mắt lồi trên hai cuống dài như kính tiềm vọng","Vây ngực thành hai bàn tay nhỏ","Vây lưng như lá cờ phướn rách","Ngồi trên một đoạn rễ đước","Da bùn xám, đốm xanh lấp lánh"],
+    pal:[["#6E7563","bùn"],["#4FC3A1","đốm"],["#7FD3FF","vây"],["#9B6DFF","Mute"]],
+    pers:"Láu cá, hiếu động, không chịu đứng yên.",
+    fight:"Nhảy zigzag khó đoán, đánh xong nhảy lùi ra xa.",
+    p:"A mudskipper fish with bulging eyes on two long periscope-like stalks, pectoral fins shaped like small hands, a tall torn banner-like dorsal fin, sitting on a twisted mangrove root, muddy grey skin with shimmering teal spots, no mouth." },
+  { id:"roi-nuoc", tier:"common", name:"Roi Nuoc", vn:"Rối Nước", emo:"🎎", zone:"❄️ Bắc · hồ băng",
+    lore:"Con rối nước luôn cần nghệ nhân sau mành tre nói thay mình. The Mute cắt đứt dây điều khiển và đóng băng mặt hồ. Giờ con rối tự cử động được, nhưng không còn ai nói thay nó nữa.",
+    mean:"Quen chờ người khác nói hộ.",
+    shape:["Rối gỗ sơn son thếp vàng, áo nông dân","Thân cắm trên cây sào, đế là khối băng trượt","Dây điều khiển đứt lơ lửng trên đầu","Nụ cười sơn vẽ đã nứt","Khớp tay xoay được 360°"],
+    pal:[["#C8372D","son"],["#D9A441","vàng"],["#A8DDF0","băng"],["#9B6DFF","Mute"]],
+    pers:"Cứng đờ, giật cục, nhìn hơi rợn.",
+    fight:"Trượt thẳng rất nhanh trên mặt băng, xoay tay quét vòng tròn quanh mình.",
+    p:"A traditional lacquered wooden water puppet in red and gold peasant clothes, mounted on a pole that sinks into a block of ice it glides on, snapped strings dangling above its head, its painted smile cracked across, jointed arms twisted at odd angles, frost on its shoulders." },
+  { id:"to-he", tier:"common", name:"To He", vn:"Tò He", emo:"🍡", zone:"🌸 Nam · chợ quê, đồi hoa",
+    lore:"Tò he là tượng bột nặn đủ màu, từng thành ông tiên, con gà, con rồng. The Mute làm bột chảy nhão: con vật nặn dở, màu trộn vào nhau, chẳng còn ra hình gì.",
+    mean:"Câu bị trộn lộn xộn, sai trật tự từ.",
+    shape:["Nửa gà, nửa rồng, nặn dở","Màu chảy như sáp nến","Vẫn cắm trên que tre","Hai cái đầu nhìn ngược chiều nhau","Ngón tay nặn in hằn trên thân"],
+    pal:[["#FF6FAE","hồng"],["#5BCB5B","lá"],["#FFD23F","vàng"],["#9B6DFF","Mute"]],
+    pers:"Lộn xộn, hai đầu cãi nhau suốt.",
+    fight:"Khi còn dưới 50% máu thì tách thành 2 cục nhỏ, mỗi cục chạy một hướng.",
+    p:"A half-finished rice-dough figurine creature, part rooster and part dragon, colors melting and dripping like candle wax in pink, green and yellow, still stuck on a bamboo stick it hops on, two heads facing opposite directions, fingerprint marks pressed into its body." },
+  { id:"bu-nhin", tier:"common", name:"Bu Nhin", vn:"Bù Nhìn", emo:"🌾", zone:"🍁 Đông Bắc · ruộng lúa",
+    lore:"Bù nhìn đứng giữa ruộng dọa chim, chưa bao giờ nói một lời. The Mute thổi hồn vào nó, và giờ nó dọa cả người.",
+    mean:"Được hỏi thì đứng im, không dám đáp.",
+    shape:["Đầu là nón lá rách","Áo tơi bằng rơm","Hai tay giang ngang là cành tre","Lồng đèn tím phát sáng trong ngực rơm","Mắt là hai cúc áo phát sáng, chim sẻ giấy đậu trên vai"],
+    pal:[["#D8B45A","rơm"],["#7A5230","áo"],["#B24A3A","khăn"],["#9B6DFF","Mute"]],
+    pers:"Im lìm, rình rập, rất kiên nhẫn.",
+    fight:"Đứng im như bù nhìn thường cho tới khi người chơi lại gần, bất ngờ bật dậy, xoay tròn quét rơm.",
+    p:"A haunted scarecrow with a torn conical palm-leaf hat for a head, a straw raincoat body, arms stretched out as bamboo branches, a glowing violet lantern visible inside its straw chest, two glowing button eyes, paper sparrows perched on its shoulders, stitched mouth." },
+  { id:"ong-ba-bi", tier:"boss", gen:"Vorax", name:"Ong Ba Bi", vn:"Ông Ba Bị · The Sack Man", emo:"👝", zone:"🌸 Nam · trùm đầu tiên",
+    lore:"Người lớn vẫn dọa trẻ: \"Im đi, không Ông Ba Bị bắt!\". Vorax nặn ông thành kẻ đi gom tiếng nói trẻ con. Cái bị khổng lồ trên lưng ông phình lên, động đậy, bên trong là hàng trăm Word Spirits đang đập đòi ra.",
+    mean:"Nỗi sợ bị bắt im lặng từ thuở nhỏ.",
+    shape:["Cao lêu nghêu như cây sào, tay dài chạm đất","Nón lá rách che mặt, chỉ thấy hai mắt sáng","Cái bị vá chằng vá đụp, to gấp ba người","Miệng bị có răng đỏ thẫm","Chín cái túi nhỏ đeo quanh hông"],
+    pal:[["#5A4632","áo"],["#A08A64","bao tải"],["#E0465C","Vorax"],["#9B6DFF","Mute"]],
+    pers:"Chậm rãi, lặng lẽ, cười không thành tiếng.",
+    fight:"Chụp bị: người chơi bị nhốt 2 giây (như bị câm). Thả Mutelings nhỏ từ bị ra. Giai đoạn 2: miệng bị há ra, hút người chơi lại gần. Thắng thì bị bung ra, Word Spirits bay khắp trời.",
+    p:"A towering lanky old sack man, thin as a pole, arms so long they touch the ground, a torn conical palm-leaf hat hiding his face except two glowing eyes, a straw raincoat, carrying a giant patched burlap sack three times his size that bulges and squirms with trapped glowing spirits, the sack has a toothy crimson mouth, nine small pouches hanging from his belt." },
+  { id:"thuong-luong", tier:"boss", gen:"Distortia", name:"Thuong Luong", vn:"Thuồng Luồng", emo:"🐉", zone:"🏝️ Đông Nam · cửa sông",
+    lore:"Thuồng luồng là quân của Thủy Tinh dâng nước. Distortia gọi nó dậy: tiếng gầm của nó vang dưới nước rồi vỡ vụn, méo mó. Ai nghe thấy cũng không còn phân biệt được âm nào ra âm nào.",
+    mean:"Nghe không rõ, âm thanh lẫn lộn.",
+    shape:["Thân rắn khổng lồ trong suốt như nước","Bên trong có đàn cá và rễ đước","Vảy như mảnh gương vỡ","Bờm là bọt sóng, sừng san hô","Quanh đầu là các vòng sóng âm bị méo"],
+    pal:[["#1F8F86","lục bảo"],["#7FE0D6","nước"],["#38E1F2","Distortia"],["#9B6DFF","Mute"]],
+    pers:"Kiêu ngạo, giận dữ như lũ.",
+    fight:"Lặn xuống rồi trồi lên chỗ có vòng đỏ. Phun cột nước. Sóng nhiễu làm thẻ đề rung nhẹ 2 giây. Giai đoạn 2: nước dâng, sân đấu thu hẹp.",
+    p:"A colossal water serpent dragon whose body is translucent like flowing water, a school of fish and mangrove roots visible inside it, scales like shards of broken mirror, a mane of sea foam, coral antlers, no mouth." },
+  { id:"chan-tinh", tier:"boss", gen:"Oblivia", name:"Chan Tinh", vn:"Chằn Tinh", emo:"🐍", zone:"🏜️ Đông · đồi cát",
+    lore:"Trong truyện Thạch Sanh, chằn tinh mỗi năm bắt một người. Oblivia biến nó thành kẻ ăn trí nhớ: ai bị nó chạm vào là quên ngay từ mình vừa định nói.",
+    mean:"Quên từ ngay lúc cần nói.",
+    shape:["Thân dưới là trăn khổng lồ, thân trên là gã khổng lồ to xác","Da như đá sa thạch đỏ","Nhiều mảng da trắng trơn như bị tẩy xoá","Trang sách rách dính trên bụng","Mắt lờ đờ buồn ngủ, hơi ngố"],
+    pal:[["#C1532F","cát đỏ"],["#E48A4E","sa thạch"],["#EAE6DC","Oblivia"],["#9B6DFF","Mute"]],
+    pers:"To xác, đãng trí, ngơ ngác nhưng rất mạnh.",
+    fight:"Quất đuôi vòng rộng. Đòn \"Tẩy\": làm mờ một nút chiêu 5 giây (quên chiêu). Giai đoạn 2: cuộn tròn lăn quanh sân.",
+    p:"A huge ogre-serpent: the lower body of a giant python, the upper body of a hulking dim-witted giant, red sandstone skin, several smooth blank white patches as if erased by a giant eraser, torn book pages stuck to its belly, sleepy half-closed eyes." },
+  { id:"dai-bang-tinh", tier:"boss", gen:"Tremora", name:"Dai Bang Tinh", vn:"Đại Bàng Tinh", emo:"🦅", zone:"🍁 Đông Bắc · vách núi",
+    lore:"Trong truyện Thạch Sanh, đại bàng tinh quắp người bay đi. Tremora biến tiếng rít của nó thành nỗi sợ: bóng nó lướt qua đâu, giọng người ở đó run lên.",
+    mean:"Run, sợ nói trước đám đông.",
+    shape:["Đại bàng khổng lồ, lông như lá phong đỏ cháy","Đôi cánh là những cánh diều giấy rách","Móng vuốt bằng đồng","Cổ đeo chuỗi chuông câm","Bóng nó trên mặt đất là một con mắt khổng lồ"],
+    pal:[["#C2412D","phong"],["#B07A3B","đồng"],["#CFC547","Tremora"],["#9B6DFF","Mute"]],
+    pers:"Kiêu hãnh, thích làm người khác sợ.",
+    fight:"Bay vòng rồi bổ nhào theo bóng (né cái bóng). Tiếng rít gây run giọng (như trúng độc). Giai đoạn 2: lông vũ rơi như mưa.",
+    p:"A giant eagle whose feathers look like burning red maple leaves, wings made of torn paper kites, bronze talons, a chain of silent bells around its neck, its shadow on the ground shaped like a giant eye, beak bound shut with red thread." },
+  { id:"nine-tailed-fox", tier:"boss", gen:"Distortia", name:"Nine-Tailed Fox", vn:"Cáo Chín Đuôi", emo:"🦊", zone:"❄️ Bắc · hồ băng",
+    lore:"Truyền thuyết kể cáo chín đuôi sống trong hang đá, hoá phép hại người. Khi bị đánh đuổi, hang sụp, nước tràn vào thành hồ lớn. Distortia đưa nó trở lại, lần này nó biết giả giọng người.",
+    mean:"Nhầm lẫn những âm gần giống nhau.",
+    shape:["Cáo trắng như tuyết, thon dài","Chín đuôi là chín dải cực quang","Cuối mỗi đuôi là một mặt nạ nhỏ","Mặt không có miệng, mắt xanh băng","Đứng trên mặt hồ đóng băng phản chiếu"],
+    pal:[["#F4F7FB","tuyết"],["#9AD7F2","băng"],["#7CF2C2","cực quang"],["#38E1F2","Distortia"]],
+    pers:"Ranh mãnh, thanh lịch, thích trêu.",
+    fight:"Tạo 3 ảo ảnh, chỉ con thật có bóng. Giai đoạn 2: đóng băng mặt sân, người chơi trượt khi đi.",
+    p:"An elegant snow-white fox with nine tails made of flowing aurora ribbons, each tail ending in a small mask, a face with no mouth, ice-blue glowing eyes, standing on a frozen lake that reflects it, frost crystals floating around." }
+];
+
+const list = document.getElementById("list");
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]))}
+function promptOf(m){ return m.p + " " + STYLE + (m.tier === "boss" ? BOSS + GEN[m.gen].p : ""); }
+list.innerHTML = M.map(m => {
+  const g = m.gen ? GEN[m.gen] : null;
+  return `<article class="card ${m.tier}" data-tier="${m.tier}" id="${m.id}" style="--p1:${m.pal[1][0]};--p2:${m.pal[0][0]};${g ? "--gc:" + g.c : ""}">
+    <div class="top">
+      <div class="plate" aria-hidden="true">${m.emo}</div>
+      <div class="id">
+        <h3>${esc(m.name)}</h3>
+        <div class="vn">${esc(m.vn)}</div>
+        <div class="tags"><span class="tag tier">${m.tier === "boss" ? "TRÙM" : "QUÁI THƯỜNG"}</span><span class="tag">${esc(m.zone)}</span>${g ? `<span class="tag gen">${m.gen}</span>` : ""}</div>
+      </div>
+    </div>
+    <p class="lore">${esc(m.lore)}</p>
+    <div class="mean">Ý nghĩa: ${esc(m.mean)}</div>
+    <div class="grid2">
+      <div class="blk"><h4>Dáng</h4><ul>${m.shape.map(s => `<li>${esc(s)}</li>`).join("")}</ul></div>
+      <div class="blk" style="display:grid;gap:12px;align-content:start">
+        <div><h4>Màu</h4><div class="sw">${m.pal.map(([c, n]) => `<span><i style="--c:${c}"></i>${n}</span>`).join("")}</div></div>
+        <div><h4>Tính cách</h4><p>${esc(m.pers)}</p></div>
+        <div><h4>Cách đánh</h4><p>${esc(m.fight)}</p></div>
+      </div>
+    </div>
+    <div class="prompt">
+      <div class="row"><h4 class="blk" style="margin:0"><span style="font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--fog)">CÂU LỆNH VẼ AI</span></h4><button class="copy" type="button" id="copy-${m.id}">Copy</button></div>
+      <pre id="pr-${m.id}">${esc(promptOf(m))}</pre>
+    </div>
+  </article>`;
+}).join("");
+
+list.addEventListener("click", e => {
+  const b = e.target.closest(".copy"); if (!b) return;
+  const pre = document.getElementById("pr-" + b.id.slice(5));
+  const ok = () => { b.textContent = "Đã copy"; b.classList.add("done"); setTimeout(() => { b.textContent = "Copy"; b.classList.remove("done"); }, 1600); };
+  const sel = () => { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Đã chọn, bấm giữ để copy"; };
+  try { navigator.clipboard.writeText(pre.textContent).then(ok, sel); } catch (_) { sel(); }
+});
+document.querySelectorAll(".filters button").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll(".filters button").forEach(x => x.setAttribute("aria-pressed", x === btn));
+  const f = btn.dataset.f;
+  list.querySelectorAll(".card").forEach(c => c.hidden = f !== "all" && c.dataset.tier !== f);
+}));
+</script>
