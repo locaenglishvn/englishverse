@@ -45,6 +45,8 @@ Vấn đề gốc: không có môi trường tiếng Anh ngoài lớp học; d�
 
 ## 2. Cốt truyện & bối cảnh
 
+> **20/11: cốt truyện mới (bản nháp v1, chờ chốt) ở [`docs/STORY.md`](STORY.md)**: Vocara + Vox Prima, tháp Babel, The Great Silence, Vòm Thần ở vùng Đông Nam thế giới, tiếng Anh = thần chú. Phần bên dưới là bản cũ, chỉ giữ lại để tham khảo (Mutelings, Word Spirit, thanh Voice chung vẫn dùng được).
+
 **Verse City** – thành phố nằm giữa các cánh cổng thời gian. Ngày xưa ai cũng nói, rồi người ta **sợ nói sai** và im lặng dần. Những lời không dám nói đọng lại thành **The Mute**: màn sương xám làm mọi thứ mất màu, mất tiếng.
 
 - **The Mute** là một **thế lực** (giống "phe bóng tối"), không phải một con quái. Thông điệp ngầm: *"Mở miệng nói là sức mạnh; im lặng mới là kẻ thù."*
