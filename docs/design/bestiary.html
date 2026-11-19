@@ -85,7 +85,7 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">EnglishVerse · sổ tay nhân vật · bản thử 1 · 20/11</div>
+    <div class="eyebrow">EnglishVerse · sổ tay nhân vật · bản thử 2 · 20/11</div>
     <h1>Mute <span>Bestiary</span></h1>
     <p class="lead">13 thần quái của vòng trong quanh The Last Echo City: 8 quái thường và 5 trùm. Silentium nặn chúng từ nỗi sợ trong chính truyện kể và đời sống của vùng đất này. Mỗi con đang giam Word Spirits trong người.</p>
     <div class="note">
@@ -96,11 +96,12 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
   </header>
 
   <h2>Dấu ấn của phe The Mute</h2>
-  <p class="lead">Con nào cũng có 3 dấu hiệu này, để người chơi nhìn là biết đó là thần quái.</p>
+  <p class="lead">Con nào cũng có 4 dấu hiệu này, để người chơi nhìn là biết đó là thần quái.</p>
   <div class="marks">
     <div class="mark"><b>Miệng bị niêm</b>Khâu chỉ, kéo khóa kéo, hoặc không có miệng. The Mute lấy đi tiếng nói.</div>
     <div class="mark"><b>Vết nứt tím</b>Phát sáng, bên trong lấp lánh chữ cái nhỏ. Đó là Word Spirits bị nhốt.</div>
     <div class="mark"><b>Mắt phát sáng</b>To, tròn, sáng rực. Giữ biểu cảm rõ khi nhìn từ xa trên điện thoại.</div>
+    <div class="mark"><b>Thân xác bị tráo</b>Không con nào mang thân của chính loài gốc. Trâu thành bọ hung, cá thành cóc, chim thành bướm. Chỉ giữ vài dấu hiệu (sừng, vỏ, nón lá…) để người chơi đoán ra gốc.</div>
   </div>
   <p class="lead" style="margin-top:18px">Trùm mang thêm màu của vị tướng chỉ huy nó:</p>
   <div class="gens">
@@ -125,7 +126,7 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
 </div>
 
 <script>
-const STYLE = "Surreal dark-fantasy creature for a stylized 3D mobile game: chunky cartoon proportions, soft clay-like materials, bold readable silhouette, eerie yet playful, oversized glowing eyes. Mute-faction markings: its mouth is sealed (stitched shut or zipped), glowing violet cracks on the body with tiny luminous letters trapped inside. Full body, single character, front three-quarter view, neutral standing pose, centered, plain light grey background, no text, no logo, no ground shadow.";
+const STYLE = "It is an impossible hybrid: it must NOT have the body of the animal or thing it is named after. Surreal dark-fantasy creature for a stylized 3D mobile game: chunky cartoon proportions, soft clay-like materials, bold readable silhouette, eerie yet playful, oversized glowing eyes. Mute-faction markings: its mouth is sealed (stitched shut or zipped), glowing violet cracks on the body with tiny luminous letters trapped inside. Full body, single character, front three-quarter view, neutral standing pose, centered, plain light grey background, no text, no logo, no ground shadow.";
 const BOSS = " Epic boss character, three times the size of normal monsters, more ornate details.";
 const GEN = {
   Distortia: { c: "var(--distortia)", p: " Accent: cyan glitch streaks and distorted sound-wave rings around it." },
@@ -134,110 +135,110 @@ const GEN = {
   Tremora:   { c: "var(--tremora)",   p: " Accent: sickly yellow glow and trembling, wavy outlines." }
 };
 const M = [
-  { id:"mud-buffalo", tier:"common", name:"Mud Buffalo", vn:"Trâu Bùn", emo:"🐃", zone:"🍁 Đông Bắc · ruộng bậc thang",
-    lore:"Con trâu từng cày ruộng cạnh người nông dân, nghe họ trò chuyện suốt ngày. Khi The Great Silence ập tới, nó hoá thành tượng bùn khô biết đi. Trên lưng mọc cả một sườn đồi ruộng bậc thang thu nhỏ.",
+  { id:"mud-buffalo", tier:"common", name:"Mud Buffalo", vn:"Trâu Bùn", emo:"🪲", body:"Bọ hung sừng (côn trùng)", zone:"🍁 Đông Bắc · ruộng bậc thang",
+    lore:"Con trâu từng cày ruộng cạnh người nông dân, nghe họ trò chuyện suốt ngày. The Great Silence xáo trộn cả thân xác nó: con trâu giờ là một con bọ hung khổng lồ bằng bùn khô, mai lưng mọc cả một sườn đồi ruộng bậc thang.",
     mean:"Nói chậm, ngại người nghe sốt ruột.",
-    shape:["Khổng lồ, nặng, đầu cúi thấp","Lưng là ruộng bậc thang mini, lúa vàng","Sừng cong thành lưỡi cày gỗ","Một con cò giấy trắng đậu trên sừng","Dây xỏ mũi biến thành đường khâu kín miệng"],
+    shape:["Thân bọ hung 6 chân, mai bùn khô nứt nẻ","Trên mai là ruộng bậc thang mini, lúa vàng","Dấu hiệu trâu: đôi sừng cong như lưỡi cày gỗ","Dấu hiệu trâu: dây xỏ mũi thành đường khâu kín miệng","Một con cò giấy trắng đậu trên sừng"],
     pal:[["#6B4A2F","bùn"],["#E3B341","lúa"],["#5B5566","đá"],["#9B6DFF","Mute"]],
     pers:"Hiền, ì, nhưng nổi khùng thì không ai cản nổi.",
-    fight:"Quái lì: máu nhiều, đi chậm. Cào móng 1 giây rồi húc thẳng một đường dài (vòng đỏ dài báo trước).",
-    p:"A giant water buffalo made of cracked dry mud, tiny golden rice terraces growing on its back like a little hillside, curved horns shaped like wooden plow blades, a paper-white egret perched on one horn, its nose rope turned into stitches that seal its mouth shut, heavy and slow, head lowered." },
-  { id:"tacke-gecko", tier:"common", name:"Tacke Gecko", vn:"Tắc Kè", emo:"🦎", zone:"🌸 Nam · rừng tre, tường đá",
-    lore:"Tắc kè chỉ biết gọi tên chính mình. The Mute khoá tiếng kêu ấy thành một vòng lặp không bao giờ dứt: nó kêu mãi một âm mà không nói được điều gì khác.",
+    fight:"Quái lì: máu nhiều, đi chậm. Cào chân 1 giây rồi húc thẳng một đường dài (vòng đỏ dài báo trước).",
+    p:"A giant six-legged rhinoceros beetle (an insect, NOT a mammal) whose shell is made of cracked dry mud, tiny golden rice terraces growing on top of its shell like a little hillside, a pair of curved water-buffalo horns shaped like wooden plow blades on its head, a frayed nose rope turned into stitches that seal its mouth shut, a paper-white egret perched on one horn, heavy and slow." },
+  { id:"tacke-gecko", tier:"common", name:"Tacke Gecko", vn:"Tắc Kè", emo:"🐦", body:"Chim cổ dài (chim)", zone:"🌸 Nam · rừng tre, tường đá",
+    lore:"Tắc kè chỉ biết gọi tên chính mình. The Mute khoá tiếng kêu ấy thành một vòng lặp không dứt, rồi nặn nó thành một con chim gốm cứ phồng diều kêu mãi một âm.",
     mean:"Chỉ dám nói đi nói lại một câu quen, sợ thử câu mới.",
-    shape:["Dài, dẹt, 6 chân bám tường","Da men gốm rạn, xanh ngọc đốm cam","Đuôi cuộn thành vòng xoắn ốc vô tận","Túi cổ phồng to như cái loa đá","Mắt vàng có vòng xoáy, miệng là khoá kéo"],
+    shape:["Thân chim cổ dài, chân cao, đậu trên đá","Không có lông: da men gốm rạn xanh ngọc đốm cam (dấu hiệu tắc kè)","Túi diều đỏ phồng to như cái loa đá","Đuôi cuộn thành vòng xoắn ốc vô tận","Mắt vàng có vòng xoáy, mỏ khoá bằng khoá kéo"],
     pal:[["#2FA58C","ngọc"],["#F08A3C","đốm"],["#F7D046","mắt"],["#9B6DFF","Mute"]],
     pers:"Lắm chuyện mà chẳng nói được gì, hay rình.",
-    fight:"Nhanh, bò lên đá, đổi màu ẩn mình rồi phóng ra từ bên hông.",
-    p:"A six-legged gecko with crackled ceramic-glaze skin in jade green with orange spots, its tail curling into an endless spiral loop, a huge inflated throat pouch shaped like a stone loudspeaker, spiral-patterned golden eyes, a zipper for a mouth, clinging pose." },
-  { id:"hermit-crab", tier:"common", name:"Hermit Crab", vn:"Ốc Mượn Hồn", emo:"🦀", zone:"🏝️ Đông Nam · bãi biển",
-    lore:"Ốc mượn hồn đi mượn vỏ để trốn. The Mute cho nó mượn một chiếc chum gốm men lam vỡ miệng. Nhìn vào miệng chum thấy cả một vùng biển đêm thu nhỏ, có trăng.",
+    fight:"Nhanh, nhảy lên đá, đổi màu ẩn mình rồi lao ra từ bên hông.",
+    p:"A long-necked wading bird (a bird, NOT a lizard) with no feathers: its skin is crackled ceramic glaze in jade green with orange gecko spots, a huge inflated red throat pouch shaped like a stone loudspeaker, a tail curling into an endless spiral loop, spiral-patterned golden eyes, its beak closed by a zipper, standing on a rock." },
+  { id:"hermit-crab", tier:"common", name:"Hermit Crab", vn:"Ốc Mượn Hồn", emo:"🐙", body:"Bạch tuộc (thân mềm)", zone:"🏝️ Đông Nam · bãi biển",
+    lore:"Ốc mượn hồn đi mượn vỏ để trốn. The Mute cho nó mượn một chiếc chum gốm men lam vỡ miệng, và biến kẻ trốn trong chum thành một sinh vật xúc tu. Nhìn vào miệng chum thấy cả một vùng biển đêm thu nhỏ, có trăng.",
     mean:"Ngại hỏi, gặp chuyện là rụt vào vỏ.",
-    shape:["Vỏ là chum gốm men lam, sứt mẻ","Trong vỏ là biển đêm và trăng tí hon","Chân dài ngoẵng như cà kheo","Hai càng không cân, một càng to bằng thân","Mắt trên cuống sáng như đèn lồng"],
-    pal:[["#2F5DA8","men lam"],["#E9EEF5","sứ"],["#E5653A","cua"],["#9B6DFF","Mute"]],
+    shape:["Bạch tuộc sống trong chum gốm men lam sứt mẻ (dấu hiệu: mượn vỏ)","Trong miệng chum là biển đêm và trăng tí hon","Xúc tu dài như cà kheo, chống chum đi","Một xúc tu mọc càng cua to bằng thân (dấu hiệu cua)","Mắt sáng như đèn lồng nhìn ra từ miệng chum"],
+    pal:[["#2F5DA8","men lam"],["#E9EEF5","sứ"],["#E5653A","cam"],["#9B6DFF","Mute"]],
     pers:"Nhút nhát, cáu bẳn khi bị làm phiền.",
-    fight:"Bị đánh liên tục thì rụt vào vỏ 2 giây (giảm sát thương), sau đó bật ra kẹp mạnh.",
-    p:"A hermit crab living inside a chipped blue-and-white glazed ceramic jar instead of a shell, inside the jar opening a tiny night sea with a glowing moon, very long stilt-like legs, one claw as big as its body, eyes on stalks glowing like little lanterns." },
-  { id:"puffer-pop", tier:"common", name:"Puffer Pop", vn:"Cá Nóc", emo:"🐡", zone:"🏝️ Đông Nam · bờ biển",
-    lore:"Cá nóc phồng lên khi sợ. The Mute nhồi vào bụng nó những lời không ai dám nói, nên nó cứ phình mãi như quả bóng sắp nổ, bơi lơ lửng giữa không trung.",
+    fight:"Bị đánh liên tục thì rụt vào chum 2 giây (giảm sát thương), sau đó bật ra kẹp mạnh.",
+    p:"An octopus creature (a mollusk, NOT a crab) living inside a chipped blue-and-white glazed ceramic jar, long stilt-like tentacles carrying the jar around, one tentacle ending in a single oversized crab claw, inside the jar opening a tiny night sea with a glowing moon, lantern-like glowing eyes peeking out." },
+  { id:"puffer-pop", tier:"common", name:"Puffer Pop", vn:"Cá Nóc", emo:"🐸", body:"Cóc phồng (lưỡng cư)", zone:"🏝️ Đông Nam · bờ biển",
+    lore:"Cá nóc phồng lên khi sợ. The Mute nhồi vào nó những lời không ai dám nói và nặn nó thành một con cóc gai trong suốt, phình mãi như quả bóng sắp nổ, lơ lửng giữa không trung.",
     mean:"Hồi hộp, chữ nghẹn trong cổ không ra được.",
-    shape:["Tròn, trong suốt như bong bóng thuỷ tinh","Chữ cái phát sáng trôi bên trong bụng","Gai mềm như kẹo, màu hồng","Vây nhỏ xíu, bơi trong không khí","Miệng khâu chặt, má phồng"],
+    shape:["Thân cóc tròn trong suốt như bóng thuỷ tinh","Chữ cái phát sáng trôi bên trong bụng","Gai cá nóc mềm như kẹo, màu hồng (dấu hiệu cá nóc)","Vây cá nhỏ thay cho chân trước, bơi trong không khí","Miệng khâu chặt, má phồng"],
     pal:[["#F2E25C","chanh"],["#3CC2D9","biển"],["#F27BA0","gai"],["#9B6DFF","Mute"]],
     pers:"Lo âu, lúc nào cũng như sắp khóc.",
     fight:"Bay lơ lửng, phình to dần rồi nổ ra sóng âm hình tròn (vòng đỏ tròn), sau đó xẹp và mềm, dễ đánh.",
-    p:"A floating pufferfish with a round transparent glass-bubble body, glowing letters drifting inside its belly, soft candy-like pink spikes, tiny fins swimming through the air, puffed cheeks with its mouth stitched tightly shut, anxious watery eyes." },
-  { id:"mudskipper", tier:"common", name:"Mudskipper", vn:"Cá Thòi Lòi", emo:"🐟", zone:"🏝️ Đông Nam · rừng đước",
-    lore:"Con cá muốn lên bờ, cứ mắc kẹt giữa nước và đất. The Mute giữ nó mãi ở chỗ lưng chừng ấy: không thuộc về bên nào.",
+    p:"A floating toad (an amphibian, NOT a fish) with a round transparent glass-balloon body, glowing letters drifting inside its belly, covered in soft candy-pink pufferfish spikes, small fish fins instead of front legs, floating in the air, puffed cheeks with its mouth stitched shut, anxious watery eyes." },
+  { id:"mudskipper", tier:"common", name:"Mudskipper", vn:"Cá Thòi Lòi", emo:"🦗", body:"Châu chấu (côn trùng)", zone:"🏝️ Đông Nam · rừng đước",
+    lore:"Con cá muốn lên bờ, cứ mắc kẹt giữa nước và đất. The Mute giữ nó mãi ở chỗ lưng chừng ấy và biến nó thành một con châu chấu vảy cá, không thuộc về bên nào.",
     mean:"Nghĩ bằng tiếng Việt rồi dịch, lưỡng lự giữa hai thứ tiếng.",
-    shape:["Mắt lồi trên hai cuống dài như kính tiềm vọng","Vây ngực thành hai bàn tay nhỏ","Vây lưng như lá cờ phướn rách","Ngồi trên một đoạn rễ đước","Da bùn xám, đốm xanh lấp lánh"],
+    shape:["Thân châu chấu, chân sau to để nhảy","Mắt lồi trên hai cuống dài như kính tiềm vọng (dấu hiệu cá thòi lòi)","Da vảy cá xám bùn, đốm xanh lấp lánh","Vây lưng như lá cờ phướn rách","Ngồi trên một đoạn rễ đước"],
     pal:[["#6E7563","bùn"],["#4FC3A1","đốm"],["#7FD3FF","vây"],["#9B6DFF","Mute"]],
     pers:"Láu cá, hiếu động, không chịu đứng yên.",
     fight:"Nhảy zigzag khó đoán, đánh xong nhảy lùi ra xa.",
-    p:"A mudskipper fish with bulging eyes on two long periscope-like stalks, pectoral fins shaped like small hands, a tall torn banner-like dorsal fin, sitting on a twisted mangrove root, muddy grey skin with shimmering teal spots, no mouth." },
-  { id:"roi-nuoc", tier:"common", name:"Roi Nuoc", vn:"Rối Nước", emo:"🎎", zone:"❄️ Bắc · hồ băng",
-    lore:"Con rối nước luôn cần nghệ nhân sau mành tre nói thay mình. The Mute cắt đứt dây điều khiển và đóng băng mặt hồ. Giờ con rối tự cử động được, nhưng không còn ai nói thay nó nữa.",
+    p:"A grasshopper creature (an insect, NOT a fish) with powerful jumping hind legs, bulging mudskipper eyes on two long periscope-like stalks, muddy grey fish-scale skin with shimmering teal spots, a tall torn banner-like fish fin on its back, perched on a twisted mangrove root, no mouth." },
+  { id:"roi-nuoc", tier:"common", name:"Roi Nuoc", vn:"Rối Nước", emo:"🕷️", body:"Nhện nước (côn trùng)", zone:"❄️ Bắc · hồ băng",
+    lore:"Con rối nước luôn cần nghệ nhân sau mành tre nói thay mình. The Mute cắt đứt dây điều khiển và đóng băng mặt hồ. Giờ con rối tự trượt trên băng bằng những cái chân dài như nhện nước, nhưng không còn ai nói thay nó nữa.",
     mean:"Quen chờ người khác nói hộ.",
-    shape:["Rối gỗ sơn son thếp vàng, áo nông dân","Thân cắm trên cây sào, đế là khối băng trượt","Dây điều khiển đứt lơ lửng trên đầu","Nụ cười sơn vẽ đã nứt","Khớp tay xoay được 360°"],
+    shape:["Thân nhện nước (gọng vó) chân dài mảnh trượt trên băng","Đầu là mặt rối gỗ sơn son, nụ cười sơn đã nứt (dấu hiệu rối nước)","Thân sơn son thếp vàng như áo rối","Dây điều khiển đứt lơ lửng trên đầu","Sương giá đọng trên lưng"],
     pal:[["#C8372D","son"],["#D9A441","vàng"],["#A8DDF0","băng"],["#9B6DFF","Mute"]],
     pers:"Cứng đờ, giật cục, nhìn hơi rợn.",
-    fight:"Trượt thẳng rất nhanh trên mặt băng, xoay tay quét vòng tròn quanh mình.",
-    p:"A traditional lacquered wooden water puppet in red and gold peasant clothes, mounted on a pole that sinks into a block of ice it glides on, snapped strings dangling above its head, its painted smile cracked across, jointed arms twisted at odd angles, frost on its shoulders." },
-  { id:"to-he", tier:"common", name:"To He", vn:"Tò He", emo:"🍡", zone:"🌸 Nam · chợ quê, đồi hoa",
-    lore:"Tò he là tượng bột nặn đủ màu, từng thành ông tiên, con gà, con rồng. The Mute làm bột chảy nhão: con vật nặn dở, màu trộn vào nhau, chẳng còn ra hình gì.",
+    fight:"Trượt thẳng rất nhanh trên mặt băng, xoay chân quét vòng tròn quanh mình.",
+    p:"A water-strider insect (NOT a human figure) with long thin legs skating on ice, its head is a traditional lacquered wooden water-puppet face with a cracked painted smile, body lacquered red and gold like a puppet costume, snapped puppet strings dangling above it, frost on its back." },
+  { id:"to-he", tier:"common", name:"To He", vn:"Tò He", emo:"🐌", body:"Sên (thân mềm)", zone:"🌸 Nam · chợ quê, đồi hoa",
+    lore:"Tò he là tượng bột nặn đủ màu, từng thành con gà, con rồng. The Mute làm bột chảy nhão thành một con sên bột bò lê, trên lưng còn dở dang những hình nặn chưa xong.",
     mean:"Câu bị trộn lộn xộn, sai trật tự từ.",
-    shape:["Nửa gà, nửa rồng, nặn dở","Màu chảy như sáp nến","Vẫn cắm trên que tre","Hai cái đầu nhìn ngược chiều nhau","Ngón tay nặn in hằn trên thân"],
+    shape:["Thân sên mềm, màu chảy như sáp nến","Trên lưng: đầu gà và đầu rồng nặn dở nhìn ngược nhau (dấu hiệu tò he)","Que tre cắm xuyên qua thân","Vệt bột màu để lại sau khi bò","Dấu ngón tay nặn in hằn trên thân"],
     pal:[["#FF6FAE","hồng"],["#5BCB5B","lá"],["#FFD23F","vàng"],["#9B6DFF","Mute"]],
     pers:"Lộn xộn, hai đầu cãi nhau suốt.",
     fight:"Khi còn dưới 50% máu thì tách thành 2 cục nhỏ, mỗi cục chạy một hướng.",
-    p:"A half-finished rice-dough figurine creature, part rooster and part dragon, colors melting and dripping like candle wax in pink, green and yellow, still stuck on a bamboo stick it hops on, two heads facing opposite directions, fingerprint marks pressed into its body." },
-  { id:"bu-nhin", tier:"common", name:"Bu Nhin", vn:"Bù Nhìn", emo:"🌾", zone:"🍁 Đông Bắc · ruộng lúa",
-    lore:"Bù nhìn đứng giữa ruộng dọa chim, chưa bao giờ nói một lời. The Mute thổi hồn vào nó, và giờ nó dọa cả người.",
+    p:"A slug creature (a mollusk, NOT a bird or dragon) made of melting rice dough, colors dripping like candle wax in pink, green and yellow, on its back two half-sculpted dough heads, a rooster head and a dragon head, facing opposite directions, a bamboo stick piercing through its body, fingerprint marks pressed into the dough, leaving a colorful trail." },
+  { id:"bu-nhin", tier:"common", name:"Bu Nhin", vn:"Bù Nhìn", emo:"🕸️", body:"Nhện (chân khớp)", zone:"🍁 Đông Bắc · ruộng lúa",
+    lore:"Bù nhìn đứng giữa ruộng dọa chim, chưa bao giờ nói một lời. The Mute thổi hồn vào nó, bẻ thân rơm thành một con nhện tám chân bằng tre, và giờ nó dọa cả người.",
     mean:"Được hỏi thì đứng im, không dám đáp.",
-    shape:["Đầu là nón lá rách","Áo tơi bằng rơm","Hai tay giang ngang là cành tre","Lồng đèn tím phát sáng trong ngực rơm","Mắt là hai cúc áo phát sáng, chim sẻ giấy đậu trên vai"],
-    pal:[["#D8B45A","rơm"],["#7A5230","áo"],["#B24A3A","khăn"],["#9B6DFF","Mute"]],
+    shape:["Thân nhện, 8 chân là cành tre","Bụng là bó rơm, có lồng đèn tím sáng bên trong","Đầu là nón lá rách (dấu hiệu bù nhìn)","Khoác áo tơi rơm như bù nhìn","Mắt là hai cúc áo phát sáng, chim sẻ giấy đậu trên lưng"],
+    pal:[["#D8B45A","rơm"],["#7A5230","tre"],["#B24A3A","khăn"],["#9B6DFF","Mute"]],
     pers:"Im lìm, rình rập, rất kiên nhẫn.",
-    fight:"Đứng im như bù nhìn thường cho tới khi người chơi lại gần, bất ngờ bật dậy, xoay tròn quét rơm.",
-    p:"A haunted scarecrow with a torn conical palm-leaf hat for a head, a straw raincoat body, arms stretched out as bamboo branches, a glowing violet lantern visible inside its straw chest, two glowing button eyes, paper sparrows perched on its shoulders, stitched mouth." },
-  { id:"ong-ba-bi", tier:"boss", gen:"Vorax", name:"Ong Ba Bi", vn:"Ông Ba Bị · The Sack Man", emo:"👝", zone:"🌸 Nam · trùm đầu tiên",
-    lore:"Người lớn vẫn dọa trẻ: \"Im đi, không Ông Ba Bị bắt!\". Vorax nặn ông thành kẻ đi gom tiếng nói trẻ con. Cái bị khổng lồ trên lưng ông phình lên, động đậy, bên trong là hàng trăm Word Spirits đang đập đòi ra.",
+    fight:"Đứng im giả làm bù nhìn cho tới khi người chơi lại gần, bất ngờ bật dậy, xoay tròn quét chân tre.",
+    p:"A spider creature (an arachnid, NOT a human scarecrow) with eight legs made of bamboo branches, an abdomen made of a bundle of straw with a glowing violet lantern inside, a torn conical palm-leaf hat as its head, a straw raincoat draped over its back, two glowing button eyes, stitched mouth, paper sparrows perched on its back." },
+  { id:"ong-ba-bi", tier:"boss", gen:"Vorax", name:"Ong Ba Bi", vn:"Ông Ba Bị · The Sack Man", emo:"👝", body:"Cò già khổng lồ (chim)", zone:"🌸 Nam · trùm đầu tiên",
+    lore:"Người lớn vẫn dọa trẻ: \"Im đi, không Ông Ba Bị bắt!\". Vorax nặn lời dọa ấy thành một con cò già trọc đầu khổng lồ, lêu nghêu, đi gom tiếng nói trẻ con vào cái bị. Cái bị phình lên, động đậy, bên trong hàng trăm Word Spirits đang đập đòi ra.",
     mean:"Nỗi sợ bị bắt im lặng từ thuở nhỏ.",
-    shape:["Cao lêu nghêu như cây sào, tay dài chạm đất","Nón lá rách che mặt, chỉ thấy hai mắt sáng","Cái bị vá chằng vá đụp, to gấp ba người","Miệng bị có răng đỏ thẫm","Chín cái túi nhỏ đeo quanh hông"],
+    shape:["Cò già khổng lồ, chân như cây sào, cổ trọc","Đội nón lá rách, khoác áo tơi (dấu hiệu Ông Ba Bị)","Cái bị vá chằng vá đụp to gấp ba thân, có miệng răng đỏ thẫm","Túi da dưới cổ phồng như một cái bị nhỏ","Chín cái túi nhỏ đeo quanh hông"],
     pal:[["#5A4632","áo"],["#A08A64","bao tải"],["#E0465C","Vorax"],["#9B6DFF","Mute"]],
     pers:"Chậm rãi, lặng lẽ, cười không thành tiếng.",
     fight:"Chụp bị: người chơi bị nhốt 2 giây (như bị câm). Thả Mutelings nhỏ từ bị ra. Giai đoạn 2: miệng bị há ra, hút người chơi lại gần. Thắng thì bị bung ra, Word Spirits bay khắp trời.",
-    p:"A towering lanky old sack man, thin as a pole, arms so long they touch the ground, a torn conical palm-leaf hat hiding his face except two glowing eyes, a straw raincoat, carrying a giant patched burlap sack three times his size that bulges and squirms with trapped glowing spirits, the sack has a toothy crimson mouth, nine small pouches hanging from his belt." },
-  { id:"thuong-luong", tier:"boss", gen:"Distortia", name:"Thuong Luong", vn:"Thuồng Luồng", emo:"🐉", zone:"🏝️ Đông Nam · cửa sông",
-    lore:"Thuồng luồng là quân của Thủy Tinh dâng nước. Distortia gọi nó dậy: tiếng gầm của nó vang dưới nước rồi vỡ vụn, méo mó. Ai nghe thấy cũng không còn phân biệt được âm nào ra âm nào.",
+    p:"A towering old marabou stork (a bird, NOT a human) with stilt-like legs, a bald wrinkled neck and a sagging throat pouch, wearing a torn conical palm-leaf hat and a ragged straw raincoat, carrying in its beak a giant patched burlap sack three times its size that bulges and squirms with trapped glowing spirits, the sack has a toothy crimson mouth, nine small pouches hanging around its body." },
+  { id:"thuong-luong", tier:"boss", gen:"Distortia", name:"Thuong Luong", vn:"Thuồng Luồng", emo:"🪼", body:"Sứa khổng lồ", zone:"🏝️ Đông Nam · cửa sông",
+    lore:"Thuồng luồng là quân của Thủy Tinh dâng nước. Distortia gọi nó dậy trong hình một con sứa khổng lồ: tiếng gầm của nó vang dưới nước rồi vỡ vụn, méo mó, ai nghe cũng không còn phân biệt được âm nào ra âm nào.",
     mean:"Nghe không rõ, âm thanh lẫn lộn.",
-    shape:["Thân rắn khổng lồ trong suốt như nước","Bên trong có đàn cá và rễ đước","Vảy như mảnh gương vỡ","Bờm là bọt sóng, sừng san hô","Quanh đầu là các vòng sóng âm bị méo"],
+    shape:["Sứa khổng lồ trong suốt, cao như toà nhà","Chóp sứa mang sừng san hô và bờm bọt sóng (dấu hiệu thuồng luồng)","Vảy gương vỡ phủ quanh chóp","Xúc tu dài uốn lượn như con thuồng luồng, có đàn cá bên trong","Quanh mình là các vòng sóng âm bị méo"],
     pal:[["#1F8F86","lục bảo"],["#7FE0D6","nước"],["#38E1F2","Distortia"],["#9B6DFF","Mute"]],
     pers:"Kiêu ngạo, giận dữ như lũ.",
     fight:"Lặn xuống rồi trồi lên chỗ có vòng đỏ. Phun cột nước. Sóng nhiễu làm thẻ đề rung nhẹ 2 giây. Giai đoạn 2: nước dâng, sân đấu thu hẹp.",
-    p:"A colossal water serpent dragon whose body is translucent like flowing water, a school of fish and mangrove roots visible inside it, scales like shards of broken mirror, a mane of sea foam, coral antlers, no mouth." },
-  { id:"chan-tinh", tier:"boss", gen:"Oblivia", name:"Chan Tinh", vn:"Chằn Tinh", emo:"🐍", zone:"🏜️ Đông · đồi cát",
-    lore:"Trong truyện Thạch Sanh, chằn tinh mỗi năm bắt một người. Oblivia biến nó thành kẻ ăn trí nhớ: ai bị nó chạm vào là quên ngay từ mình vừa định nói.",
+    p:"A colossal jellyfish (NOT a snake or dragon) with a translucent water-like bell crowned with coral dragon antlers and a mane of sea foam, shards of broken-mirror scales around the bell, very long serpentine tentacles with a school of fish swimming inside them, floating above a river mouth." },
+  { id:"chan-tinh", tier:"boss", gen:"Oblivia", name:"Chan Tinh", vn:"Chằn Tinh", emo:"🦂", body:"Bọ cạp (chân khớp)", zone:"🏜️ Đông · đồi cát",
+    lore:"Trong truyện Thạch Sanh, chằn tinh mỗi năm bắt một người. Oblivia nặn nó thành một con bọ cạp đá đỏ khổng lồ ăn trí nhớ: ai bị nó chạm vào là quên ngay từ mình vừa định nói.",
     mean:"Quên từ ngay lúc cần nói.",
-    shape:["Thân dưới là trăn khổng lồ, thân trên là gã khổng lồ to xác","Da như đá sa thạch đỏ","Nhiều mảng da trắng trơn như bị tẩy xoá","Trang sách rách dính trên bụng","Mắt lờ đờ buồn ngủ, hơi ngố"],
+    shape:["Bọ cạp khổng lồ, mai sa thạch đỏ","Đuôi dài cuộn như trăn, có vân trăn (dấu hiệu chằn tinh)","Mặt to bè, mắt lờ đờ buồn ngủ, hơi ngố","Nhiều mảng mai trắng trơn như bị tẩy xoá","Trang sách rách dính dưới bụng"],
     pal:[["#C1532F","cát đỏ"],["#E48A4E","sa thạch"],["#EAE6DC","Oblivia"],["#9B6DFF","Mute"]],
     pers:"To xác, đãng trí, ngơ ngác nhưng rất mạnh.",
     fight:"Quất đuôi vòng rộng. Đòn \"Tẩy\": làm mờ một nút chiêu 5 giây (quên chiêu). Giai đoạn 2: cuộn tròn lăn quanh sân.",
-    p:"A huge ogre-serpent: the lower body of a giant python, the upper body of a hulking dim-witted giant, red sandstone skin, several smooth blank white patches as if erased by a giant eraser, torn book pages stuck to its belly, sleepy half-closed eyes." },
-  { id:"dai-bang-tinh", tier:"boss", gen:"Tremora", name:"Dai Bang Tinh", vn:"Đại Bàng Tinh", emo:"🦅", zone:"🍁 Đông Bắc · vách núi",
-    lore:"Trong truyện Thạch Sanh, đại bàng tinh quắp người bay đi. Tremora biến tiếng rít của nó thành nỗi sợ: bóng nó lướt qua đâu, giọng người ở đó run lên.",
+    p:"A giant scorpion (an arachnid, NOT a snake or human) with a red sandstone shell, a long tail coiled like a python with python skin pattern, a broad dim-witted face with sleepy half-closed eyes, several smooth blank white patches as if erased by a giant eraser, torn book pages stuck under its belly, standing on sand dunes." },
+  { id:"dai-bang-tinh", tier:"boss", gen:"Tremora", name:"Dai Bang Tinh", vn:"Đại Bàng Tinh", emo:"🦋", body:"Bướm đêm khổng lồ (côn trùng)", zone:"🍁 Đông Bắc · vách núi",
+    lore:"Trong truyện Thạch Sanh, đại bàng tinh quắp người bay đi. Tremora biến nó thành một con bướm đêm khổng lồ có đôi cánh mang mắt: bóng nó lướt qua đâu, giọng người ở đó run lên.",
     mean:"Run, sợ nói trước đám đông.",
-    shape:["Đại bàng khổng lồ, lông như lá phong đỏ cháy","Đôi cánh là những cánh diều giấy rách","Móng vuốt bằng đồng","Cổ đeo chuỗi chuông câm","Bóng nó trên mặt đất là một con mắt khổng lồ"],
+    shape:["Bướm đêm khổng lồ, cánh là những cánh diều giấy rách màu lá phong","Trên cánh có hai đốm hình mắt khổng lồ","Đầu có mỏ quặp đại bàng bằng đồng (dấu hiệu đại bàng)","Chân trước là móng vuốt đồng để quắp","Cổ đeo chuỗi chuông câm"],
     pal:[["#C2412D","phong"],["#B07A3B","đồng"],["#CFC547","Tremora"],["#9B6DFF","Mute"]],
     pers:"Kiêu hãnh, thích làm người khác sợ.",
-    fight:"Bay vòng rồi bổ nhào theo bóng (né cái bóng). Tiếng rít gây run giọng (như trúng độc). Giai đoạn 2: lông vũ rơi như mưa.",
-    p:"A giant eagle whose feathers look like burning red maple leaves, wings made of torn paper kites, bronze talons, a chain of silent bells around its neck, its shadow on the ground shaped like a giant eye, beak bound shut with red thread." },
-  { id:"nine-tailed-fox", tier:"boss", gen:"Distortia", name:"Nine-Tailed Fox", vn:"Cáo Chín Đuôi", emo:"🦊", zone:"❄️ Bắc · hồ băng",
-    lore:"Truyền thuyết kể cáo chín đuôi sống trong hang đá, hoá phép hại người. Khi bị đánh đuổi, hang sụp, nước tràn vào thành hồ lớn. Distortia đưa nó trở lại, lần này nó biết giả giọng người.",
+    fight:"Bay vòng rồi bổ nhào theo bóng (né cái bóng). Tiếng rít gây run giọng (như trúng độc). Giai đoạn 2: vảy cánh rơi như mưa.",
+    p:"A giant moth (an insect, NOT a bird) with wings made of torn paper kites in burning red maple-leaf colors, two huge eye spots on its wings, a bronze hooked eagle beak bound shut with red thread, front legs ending in bronze eagle talons, a chain of silent bells around its neck." },
+  { id:"nine-tailed-fox", tier:"boss", gen:"Distortia", name:"Nine-Tailed Fox", vn:"Cáo Chín Đuôi", emo:"🦢", body:"Hạc tuyết (chim)", zone:"❄️ Bắc · hồ băng",
+    lore:"Truyền thuyết kể cáo chín đuôi sống trong hang đá, hoá phép hại người. Khi bị đánh đuổi, hang sụp, nước tràn vào thành hồ lớn. Distortia đưa nó trở lại trong hình một con hạc tuyết đeo mặt nạ cáo, lần này nó biết giả giọng người.",
     mean:"Nhầm lẫn những âm gần giống nhau.",
-    shape:["Cáo trắng như tuyết, thon dài","Chín đuôi là chín dải cực quang","Cuối mỗi đuôi là một mặt nạ nhỏ","Mặt không có miệng, mắt xanh băng","Đứng trên mặt hồ đóng băng phản chiếu"],
+    shape:["Hạc trắng như tuyết, cổ và chân dài","Mặt là chiếc mặt nạ cáo trắng, không có miệng (dấu hiệu cáo)","Chín lông đuôi dài là chín dải cực quang","Cuối mỗi lông đuôi là một mặt nạ nhỏ","Đứng trên mặt hồ đóng băng phản chiếu"],
     pal:[["#F4F7FB","tuyết"],["#9AD7F2","băng"],["#7CF2C2","cực quang"],["#38E1F2","Distortia"]],
     pers:"Ranh mãnh, thanh lịch, thích trêu.",
     fight:"Tạo 3 ảo ảnh, chỉ con thật có bóng. Giai đoạn 2: đóng băng mặt sân, người chơi trượt khi đi.",
-    p:"An elegant snow-white fox with nine tails made of flowing aurora ribbons, each tail ending in a small mask, a face with no mouth, ice-blue glowing eyes, standing on a frozen lake that reflects it, frost crystals floating around." }
+    p:"An elegant snow-white crane (a bird, NOT a fox) with a long neck and long legs, its face is a white fox mask with no mouth and ice-blue glowing eyes, nine long tail plumes made of flowing aurora ribbons, each plume ending in a small mask, standing on a frozen lake that reflects it, frost crystals floating around." }
 ];
 
 const list = document.getElementById("list");
@@ -251,7 +252,7 @@ list.innerHTML = M.map(m => {
       <div class="id">
         <h3>${esc(m.name)}</h3>
         <div class="vn">${esc(m.vn)}</div>
-        <div class="tags"><span class="tag tier">${m.tier === "boss" ? "TRÙM" : "QUÁI THƯỜNG"}</span><span class="tag">${esc(m.zone)}</span>${g ? `<span class="tag gen">${m.gen}</span>` : ""}</div>
+        <div class="tags"><span class="tag tier">${m.tier === "boss" ? "TRÙM" : "QUÁI THƯỜNG"}</span><span class="tag">${esc(m.zone)}</span><span class="tag">thân: ${esc(m.body)}</span>${g ? `<span class="tag gen">${m.gen}</span>` : ""}</div>
       </div>
     </div>
     <p class="lore">${esc(m.lore)}</p>
