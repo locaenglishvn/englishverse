@@ -74,12 +74,13 @@
 
 ## 7. Vì sao là tiếng Anh: Vòm Thần
 
-- Để bảo vệ một vùng đất, các vị thần phải dựng **Vòm Thần (The Divine Dome)**: một tấm khiên cộng hưởng với Vocal Frequency.
+- Để bảo vệ một vùng đất, các vị thần phải dựng **Vòm Thần – Resonance Dome**: một tấm khiên cộng hưởng với Vocal Frequency.
 - Vòm cần cộng hưởng với **một tiếng nói chung mà nhiều dân tộc cùng dùng**. Đó là thứ gần nhất với "tiếng nói chung trước thời tòa tháp".
 - Ở thời hiện đại, tiếng nói chung ấy là **tiếng Anh** *(chốt 20/11; KHÔNG nói tiếng Anh sinh ra từ tiếng Phạn – sai ngôn ngữ học)*: ngôn ngữ cầu nối được nhiều người trên thế giới dùng để nói với nhau nhất. Và ở vùng đất này, rất nhiều người, từ thường dân tới chiến binh, đang học tiếng Anh.
 - Vì thế dưới Vòm Thần, **giọng nói tiếng Anh không bị The Mute chạm tới**. Người dân Verse City nói tiếng Anh bình thường.
 - **Tiếng Anh nói ra = thần chú.** Mỗi câu nói đúng và tự tin truyền sức mạnh của Vocara vào vũ khí, đánh vào thần quái và giải thoát Word Spirit bị nhốt bên trong.
-- Lõi của Vòm Thần là **quả cầu ở quảng trường Town Hall – The Heart of Verse** ⚠️ *(dùng lại tượng quả cầu đã có trong game)*. Mỗi câu người chơi nói ra góp thêm sức cho lõi.
+- **Vũ khí** *(chốt 20/11)*: dùng loại nào cũng được – kiếm, trượng, đao, búa, giáo, vũ khí của các vị thần – miễn **dáng tròn, hoạt hình, không nhìn quá sắc bén**. Dòng hiếm nhất lấy cảm hứng từ vũ khí / vật cầm tay của các thần trong Council of Langua. **Nhạc cụ không còn là vũ khí bắt buộc**, có thể thành vật phẩm đặc biệt khác.
+- Lõi của Vòm Thần là **The Babel Tower** *(chốt 20/11)*: phần đỉnh dang dở của tháp Babel năm xưa, nơi còn đọng tiếng vọng của tiếng nói chung đầu tiên của loài người. Các vị thần mang nó về đặt giữa Verse City *(sau này thay tượng quả cầu ở quảng trường Town Hall)*. Mỗi câu người chơi nói ra góp thêm sức cho lõi. Ý nghĩa: tòa tháp loài người bỏ dở vì mất tiếng nói chung, nay được hoàn thành tiếp bằng tiếng nói chung mới.
 
 ## 8. Nhiệm vụ của người chơi
 
@@ -88,13 +89,14 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 | Nhiệm vụ | Trong truyện | Trong game |
 |---|---|---|
 | **① Phục hồi ngôn ngữ** | Đánh thần quái, giải thoát Word Spirits bị nhốt | Đánh quái bằng giọng nói, sưu tầm tinh linh, sổ thẻ |
-| **② Phục hồi khoa học** *(giai đoạn sau)* | Khi Heart of Verse đủ mạnh, nó gọi được **linh hồn các danh nhân** về hướng dẫn | Chuỗi nhiệm vụ danh nhân (Pasteur, Wright, Edison, Ada Lovelace…) dựng lại Science Lab, Power Plant, Airfield… *(chính là các ô 🚧 trong thành phố)* |
+| **② Phục hồi khoa học** *(giai đoạn sau)* | Khi Babel Tower đủ mạnh, nó gọi được **linh hồn các danh nhân** về hướng dẫn | Chuỗi nhiệm vụ danh nhân (Pasteur, Wright, Edison, Ada Lovelace…) dựng lại Science Lab, Power Plant, Airfield… *(chính là các ô 🚧 trong thành phố)* |
 
 **Mục tiêu cuối cùng của cả game:** đẩy lùi The Mute, khôi phục Vocal Frequency cho toàn thế giới.
 
 ### Cách truyện khớp với thứ đã có trong game
 - **Bên trong Vòm Thần** = Verse City: an toàn, mua bán, học nói với NPC.
 - **Bên ngoài Vòm** = vùng hoang dã có quái. Càng xa vòm thì The Mute càng mạnh, nên quái càng mạnh *(khớp với các vòng cấp đã thiết kế)*.
+- **Luật hình dạng quái:** The Mute nặn thần quái từ **nỗi sợ trong truyện kể của chính vùng đất nó tấn công**. Vì vậy quái mỗi nơi mang hình truyền thuyết của nơi đó.
 - **Vết rách không gian** *(chốt 20/11)*: The Mute xé những vùng đất đã chìm im lặng từ khắp thế giới, kéo về vây quanh Vòm. Mỗi vết rách mang theo **cả vùng đất, nền văn hoá và quái trong truyền thuyết của nơi đó**, kèm một **công trình biểu tượng ở trung tâm** *(vd sa mạc: kim tự tháp nhỏ; vùng Lưỡng Hà: thành Babylon; Bắc Âu: làng gỗ, đá rune)*.
 - **Hai lớp quái theo khoảng cách** *(chốt 20/11)*:
   - **Vùng viền quanh thành phố (vòng trong):** quái từ **truyện dân gian của chính vùng đất này**, kiểu "cây nhà lá vườn", người chơi gặp trước.
@@ -123,8 +125,24 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 
 ---
 
-## 11. Tên các nhân tố chính – ⚠️ chờ chốt
-*(xem đề xuất trong phiên 20/11; chốt xong điền vào đây)*
+## 11. Tên các nhân tố chính (chốt 20/11)
+
+| Phe | Nhân tố | Tên |
+|---|---|---|
+| The Mute (Chiều 1) | Thế giới | **The Mute Realm** |
+| | Chúa tể | **Silentium** |
+| | 4 tướng | ⚠️ đang chọn tên (Nhiễu sóng · Xoá tri thức · Nuốt linh hồn chữ · Gieo nỗi sợ nói sai) |
+| | Quái nhỏ | **Mutelings** |
+| Thần (Chiều 3) | Thế giới | **The Langua** |
+| | Đấng Tối Cao | **Vocara** |
+| | Món quà thanh quản | **Vox Prima** |
+| | Hội các thần ngôn ngữ | **The Council of Langua** (Thoth, Odin, Hermes, Nabu, Ogma, Thương Hiệt) |
+| | Vòm bảo vệ | **Resonance Dome** |
+| | Lõi vòm | **The Babel Tower** |
+| | Tên thần gọi vùng đất | **The Last Echo City** |
+| Con người (Chiều 2) | Người chơi | **a Voice** – cùng nhau là **The Voice Guard** |
+| | Người truyền lời thần | **The Oracle Lady** |
+| | Linh hồn ngôn ngữ bị nhốt | **Word Spirits** |
 
 ## Đã bỏ
 - Chim sáo tinh linh dẫn đường (mỗi người một con thì rối hình) – chủ dự án bỏ 20/11.

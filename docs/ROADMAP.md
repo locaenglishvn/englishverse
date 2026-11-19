@@ -20,7 +20,7 @@ Vấn đề gốc: không có môi trường tiếng Anh ngoài lớp học; d�
 4. **Đồ hiếm nhất không mua được bằng tiền**, chỉ đạt được bằng thành tích tiếng Anh. Vì vậy địa vị trong cộng đồng gắn với việc dùng tiếng Anh.
 5. **Hạn chế tiếng Việt bằng thiết kế, không bằng lệnh cấm:** không có ô gõ tự do; chat bằng câu có sẵn hoặc giọng nói (máy chỉ nghe ra tiếng Anh); tên nhân vật chỉ chữ cái tiếng Anh.
 6. **Mọi mini-game là một "trạm" trong thế giới.** Chơi xong thì quay lại thành phố.
-7. **Không bạo lực:** quái bị "giải thoát" chứ không bị giết; vũ khí là nhạc cụ, chiêu thức là câu nói.
+7. **Không bạo lực:** quái bị "giải thoát" chứ không bị giết; chiêu thức là câu nói. Vũ khí loại nào cũng được (kiếm, trượng, búa…) nhưng dáng tròn, hoạt hình, không sắc bén (chốt 20/11, xem `docs/STORY.md`); nhạc cụ thành vật phẩm đặc biệt.
 8. **Giữ nút để nói** ở mọi chỗ có micro (giữ → nói → thả tay là chấm ngay).
 
 ### Lý thuyết nền (để giải thích với nhà trường, phụ huynh, nhà đầu tư)
