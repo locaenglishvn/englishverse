@@ -378,7 +378,7 @@ function flat(w, d, color, x, z, y, mt) {   // mặt phẳng nằm trên đất:
 const ROADS = [];   // đường đi (để vẽ bản đồ nhỏ)
 function road(w, d, x, z, y) { flat(w, d, 0, x, z, y || 0.012, asphaltMat()); ROADS.push({ x, z, w, d, road: true }); }   // đường nhựa; vạch + lề vẽ ở roadMarks()
 function roadMarks() {   // vạch giữa đứt khúc, lề đường, vạch đi bộ qua đường ở mọi nhánh ngã ba / ngã tư (chủ dự án 19/11: lề không được chồng lên miệng đường)
-  const R = ROADS.slice(), dash = [], curb = [], zebra = [];
+  const R = ROADS.slice(), dash = [], curb = [], zebra = [], cand = [];   // cand: vạch đi bộ dự kiến {x, z, main, bars}
   const quad = (A, x, z, hx, hz, y) => A.push(x - hx, y, z - hz, x - hx, y, z + hz, x + hx, y, z + hz, x - hx, y, z - hz, x + hx, y, z + hz, x + hx, y, z - hz);
   R.filter(r => r.road && !r.marked).forEach(r => { r.marked = true;
     const along = r.w >= r.d, L = along ? r.w : r.d, W = along ? r.d : r.w, P = (t, o) => along ? [r.x + t, r.z + o] : [r.x + o, r.z + t];
@@ -396,9 +396,13 @@ function roadMarks() {   // vạch giữa đứt khúc, lề đường, vạch �
       const [x, z] = P(t, side * (W / 2 - 0.2)); quad(curb, x, z, along ? 0.5 : 0.2, along ? 0.2 : 0.5, 0.02); }
     cuts.filter(c => c.road).forEach(c => [c.a - 1.6, c.b + 1.6].forEach(t => {   // vạch đi bộ ngay ngoài miệng ngã
       if (t < -L / 2 + 1.2 || t > L / 2 - 1.2 || inCut(t, 0.9)) return;
-      for (let o = -W / 2 + 0.7; o <= W / 2 - 0.6; o += 0.9) { const [x, z] = P(t, o); quad(zebra, x, z, along ? 1.0 : 0.25, along ? 0.25 : 1.0, 0.018); }
+      const bars = []; for (let o = -W / 2 + 0.7; o <= W / 2 - 0.6; o += 0.9) bars.push([...P(t, o), along ? 1.0 : 0.25, along ? 0.25 : 1.0]);
+      const [cx, cz] = P(t, 0); cand.push({ x: cx, z: cz, main: W >= 6, r, bars });
     }));
   });
+  // hai ngã sát nhau: vạch đi bộ cách nhau < 10 m thì giữ vạch trên đường chính (rộng ≥ 6 m), bỏ vạch trên nhánh phụ (chủ dự án 19/11)
+  cand.sort((a, b) => b.main - a.main); const kept = [];
+  cand.forEach(c => { if (kept.some(k => k.r !== c.r && Math.hypot(k.x - c.x, k.z - c.z) < 10 && (k.main || !c.main))) return; kept.push(c); c.bars.forEach(([x, z, hx, hz]) => quad(zebra, x, z, hx, hz, 0.018)); });
   [[dash, 0xf1f3f5], [curb, 0xc9c5bc], [zebra, 0xf8f9fa]].forEach(([pos, col]) => { if (!pos.length) return; const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
     const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: col, side: THREE.DoubleSide })); m.userData.flat = true; scene.add(m); });
 }
