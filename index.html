@@ -377,15 +377,29 @@ function flat(w, d, color, x, z, y, mt) {   // mặt phẳng nằm trên đất:
    Đường vành đai x = ±47, z = ±63; mỗi khu có đường trục riêng. Bắc = phía z âm. */
 const ROADS = [];   // đường đi (để vẽ bản đồ nhỏ)
 function road(w, d, x, z, y) { flat(w, d, 0, x, z, y || 0.012, asphaltMat()); ROADS.push({ x, z, w, d, road: true }); }   // đường nhựa; vạch + lề vẽ ở roadMarks()
-function roadMarks() {   // vạch giữa đứt khúc (trắng) + lề đường (xám nhạt) cho mọi đường nhựa; bỏ qua đoạn nằm trong ngã tư / quảng trường
-  const R = ROADS.slice(), inOther = (r, x, z, pad) => R.some(o => o !== r && Math.abs(x - o.x) < o.w / 2 + pad && Math.abs(z - o.z) < o.d / 2 + pad);
-  const dash = [], curb = [], quad = (A, x, z, hx, hz, y) => A.push(x - hx, y, z - hz, x - hx, y, z + hz, x + hx, y, z + hz, x - hx, y, z - hz, x + hx, y, z + hz, x + hx, y, z - hz);
+function roadMarks() {   // vạch giữa đứt khúc, lề đường, vạch đi bộ qua đường ở mọi nhánh ngã ba / ngã tư (chủ dự án 19/11: lề không được chồng lên miệng đường)
+  const R = ROADS.slice(), dash = [], curb = [], zebra = [];
+  const quad = (A, x, z, hx, hz, y) => A.push(x - hx, y, z - hz, x - hx, y, z + hz, x + hx, y, z + hz, x - hx, y, z - hz, x + hx, y, z + hz, x + hx, y, z - hz);
   R.filter(r => r.road && !r.marked).forEach(r => { r.marked = true;
     const along = r.w >= r.d, L = along ? r.w : r.d, W = along ? r.d : r.w, P = (t, o) => along ? [r.x + t, r.z + o] : [r.x + o, r.z + t];
-    if (W >= 4.5) for (let t = -L / 2 + 1.5; t < L / 2 - 1; t += 4) { const [x, z] = P(t + 0.9, 0); if (!inOther(r, x, z, 0.4)) quad(dash, x, z, along ? 0.9 : 0.09, along ? 0.09 : 0.9, 0.016); }
-    for (const side of [-1, 1]) for (let t = -L / 2 + 0.5; t < L / 2; t += 1) { const [x, z] = P(t, side * (W / 2 - 0.2)); if (!inOther(r, x, z, 0.05)) quad(curb, x, z, along ? 0.5 : 0.2, along ? 0.2 : 0.5, 0.02); }
+    // các "miệng" đường khác chạm / cắt vào đường này: khoảng [a, b] theo chiều dọc đường + phía bị cắt (-1 / +1)
+    const cuts = [];
+    R.forEach(o => { if (o === r) return;
+      const ot0 = (along ? o.x - o.w / 2 : o.z - o.d / 2) - (along ? r.x : r.z), ot1 = ot0 + (along ? o.w : o.d);   // theo chiều dọc
+      const op0 = (along ? o.z - o.d / 2 : o.x - o.w / 2) - (along ? r.z : r.x), op1 = op0 + (along ? o.d : o.w);   // theo chiều ngang
+      if (ot1 < -L / 2 - 0.6 || ot0 > L / 2 + 0.6 || op1 < -W / 2 - 0.6 || op0 > W / 2 + 0.6) return;   // không chạm
+      cuts.push({ a: ot0, b: ot1, neg: op0 < -W / 2 + 0.3, pos: op1 > W / 2 - 0.3, road: !!o.road });
+    });
+    const inCut = (t, pad, side) => cuts.some(c => t > c.a - pad && t < c.b + pad && (side === undefined || (side < 0 ? c.neg : c.pos)));
+    if (W >= 4.5) for (let t = -L / 2 + 1.5; t < L / 2 - 1; t += 4) { const [x, z] = P(t + 0.9, 0); if (!inCut(t + 0.9, 3.4)) quad(dash, x, z, along ? 0.9 : 0.09, along ? 0.09 : 0.9, 0.016); }
+    for (const side of [-1, 1]) for (let t = -L / 2 + 0.5; t < L / 2; t += 1) { if (inCut(t, 0.5, side)) continue;   // phía có đường khác đâm vào: bỏ lề
+      const [x, z] = P(t, side * (W / 2 - 0.2)); quad(curb, x, z, along ? 0.5 : 0.2, along ? 0.2 : 0.5, 0.02); }
+    cuts.filter(c => c.road).forEach(c => [c.a - 1.6, c.b + 1.6].forEach(t => {   // vạch đi bộ ngay ngoài miệng ngã
+      if (t < -L / 2 + 1.2 || t > L / 2 - 1.2 || inCut(t, 0.9)) return;
+      for (let o = -W / 2 + 0.7; o <= W / 2 - 0.6; o += 0.9) { const [x, z] = P(t, o); quad(zebra, x, z, along ? 1.0 : 0.25, along ? 0.25 : 1.0, 0.018); }
+    }));
   });
-  [[dash, 0xf1f3f5], [curb, 0xc9c5bc]].forEach(([pos, col]) => { if (!pos.length) return; const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
+  [[dash, 0xf1f3f5], [curb, 0xc9c5bc], [zebra, 0xf8f9fa]].forEach(([pos, col]) => { if (!pos.length) return; const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals();
     const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: col, side: THREE.DoubleSide })); m.userData.flat = true; scene.add(m); });
 }
 flat(310, 310, 0x8fd17a, 0, 0, -0.025);    // cỏ thành phố
