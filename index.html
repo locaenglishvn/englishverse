@@ -300,7 +300,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xdff0ff, 0x9bc47a, 0.62));   // ánh sáng trời + phản chiếu từ cỏ
+const hemi = new THREE.HemisphereLight(0xdff0ff, 0x9bc47a, 0.62); scene.add(hemi);   // ánh sáng trời + phản chiếu từ cỏ (trong nhà đổi sang ánh ấm: indoorLook)
 const sun = new THREE.DirectionalLight(0xfff0d6, 0.75);   // nắng ấm
 sun.position.set(12, 22, 9);
 renderer.shadowMap.enabled = true;   // bóng đổ mềm
@@ -2984,13 +2984,39 @@ function updateAmbient(dt) {
   solid(0, 50, 3, 3); shade(gq);
 }
 const indoorBg = new THREE.Color(0x3b2f2a);
+/* ĐÈN TRONG NHÀ (chủ dự án 19/11: phòng sàn trắng bị lóa, thiếu chiều sâu, chưa ấm):
+   - ánh ấm: trời vàng nhạt, phản chiếu từ sàn nâu (thay trời xanh + cỏ xanh của ngoài trời), nắng vàng, đèn phòng ấm;
+   - TỰ CÂN SÁNG như máy ảnh: vào phòng thì chụp nhanh 1 ảnh nhỏ 64×32 ngoài màn hình, đo độ sáng trung bình rồi giảm đèn cho tới mức ~0,58
+     (phòng tối sẵn như Home & Cozy giữ nguyên, không làm sáng thêm); đèn đổi mượt trong ~0,3 giây như mắt quen dần;
+   - viền tối nhẹ quanh màn hình (#vig) cho có chiều sâu. */
+const expo = { cur: 1, want: 1, base: 0.22, rt: null, buf: new Uint8Array(64 * 32 * 4) };
+function indoorLights(k) { hemi.intensity = 0.62 * k; sun.intensity = 0.75 * k; roomLight.intensity = expo.base * k; }
+function indoorLook(on) {
+  hemi.color.setHex(on ? 0xffead2 : 0xdff0ff); hemi.groundColor.setHex(on ? 0x8f765c : 0x9bc47a); sun.color.setHex(on ? 0xffdfb6 : 0xfff0d6); roomLight.color.setHex(on ? 0xffd9b0 : 0xfff4e6);
+  let v = $("vig"); if (!v) { v = document.createElement("div"); v.id = "vig"; v.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,0) 55%,rgba(40,24,10,.38) 100%)"; document.body.appendChild(v); }
+  v.style.display = on ? "block" : "none";
+  if (!on) { hemi.intensity = 0.62; sun.intensity = 0.75; roomLight.intensity = 0; }
+}
+function autoExpose() {   // đo độ sáng phòng (2 lượt, lượt 2 sửa sai số do chỗ cháy trắng) → expo.want
+  if (!room) return; const rt = expo.rt || (expo.rt = new THREE.WebGLRenderTarget(64, 32)), buf = expo.buf; let k = 1;
+  try {
+    for (let i = 0; i < 2; i++) {
+      indoorLights(k); renderer.setRenderTarget(rt); renderer.render(scene, camera); renderer.readRenderTargetPixels(rt, 0, 0, 64, 32, buf); renderer.setRenderTarget(null);
+      let sum = 0; for (let j = 0; j < buf.length; j += 4) sum += 0.2126 * buf[j] + 0.7152 * buf[j + 1] + 0.0722 * buf[j + 2];
+      const m = sum / (64 * 32 * 255); k = Math.min(1, Math.max(0.5, k * 0.58 / Math.max(0.05, m)));
+    }
+  } catch (e) { k = 0.8; renderer.setRenderTarget(null); }
+  expo.want = k; indoorLights(expo.cur);
+}
+function expoTick(dt) { if (!room) return; expo.cur += (expo.want - expo.cur) * Math.min(1, dt * 7); indoorLights(expo.cur); }
 function enterRoom(P) {
   room = P.room; P.int.visible = true; lodT = 1;   // cập nhật ngay NPC nào hiện
   player.position.set(room.exit.x, 0, room.exit.z - (P.size ? 3.5 : 0.6)); camAngle = 0; camPitch = 0.25; camSnap = true;   // phòng lớn: đứng lùi vào trong để camera có chỗ phía sau
   camera.fov = Math.min(80, 2 * Math.atan(Math.tan(38 * Math.PI / 180) / camera.aspect) * 180 / Math.PI); camera.updateProjectionMatrix();   // trong nhà: góc nhìn rộng để thấy cả phòng
-  sky.visible = false; clouds.forEach(c => c.visible = false); scene.background = indoorBg; scene.fog = null; roomLight.intensity = 0.22;
+  sky.visible = false; clouds.forEach(c => c.visible = false); scene.background = indoorBg; scene.fog = null; expo.base = 0.22; expo.cur = expo.want = 0.8; indoorLook(true);
   ["askBtn", "guide", "askp"].forEach(id => $(id).style.display = "none"); goal = null; arrow.visible = false;
-  if ((INTERIORS[P.layout] || {}).bright) { scene.background = new THREE.Color(0xcfe8ff); roomLight.intensity = 0.35; }   // mái kính / giếng trời: nhìn lên thấy trời   // nhà kính: nhìn lên thấy trời qua mái kính
+  if ((INTERIORS[P.layout] || {}).bright) { scene.background = new THREE.Color(0xcfe8ff); expo.base = 0.35; }
+  indoorLights(expo.cur); requestAnimationFrame(() => requestAnimationFrame(autoExpose));   // đo sau 2 khung (camera đã vào chỗ)   // mái kính / giếng trời: nhìn lên thấy trời   // nhà kính: nhìn lên thấy trời qua mái kính
   if (P.type === "home") homeRefresh(P);
   if (P.anchors) { if (!P.room.baseSpots) P.room.baseSpots = P.room.spots || []; refreshVocab(P); }
   speak(P.type === "home" ? "Welcome home, " + (myName || "friend") + "!" : "Welcome to " + P.name + "!");
@@ -2999,7 +3025,7 @@ function exitRoom() {
   const P = room.P; P.int.visible = false; room = null; lodT = 1;
   player.position.set(P.doorPos.x, 0, P.doorPos.z); camAngle = ROT[P.door]; camPitch = 0.75; camSnap = true;
   camera.fov = 55; camera.updateProjectionMatrix();
-  roomLight.intensity = 0; sky.visible = true; clouds.forEach(c => c.visible = true); scene.background = new THREE.Color(0xcfe8ff); scene.fog = outdoorFog();
+  indoorLook(false); sky.visible = true; clouds.forEach(c => c.visible = true); scene.background = new THREE.Color(0xcfe8ff); scene.fog = outdoorFog();
   $("askBtn").style.display = "block";
 }
 $("actBtn").onclick = () => { if (nearSpot) nearSpot.fn(); };
@@ -3264,6 +3290,7 @@ function loop() {
   requestAnimationFrame(loop);
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
   if (typeof updateCombat === "function") updateCombat(dt, t);   // parts/combat/engine.js
+  expoTick(dt);   // đèn trong nhà đổi mượt theo độ sáng đo được
   let mx = input.x, mz = input.z;
   if (keys["a"] || keys["arrowleft"]) mx -= 1;
   if (keys["d"] || keys["arrowright"]) mx += 1;
