@@ -498,9 +498,15 @@ function wc(s) { return s.split(/\s+/).filter(Boolean).length; }
 const BAND_WORDS = [0, [2, 4], [5, 6], [7, 8], [9, 10], [11, 12]];
 function bandOk(s, band) { const n = wc(s), [a, b] = BAND_WORDS[band]; return n >= a - 1 && n <= b + 1; }
 const FILL_SKIP = ["the", "and", "you", "are", "was", "this", "that", "with", "have", "has", "for", "can", "not", "your", "very"];
-function ownLine() {   // 1 câu từ thẻ của mình (ưu tiên thẻ ít sao), không có thì lấy bộ thẻ khởi đầu
-  const have = allCards().filter(c => hasCard(c.id) && c.ex); if (have.length) { const c = pickByStars(have, null); return { text: c.type === "p" && Math.random() < 0.3 ? c.w : c.ex, card: c.id, pic: c.pic }; }
-  const st = typeof STARTER_DECK !== "undefined" ? cbPick(STARTER_DECK) : { say: "Let's go!" }; return { text: st.say, card: null, pic: st.pic, vi: st.vi };
+/* LISTEN: giới hạn độ dài câu nghe theo cấp (chủ dự án chốt 20/11): Lv < 10 → dưới 5 từ, Lv < 20 → dưới 7 từ, sau đó tự do */
+function listenMax() { const lv = save.level || 1; return lv < 10 ? 4 : lv < 20 ? 6 : 99; }
+function ownLine(max) {   // 1 câu từ thẻ của mình (ưu tiên thẻ ít sao), không có thì lấy bộ thẻ khởi đầu; max = số từ tối đa
+  max = max || 99; const fits = t => !!t && wc(t) <= max;
+  const have = allCards().filter(c => hasCard(c.id) && c.ex && (fits(c.ex) || (c.type === "p" && fits(c.w))));
+  if (have.length) { const c = pickByStars(have, null), wOk = c.type === "p" && fits(c.w), useW = wOk && (!fits(c.ex) || Math.random() < 0.3); return { text: useW ? c.w : c.ex, card: c.id, pic: c.pic }; }
+  if (typeof STARTER_DECK === "undefined") return { text: "Let's go!", card: null };
+  const pool = STARTER_DECK.filter(x => fits(x.say)), st = cbPick(pool.length ? pool : STARTER_DECK.slice().sort((a, b) => wc(a.say) - wc(b.say)).slice(0, 3));
+  return { text: st.say, card: null, pic: st.pic, vi: st.vi };
 }
 function makeTask(type, band) {
   const season = CB.sec ? CB.sec.season : "city";
@@ -526,7 +532,7 @@ function makeTask(type, band) {
     return { type, show: (a.pic || "") + " “" + a.say + "”", speak: a.say, keys: a.keys, target: a.full, vi: a.vi, hint: "Ask a question back." };
   }
   if (type === "listen") {   // không có chữ: nghe máy đọc rồi nói lại. Chỉ dùng câu đã học → nghe được, hiểu được (i+1)
-    const L = ownLine(), n = wc(L.text);
+    const L = ownLine(listenMax()), n = wc(L.text);
     return { type, show: "🎧 " + "▁ ".repeat(n).trim() + "  (" + n + " words)", speak: L.text, target: L.text, card: L.card, listen: true, hint: "Listen. Tap 🔊 to hear again." };
   }
   if (type === "fill") {   // che 1 từ trong câu của thẻ đã có → nhớ lại chủ động (retrieval practice)

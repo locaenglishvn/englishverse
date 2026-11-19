@@ -352,6 +352,8 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 - **Gọi chiêu cho đồng đội** (Harmony chỉ hồi máu / khiên khi đồng đội nói "Heal me!", "Shield now!" qua bộ đàm) – chủ dự án hoãn, làm sau visual.
 - **Lưu tiến độ lên server theo tài khoản** (🔴 dữ liệu trẻ em): hiện trình duyệt xoá dữ liệu là mất tiến độ.
 
+**LISTEN giới hạn độ dài theo cấp (chốt 20/11, đã làm):** Lv < 10 → câu ≤ 4 từ, Lv < 20 → ≤ 6 từ, sau đó tự do (`listenMax()` trong parts/combat/engine.js). Loại đề không phụ thuộc quái (trừ DESCRIBE).
+
 0. **4 dạng bài đã duyệt ý tưởng (17/11), đã có trong bảng 📚 Challenges với nhãn "Coming soon" (`soon: true` trong `CHALLENGES`, engine.js):**
    - **REPLY (Lv.15):** đáp lại câu tình huống ("Can I help you?" → "Yes, I need a map."). Cần ngân hàng ~120 cặp câu – câu đáp theo `keys` như ANSWER. Writer viết.
    - **MY MISTAKES (Lv.10):** lấy LỖI THẬT của người chơi. Mỗi lần chấm Good/Weak ở REPEAT/LISTEN/FILL/BUILD: so từng từ câu đích với câu máy nghe được (thiếu từ, thiếu -s/-ed, sai trật tự) → lưu tối đa ~30 câu vào `save.combat.mistakes` (câu đích + phần sai). Đề: hiện câu người chơi đã nói, tô phần sai, người chơi nói lại câu đúng; làm đúng 2 lần thì xoá khỏi danh sách. Lưu ý: máy nhận dạng giọng nói hay tự sửa ngữ pháp → chủ yếu bắt được lỗi THIẾU từ / đuôi và sai trật tự, khó bắt lỗi chia động từ.

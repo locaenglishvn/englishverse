@@ -79,7 +79,7 @@
 - Ở thời hiện đại, tiếng nói chung ấy là **tiếng Anh** *(chốt 20/11; KHÔNG nói tiếng Anh sinh ra từ tiếng Phạn – sai ngôn ngữ học)*: ngôn ngữ cầu nối được nhiều người trên thế giới dùng để nói với nhau nhất. Và ở vùng đất này, rất nhiều người, từ thường dân tới chiến binh, đang học tiếng Anh.
 - Vì thế dưới Vòm Thần, **giọng nói tiếng Anh không bị The Mute chạm tới**. Người dân Verse City nói tiếng Anh bình thường.
 - **Tiếng Anh nói ra = thần chú.** Mỗi câu nói đúng và tự tin truyền sức mạnh của Vocara vào vũ khí, đánh vào thần quái và giải thoát Word Spirit bị nhốt bên trong.
-- **Vũ khí** *(chốt 20/11)*: dùng loại nào cũng được – kiếm, trượng, đao, búa, giáo, vũ khí của các vị thần – miễn **dáng tròn, hoạt hình, không nhìn quá sắc bén**. Dòng hiếm nhất lấy cảm hứng từ vũ khí / vật cầm tay của các thần trong Council of Langua. **Nhạc cụ không còn là vũ khí bắt buộc**, có thể thành vật phẩm đặc biệt khác.
+- **Vũ khí** *(chốt 20/11)*: dùng loại nào cũng được – kiếm, trượng, đao, búa, giáo, vũ khí của các vị thần – miễn **dáng tròn, hoạt hình, không nhìn quá sắc bén**. Dòng hiếm nhất lấy cảm hứng từ vũ khí / vật cầm tay của các thần trong Council of Langua (giáo Odin, gậy Hermes, bút sậy Thoth, bút lông Thương Hiệt…), và **chỉ rơi từ quái đặc biệt** (quái hoàng kim, trùm), tỉ lệ thấp. Đồ thần **trao** khi xong nhiệm vụ thì tốt nhưng **luôn kém hơn** đồ thần rơi ra. **Nhạc cụ không còn là vũ khí bắt buộc**, có thể thành vật phẩm đặc biệt khác.
 - Lõi của Vòm Thần là **The Babel Tower** *(chốt 20/11)*: phần đỉnh dang dở của tháp Babel năm xưa, nơi còn đọng tiếng vọng của tiếng nói chung đầu tiên của loài người. Các vị thần mang nó về đặt giữa Verse City *(sau này thay tượng quả cầu ở quảng trường Town Hall)*. Mỗi câu người chơi nói ra góp thêm sức cho lõi. Ý nghĩa: tòa tháp loài người bỏ dở vì mất tiếng nói chung, nay được hoàn thành tiếp bằng tiếng nói chung mới.
 
 ## 8. Nhiệm vụ của người chơi
@@ -96,6 +96,8 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 ### Cách truyện khớp với thứ đã có trong game
 - **Bên trong Vòm Thần** = Verse City: an toàn, mua bán, học nói với NPC.
 - **Bên ngoài Vòm** = vùng hoang dã có quái. Càng xa vòm thì The Mute càng mạnh, nên quái càng mạnh *(khớp với các vòng cấp đã thiết kế)*.
+- **Tên quái:** tiếng Anh; không có từ tiếng Anh hợp thì dùng tiếng Việt không dấu. Quái vòng trong lấy từ **bất cứ thứ gì đặc trưng của vùng đất này** (con vật, đồ vật, món ăn, lễ hội, truyện dân gian…), không bắt buộc là truyện dân gian.
+- **Loại đề khi đánh quái KHÔNG phụ thuộc quái** (chốt 20/11): thuật toán Voice Deck chọn theo người chơi (điểm yếu, thẻ ít sao, cấp). Ngoại lệ: DESCRIBE (tả tranh) chỉ có ở quái hoàng kim / trùm. Quái chỉ có thể "sợ" một loại đề (sát thương ×1,5 nếu trùng).
 - **Luật hình dạng quái:** The Mute nặn thần quái từ **nỗi sợ trong truyện kể của chính vùng đất nó tấn công**. Vì vậy quái mỗi nơi mang hình truyền thuyết của nơi đó.
 - **Vết rách không gian** *(chốt 20/11)*: The Mute xé những vùng đất đã chìm im lặng từ khắp thế giới, kéo về vây quanh Vòm. Mỗi vết rách mang theo **cả vùng đất, nền văn hoá và quái trong truyền thuyết của nơi đó**, kèm một **công trình biểu tượng ở trung tâm** *(vd sa mạc: kim tự tháp nhỏ; vùng Lưỡng Hà: thành Babylon; Bắc Âu: làng gỗ, đá rune)*.
 - **Hai lớp quái theo khoảng cách** *(chốt 20/11)*:
@@ -131,7 +133,7 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 |---|---|---|
 | The Mute (Chiều 1) | Thế giới | **The Mute Realm** |
 | | Chúa tể | **Silentium** |
-| | 4 tướng | ⚠️ đang chọn tên (Nhiễu sóng · Xoá tri thức · Nuốt linh hồn chữ · Gieo nỗi sợ nói sai) |
+| | 4 tướng | **Distortia** (nhiễu sóng giọng nói → đòn "câm") · **Oblivia** (xoá tri thức khoa học) · **Vorax** (nuốt linh hồn chữ) · **Tremora** (gieo nỗi sợ nói sai → trúng độc) |
 | | Quái nhỏ | **Mutelings** |
 | Thần (Chiều 3) | Thế giới | **The Langua** |
 | | Đấng Tối Cao | **Vocara** |
