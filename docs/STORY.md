@@ -1,6 +1,7 @@
 # EnglishVerse – Cốt truyện (Lore)
 
-> **Trạng thái:** BẢN NHÁP v1 (20/11) – dựng từ ý tưởng của chủ dự án, CTO đã chỉnh các chỗ hổng logic.
+> **Trạng thái:** BẢN NHÁP v2 (20/11) – đã chốt: tiếng Anh = tiếng nói chung, luật 3 chiều không gian, Babel, thần thật, vết rách đa văn hoá, bỏ chim dẫn đường. Còn chờ: tên gọi (mục 11).
+> Bản v1 – dựng từ ý tưởng của chủ dự án, CTO đã chỉnh các chỗ hổng logic.
 > Các điểm có dấu ⚠️ **chờ chủ dự án chốt**. Chốt xong thì đây là "kinh thánh" của game: mọi nhân vật, quái, NPC, nhiệm vụ đều phải khớp file này.
 > Bản cũ (sương xám, người dân sợ nói sai) ở ROADMAP mục 2 đã được thay bằng file này.
 
@@ -22,36 +23,46 @@
 - Nhờ Vox Prima, các bộ lạc biết bàn bạc, phân việc, dạy nhau. Loài người tiến nhanh hơn mọi loài khác.
 - Dòng chảy vô hình nối tất cả giọng nói của loài người gọi là **Vocal Frequency** – Tần số Giọng nói.
 
-## 2. Lần tấn công thứ nhất: Tòa tháp
+## 2. Lần tấn công thứ nhất: Tòa tháp Babel
 
-- Khi đã nói chung một tiếng, loài người tự tin tới mức kiêu ngạo, cùng nhau xây một **tòa tháp chọc trời** để vươn tới cõi thần *(truyền thuyết tháp Babel)* ⚠️.
-- **The Mute** là thế lực đối nghịch với Vocara, thế lực của **im lặng và quên lãng**. Nó sợ loài người sẽ không còn chịu khuất phục giới thần quái.
-- The Mute **làm nhiễu Vocal Frequency** của toàn nhân loại. Con người quên mất tiếng nói chung, không hiểu nhau, tòa tháp đổ dở, các bộ tộc tản ra khắp mặt đất.
-- Tin rằng loài người đã hết đường, The Mute bỏ đi.
+- Khi đã nói chung một tiếng, loài người tự tin tới mức kiêu ngạo, cùng nhau xây **tháp Babel** để vươn tới trời.
+- **The Mute** là thế lực đối nghịch với Vocara, thế lực của **im lặng và quên lãng**. Nó sợ loài người sẽ không còn chịu khuất phục giới thần quái, nên chuẩn bị **một đòn triệt tiêu duy nhất** nhắm vào *tiếng nói chung* đó: một ngôn ngữ, một mục tiêu, xoá một lần là hết.
+- **Vocara biết trước.** Để ngôn ngữ loài người không bị diệt trong một đòn, chính Vocara **làm nhiễu sóng ngôn ngữ của loài người, tách tiếng nói chung thành nhiều thứ tiếng khác nhau**. Không còn một mục tiêu chung thì The Mute không thể xoá tất cả cùng lúc *(như không bỏ hết trứng vào một giỏ)*.
+- Cái giá: con người không còn hiểu nhau, tháp Babel bỏ dở. Họ chỉ còn vài tiếng ú ớ đơn giản, mỗi nhóm một kiểu, tản đi khắp mặt đất để tồn tại và thụt lùi rất lâu.
+- The Mute thấy loài người tan tác, ngôn ngữ vụn vỡ, tin rằng chúng đã hết đường nên **yên tâm bỏ đi**.
 
 ## 3. Những vị thần gieo lại hạt giống
 
 - Các **thần ngôn ngữ dưới trướng Vocara** tìm đến từng vùng đất, nhen lại mầm ngôn ngữ cho từng bộ tộc.
 - Mỗi vùng có khí hậu, thiên nhiên, cách sống khác nhau, nên ngôn ngữ lớn lên mỗi nơi một kiểu. Đó là lý do thế giới có hàng nghìn ngôn ngữ như ngày nay.
-- Các vị thần này chính là **thần chữ viết, thần lời nói trong thần thoại của nhiều nền văn hoá** *(đề xuất – xem mục 9)*: Thoth trao chữ viết cho Ai Cập, Nabu cho Lưỡng Hà, Hermes cho Hy Lạp, Odin tìm ra chữ rune cho Bắc Âu, Thương Hiệt tạo chữ ở phương Đông…
+- Các vị thần này chính là **thần chữ viết, thần lời nói trong thần thoại của nhiều nền văn hoá, dùng tên thật** *(chốt 20/11)*: **Thoth** trao chữ viết cho Ai Cập, **Nabu** cho Lưỡng Hà, **Hermes** cho Hy Lạp, **Odin** tìm ra chữ rune cho Bắc Âu, **Ogma** tạo chữ Ogham cho người Celt, **Thương Hiệt** tạo chữ ở phương Đông…
+- **Bài học của thời này:** sự đa dạng ngôn ngữ chính là thứ đã cứu loài người. Mọi thứ tiếng đều đáng quý.
 - Có lại ngôn ngữ, loài người có chữ viết, sách vở, rồi khoa học. Sau vài nghìn năm, nhân loại vượt xa thời tòa tháp.
 
 ## 4. Lần tấn công thứ hai: The Great Silence
 
 - Thời hiện đại, The Mute quay lại và sững sờ: thành phố chọc trời, máy móc, robot, AI. Thế giới loài người giờ **đẹp hơn cả cõi của nó**.
-- **Chúa tể The Mute** ⚠️ *(chưa có tên)* nổi giận. Lần trước chỉ làm nhiễu, loài người vẫn hồi phục. Lần này nó **ở lại** và làm hai việc:
+- Tệ hơn, loài người lại có **một tiếng nói chung** để nói với cả thế giới: tiếng Anh. Mục tiêu cũ đã quay lại.
+- **Chúa tể The Mute** ⚠️ *(tên ở mục 11)* nổi giận. Lần trước chỉ làm nhiễu, loài người vẫn hồi phục. Lần này nó **ở lại** và làm hai việc:
   1. **Phá Vocal Frequency** để con người mất giọng, không còn nói chuyện được với nhau.
   2. **Xoá tri thức khoa học, công nghệ** để con người quên cách vận hành chính thế giới mình đã xây.
 - Thế giới rơi vào **The Great Silence** (Đại Im Lặng): thành phố vẫn đứng đó nhưng con người lặng lẽ, u uất, chỉ còn tiếng máy móc vô hồn.
 - **Luật cân bằng:** Vocara không thể *tạo sẵn* một ngôn ngữ, thì The Mute cũng không thể *xoá trắng* ngôn ngữ ngay lập tức. Mỗi lời nói, mỗi con chữ đều có **linh khí**. The Mute chỉ làm được hai việc: xáo trộn chúng, và **nhốt các linh hồn ngôn ngữ (Word Spirits) vào bụng lũ thần quái** để chúng gặm dần, cho tới khi ngôn ngữ biến mất vĩnh viễn.
 - Đến khi các vị thần kịp tới, **~90% thế giới đã chìm vào im lặng**.
 
-## 5. Luật của các chiều không gian
+## 5. Luật của ba chiều không gian
 
-- Thần linh và thần quái sống ở những chiều không gian khác nhau (multiverse), **không thể trực tiếp đánh nhau trong thế giới loài người**.
-- **Vì sao The Mute vẫn ra tay được?** Vì im lặng là *sự vắng mặt*: nó không cần thân xác, nó thấm qua mọi kẽ hở. The Mute hành động qua lũ thần quái mà nó thả vào thế giới.
-- **Vì sao các vị thần không tự cứu?** Vì thần ngôn ngữ chỉ hiện diện qua **giọng nói của con người**. Không còn ai nói thì thần cũng không còn đường vào. Thần chỉ có thể *bảo hộ và tiếp sức*.
-- → **Con người phải tự đứng lên.** Thần chọn một vùng đất, giữ trọn giọng nói cho người dân ở đó, để họ chiến đấu thay cho cả nhân loại.
+| Chiều | Ai ở đó |
+|---|---|
+| **Chiều 1** | The Mute và lũ thần quái |
+| **Chiều 2** | Loài người (thế giới của game) |
+| **Chiều 3** | Vocara và các thần ngôn ngữ |
+
+- **Chiều 1 và Chiều 3 không thể tác động lên nhau**, kể cả trực tiếp hay gián tiếp. Hai phe không bao giờ đánh nhau mặt đối mặt.
+- **Cả hai chỉ tác động *gián tiếp* lên Chiều 2**, và mỗi bên có giới hạn:
+  - **The Mute:** làm nhiễu Vocal Frequency, xoá kiến thức, thả thần quái vào thế giới. Nhưng **không thể tự tay xoá linh hồn ngôn ngữ**, chỉ có thể nhốt chúng vào thần quái để gặm dần.
+  - **Các vị thần:** ban **thanh quản thần thánh (Vox Prima)**, dựng **vòm sóng bảo vệ**, cử thần ngôn ngữ gieo mầm. Nhưng **không thể trao sẵn một ngôn ngữ**, càng không thể tự đánh thần quái.
+- → **Trận chiến thật chỉ diễn ra ở Chiều 2, và chỉ con người mới đánh được.** Thần chọn một vùng đất, giữ trọn giọng nói cho người dân ở đó, để họ chiến đấu thay cho cả nhân loại.
 
 ## 6. Vùng đất được chọn
 
@@ -65,7 +76,7 @@
 
 - Để bảo vệ một vùng đất, các vị thần phải dựng **Vòm Thần (The Divine Dome)**: một tấm khiên cộng hưởng với Vocal Frequency.
 - Vòm cần cộng hưởng với **một tiếng nói chung mà nhiều dân tộc cùng dùng**. Đó là thứ gần nhất với "tiếng nói chung trước thời tòa tháp".
-- Ở thời hiện đại, tiếng nói chung ấy là **tiếng Anh**: ngôn ngữ cầu nối được nhiều người trên thế giới dùng để nói với nhau nhất. Và ở vùng đất này, rất nhiều người, từ thường dân tới chiến binh, đang học tiếng Anh.
+- Ở thời hiện đại, tiếng nói chung ấy là **tiếng Anh** *(chốt 20/11; KHÔNG nói tiếng Anh sinh ra từ tiếng Phạn – sai ngôn ngữ học)*: ngôn ngữ cầu nối được nhiều người trên thế giới dùng để nói với nhau nhất. Và ở vùng đất này, rất nhiều người, từ thường dân tới chiến binh, đang học tiếng Anh.
 - Vì thế dưới Vòm Thần, **giọng nói tiếng Anh không bị The Mute chạm tới**. Người dân Verse City nói tiếng Anh bình thường.
 - **Tiếng Anh nói ra = thần chú.** Mỗi câu nói đúng và tự tin truyền sức mạnh của Vocara vào vũ khí, đánh vào thần quái và giải thoát Word Spirit bị nhốt bên trong.
 - Lõi của Vòm Thần là **quả cầu ở quảng trường Town Hall – The Heart of Verse** ⚠️ *(dùng lại tượng quả cầu đã có trong game)*. Mỗi câu người chơi nói ra góp thêm sức cho lõi.
@@ -84,7 +95,11 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 ### Cách truyện khớp với thứ đã có trong game
 - **Bên trong Vòm Thần** = Verse City: an toàn, mua bán, học nói với NPC.
 - **Bên ngoài Vòm** = vùng hoang dã có quái. Càng xa vòm thì The Mute càng mạnh, nên quái càng mạnh *(khớp với các vòng cấp đã thiết kế)*.
-- **5 vùng mùa** ⚠️ *(đề xuất)*: là **những vết rách không gian**. The Mute xé những mảnh đất từ khắp thế giới đã chìm im lặng (núi tuyết, sa mạc, rừng phong, biển…) kéo về vây quanh Vòm. Mỗi vùng mang quái từ **truyền thuyết của nơi đó** → lý do quái có nguồn gốc văn hoá toàn cầu.
+- **Vết rách không gian** *(chốt 20/11)*: The Mute xé những vùng đất đã chìm im lặng từ khắp thế giới, kéo về vây quanh Vòm. Mỗi vết rách mang theo **cả vùng đất, nền văn hoá và quái trong truyền thuyết của nơi đó**, kèm một **công trình biểu tượng ở trung tâm** *(vd sa mạc: kim tự tháp nhỏ; vùng Lưỡng Hà: thành Babylon; Bắc Âu: làng gỗ, đá rune)*.
+- **Hai lớp quái theo khoảng cách** *(chốt 20/11)*:
+  - **Vùng viền quanh thành phố (vòng trong):** quái từ **truyện dân gian của chính vùng đất này**, kiểu "cây nhà lá vườn", người chơi gặp trước.
+  - **Các vết rách đa văn hoá (vòng ngoài):** quái từ truyền thuyết thế giới, **mạnh hơn**. Là vùng mở rộng dần về sau.
+  - Mỗi vết rách gắn với vị thần đã gieo ngôn ngữ cho nền văn hoá đó *(vd vết rách Ai Cập: Thoth; Bắc Âu: Odin)*. Giải phóng xong, vị thần ấy có thể truyền lời qua Vòm *(nhiệm vụ, phần thưởng)*.
 - **Giải thoát chứ không giết** *(nguyên tắc 7)*: thần quái bị đánh bại thì Word Spirit thoát ra, còn thần quái bị **đẩy về chiều không gian của nó**.
 - **Nhà ga:** sau này đi tàu tới các vùng đất khác đang chìm im lặng để mở rộng Vòm *(mở rộng bản đồ, mùa mới)*.
 - **Bị đánh thì "câm"** (micro khoá vài giây): chính là sức mạnh của The Mute chạm vào người chơi.
@@ -94,7 +109,7 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 ## 9. Thần thoại dùng thế nào (nguyên tắc an toàn)
 
 - **Đấng tối cao, Chúa tể The Mute = nhân vật tự sáng tác.** Không đồng nhất với Thượng đế hay vị thần của bất kỳ tôn giáo nào đang có người thờ.
-- **Thần dưới trướng:** ưu tiên thần thoại **không còn là tôn giáo đang thờ phụng rộng rãi** (Ai Cập: Thoth · Lưỡng Hà: Nabu · Hy Lạp: Hermes · Bắc Âu: Odin · Celt: Ogma) và nhân vật truyền thuyết (Thương Hiệt). Thần của tôn giáo đang sống (vd Saraswati – Hindu giáo) chỉ nhắc tên một cách tôn trọng hoặc không dùng.
+- **Thần dưới trướng: dùng tên thật** *(chốt 20/11)*, chọn thần thoại **không còn là tôn giáo đang thờ phụng rộng rãi** (Ai Cập: Thoth · Lưỡng Hà: Nabu · Hy Lạp: Hermes · Bắc Âu: Odin · Celt: Ogma) và nhân vật truyền thuyết (Thương Hiệt). Miêu tả trang trọng, đúng thần thoại, không biến thành trò cười. Thần của tôn giáo đang sống (vd Saraswati – Hindu giáo) chỉ nhắc tên một cách tôn trọng hoặc không dùng.
 - **Quái** lấy cảm hứng từ sinh vật dân gian thế giới (yêu tinh, rồng, quỷ tuyết, nhân sư…), vẽ lại theo chibi tròn mềm, không đáng sợ với trẻ 8 tuổi.
 - Danh nhân: đúng sự thật lịch sử, không bịa trích dẫn, không chọn người còn sống hoặc nhân vật chính trị *(như ROADMAP đã ghi)*.
 
@@ -108,10 +123,8 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 
 ---
 
-## ⚠️ Chờ chủ dự án chốt
-1. Tên **Đấng Tối Cao** (Vocara?), tên **món quà** (Vox Prima?), tên **Chúa tể The Mute**.
-2. Giữ tên **"tháp Babel"** hay đổi thành "the Great Tower" (người chơi tự liên tưởng)?
-3. Dùng các **thần ngôn ngữ thần thoại thật** (Thoth, Odin…) làm nhân vật, hay chỉ tự sáng tác?
-4. **5 vùng mùa = vết rách không gian** có ổn không?
-5. **Heart of Verse** (quả cầu quảng trường) làm lõi Vòm Thần?
-6. Giữ hay bỏ **chim sáo tinh linh** dẫn đường (sứ giả của các vị thần)?
+## 11. Tên các nhân tố chính – ⚠️ chờ chốt
+*(xem đề xuất trong phiên 20/11; chốt xong điền vào đây)*
+
+## Đã bỏ
+- Chim sáo tinh linh dẫn đường (mỗi người một con thì rối hình) – chủ dự án bỏ 20/11.
