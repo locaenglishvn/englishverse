@@ -61,6 +61,7 @@ header h1 span{color:var(--mute)}
 .tag.tier{background:var(--mute-soft);color:var(--mute)}
 .tag.gen{background:color-mix(in srgb,var(--gc) 18%,var(--mist2));color:var(--gc)}
 .lore{font-size:1rem}
+.idiom{border-left:3px solid var(--spirit);padding:4px 0 4px 12px;color:var(--ink);font-size:.93rem;font-style:italic}
 .mean{background:var(--spirit-soft);color:var(--spirit);border-radius:10px;padding:10px 12px;font-size:.92rem}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .blk{min-width:0}
@@ -85,12 +86,13 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">EnglishVerse · sổ tay nhân vật · bản thử 2 · 20/11</div>
+    <div class="eyebrow">EnglishVerse · sổ tay nhân vật · bản thử 3 · 20/11</div>
     <h1>Mute <span>Bestiary</span></h1>
-    <p class="lead">13 thần quái của vòng trong quanh The Last Echo City: 8 quái thường và 5 trùm. Silentium nặn chúng từ nỗi sợ trong chính truyện kể và đời sống của vùng đất này. Mỗi con đang giam Word Spirits trong người.</p>
+    <p class="lead">25 thần quái của vòng trong quanh The Last Echo City: 15 quái thường, 3 tinh anh, 1 quái hiếm và 5 trùm. Nhiều con lấy từ thành ngữ, ca dao, trò chơi dân gian. Silentium nặn chúng từ nỗi sợ trong chính truyện kể và đời sống của vùng đất này. Mỗi con đang giam Word Spirits trong người.</p>
     <div class="note">
       <span><b>Phong cách:</b> surreal fantasy, hoạt hình 3D dáng to khỏe, hơi rợn nhưng vẫn vui mắt. Vật và thú hòa vào nhau, tỉ lệ phi lý, có bộ phận lơ lửng.</span>
       <span><b>Cách dùng câu lệnh vẽ:</b> bấm Copy, dán vào ChatGPT hoặc Gemini, tạo 3–4 ảnh, chọn 1 ảnh rồi đưa vào Tripo (Image to 3D). Câu lệnh đã có sẵn nền xám trơn và dáng đứng thẳng để Tripo dựng mô hình dễ.</span>
+      <span><b>Giữ đồng bộ phong cách:</b> đính kèm ảnh chuẩn Mud Buffalo (assets/concept/mud-buffalo.webp) và thêm câu "Same art style as the attached image."</span>
       <span><b>Loại đề khi đánh không phụ thuộc quái.</b> Dòng "Ý nghĩa" chỉ là chất truyện để kể với phụ huynh và nhà trường.</span>
     </div>
   </header>
@@ -101,7 +103,7 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
     <div class="mark"><b>Miệng bị niêm</b>Khâu chỉ, kéo khóa kéo, hoặc không có miệng. The Mute lấy đi tiếng nói.</div>
     <div class="mark"><b>Vết nứt tím</b>Phát sáng, bên trong lấp lánh chữ cái nhỏ. Đó là Word Spirits bị nhốt.</div>
     <div class="mark"><b>Mắt phát sáng</b>To, tròn, sáng rực. Giữ biểu cảm rõ khi nhìn từ xa trên điện thoại.</div>
-    <div class="mark"><b>Thân xác bị tráo</b>Không con nào mang thân của chính loài gốc. Trâu thành bọ hung, cá thành cóc, chim thành bướm. Chỉ giữ vài dấu hiệu (sừng, vỏ, nón lá…) để người chơi đoán ra gốc.</div>
+    <div class="mark"><b>Thân xác bị tráo</b>Không con nào mang thân của chính loài gốc. Trâu thành bọ hung, cá thành cóc, chim thành bướm. Chỉ giữ vài dấu hiệu (sừng, vỏ, nón lá…) để người chơi đoán ra gốc. <i>Ngoại lệ: quái từ thành ngữ, ca dao giữ thân gốc để câu nói còn nhận ra được.</i></div>
   </div>
   <p class="lead" style="margin-top:18px">Trùm mang thêm màu của vị tướng chỉ huy nó:</p>
   <div class="gens">
@@ -112,15 +114,17 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
   </div>
 
   <div class="filters" role="group" aria-label="Lọc quái">
-    <button id="f-all" data-f="all" aria-pressed="true">Tất cả · 13</button>
-    <button id="f-common" data-f="common" aria-pressed="false">Quái thường · 8</button>
+    <button id="f-all" data-f="all" aria-pressed="true">Tất cả · 25</button>
+    <button id="f-common" data-f="common" aria-pressed="false">Quái thường · 15</button>
+    <button id="f-elite" data-f="elite" aria-pressed="false">Tinh anh · 3</button>
+    <button id="f-rare" data-f="rare" aria-pressed="false">Hiếm · 1</button>
     <button id="f-boss" data-f="boss" aria-pressed="false">Trùm · 5</button>
   </div>
 
   <div class="list" id="list"></div>
 
   <footer>
-    <span>Cân đối vùng: 🏝️ Đông Nam có 3 quái thường, 🌸 Nam 2, 🍁 Đông Bắc 2, ❄️ Bắc 1, 🏜️ Đông chưa có quái thường. Có thể dời bớt một con sang vùng thiếu.</span>
+    <span>Quái thường theo vùng: 🏜️ Đông 4 · ❄️ Bắc 3 · 🍁 Đông Bắc 3 · 🌸 Nam 3 · 🏝️ Đông Nam 3. Mỗi vùng còn có 1 trùm; tinh anh ở Bắc, Đông Bắc, Đông Nam; quái hiếm ở Nam.</span>
     <span>Nguồn cảm hứng: đời sống và truyện dân gian Việt Nam (Thạch Sanh, Sơn Tinh – Thủy Tinh, truyền thuyết Hồ Tây), không có bản quyền. File gốc: docs/design/bestiary.html.</span>
   </footer>
 </div>
@@ -199,6 +203,113 @@ const M = [
     pers:"Im lìm, rình rập, rất kiên nhẫn.",
     fight:"Đứng im giả làm bù nhìn cho tới khi người chơi lại gần, bất ngờ bật dậy, xoay tròn quét chân tre.",
     p:"A spider creature (an arachnid, NOT a human scarecrow) with eight legs made of bamboo branches, an abdomen made of a bundle of straw with a glowing violet lantern inside, a torn conical palm-leaf hat as its head, a straw raincoat draped over its back, two glowing button eyes, stitched mouth, paper sparrows perched on its back." },
+  { id:"tiger-hornet", tier:"elite", name:"Tiger Hornet", vn:"Hổ Mọc Thêm Cánh", emo:"🐝", body:"Ong bắp cày (côn trùng)", zone:"❄️ Bắc · núi rừng",
+    idiom:"\"Hổ mọc thêm cánh\" – đã mạnh lại càng mạnh hơn. Tiếng Anh gần nghĩa: go from strength to strength.",
+    lore:"Con hổ chúa sơn lâm đã mạnh, The Mute còn cho nó thêm cánh. Nhưng đổi lại, nó lấy mất thân hổ: giờ chúa sơn lâm là một con ong bắp cày khổng lồ sọc vằn, bay vù vù trên đỉnh núi tuyết.",
+    mean:"Người giỏi rồi mà vẫn ngại nói, sợ mất hình ảnh.",
+    shape:["Thân ong bắp cày khổng lồ, sọc vằn hổ cam đen","Đầu mang mặt hổ: mõm, râu, tai tròn (dấu hiệu hổ)","Bốn cánh mỏng như giấy dó, rìa rách","Kim đuôi là một chiếc vuốt hổ cong","Miệng hổ bị khâu kín bằng chỉ đỏ"],
+    pal:[["#E8742A","vằn cam"],["#1E1A1A","vằn đen"],["#F3E7C9","cánh"],["#9B6DFF","Mute"]],
+    pers:"Hống hách, nhanh, tự tin thái quá.",
+    fight:"Quái tinh anh: máu ×2. Bay vòng trên cao rồi bổ nhào chích (vòng đỏ nhỏ, rất nhanh). Đôi khi gầm câm làm cả vùng rung.",
+    p:"A giant hornet (an insect, NOT a mammal) with orange-and-black tiger stripes, its head has a tiger's face with whiskers, round ears and a muzzle stitched shut with red thread, four thin torn paper-like wings, its stinger shaped like a curved tiger claw, hovering pose." },
+  { id:"rooster-shrimp", tier:"common", name:"Shrimp-Tail Rooster", vn:"Gà Mọc Đuôi Tôm", emo:"🦐", body:"Tôm hùm (giáp xác)", zone:"🏜️ Đông · đầm phá ven cát",
+    lore:"Con gà trống mất tiếng gáy giữa buổi sáng. The Mute vo nó lại thành một con tôm hùm đội mào gà, đuôi tôm quẫy, chân đi giật lùi. Nó vẫn vươn cổ gáy mỗi sáng, nhưng không ra tiếng.",
+    mean:"Câu nói \"đi giật lùi\": đặt từ sai thứ tự, đầu đuôi lộn xộn.",
+    shape:["Thân tôm hùm, vỏ đỏ cam bóng","Mào gà đỏ và yếm gà lủng lẳng (dấu hiệu gà)","Đuôi tôm xoè như đuôi gà trống, có vài lông vũ","Hai càng như cánh gà gập lại","Mỏ gà kéo khoá kéo"],
+    pal:[["#E2502F","vỏ"],["#F2A541","càng"],["#C41E3A","mào"],["#9B6DFF","Mute"]],
+    pers:"Hay ra oai, nóng nảy, đi giật lùi.",
+    fight:"Bị đánh thì búng đuôi phóng lùi rất nhanh rồi quay lại mổ. \"Gáy câm\": gọi 1–2 quái gần đó tới.",
+    p:"A lobster creature (a crustacean, NOT a bird) with a glossy red-orange shell, a bright red rooster comb and dangling wattles on its head, a beak closed with a zipper, a fanned shrimp tail shaped like a rooster's tail with a few feathers, claws folded like chicken wings, walking backwards." },
+  { id:"carp-dragon", tier:"rare", name:"Carp Dragon", vn:"Cá Chép Hoá Rồng", emo:"🐉", body:"Rồng dở dang (biến hình)", zone:"🌸 Nam · suối, thác",
+    idiom:"\"Cá chép vượt vũ môn hoá rồng\" – vượt khó để đổi đời. Tiếng Anh gần nghĩa: rags to riches.",
+    lore:"Cá chép vượt thác để hoá rồng. The Mute bắt nó dừng lại đúng giữa lúc biến hình: nửa vảy cá, nửa vảy rồng, mãi mãi lơ lửng trên thác, không thành cá cũng chẳng thành rồng.",
+    mean:"Đang tiến bộ thì dừng lại vì sợ sai, bỏ dở giữa chừng.",
+    shape:["Thân rồng dài lượn sóng, chưa có chân","Đầu còn là đầu cá chép, có râu rồng mọc dở (dấu hiệu cá chép)","Vảy chuyển dần từ vảy cá vàng đỏ sang vảy rồng ngọc","Vây cá biến dần thành móng rồng","Sừng rồng mới nhú, miệng khâu bằng sợi vàng"],
+    pal:[["#F2B134","vàng"],["#D9452B","đỏ"],["#2FB48C","ngọc"],["#9B6DFF","Mute"]],
+    pers:"Kiêu hãnh, buồn bã, rất muốn thoát.",
+    fight:"Quái HIẾM (tỉ lệ ~3%): viền vàng, máu ×3, rơi đồ quý. Sau 60 giây không bị hạ thì nhảy vọt lên thác và biến mất.",
+    p:"A half-transformed creature frozen mid-metamorphosis: a long wavy dragon body without legs, its head still a koi carp head with newly sprouting dragon whiskers and tiny horn buds, scales shifting from gold-and-red carp scales to jade dragon scales, fins turning into dragon claws, mouth sewn with golden thread, leaping above a waterfall." },
+  { id:"elephant-mouse", tier:"common", name:"Elephant-Head Mousetail", vn:"Đầu Voi Đuôi Chuột", emo:"🐘", body:"Nòng nọc (lưỡng cư)", zone:"🏜️ Đông · đồi cát",
+    idiom:"\"Đầu voi đuôi chuột\" – khởi đầu hoành tráng, kết thúc èo uột. Tiếng Anh gần nghĩa: start with a bang, end with a whimper.",
+    lore:"Một cái đầu voi khổng lồ gắn trên thân nòng nọc bé tí, kéo theo cái đuôi chuột dài ngoẵng. Nó lao tới rất dữ, rồi hết hơi ngay sau đó.",
+    mean:"Mở đầu câu rất to, càng về cuối càng nhỏ dần rồi bỏ lửng.",
+    shape:["Đầu voi to gấp 3 thân, tai như hai chiếc lá chuối","Thân nòng nọc nhỏ, trơn, bò trên cát bằng hai chân ếch tí hon","Đuôi chuột hồng dài và mảnh","Vòi voi thắt nút (miệng bị niêm)","Ngà voi ngắn, nứt"],
+    pal:[["#8C8C9A","da voi"],["#C9A97A","cát"],["#F2A7B0","đuôi"],["#9B6DFF","Mute"]],
+    pers:"Huênh hoang, nhanh nản.",
+    fight:"Đòn đầu tiên rất mạnh (húc ×3), sau đó mỗi đòn yếu dần. Đánh chặn được cú đầu là thắng dễ.",
+    p:"A tiny slippery tadpole body (an amphibian, NOT a mammal) crawling on sand with two tiny frog legs, carrying an enormous elephant head three times its size with banana-leaf ears and short cracked tusks, its trunk tied in a knot, a long thin pink mouse tail, comically unbalanced." },
+  { id:"swan-toad", tier:"common", keep:true, name:"Swan-Craving Toad", vn:"Cóc Ghẻ Ăn Thịt Thiên Nga", emo:"🐸", body:"giữ thân cóc (ngoại lệ)", zone:"❄️ Bắc · hồ băng",
+    idiom:"\"Cóc ghẻ đòi ăn thịt thiên nga\" – mơ ước điều quá sức mình. Tiếng Anh gần nghĩa: reach for the moon / aim above your station.",
+    lore:"Con cóc ghẻ ngồi bên hồ băng ngày ngày nhìn đàn thiên nga. The Mute khoác cho nó một bộ lông thiên nga giả và đôi cánh gãy, nó tin mình bay được, nên nhảy mãi lên không trung.",
+    mean:"Muốn nói câu thật dài thật hay ngay, bỏ qua câu ngắn đơn giản.",
+    shape:["Cóc ghẻ to, da sần đầy mụn","Khoác bộ lông thiên nga trắng rách tả tơi","Đôi cánh thiên nga gãy cột vào lưng bằng dây","Cổ đeo vòng cổ thiên nga dài bằng giấy","Miệng rộng khâu kín, một chiếc lông trắng thò ra"],
+    pal:[["#6F7D3A","da cóc"],["#F4F4F0","lông"],["#A8DDF0","băng"],["#9B6DFF","Mute"]],
+    pers:"Mơ mộng, cố chấp, hơi tội nghiệp.",
+    fight:"Nhảy rất cao rồi rơi xuống đè (vòng đỏ to). Sau mỗi cú rơi bị choáng 1 giây, đó là lúc đánh.",
+    p:"A big warty toad wearing a ragged costume of white swan feathers, broken swan wings tied to its back with string, a long paper swan neck collar, its wide mouth stitched shut with one white feather sticking out, sitting by a frozen lake, dreamy eyes looking up." },
+  { id:"lucky-dog", tier:"common", keep:true, name:"Lucky Yawn Dog", vn:"Chó Ngáp Phải Ruồi", emo:"🐕", body:"giữ thân chó (ngoại lệ)", zone:"🏜️ Đông · đồi cát",
+    idiom:"\"Chó ngáp phải ruồi\" – may mắn bất ngờ, không nhờ tài. Tiếng Anh gần nghĩa: dumb luck / even a blind squirrel finds a nut.",
+    lore:"Con chó lười nằm phơi nắng trên đồi cát, cả ngày chỉ ngáp. The Mute khâu miệng nó lại, nhưng mỗi lần nó cố ngáp, đường khâu bung ra một chút, và đôi khi đớp trúng một con ruồi chữ phát sáng.",
+    mean:"Nói đúng nhờ may, không biết vì sao đúng.",
+    shape:["Chó cỏ vàng lười, nằm ườn, bụng tròn","Miệng khâu chỉ bị bung một góc vì ngáp","Ruồi chữ cái phát sáng bay vo ve quanh đầu","Mắt lim dim buồn ngủ","Tai cụp, đuôi cuộn"],
+    pal:[["#D9A05B","lông"],["#F6E2B3","bụng"],["#F5C451","ruồi"],["#9B6DFF","Mute"]],
+    pers:"Lười, vô tư, hên bất ngờ.",
+    fight:"Đánh yếu, nhưng 10% đòn \"ngáp trúng\" gây sát thương ×3. Ít máu, dễ hạ.",
+    p:"A lazy yellow village dog lying on a sand dune with a round belly, sleepy half-closed eyes, floppy ears, its mouth stitched shut but the stitches torn open at one corner from yawning, glowing letter-shaped flies buzzing around its head." },
+  { id:"tempted-cat", tier:"common", keep:true, name:"Tempted Cat", vn:"Mỡ Treo Miệng Mèo", emo:"🐈", body:"giữ thân mèo (ngoại lệ)", zone:"❄️ Bắc · gian bếp làng",
+    idiom:"\"Mỡ treo miệng mèo\" – thứ hấp dẫn ở ngay trước mặt, khó mà cưỡng lại. Tiếng Anh gần nghĩa: like a kid in a candy store.",
+    lore:"The Mute treo một miếng mỡ phát sáng lủng lẳng trước mũi con mèo, buộc vào chiếc cần câu mọc ra từ chính lưng nó. Con mèo đuổi theo miếng mỡ mãi mà không bao giờ với tới.",
+    mean:"Chạy theo đáp án dễ (bấm nút chọn sẵn) thay vì tự nói.",
+    shape:["Mèo mướp gầy, lưng cong","Từ lưng mọc ra cần câu tre, treo miếng mỡ phát sáng trước mũi","Mắt dán chặt vào miếng mỡ, đồng tử dọc","Miệng khâu kín, nước dãi chảy","Móng vuốt dài cào đất"],
+    pal:[["#8A7560","lông mướp"],["#3E3428","vằn"],["#FFE9A8","mỡ"],["#9B6DFF","Mute"]],
+    pers:"Thèm khát, bồn chồn, dễ bị dụ.",
+    fight:"Chạy vòng quanh đuổi miếng mỡ, khó đoán hướng. Người chơi ăn đồ gần nó thì nó lao tới giành.",
+    p:"A skinny tabby cat with an arched back, a bamboo fishing rod growing out of its own back dangling a glowing piece of pork fat right in front of its nose, eyes locked on the fat with slit pupils, mouth stitched shut and drooling, long claws scratching the ground." },
+  { id:"well-frog", tier:"common", keep:true, name:"Well Frog", vn:"Ếch Ngồi Đáy Giếng", emo:"🐸", body:"giữ thân ếch (ngoại lệ)", zone:"🍁 Đông Bắc · giếng làng",
+    idiom:"\"Ếch ngồi đáy giếng\" – hiểu biết hạn hẹp mà tưởng mình biết hết. Tiếng Anh có câu y hệt: a frog in a well.",
+    lore:"Con ếch ngồi đáy giếng, tưởng bầu trời chỉ to bằng miệng giếng. The Mute giữ nó ở đó mãi: cái giếng gạch lớn lên cùng nó, giờ nó mang cả cái giếng trên người như mặc một chiếc váy đá.",
+    mean:"Nghĩ thế giới chỉ có tiếng mẹ đẻ, ngại bước ra.",
+    shape:["Ếch xanh mập ngồi trong một cái giếng gạch rêu","Giếng dính liền với thân như chiếc váy đá, ếch đi bằng cả giếng","Trên đầu đội một mảnh trời tròn bằng miệng giếng","Gàu nước và dây thừng lủng lẳng","Miệng khâu, mắt lồi nhìn lên"],
+    pal:[["#5E9C3D","ếch"],["#9C6B4E","gạch"],["#7DBE6A","rêu"],["#9B6DFF","Mute"]],
+    pers:"Bảo thủ, tự mãn, không chịu nghe.",
+    fight:"Không rời giếng: chỉ đánh người chơi đứng trong vòng quanh nó, lưỡi phóng xa. Đứng ngoài tầm lưỡi để đánh.",
+    p:"A plump green frog sitting inside an old mossy brick village well that is fused to its body like a stone skirt, it waddles around carrying the whole well, a small round piece of blue sky floating above its head the size of the well's opening, a wooden bucket and rope dangling, mouth stitched shut, bulging eyes looking up." },
+  { id:"rain-dragonfly", tier:"common", keep:true, name:"Rainmaker Dragonfly", vn:"Chuồn Chuồn Gọi Mưa", emo:"🪰", body:"giữ thân chuồn chuồn (ngoại lệ)", zone:"🌸 Nam · đồng lúa",
+    idiom:"Ca dao: \"Chuồn chuồn bay thấp thì mưa, bay cao thì nắng, bay vừa thì râm.\" Tiếng Anh cũng có kinh nghiệm dân gian: dragonflies fly low before rain.",
+    lore:"Chuồn chuồn báo mưa cho nhà nông. The Mute bắt nó điều khiển luôn mây mưa: mỗi con kéo theo một đám mây xám bé xíu buộc vào đuôi như quả bóng bay.",
+    mean:"Tâm trạng thất thường: hôm dám nói, hôm im bặt.",
+    shape:["Chuồn chuồn ngô to, mắt kép như hai quả cầu phát sáng","Bốn cánh như kính màu chì","Đuôi buộc một đám mây xám nhỏ đang mưa lắc rắc","Thân đốt xanh lam ánh kim","Hàm khoá kéo"],
+    pal:[["#2F7FC1","thân"],["#9FD8E8","cánh"],["#8A8FA3","mây"],["#9B6DFF","Mute"]],
+    pers:"Thất thường, đổi hướng liên tục.",
+    fight:"Bay thấp: tạo vùng mưa làm người chơi đi chậm. Bay cao: lao thẳng xuống. Bay vừa: đứng yên, dễ đánh.",
+    p:"A large dragonfly with huge glowing compound eyes, four wings like stained-glass windows, a segmented metallic blue body, a small grey rain cloud tied to its tail like a balloon drizzling rain, its jaws closed with a zipper, hovering." },
+  { id:"market-mouse", tier:"common", keep:true, name:"Market Mouse", vn:"Chuột Đi Chợ Đường Xa", emo:"🐭", body:"giữ thân chuột (ngoại lệ)", zone:"🏜️ Đông · đường cát",
+    idiom:"Đồng dao: \"Con mèo mà trèo cây cau… Chú chuột đi chợ đường xa, mua mắm mua muối giỗ cha chú mèo.\"",
+    lore:"Chú chuột đi chợ đường xa mãi chưa về. The Mute làm đường kéo dài vô tận, chú cứ gánh mắm gánh muối đi hoài trên đồi cát. Ai chặn đường thì chú vứt gánh mà chạy.",
+    mean:"Vòng vo, nói mãi không tới ý chính.",
+    shape:["Chuột nhắt đứng hai chân, gầy, đội nón lá nhỏ","Vai gánh đòn gánh: một đầu hũ mắm, một đầu túi muối","Chân đi dép tổ ong","Hũ mắm có vết nứt tím chứa chữ","Miệng khâu, râu vểnh, mắt láo liên"],
+    pal:[["#9A9AA5","lông"],["#7A4E2D","hũ mắm"],["#F2F2EE","muối"],["#9B6DFF","Mute"]],
+    pers:"Nhút nhát, lanh lẹ, tham vặt.",
+    fight:"Thấy người chơi là bỏ chạy. Đuổi kịp và hạ được thì rơi nhiều xu (gánh hàng đổ ra). Chạy thoát sau 20 giây.",
+    p:"A small skinny mouse standing on two legs wearing a tiny conical palm-leaf hat and rubber sandals, carrying a bamboo shoulder pole with a clay jar of fish sauce on one end and a cloth bag of salt on the other, the clay jar has glowing violet cracks, mouth stitched shut, twitching whiskers, darting eyes." },
+  { id:"cloud-dragon-train", tier:"elite", keep:true, name:"Cloud Dragon Chain", vn:"Rồng Rắn Lên Mây", emo:"🐲", body:"giữ hình đoàn rồng rắn (ngoại lệ)", zone:"🍁 Đông Bắc · sân đình",
+    idiom:"Trò chơi dân gian: \"Rồng rắn lên mây, có cây lúc lắc, có nhà điểm binh…\" – thầy thuốc phải bắt được khúc đuôi.",
+    lore:"Trò rồng rắn của trẻ con bị The Mute thổi thành một con rồng mây thật: mỗi khúc thân là một chiếc lồng đèn có chân, nối đuôi nhau bay lượn quanh cây lúc lắc. Muốn hạ nó phải bắt được khúc đuôi, đúng như luật chơi ngày xưa.",
+    mean:"Câu dài nối đuôi nhau, mất phần cuối.",
+    shape:["Đầu rồng múa bằng giấy bồi, sừng mây","Thân là 6–8 khúc lồng đèn tròn có chân, nối đuôi nhau","Khúc đuôi nhỏ nhất, phát sáng vàng (điểm yếu)","Bay quanh một cây lúc lắc treo chuông","Miệng rồng khâu kín bằng dây đỏ"],
+    pal:[["#D93A3A","đỏ"],["#F2C14E","vàng"],["#F7F2E8","giấy"],["#9B6DFF","Mute"]],
+    pers:"Vui nhộn, tinh nghịch, đông đúc.",
+    fight:"Quái tinh anh: chỉ khúc đuôi nhận sát thương. Đầu rồng luôn quay chặn trước khúc đuôi, người chơi phải vòng ra sau.",
+    p:"A festive paper dragon made of a papier-mache dragon dance head with cloud-shaped horns, followed by a chain of six round paper lanterns with little legs as its body segments, the smallest tail segment glowing gold, circling around a swaying tree hung with bells, the dragon's mouth tied shut with red string." },
+  { id:"laughing-bom", tier:"elite", keep:true, name:"Laughing Bom", vn:"Thằng Bờm", emo:"🪭", body:"giữ hình người (ngoại lệ)", zone:"🏝️ Đông Nam · bãi biển",
+    idiom:"Ca dao: \"Thằng Bờm có cái quạt mo, phú ông xin đổi ba bò chín trâu…\" – đổi gì Bờm cũng lắc đầu, chỉ đổi nắm xôi thì Bờm cười.",
+    lore:"Bờm chẳng cần gì ngoài cái quạt mo và nắm xôi. The Mute biến tiếng cười của Bờm thành tiếng cười câm: miệng cười toe toét bị khâu cứng, và cái quạt mo lớn dần thành một cánh quạt khổng lồ thổi bay mọi thứ.",
+    mean:"Cười trừ cho qua, không nói thành lời.",
+    shape:["Cậu bé gầy, đầu trọc để chỏm, áo nâu vá","Cầm cái quạt mo cau to gấp đôi người","Hông đeo nắm xôi gói lá chuối phát sáng","Nụ cười toe toét bị khâu cứng lại","Mắt phát sáng cong cong như đang cười"],
+    pal:[["#8B5E3C","áo nâu"],["#D9C28E","quạt mo"],["#F5F0E1","xôi"],["#9B6DFF","Mute"]],
+    pers:"Hồn nhiên, khó đoán, không ham của.",
+    fight:"Quái tinh anh: phẩy quạt thổi bay người chơi ra xa (vòng gió). Không rơi xu, chỉ rơi Xôi (hồi máu nhiều).",
+    p:"A cheeky skinny boy from a folk song with a shaved head and one tuft of hair, a patched brown peasant shirt, holding a giant areca-palm-sheath fan twice his size, a glowing sticky-rice ball wrapped in banana leaf at his hip, his wide grin stitched shut into a frozen silent laugh, glowing crescent-shaped eyes." },
   { id:"ong-ba-bi", tier:"boss", gen:"Vorax", name:"Ong Ba Bi", vn:"Ông Ba Bị · The Sack Man", emo:"👝", body:"Cò già khổng lồ (chim)", zone:"🌸 Nam · trùm đầu tiên",
     lore:"Người lớn vẫn dọa trẻ: \"Im đi, không Ông Ba Bị bắt!\". Vorax nặn lời dọa ấy thành một con cò già trọc đầu khổng lồ, lêu nghêu, đi gom tiếng nói trẻ con vào cái bị. Cái bị phình lên, động đậy, bên trong hàng trăm Word Spirits đang đập đòi ra.",
     mean:"Nỗi sợ bị bắt im lặng từ thuở nhỏ.",
@@ -243,7 +354,9 @@ const M = [
 
 const list = document.getElementById("list");
 function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]))}
-function promptOf(m){ return m.p + " " + STYLE + (m.tier === "boss" ? BOSS + GEN[m.gen].p : ""); }
+const KEEP = "This creature keeps its own natural animal body (it comes from a folk saying), but it is cursed by the Mute.";
+const TIER = { common:"QUÁI THƯỜNG", elite:"TINH ANH", rare:"HIẾM", boss:"TRÙM" };
+function promptOf(m){ const st = m.keep ? KEEP + STYLE.slice(STYLE.indexOf(" Surreal")) : STYLE; return m.p + " " + st + (m.tier === "boss" ? BOSS + GEN[m.gen].p : m.tier === "elite" || m.tier === "rare" ? " Elite monster, twice the size of normal monsters." : ""); }
 list.innerHTML = M.map(m => {
   const g = m.gen ? GEN[m.gen] : null;
   return `<article class="card ${m.tier}" data-tier="${m.tier}" id="${m.id}" style="--p1:${m.pal[1][0]};--p2:${m.pal[0][0]};${g ? "--gc:" + g.c : ""}">
@@ -252,10 +365,11 @@ list.innerHTML = M.map(m => {
       <div class="id">
         <h3>${esc(m.name)}</h3>
         <div class="vn">${esc(m.vn)}</div>
-        <div class="tags"><span class="tag tier">${m.tier === "boss" ? "TRÙM" : "QUÁI THƯỜNG"}</span><span class="tag">${esc(m.zone)}</span><span class="tag">thân: ${esc(m.body)}</span>${g ? `<span class="tag gen">${m.gen}</span>` : ""}</div>
+        <div class="tags"><span class="tag tier">${TIER[m.tier]}</span><span class="tag">${esc(m.zone)}</span><span class="tag">thân: ${esc(m.body)}</span>${g ? `<span class="tag gen">${m.gen}</span>` : ""}</div>
       </div>
     </div>
     <p class="lore">${esc(m.lore)}</p>
+    ${m.idiom ? `<div class="idiom">${esc(m.idiom)}</div>` : ""}
     <div class="mean">Ý nghĩa: ${esc(m.mean)}</div>
     <div class="grid2">
       <div class="blk"><h4>Dáng</h4><ul>${m.shape.map(s => `<li>${esc(s)}</li>`).join("")}</ul></div>
