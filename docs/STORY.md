@@ -105,6 +105,7 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
   - **Vùng viền quanh thành phố (vòng trong):** quái từ **truyện dân gian của chính vùng đất này**, kiểu "cây nhà lá vườn", người chơi gặp trước.
   - **Các vết rách đa văn hoá (vòng ngoài):** quái từ truyền thuyết thế giới, **mạnh hơn**. Là vùng mở rộng dần về sau.
   - Mỗi vết rách gắn với vị thần đã gieo ngôn ngữ cho nền văn hoá đó *(vd vết rách Ai Cập: Thoth; Bắc Âu: Odin)*. Giải phóng xong, vị thần ấy có thể truyền lời qua Vòm *(nhiệm vụ, phần thưởng)*.
+- **Thần thú bị xiềng – trùm thế giới** *(chốt 20/11)*: không phải quái do The Mute sinh ra mà là **thần thú Việt bị Silentium chiếm giữ**, xích bằng xích chữ tím + ấn phong nứt trên trán (không khâu miệng). Cả server gọi ra bằng thanh Voice chung, đánh nhóm; giải thoát xong thành thần hộ vệ. **The Ninefold** (voi chín ngà + gà chín cựa + ngựa chín hồng mao – sính lễ Sơn Tinh; thân gà chọi đứng, mặt voi) và **The Four Sacred** (Tứ Linh: thân rùa núi đền, đầu rồng, cánh phượng, chân lân). Ảnh chốt: `assets/concept/ninefold.webp`, `four-sacred.webp`.
 - **Giải thoát chứ không giết** *(nguyên tắc 7)*: thần quái bị đánh bại thì Word Spirit thoát ra, còn thần quái bị **đẩy về chiều không gian của nó**.
 - **Nhà ga:** sau này đi tàu tới các vùng đất khác đang chìm im lặng để mở rộng Vòm *(mở rộng bản đồ, mùa mới)*.
 - **Bị đánh thì "câm"** (micro khoá vài giây): chính là sức mạnh của The Mute chạm vào người chơi.

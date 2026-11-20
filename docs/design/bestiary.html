@@ -61,6 +61,11 @@ header h1 span{color:var(--mute)}
 .tag.tier{background:var(--mute-soft);color:var(--mute)}
 .tag.gen{background:color-mix(in srgb,var(--gc) 18%,var(--mist2));color:var(--gc)}
 .lore{font-size:1rem}
+.art{margin:0;border-radius:12px;overflow:hidden;background:#d9d9d9;position:relative}
+.art img{display:block;width:100%;height:auto;max-width:100%}
+.art figcaption{position:absolute;left:8px;top:8px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;background:var(--void);color:var(--spirit);padding:2px 8px;border-radius:99px}
+.card.world{border-color:var(--spirit);background:linear-gradient(180deg,color-mix(in srgb,var(--spirit) 10%,var(--mist)),var(--mist) 40%)}
+.world .plate{width:112px;height:112px;font-size:54px;box-shadow:0 0 34px -4px var(--spirit)}
 .idiom{border-left:3px solid var(--spirit);padding:4px 0 4px 12px;color:var(--ink);font-size:.93rem;font-style:italic}
 .mean{background:var(--spirit-soft);color:var(--spirit);border-radius:10px;padding:10px 12px;font-size:.92rem}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
@@ -86,9 +91,9 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">EnglishVerse · sổ tay nhân vật · bản thử 4 · 20/11</div>
+    <div class="eyebrow">EnglishVerse · sổ tay nhân vật · bản thử 5 · 20/11</div>
     <h1>Mute <span>Bestiary</span></h1>
-    <p class="lead">25 thần quái của vòng trong quanh The Last Echo City: 15 quái thường, 3 tinh anh, 1 quái hiếm và 5 trùm. Nhiều con lấy từ thành ngữ, ca dao, trò chơi dân gian. Silentium nặn chúng từ nỗi sợ trong chính truyện kể và đời sống của vùng đất này. Mỗi con đang giam Word Spirits trong người.</p>
+    <p class="lead">25 thần quái của vòng trong và 2 thần thú bị xiềng quanh The Last Echo City: 15 quái thường, 3 tinh anh, 1 quái hiếm và 5 trùm. Nhiều con lấy từ thành ngữ, ca dao, trò chơi dân gian. Silentium nặn chúng từ nỗi sợ trong chính truyện kể và đời sống của vùng đất này. Mỗi con đang giam Word Spirits trong người.</p>
     <div class="note">
       <span><b>Phong cách:</b> surreal fantasy, hoạt hình 3D dáng to khỏe, hơi rợn nhưng vẫn vui mắt. Vật và thú hòa vào nhau, tỉ lệ phi lý, có bộ phận lơ lửng.</span>
       <span><b>Cách dùng câu lệnh vẽ:</b> bấm Copy, dán vào ChatGPT hoặc Gemini, tạo 3–4 ảnh, chọn 1 ảnh rồi đưa vào Tripo (Image to 3D). Câu lệnh đã có sẵn nền xám trơn và dáng đứng thẳng để Tripo dựng mô hình dễ.</span>
@@ -114,11 +119,12 @@ footer{margin-top:40px;color:var(--fog);font-size:.88rem;display:grid;gap:6px}
   </div>
 
   <div class="filters" role="group" aria-label="Lọc quái">
-    <button id="f-all" data-f="all" aria-pressed="true">Tất cả · 25</button>
+    <button id="f-all" data-f="all" aria-pressed="true">Tất cả · 27</button>
     <button id="f-common" data-f="common" aria-pressed="false">Quái thường · 15</button>
     <button id="f-elite" data-f="elite" aria-pressed="false">Tinh anh · 3</button>
     <button id="f-rare" data-f="rare" aria-pressed="false">Hiếm · 1</button>
     <button id="f-boss" data-f="boss" aria-pressed="false">Trùm · 5</button>
+    <button id="f-world" data-f="world" aria-pressed="false">Thần thú · 2</button>
   </div>
 
   <div class="list" id="list"></div>
@@ -139,7 +145,7 @@ const GEN = {
   Tremora:   { c: "var(--tremora)",   p: " Accent: sickly yellow glow and trembling, wavy outlines." }
 };
 const M = [
-  { id:"mud-buffalo", tier:"common", name:"Mud Buffalo", vn:"Trâu Bùn", emo:"🪲", body:"Bọ hung sừng (côn trùng)", zone:"🍁 Đông Bắc · ruộng bậc thang",
+  { id:"mud-buffalo", tier:"common", img:"concept/mud-buffalo.webp", name:"Mud Buffalo", vn:"Trâu Bùn", emo:"🪲", body:"Bọ hung sừng (côn trùng)", zone:"🍁 Đông Bắc · ruộng bậc thang",
     lore:"Con trâu từng cày ruộng cạnh người nông dân, nghe họ trò chuyện suốt ngày. The Great Silence xáo trộn cả thân xác nó: con trâu giờ là một con bọ hung khổng lồ bằng bùn khô, mai lưng mọc cả một sườn đồi ruộng bậc thang.",
     mean:"Nói chậm, ngại người nghe sốt ruột.",
     shape:["Thân bọ hung 6 chân, mai bùn khô nứt nẻ","Trên mai là ruộng bậc thang mini, lúa vàng","Dấu hiệu trâu: đôi sừng cong như lưỡi cày gỗ","Dấu hiệu trâu: dây xỏ mũi thành đường khâu kín miệng","Một con cò giấy trắng đậu trên sừng"],
@@ -349,15 +355,33 @@ const M = [
     pal:[["#F4F7FB","tuyết"],["#9AD7F2","băng"],["#7CF2C2","cực quang"],["#38E1F2","Distortia"]],
     pers:"Ranh mãnh, thanh lịch, thích trêu.",
     fight:"Tạo 3 ảo ảnh, chỉ con thật có bóng. Giai đoạn 2: đóng băng mặt sân, người chơi trượt khi đi.",
-    p:"An elegant snow-white crane (a bird, NOT a fox) with a long neck and long legs, its face is a white fox mask with no mouth and ice-blue glowing eyes, nine long tail plumes made of flowing aurora ribbons, each plume ending in a small mask, standing on a frozen lake that reflects it, frost crystals floating around." }
+    p:"An elegant snow-white crane (a bird, NOT a fox) with a long neck and long legs, its face is a white fox mask with no mouth and ice-blue glowing eyes, nine long tail plumes made of flowing aurora ribbons, each plume ending in a small mask, standing on a frozen lake that reflects it, frost crystals floating around." },
+  { id:"ninefold", tier:"world", full:true, img:"concept/ninefold.webp", name:"The Ninefold", vn:"Thần thú Sính Lễ · Voi chín ngà, gà chín cựa, ngựa chín hồng mao", emo:"🐘", body:"gà chọi đứng thẳng + mặt voi + bờm ngựa", zone:"🌐 Trùm thế giới · theo mùa",
+    idiom:"Truyền thuyết Sơn Tinh – Thủy Tinh: vua Hùng đòi sính lễ \"voi chín ngà, gà chín cựa, ngựa chín hồng mao\". Sơn Tinh mang tới trước nên cưới được Mị Nương.",
+    lore:"Silentium đánh cắp cả ba lễ vật và nung chảy chúng thành một thần thú: thân gà chọi đứng thẳng, cánh dang như áo choàng, mặt voi chín ngà, cổ cháy bờm lửa chín sợi hồng mao. Chín sợi xích chữ tím trói nó vào ý chí The Mute. Phá đủ chín xích, thần thú được giải thoát và trở thành thần hộ vệ Babel Tower.",
+    mean:"Chần chừ không dám nói là mất cơ hội. Sơn Tinh thắng vì đến trước.",
+    shape:["Thân gà chọi khổng lồ đứng thẳng, vảy đỏ đồng, cánh nâu dang rộng","Mặt voi, vòi cong, chín ngà ngà voi chĩa ra như lưỡi kiếm","Bờm lửa đỏ chín dải hồng mao ngựa trên đầu và cổ","Chân gà to, mỗi chân chín cựa đồng","Đuôi ngựa lẫn lông đuôi gà ánh xanh; xích tím chữ quấn quanh, ấn phong tím nứt trên trán"],
+    pal:[["#8E3A22","vảy đồng"],["#E23B2E","bờm lửa"],["#8C8C96","da voi"],["#9B6DFF","xích Mute"]],
+    pers:"Kiêu hùng, giận dữ vì bị xiềng, vẫn còn chút linh tính của thần thú.",
+    fight:"Cả server góp câu nói vào thanh Voice chung để gọi ra, đánh theo nhóm. 3 giai đoạn, mỗi giai đoạn phá 3 xích: (1) Chín ngà: quét vòng tròn quanh thân. (2) Chín cựa: đạp đất, vòng đỏ dưới chân lan ra. (3) Chín hồng mao: bờm bùng lửa, phun thành hàng. Phá xích thứ 9: thần thú gầm vang, được giải thoát.",
+    p:"A colossal fighting rooster boss standing upright in a battle stance, wings spread like a cape, its head wears an elephant face mask with a curled trunk and nine ivory tusks curving down like a beard of blades, its neck hackles replaced by nine flaming crimson horse manes, thick armored legs with nine iron spurs on each, a horse tail mixed with rooster tail feathers. Wrapped in violet chains made of glowing letters, a cracked violet seal glowing on its forehead. Surreal dark-fantasy boss creature for a stylized 3D mobile game: epic and majestic, fierce sharp glowing eyes, NOT cute or goofy, soft clay-like stylized materials, bold readable silhouette, three times the size of normal monsters. Mute corruption: glowing violet cracks across its body with tiny luminous letters trapped inside. Full body, single creature, front three-quarter view, centered, plain light grey background, no text, no logo, no ground shadow." },
+  { id:"four-sacred", tier:"world", full:true, img:"concept/four-sacred.webp", name:"The Four Sacred", vn:"Thần thú Tứ Linh · Long, Lân, Quy, Phụng", emo:"🐢", body:"rùa núi đền + đầu rồng + cánh phượng + chân lân", zone:"🌐 Trùm thế giới · theo mùa",
+    idiom:"Tứ Linh – bốn linh vật trong văn hoá Việt: Long (rồng), Lân (kỳ lân), Quy (rùa), Phụng (phượng hoàng).",
+    lore:"Bốn linh vật canh giữ bốn phương. Silentium xích cả bốn vào chung một thân: mai rùa nhô lên như ngọn núi đền phủ rêu, đầu rồng có gạc, đôi cánh phượng đỏ vàng, bốn chân lân bờm lửa. Bốn linh hồn giằng xé nhau bên trong. Giải thoát từng linh hồn một, Tứ Linh trở về canh giữ bốn phía Resonance Dome.",
+    mean:"Bốn kỹ năng nghe, nói, đọc, viết bị trói làm một, không cái nào phát huy được.",
+    shape:["Thân rùa khổng lồ, mai như ngọn núi đền chạm hoa văn cổ, phủ rêu","Cổ và đầu rồng: gạc, râu dài, bờm xoăn","Cánh phượng đỏ vàng mọc từ vai","Bốn chân lân phủ vảy xanh, lông xoăn như lửa","Đuôi phượng nhiều màu; xích tím chữ quấn quanh, ấn phong tím nứt trên trán"],
+    pal:[["#7A7A6A","mai đá"],["#C8552B","lông lửa"],["#3E8E5A","vảy ngọc"],["#9B6DFF","xích Mute"]],
+    pers:"Trầm, cổ kính, chậm mà nặng như núi; mỗi linh hồn một tính khí.",
+    fight:"Trùm thế giới, đánh theo nhóm. 4 giai đoạn, mỗi giai đoạn một linh hồn trỗi dậy: Quy – rụt vào mai, chỉ đánh được vào vết nứt tím. Lân – lao húc theo đường thẳng. Long – phun cột nước quét ngang. Phụng – bay lên, rải lông lửa. Mỗi giai đoạn qua, một linh hồn được giải thoát bay về một phương.",
+    p:"A colossal ancient turtle boss walking slowly, its shell rises like a mossy temple mountain with carved sacred patterns, its long neck and head are a fierce dragon with antlers and whiskers, phoenix wings of red and gold feathers sprouting from its shoulders, four sturdy qilin (lan) legs covered in curly flame-like fur, a phoenix tail of flowing plumes. Wrapped in violet chains made of glowing letters, a cracked violet seal glowing on its forehead. Surreal dark-fantasy boss creature for a stylized 3D mobile game: epic and majestic, fierce sharp glowing eyes, NOT cute or goofy, soft clay-like stylized materials, bold readable silhouette, three times the size of normal monsters. Mute corruption: glowing violet cracks across its body with tiny luminous letters trapped inside. Full body, single creature, front three-quarter view, centered, plain light grey background, no text, no logo, no ground shadow." },
 ];
 
 const list = document.getElementById("list");
 function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]))}
 const KEEP = "This creature keeps its own natural animal body (it comes from a folk saying), but it is cursed by the Mute.";
-const TIER = { common:"QUÁI THƯỜNG", elite:"TINH ANH", rare:"HIẾM", boss:"TRÙM" };
+const TIER = { common:"QUÁI THƯỜNG", elite:"TINH ANH", rare:"HIẾM", boss:"TRÙM", world:"THẦN THÚ · TRÙM THẾ GIỚI" };
 const COOL = "fierce and majestic, sharp intense glowing eyes, NOT cute or goofy";
-function promptOf(m){ let st = m.keep ? KEEP + STYLE.slice(STYLE.indexOf(" Surreal")) : STYLE; if (m.cool) st = st.replace("eerie yet playful, oversized glowing eyes", COOL); return m.p + " " + st + (m.tier === "boss" ? BOSS + GEN[m.gen].p : m.tier === "elite" || m.tier === "rare" ? " Elite monster, twice the size of normal monsters." : ""); }
+function promptOf(m){ if (m.full) return m.p; let st = m.keep ? KEEP + STYLE.slice(STYLE.indexOf(" Surreal")) : STYLE; if (m.cool) st = st.replace("eerie yet playful, oversized glowing eyes", COOL); return m.p + " " + st + (m.tier === "boss" ? BOSS + GEN[m.gen].p : m.tier === "elite" || m.tier === "rare" ? " Elite monster, twice the size of normal monsters." : ""); }
 list.innerHTML = M.map(m => {
   const g = m.gen ? GEN[m.gen] : null;
   return `<article class="card ${m.tier}" data-tier="${m.tier}" id="${m.id}" style="--p1:${m.pal[1][0]};--p2:${m.pal[0][0]};${g ? "--gc:" + g.c : ""}">
@@ -369,6 +393,7 @@ list.innerHTML = M.map(m => {
         <div class="tags"><span class="tag tier">${TIER[m.tier]}</span><span class="tag">${esc(m.zone)}</span><span class="tag">thân: ${esc(m.body)}</span>${g ? `<span class="tag gen">${m.gen}</span>` : ""}</div>
       </div>
     </div>
+    ${m.img ? `<figure class="art"><img src="${m.img}" alt="Ảnh chốt: ${esc(m.name)}" loading="lazy"><figcaption>Ảnh chốt</figcaption></figure>` : ""}
     <p class="lore">${esc(m.lore)}</p>
     ${m.idiom ? `<div class="idiom">${esc(m.idiom)}</div>` : ""}
     <div class="mean">Ý nghĩa: ${esc(m.mean)}</div>
