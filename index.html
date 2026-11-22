@@ -257,6 +257,8 @@ button{font:inherit;cursor:pointer}
 <script src="parts/registry.js"></script>
 <script src="parts/world/nature.js"></script>
 <script src="parts/world/wilds.js"></script>
+<script src="parts/world/rifts.js"></script>
+<script src="parts/world/rift-jp.js"></script>
 <script src="parts/combat/models.js"></script>
 <script src="parts/combat/vfx.js"></script>
 <script src="parts/combat/weapons3d.js"></script>
@@ -329,6 +331,7 @@ function solid(x, z, hw, hd) { obstacles.push({ x, z, hw, hd }); }
 function blocked(x, z) {
   if (maze) return maze.solids.some(o => Math.abs(x - o.x) < o.hw + 0.6 && Math.abs(z - o.z) < o.hd + 0.6);   // đang trong mê cung (giữ cách tường 0,6 m)
   if (room) return Math.abs(x - room.cx) > room.w / 2 - 0.6 || Math.abs(z - room.cz) > room.d / 2 - 0.6 || room.solids.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);   // đang ở trong nhà
+  if (typeof RIFTS !== "undefined") { const rb = RIFTS.blocked(x, z); if (rb !== undefined) return rb; }   // đang ở một khu văn hoá (bản đồ riêng, parts/world/rifts.js)
   if ((x < -360 || x > 150 || Math.abs(z) > 150) && !(typeof WILDS !== "undefined" && WILDS.walkable(x, z))) return true;   // ranh giới thế giới (thành phố + đảo đấu trường bên trái + vùng hoang dã parts/world/wilds.js)
   if (inRiver(x, z)) return true;   // sông quanh đảo: chỉ đi qua cầu
   return obstacles.some(o => Math.abs(x - o.x) < o.hw + 0.45 && Math.abs(z - o.z) < o.hd + 0.45);
@@ -722,8 +725,9 @@ function wildCamTick(dt) {
   const on = wildCam();
   if (on && !wasWildCam) camPitch = (save.combat && save.combat.camPitch) || 0.96;   // nhớ góc lần trước, mặc định 55°
   wasWildCam = on; if (!on) return;
-  let a = ((camAngle + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;   // đưa về −π…π rồi quay mượt về 0 (Bắc)
-  camAngle = Math.abs(a) < 0.01 ? 0 : a * Math.max(0, 1 - dt * 6);
+  const tg = (typeof RIFTS !== "undefined" && RIFTS.camTarget && RIFTS.camTarget()) || 0;   // gần cổng vết rách: tạm quay mặt về cổng (rifts.js), còn lại luôn hướng Bắc
+  let a = ((camAngle - tg + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;   // đưa về −π…π rồi quay mượt về hướng đích
+  camAngle = tg + (Math.abs(a) < 0.01 ? 0 : a * Math.max(0, 1 - dt * 6));
   camPitch = Math.min(WILD_PITCH[1], Math.max(WILD_PITCH[0], camPitch)); if (save.combat) save.combat.camPitch = camPitch;
 }   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
 const cv = renderer.domElement;
@@ -3067,7 +3071,8 @@ function updateCity(dt) {
     let bd = 1.8; (room.spots || []).forEach(S => { const d = Math.hypot(player.position.x - S.x, player.position.z - S.z); if (d < bd) { bd = d; nearSpot = S; } });   // rương, gương, đồ trưng bày… (chọn chỗ gần nhất)
   } else {
     CITY.forEach(P => { if (Math.hypot(player.position.x - P.doorPos.x, player.position.z - P.doorPos.z) < 2) nearDoor = P; });
-    METRO.forEach(M => { if (M.doorPos && Math.hypot(player.position.x - M.doorPos.x, player.position.z - M.doorPos.z) < 3) nearSpot = { label: "🚇 Metro", fn: () => openMetro(M) }; });   // trạm metro
+    METRO.forEach(M => { if (M.doorPos && Math.hypot(player.position.x - M.doorPos.x, player.position.z - M.doorPos.z) < 3) nearSpot = { label: "🚇 Metro", fn: () => openMetro(M) }; });
+    if (typeof RIFTS !== "undefined") { const rs = RIFTS.nearSpot(); if (rs) nearSpot = rs; }   // cổng vết rách sang khu văn hoá / về thành phố   // trạm metro
   }
   $("doorBtn").textContent = room ? "🚪 Exit" : nearDoor ? "🚪 Enter " + nearDoor.name : "";
   $("doorBtn").style.display = nearDoor ? "block" : "none";
@@ -3213,6 +3218,7 @@ holdMic($("vocabMic"), t => $("vocabFb").textContent = "🎙️ " + t, (alts, co
 function mapRect(P) { const sw = P.door === "east" || P.door === "west"; return { x: P.x, z: P.z, w: sw ? P.d : P.w, d: sw ? P.w : P.d }; }
 function drawCity(x) {   // vẽ thành phố trong hệ tọa độ thế giới (x, z)
   if (typeof WILDS !== "undefined" && WILDS.drawMap) WILDS.drawMap(x);   // vùng hoang dã quanh thành phố
+  if (typeof RIFTS !== "undefined") RIFTS.drawMap(x);   // các khu văn hoá (ở xa, chỉ thấy trên bản đồ nhỏ khi đang ở đó)
   x.fillStyle = "#8fd17a"; x.fillRect(-365, -155, 520, 310);
   x.fillStyle = "#4dabf7"; x.fillRect(RIVER.x0, RIVER.z0, RIVER.x1 - RIVER.x0, RIVER.z1 - RIVER.z0);   // sông
   x.fillStyle = "#e9dcc0"; x.fillRect(ISLAND.x0, ISLAND.z0, ISLAND.x1 - ISLAND.x0, ISLAND.z1 - ISLAND.z0);   // đảo

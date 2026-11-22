@@ -168,6 +168,7 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 | Celt | Rock of Cashel | Tường thành đá kiểu Ireland / Anh |
 
 - Vai trò: trước giải phóng thành bị The Mute chiếm (sương tím, trùm chính ở thành); sau giải phóng thành là trạm an toàn của khu (hồi sinh, cửa hàng, cổng dịch chuyển, thần hiện hình ảo trao quà).
+- **Mỗi khu là một bản đồ riêng** (chốt 22/11): cổng kiến trúc của khu đặt ở bản đồ chính, có vết rách; đi qua cổng hướng D → xuất hiện ở mép đối diện của khu, thành chính nằm cuối bản đồ theo hướng D. Mỗi khu được tự do thêm công trình, cây cối, khí hậu, đất đai cho đúng văn hoá; được dùng mô hình 3D chia sẻ miễn phí trên mạng (ghi nguồn ở `assets/CREDITS.md`). Đã dựng: **khu Nhật – Sakura Rift** (`parts/world/rift-jp.js`, chưa có quái).
 - Cách làm: thân thành + tường bằng code (đi vào được, va chạm, nhẹ máy); tượng và chi tiết đặc trưng bằng Tripo.
 
 ## Đã bỏ

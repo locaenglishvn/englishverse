@@ -711,6 +711,7 @@ const WILDS = (function () {
     ground2 = groundMesh(UX0, UX1, UZ0, UZ1, [[UX0, UZ0, UX1, -R1 - 1], [R1 + 1, -R1 - 1, UX1, R1 + 1], [UX0, R1 + 1, UX1, UZ1]], -0.01, R1 - 4, 1e9); scene.add(ground2);
     ribbons(); GATES.forEach(buildGate); landmarks(); scatter(); groves(); groves(2); boulders();
     GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); carpet(); shadeGround(ground); shadeGround(ground2); finalize();
+    if (typeof RIFTS !== "undefined") RIFTS.build();   // khu văn hoá (bản đồ riêng) + cổng vết rách – dựng trước NATURE.build để cây của khu được xếp chung
     if (typeof NATURE !== "undefined") NATURE.build();
     updateVis(); setInterval(updateVis, 250);
   } };
