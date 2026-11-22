@@ -155,5 +155,20 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 - **4 tướng** canh 4 tầng The Mute Realm: Distortia (gương vỡ, mặt nhân đôi, âm thoa xoắn, xanh lơ) · Oblivia (áo giấy trắng, mặt nhẵn, cục tẩy khổng lồ) · Vorax (nhân dạng lịch lãm, mặt nạ đỏ, ôm Hũ Vạn Ngôn hút chữ, trang sách cháy thành tàn quanh mình) · Tremora (bóng người chân tay dài run rẩy, cầm đèn rọi sân khấu chiếu ra mắt khán giả).
 - **8 thần ngôn ngữ** (vẽ đúng thần thoại, tôn trọng, ánh vàng): Thoth, Nabu, Hermes, Odin, Ogma, Itzamna, Thương Hiệt (bốn mắt), Kotodama (linh hồn trừu tượng, không phải thần). Hiện hình ảo trên Babel Tower khi giải phóng khu, trao quà; lúc khác nhắn qua The Oracle Lady.
 
+## 13. Thành trì & thành lũy 8 khu văn hoá (chủ dự án chốt 22/11)
+| Khu | Thành trì (trung tâm) | Thành lũy bao quanh cả khu |
+|---|---|---|
+| Lưỡng Hà | Vườn treo Babylon | Tường gạch Babylon, tháp gạch men xanh kiểu cổng Ishtar |
+| Trung Hoa | Cung A Phòng | Tường kiểu Vạn Lý Trường Thành (lỗ châu mai, tháp canh) |
+| Nhật | Lâu đài Himeji | Tường đá dốc + tường trắng mái ngói kiểu thành Nhật |
+| Ai Cập | Đền Edfu | Tường gạch bùn Ai Cập, cổng tháp đôi (pylon) |
+| Bắc Âu | Thành Asgard (theo thần thoại: đại sảnh gỗ mái khiên vàng, cầu vồng Bifröst; KHÔNG theo kiểu Asgard của phim Marvel) | Hàng rào gỗ + luỹ đất kiểu Viking |
+| Hy Lạp | Đền Artemis ở Ephesus | Tường đá khối Hy Lạp có tháp |
+| Maya | Tháp Chichén Itzá | Rừng cây dày đặc bọc quanh khu (thay tường) |
+| Celt | Rock of Cashel | Tường thành đá kiểu Ireland / Anh |
+
+- Vai trò: trước giải phóng thành bị The Mute chiếm (sương tím, trùm chính ở thành); sau giải phóng thành là trạm an toàn của khu (hồi sinh, cửa hàng, cổng dịch chuyển, thần hiện hình ảo trao quà).
+- Cách làm: thân thành + tường bằng code (đi vào được, va chạm, nhẹ máy); tượng và chi tiết đặc trưng bằng Tripo.
+
 ## Đã bỏ
 - Chim sáo tinh linh dẫn đường (mỗi người một con thì rối hình) – chủ dự án bỏ 20/11.
