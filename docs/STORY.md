@@ -152,7 +152,7 @@ Người chơi là một **Voice** – chiến binh tiếng nói của Verse Cit
 ## 12. Hình dạng & cách xuất hiện của thần và The Mute (đề xuất 22/11, sổ tay mục "Thần & The Mute")
 - **Vocara:** hình người không mặt, không giới tính, bằng ánh sáng vàng trắng; ở cổ là tinh thể thanh quản (Vox Prima), cánh là vòng sóng âm. **Không bao giờ hiện rõ**: phim mở đầu chỉ có ánh sáng + giọng nói; trong game hiện qua Babel Tower phát sáng.
 - **Silentium:** áo choàng tro xám, thân là khoảng trống nhiễu sóng, mặt nạ đá không miệng, ngón tay đặt lên môi "suỵt", vương miện là sóng âm bị duỗi phẳng. Phim mở đầu chỉ là bóng mờ; hiện đầy đủ ở trận cuối.
-- **4 tướng** canh 4 tầng The Mute Realm: Distortia (gương vỡ, mặt nhân đôi, âm thoa xoắn, xanh lơ) · Oblivia (áo giấy trắng, mặt nhẵn, cục tẩy khổng lồ) · Vorax (thân gần như là một cái miệng, bụng đỏ chứa Word Spirits) · Tremora (bóng người chân tay dài run rẩy, cầm đèn rọi sân khấu chiếu ra mắt khán giả).
+- **4 tướng** canh 4 tầng The Mute Realm: Distortia (gương vỡ, mặt nhân đôi, âm thoa xoắn, xanh lơ) · Oblivia (áo giấy trắng, mặt nhẵn, cục tẩy khổng lồ) · Vorax (nhân dạng lịch lãm, mặt nạ đỏ, ôm Hũ Vạn Ngôn hút chữ, trang sách cháy thành tàn quanh mình) · Tremora (bóng người chân tay dài run rẩy, cầm đèn rọi sân khấu chiếu ra mắt khán giả).
 - **8 thần ngôn ngữ** (vẽ đúng thần thoại, tôn trọng, ánh vàng): Thoth, Nabu, Hermes, Odin, Ogma, Itzamna, Thương Hiệt (bốn mắt), Kotodama (linh hồn trừu tượng, không phải thần). Hiện hình ảo trên Babel Tower khi giải phóng khu, trao quà; lúc khác nhắn qua The Oracle Lady.
 
 ## Đã bỏ
