@@ -65,7 +65,7 @@ th{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-t
 <div class="wrap">
   <header>
     <h1>Phòng thử giáp chibi</h1>
-    <p class="lede">Dáng nhân vật dựng tạm bằng khối, tỉ lệ 2,6 đầu giống mẫu Tripo của bạn. Đây là bản phác để xem giáp mặc lên đầu to có đẹp không, chưa phải hình cuối. Kéo trên hình để xoay.</p>
+    <p class="lede">Dáng nhân vật dựng tạm bằng khối, tỉ lệ <b>3,7 đầu</b> (đã chốt, gần kiểu Đại Hiệp Khách). Mẫu Tripo cũ là 2,6 đầu, vẫn bấm xem lại được. Đây là bản phác để xem giáp mặc lên đầu to có đẹp không, chưa phải hình cuối. Kéo trên hình để xoay.</p>
   </header>
 
   <div class="main">
@@ -90,10 +90,10 @@ th{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-t
         </div></div>
       <div class="row"><span class="lbl">Tỉ lệ (chiều cao = mấy cái đầu)</span>
         <div class="seg" id="heads">
-          <button data-v="2.2">2,2 đầu</button>
-          <button data-v="2.6" aria-pressed="true">2,6 · mẫu của bạn</button>
+          <button data-v="2.6">2,6 · mẫu cũ</button>
           <button data-v="3.2">3,2 đầu</button>
-          <button data-v="4">4 đầu</button>
+          <button data-v="3.7" aria-pressed="true">3,7 · đã chốt</button>
+          <button data-v="4.2">4,2 đầu</button>
         </div></div>
       <div class="row"><span class="lbl">Giáp thân (áo + quần gộp 1 món)</span>
         <div class="sets" id="sets"></div>
@@ -112,7 +112,7 @@ th{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-t
     <div class="card">
       <h2>Nên nhìn gì</h2>
       <ul>
-        <li><b>Bấm "Cả 7 bộ"</b> rồi đổi tỉ lệ 2,2 → 4 đầu. Đầu càng to thì giáp càng phải làm <b>to, ít chi tiết</b> (miếng vai, đai lưng), chi tiết nhỏ sẽ bị đầu che.</li>
+        <li><b>Bấm "Cả 7 bộ"</b> rồi đổi giữa 2,6 (mẫu cũ) và 3,7 đầu (đã chốt). Đầu càng to thì giáp càng phải làm <b>to, ít chi tiết</b> (miếng vai, đai lưng), chi tiết nhỏ sẽ bị đầu che.</li>
         <li><b>Đổi Nam/Nữ</b> cùng một bộ: cùng màu, cùng món, nhưng nữ ra váy giáp, tóc dài, eo gọn.</li>
         <li><b>Đổi giày</b> độc lập với giáp để thấy giày rời vẫn hợp.</li>
         <li><b>Bấm "Mẫu KayKit có sẵn"</b>: nhân vật thật đang có trong game, cũng đầu to và có giáp. Đây là bằng chứng giáp trên chibi vẫn đẹp.</li>
@@ -165,10 +165,10 @@ function lathe(g, pts, mat, depth, scale, phiStart, phiLen){
 /* ---------- tỉ lệ ---------- */
 function proportions(f, heads){
   const H = 1.6, h = H/heads, r = h*0.47, bodyH = H - h;
-  const P = {f, H, h, r, bodyH, legLen: bodyH*0.40, top: bodyH*0.94, headY: bodyH + r*0.93};
+  const P = {f, H, h, r, bodyH, legLen: bodyH*(0.40 + Math.max(0, heads-2.6)*0.035), top: bodyH*0.94, headY: bodyH + r*0.93};
   P.hipY = P.legLen; P.tH = P.top - P.hipY; P.waistY = P.hipY + P.tH*0.36;
-  P.sw = H*(f ? .098 : .11); P.waist = H*(f ? .072 : .088); P.hip = H*(f ? .1 : .095);
-  P.depth = .74; P.legR = H*.04; P.legX = H*.048; P.armR = H*.033; P.armL = bodyH*.44;
+  const kw = 1 - Math.max(0, heads-2.6)*.09; P.sw = H*(f ? .098 : .11)*kw; P.waist = H*(f ? .066 : .084)*kw; P.hip = H*(f ? .098 : .093)*kw;
+  P.depth = .74; const sl = Math.max(0, heads-2.6)*.003; P.legR = H*(.04-sl); P.legX = H*.048; P.armR = H*(.033-sl*.6); P.armL = bodyH*.44;
   P.shX = P.sw*.86; P.shY = P.top - P.tH*.13; P.footR = P.legR*1.5;
   return P;
 }
@@ -355,7 +355,7 @@ sun.shadow.mapSize.set(1024,1024); Object.assign(sun.shadow.camera, {left:-6,rig
 const rim = new T.DirectionalLight(0xbfe4ff, .35); rim.position.set(-3, 3, -4); scene.add(rim);
 const ground = new T.Mesh(new T.CircleGeometry(12, 48), new T.ShadowMaterial({opacity:.28})); ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
 
-const state = {mode:'one', g:'m', heads:2.6, set:'base', shoe:'sneaker', helmet:true};
+const state = {mode:'one', g:'m', heads:3.7, set:'base', shoe:'sneaker', helmet:true};
 let root = new T.Group(); scene.add(root);
 let spin = 0, dragging = false, lastX = 0, idle = 0;
 
