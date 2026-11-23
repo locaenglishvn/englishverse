@@ -55,7 +55,7 @@ const LESSONS = [
 /* ===== NPC Ở CÁC ĐỊA ĐIỂM MỚI (mỗi nơi một người, dạy mẫu câu dùng ở nơi đó) =====
    Có place: "id" → đứng trong nhà đó (x, z tính từ giữa phòng). Không có place → đứng ngoài trời tại x, z. */
 ,{
-  name: "Ms. Hoa – Teacher", color: 0x1971c2, place: "school", x: -3, z: -13,
+  name: "Mr. Huy – Teacher", color: 0x1971c2, place: "school", x: -3, z: -13,
   steps: [
     { say: "Good morning, class! Please open your books to page ten.",
       card: { w: "page", pic: "📖", ex: "Open your book to page ten." },
@@ -68,7 +68,7 @@ const LESSONS = [
       choices: [
         { t: "Sure. I’ll try my best.",  ok: true,  fb: "Brave! Trying is how we learn. +10" },
         { t: "No. I am shy always.",     ok: false, fb: "It’s OK to be shy. Try: “Sure, I’ll try.”" },
-        { t: "Yes, I read yesterday.",   ok: false, fb: "She means now. Say “Sure, I’ll try.”" } ] },
+        { t: "Yes, I read yesterday.",   ok: false, fb: "He means now. Say “Sure, I’ll try.”" } ] },
     { say: "Well done! Do you have any questions?",
       card: { w: "question", pic: "❓", ex: "Can I ask a question?" },
       choices: [

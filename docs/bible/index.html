@@ -1,0 +1,285 @@
+<title>EnglishVerse Game Bible</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Bố cục: thanh tab dính trên cùng, mỗi tab một trang; nội dung rộng tối đa 1120px, lưới thẻ tự xuống dòng trên điện thoại */
+:root{
+  --bg:#f3f6f7; --panel:#ffffff; --sunk:#e8eef0; --ink:#17232b; --muted:#5a6b75; --line:#d5dfe3;
+  --teal:#13877d; --teal-soft:#d9f1ee; --gold:#b9861a; --gold-soft:#f8ecd0; --mute:#7b5cd6;
+  --c-common:#8b97a1; --c-uncommon:#2f9e44; --c-rare:#2b7bd9; --c-epic:#8150d8; --c-legendary:#c98a05;
+  --display:"Baloo 2","Be Vietnam Pro",system-ui,sans-serif; --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171b; --panel:#162227; --sunk:#1d2b31; --ink:#e6eef1; --muted:#97a9b2; --line:#26363d;
+  --teal:#3cc7b8; --teal-soft:#123a37; --gold:#e3b34a; --gold-soft:#3a2f16; --mute:#a98cf5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171b; --panel:#162227; --sunk:#1d2b31; --ink:#e6eef1; --muted:#97a9b2; --line:#26363d;
+  --teal:#3cc7b8; --teal-soft:#123a37; --gold:#e3b34a; --gold-soft:#3a2f16; --mute:#a98cf5; color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:15px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:1120px;margin:0 auto}
+header.top{background:var(--panel);border-bottom:1px solid var(--line)}
+header.top .inner{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-block:14px 6px}
+.brand{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;color:var(--teal);margin:0}
+.brand span{color:var(--ink)}
+.built{color:var(--muted);font-size:12px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--panel);border-bottom:1px solid var(--line)}
+nav.tabs .inner{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:6px}
+nav.tabs .inner::-webkit-scrollbar{display:none}
+nav.tabs a{flex:none;text-decoration:none;color:var(--muted);font-weight:600;font-size:14px;padding:7px 12px;border-radius:10px;white-space:nowrap}
+nav.tabs a[aria-current="page"]{background:var(--teal);color:#fff}
+nav.tabs a:focus-visible,button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+main{padding-block:22px 60px}
+h1.pg{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.1;margin:0 0 4px;text-wrap:balance}
+.lede{color:var(--muted);max-width:70ch;margin:0 0 20px}
+h2{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.2;margin:30px 0 10px;text-wrap:balance}
+h3{font-size:16px;margin:0 0 4px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.grid.sm{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.card p{margin:4px 0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.stats{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));margin:8px 0 6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font-family:var(--display);font-size:30px;line-height:1;color:var(--teal);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.pill.new{background:var(--gold-soft);color:var(--gold)}
+.pill.have{background:var(--teal-soft);color:var(--teal)}
+.rar{font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.chips button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:99px;padding:5px 11px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.tbl{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:var(--sunk);position:sticky;top:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+ul.tight{margin:4px 0;padding-left:18px}
+ul.tight li{margin:2px 0}
+.md{max-width:78ch}
+.md h1{font-family:var(--display);font-size:30px;line-height:1.15}
+.md h2{font-size:22px}
+.md h3{font-size:17px;margin-top:20px}
+.md table{display:block;overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.md blockquote{margin:12px 0;padding:8px 14px;border-left:4px solid var(--teal);background:var(--panel);border-radius:0 10px 10px 0}
+.md code{background:var(--sunk);padding:1px 5px;border-radius:5px;font-size:13px}
+.md img{border-radius:10px}
+/* quái */
+.mon{display:flex;flex-direction:column;gap:6px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.mon .art{aspect-ratio:1/1;border-radius:10px;background:var(--sunk);overflow:hidden;display:grid;place-items:center;font-size:44px}
+.mon .art img{width:100%;height:100%;object-fit:cover}
+.mon b{font-family:var(--display);font-size:17px;line-height:1.15}
+.tier{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--mute)}
+.ov{position:fixed;inset:0;z-index:20;background:rgba(5,12,15,.55);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.ov[hidden]{display:none}
+.ov .box{background:var(--panel);border-radius:16px;max-width:760px;width:100%;max-height:100%;overflow:auto;padding:18px}
+.ov .box .two{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:16px}
+@media (max-width:640px){.ov .box .two{grid-template-columns:minmax(0,1fr)}}
+.ov .box img{width:100%;border-radius:12px}
+.close{float:right;font:inherit;border:1px solid var(--line);background:var(--sunk);color:var(--ink);border-radius:10px;padding:4px 12px;cursor:pointer}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:4px;border:1px solid var(--line)}
+/* nhân vật chính */
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.hero figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.hero img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center}
+.hero figcaption{font-size:12px;color:var(--muted);padding:6px 10px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.flow span{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:14px}
+.flow i{color:var(--muted);font-style:normal}
+.branch{border-top:4px solid var(--c)}
+a{color:var(--teal)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<header class="top pad"><div class="inner">
+  <p class="brand">English<span>Verse</span></p>
+  <span class="muted">Sổ tay thiết kế game</span>
+  <span class="built" id="built"></span>
+</div></header>
+<nav class="tabs pad" aria-label="Các mục"><div class="inner" id="tabs"></div></nav>
+<main class="pad"><div class="inner" id="view"></div></main>
+<div class="ov" id="ov" hidden><div class="box" id="ovBox" role="dialog" aria-modal="true"></div></div>
+
+<script src="marked.min.js"></script>
+<script src="data.js"></script>
+<script src="core-npcs.js"></script>
+<script>
+(function(){
+const B = window.BIBLE, NPC = window.CORE_NPCS || [];
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const md = s => window.marked ? marked.parse(s) : "<pre style='white-space:pre-wrap'>" + esc(s) + "</pre>";
+const RC = r => "var(--c-" + (r || "common") + ")";
+const num = n => Number(n).toLocaleString("vi-VN");
+document.getElementById("built").textContent = "Dữ liệu lấy từ code ngày " + B.built;
+
+const AREA = { vn:"🌾 Khu Việt", jp:"⛩️ Nhật", eg:"🏜️ Ai Cập", no:"❄️ Bắc Âu", ce:"🍁 Celt", my:"🏝️ Maya", gr:"🏛️ Hy Lạp", cn:"🖌️ Trung Hoa", me:"🗿 Lưỡng Hà", pa:"✨ Thần & The Mute" };
+const areaOf = m => m.area || "vn";
+const skills = Object.entries(B.SKILLS).map(([id, s]) => Object.assign({ id }, s));
+const weapons = Object.entries(B.W_LINES).reduce((n, [k, v]) => n + v.names.length, 0);
+
+/* ---------------- các trang ---------------- */
+const PAGES = [
+ { id:"tong-quan", name:"Tổng quan", render(){
+   const deckN = Object.values(B.deck).reduce((a, d) => a + d.n, 0) + B.sounds.n + B.starterDeck.length;
+   const S = [[B.monsters.length,"quái, trùm, thần trong sổ tay"],[B.monsters.filter(m=>m.img).length,"ảnh concept đã chốt"],[B.npcs.length,"NPC trong thành phố"],[NPC.length,"NPC cốt lõi (đề xuất)"],[skills.length,"chiêu thức · 4 nhánh"],[B.items.length + weapons,"vật phẩm, trang phục, vũ khí"],[B.cards.vocab + B.cards.phrase + B.cards.question,"thẻ học sưu tầm được"],[deckN,"đề nói trong ngân hàng"],[B.CHALLENGES.length,"dạng bài nói"],[8,"khu văn hoá thế giới"]];
+   return `<h1 class="pg">EnglishVerse</h1>
+   <p class="lede">Metaverse 3D trên điện thoại cho học sinh Việt Nam. Người chơi là một <b>Voice</b>, dùng tiếng Anh nói thành tiếng làm phép để giải thoát thế giới khỏi The Mute. Tiếng Anh là công cụ để chơi và để thắng, không phải môn học.</p>
+   <div class="stats">${S.map(([n,t])=>`<div class="stat"><b>${num(n)}</b><span>${t}</span></div>`).join("")}</div>
+   <h2>Vòng chơi chính</h2>
+   <div class="flow"><span>🏙️ Học nói với NPC trong Verse City</span><i>→</i><span>🎴 Nhận thẻ câu nói, câu hỏi, từ vựng</span><i>→</i><span>🌫️ Ra vùng hoang dã, nói để tung chiêu</span><i>→</i><span>✨ Giải thoát Word Spirit, rơi đồ</span><i>→</i><span>⬆️ Lên cấp, mở khu mới, dạng bài mới</span></div>
+   <h2>Đi nhanh tới</h2>
+   <div class="grid sm">${PAGES.slice(1).map(p=>`<a class="card" style="text-decoration:none;color:inherit" href="#${p.id}"><h3>${p.name}</h3><p class="small muted">${p.blurb||""}</p></a>`).join("")}</div>
+   <div class="md">${md("## Tầm nhìn" + B.roadmap1)}</div>`; } },
+ { id:"cot-truyen", name:"Cốt truyện", blurb:"Vocara, The Mute, Babel Tower, 8 khu văn hoá", render(){ return `<div class="md">${md(B.story)}</div>`; } },
+ { id:"nhan-vat", name:"Nhân vật chính", blurb:"Voice Guard nam / nữ, tỉ lệ 3,9 đầu, cách chia món", render(){
+   const F = (f, c) => `<figure><img src="concept/characters/${f}" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`;
+   return `<h1 class="pg">Nhân vật chính · The Voice Guard</h1>
+   <p class="lede">Người chơi chọn nam hoặc nữ. Cả hai bắt đầu bằng đồng phục Voice Guard. Ảnh dưới đây là ảnh chốt để đưa vào Tripo (dựng 3D có xương).</p>
+   <div class="hero">${F("voice-guard-m.webp","Nam · trước")}${F("voice-guard-m-side.webp","Nam · nghiêng")}${F("voice-guard-m-back.webp","Nam · sau")}${F("voice-guard-f.webp","Nữ · trước")}${F("voice-guard-f-side.webp","Nữ · nghiêng")}${F("voice-guard-f-back.webp","Nữ · sau")}</div>
+   <h2>Đã chốt</h2>
+   <div class="grid">
+    <div class="card"><h3>Tỉ lệ 3,9 đầu</h3><p>Kiểu chibi nhẹ: chân dài, thân thon, đầu vẫn hơi to và dễ thương. Mũ, nón, tóc bồng làm đầu trông to thêm.</p></div>
+    <div class="card"><h3>Tính cách hình ảnh</h3><p><b>Nam:</b> mặt lạnh, nam tính, tự tin. Áo gile xanh ngọc viền vàng, áo trắng dài tay.</p><p><b>Nữ:</b> tươi tắn, xinh. Áo khoác xanh ngọc, váy xếp ly navy.</p></div>
+    <div class="card"><h3>Chia món trang bị</h3><ul class="tight"><li><b>Giáp thân</b> = áo + quần gộp 1 món (Tripo, có xương)</li><li><b>Đầu + tóc, giày, mũ, vũ khí</b> = món cứng gắn vào khớp (đầu, bàn chân, tay)</li><li>Không có balo</li><li>Cùng 1 món: nam mặc ra kiểu nam, nữ ra kiểu nữ</li></ul></div>
+    <div class="card"><h3>Đẹp nhờ đâu</h3><p>Lớp màu vẽ sẵn từ Tripo, tà áo và tóc lay, hiệu ứng (viền sáng, hào quang, vệt chém). Không ghép khối bằng code.</p></div>
+   </div>
+   <h2>Phong cách nhân vật</h2>
+   <p class="md">Chibi hoạt hình 3D mềm, mặt thân thiện, màu tươi, trang phục kín đáo, có thể mang chất Việt (hoa văn mây, nón lá, áo bà ba). Không dùng: low-poly góc cạnh, anh hùng dáng người lớn, trang phục hở. Ảnh game thương mại chỉ để tham khảo, không chép.</p>`; } },
+ { id:"npc", name:"NPC", blurb:"NPC cốt lõi + toàn bộ NPC thành phố", render(){
+   const places = [...new Set(B.npcs.map(n => n.place))].sort();
+   return `<h1 class="pg">Sổ tay NPC</h1>
+   <p class="lede">NPC cốt lõi gắn với cốt truyện và một hệ thống trong game, mỗi người có mô hình riêng. NPC thường dùng thân gốc nam / nữ, máy tự phối đồ.</p>
+   <h2>NPC cốt lõi <span class="pill new">đề xuất, chờ duyệt</span></h2>
+   <div class="grid">${NPC.map(n => `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3>${n.emo} ${esc(n.name)}</h3><span class="pill ${n.status}">${n.status === "new" ? "mới" : "đã có"}</span></div>
+     <p class="small muted">📍 ${esc(n.where)} · mở ${esc(n.lv)}</p><p>${esc(n.story)}</p>
+     <p class="small" style="margin-top:8px"><b>Chức năng</b></p><ul class="tight small">${n.jobs.map(j => `<li>${esc(j)}</li>`).join("")}</ul>
+     <p class="small muted" style="margin-top:8px">👗 ${esc(n.look)}</p><p class="small muted">Đề xuất bởi: ${esc(n.who)}</p></div>`).join("")}</div>
+   <h2>Tất cả NPC trong thành phố · ${B.npcs.length}</h2>
+   <div class="chips" id="npcF"><button data-v="all" aria-pressed="true">Tất cả</button>${places.map(p => `<button data-v="${esc(p)}">${esc(p)}</button>`).join("")}</div>
+   <div class="tbl"><table><thead><tr><th>NPC</th><th>Ở đâu</th><th>Cấp</th><th>Thẻ</th><th>Câu mở đầu</th></tr></thead><tbody id="npcT"></tbody></table></div>`; },
+   after(){ const T = document.getElementById("npcT");
+     const draw = f => T.innerHTML = B.npcs.filter(n => f === "all" || n.place === f).map(n => `<tr><td>${esc(n.name)}${n.keeper ? ' <span class="pill">chủ quán</span>' : ""}</td><td>${esc(n.place)}</td><td class="num">Lv.${n.minLv}</td><td class="num">${n.cards} 💬 · ${n.qs} ❓</td><td class="small">${esc(n.first)}</td></tr>`).join("");
+     chips("npcF", draw); draw("all"); } },
+ { id:"quai", name:"Quái", blurb:"Sổ tay quái, trùm, thần · ảnh chốt", render(){
+   const areas = Object.keys(AREA).filter(a => B.monsters.some(m => areaOf(m) === a)), tiers = [...new Set(B.monsters.map(m => m.tier))];
+   return `<h1 class="pg">Sổ tay quái</h1>
+   <p class="lede">The Mute nặn quái từ nỗi sợ trong truyện kể của chính vùng đất nó tấn công. Quái bị đánh bại thì Word Spirit thoát ra. Bấm vào một con để xem truyện, hình dạng, cách đánh.</p>
+   <div class="chips" id="monA"><button data-v="all" aria-pressed="true">Mọi khu</button>${areas.map(a => `<button data-v="${a}">${AREA[a]} · ${B.monsters.filter(m => areaOf(m) === a).length}</button>`).join("")}</div>
+   <div class="chips" id="monT"><button data-v="all" aria-pressed="true">Mọi bậc</button>${tiers.map(t => `<button data-v="${t}">${esc(B.tierName[t] || t)}</button>`).join("")}</div>
+   <div class="grid sm" id="monG"></div>
+   <h2>Quái đang chạy trong game (khối code tạm)</h2>
+   <div class="tbl"><table><thead><tr><th>Quái</th><th>Sợ dạng bài</th><th>Máu</th><th>Sát thương</th><th>Tốc độ</th></tr></thead><tbody>${Object.values(B.MON).map(m => `<tr><td>${m.icon} ${esc(m.name)}</td><td>${B.TASK_ICON[m.weak]} ${esc(B.TASK_NAME[m.weak])}</td><td class="num">×${m.hp}</td><td class="num">×${m.dmg}</td><td class="num">×${m.speed}</td></tr>`).join("")}</tbody></table></div>`; },
+   after(){ const G = document.getElementById("monG"), F = { a:"all", t:"all" };
+     const draw = () => { const list = B.monsters.filter(m => (F.a === "all" || areaOf(m) === F.a) && (F.t === "all" || m.tier === F.t));
+       G.innerHTML = list.map(m => `<button class="card mon" data-id="${m.id}"><div class="art">${m.img ? `<img src="${m.img}" alt="${esc(m.name)}" loading="lazy">` : m.emo}</div><span class="tier">${esc(B.tierName[m.tier] || m.tier)}</span><b>${esc(m.name)}</b><span class="small muted">${esc(m.vn)}</span></button>`).join("") || '<p class="muted">Không có quái nào khớp bộ lọc.</p>'; };
+     chips("monA", v => { F.a = v; draw(); }); chips("monT", v => { F.t = v; draw(); }); draw();
+     G.addEventListener("click", e => { const b = e.target.closest(".mon"); if (b) openMon(B.monsters.find(m => m.id === b.dataset.id)); }); } },
+ { id:"vat-pham", name:"Vật phẩm", blurb:"Đồ ăn, thuốc, trang phục, vũ khí nhạc cụ, nội thất", render(){
+   const grp = [["🍜 Đồ ăn hồi máu", i => i.energy], ["🥤 Đồ uống hồi mana", i => i.mana], ["💊 Thuốc giải độc Mute", i => i.cure], ["👕 Trang phục", i => i.slot], ["💇 Kiểu tóc (Saigon Barber)", i => i.head], ["🛋️ Nội thất nhà riêng", i => i.decor]];
+   const SL = { armor:"Áo / giáp", pants:"Quần + giày", hat:"Mũ", cape:"Áo choàng", shoes:"Giày", gloves:"Găng", belt:"Thắt lưng" };
+   const statTxt = s => s ? Object.entries(s).map(([k, v]) => k + " +" + v).join(", ") : "";
+   const row = i => `<tr><td>${i.icon || ""} ${esc(i.name)}</td><td>${i.rarity ? `<span class="rar" style="color:${RC(i.rarity)}">${esc(B.rarity[i.rarity].name)}</span>` : ""}${i.slot ? " · " + (SL[i.slot] || i.slot) : ""}</td><td class="num">${i.lv ? "Lv." + i.lv : ""}</td><td class="num">${i.price != null ? i.price + " 🪙" : "Không bán"}</td><td class="small">${esc(statTxt(i.stats))} ${esc(i.desc || "")}</td></tr>`;
+   return `<h1 class="pg">Vật phẩm</h1>
+   <p class="lede">Tên vật phẩm là tiếng Anh vì đó cũng là từ vựng người chơi học. Đồ huyền thoại không bán, chỉ có bằng thành tích tiếng Anh.</p>
+   <h2>Độ hiếm</h2><div class="chips">${Object.entries(B.rarity).map(([k, r]) => `<span class="pill" style="color:${RC(k)}">${esc(r.name)}</span>`).join("")}</div>
+   <div class="grid">${B.legends.map(l => { const it = B.items.find(i => i.id === l.item) || {}; return `<div class="card"><h3>${it.icon || "🏆"} ${esc(it.name || l.item)} <span class="rar" style="color:${RC("legendary")}">Legendary</span></h3><p><b>${esc(l.title)}</b>: ${esc(l.desc)}</p></div>`; }).join("")}</div>
+   ${grp.map(([t, f]) => { const L = B.items.filter(f); return L.length ? `<h2>${t} · ${L.length}</h2><div class="tbl"><table><thead><tr><th>Món</th><th>Loại</th><th>Cấp</th><th>Giá</th><th>Tác dụng</th></tr></thead><tbody>${L.map(row).join("")}</tbody></table></div>` : ""; }).join("")}
+   <h2>🎵 Vũ khí nhạc cụ · 4 dòng × 8 bậc</h2>
+   <p class="muted">Mỗi dòng hợp một nhánh chiêu. Bậc càng cao càng tăng sát thương.</p>
+   <div class="tbl"><table><thead><tr><th>Bậc</th><th>Cấp</th><th>Sát thương</th>${Object.keys(B.W_LINES).map(k => `<th>${B.W_LINES[k].icon} ${esc(B.BRANCH[k].name)}</th>`).join("")}</tr></thead><tbody>${B.W_TIER.map((t, i) => `<tr><td><span class="rar" style="color:${RC(t.r)}">${i + 1}</span></td><td class="num">Lv.${t.lv}</td><td class="num">+${t.pct}%</td>${Object.values(B.W_LINES).map(l => `<td>${esc(l.names[i])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`; } },
+ { id:"chieu-thuc", name:"Chiêu thức", blurb:"4 nhánh kỹ năng, nội tại, tuyệt chiêu", render(){
+   const K = { single:"1 mục tiêu", multi:"nảy nhiều quái", aoe:"vòng quanh mình", zone:"vùng quanh mục tiêu", dash:"lướt tới", self:"lên bản thân" };
+   return `<h1 class="pg">Chiêu thức (Skills)</h1>
+   <p class="lede">Nói đúng câu thì chiêu mới nổ. Kỹ năng quyết định hiệu ứng, Voice Deck quyết định câu phải nói, vũ khí quyết định sức mạnh. Mỗi cấp được 1 điểm kỹ năng, mỗi 10 cấp thêm 1.</p>
+   <div class="flow"><span>Perfect · 100%</span><span>Good · 70%</span><span>Weak · 30%</span><span>Miss · hoàn ½ mana</span><span>Đang nói: khiên −70% sát thương</span></div>
+   ${Object.entries(B.BRANCH).map(([k, br]) => { const L = skills.filter(s => s.branch === k).sort((a, b) => a.lv - b.lv);
+     return `<h2>${br.icon} ${esc(br.name)}</h2><div class="tbl branch" style="--c:${br.color}"><table><thead><tr><th>Chiêu</th><th>Loại</th><th>Mở</th><th>Mana</th><th>Hồi</th><th>Tác dụng</th></tr></thead><tbody>${L.map(s => `<tr><td>${s.icon} <b>${esc(s.name)}</b></td><td class="small">${s.type === "passive" ? "Nội tại" : s.type === "ult" ? "Tuyệt chiêu" : (K[s.kind] || s.kind)}</td><td class="num">Lv.${s.lv}</td><td class="num">${s.mana != null ? s.mana : ""}</td><td class="num">${s.cd ? s.cd + " s" : ""}</td><td class="small">${esc(s.desc)}</td></tr>`).join("")}</tbody></table></div>`; }).join("")}`; } },
+ { id:"the-bai", name:"Sổ thẻ", blurb:"3 loại thẻ, hạn mức, sao luyện tập", render(){
+   return `<h1 class="pg">Sổ thẻ 🎴</h1>
+   <p class="lede">Thẻ là thứ người chơi sưu tầm khi nói chuyện được với NPC hoặc hỏi tên đồ vật. Quái lấy đề từ chính thẻ của người chơi, thẻ ít sao ra nhiều hơn.</p>
+   <div class="stats"><div class="stat"><b>${num(B.cards.phrase)}</b><span>💬 thẻ câu nói (từ NPC)</span></div><div class="stat"><b>${num(B.cards.question)}</b><span>❓ thẻ câu hỏi (NPC hỏi)</span></div><div class="stat"><b>${num(B.cards.vocab)}</b><span>📦 thẻ từ vựng · ${B.cards.places} địa điểm</span></div></div>
+   <h2>Luật</h2>
+   <div class="grid">
+    <div class="card"><h3>💬 Câu nói</h3><p>Trả lời đúng NPC thì nhận câu đó.</p></div>
+    <div class="card"><h3>❓ Câu hỏi</h3><p>NPC hỏi mình, trả lời đúng thì nhận câu hỏi đó.</p></div>
+    <div class="card"><h3>📦 Từ vựng</h3><p>Chạm đồ trưng bày, phải giữ 🎤 và hỏi "What is this?". Từ Lv.20 hỏi rõ loại ("What is this drink?").</p></div>
+    <div class="card"><h3>Hạn mức theo cấp</h3><p>Cấp 1–5: 6 câu nói · 2 câu hỏi · 10 từ vựng. Từ cấp 6 mỗi cấp thêm 3 / 1 / 5.</p></div>
+    <div class="card"><h3>Sao luyện tập 0–3 ⭐</h3><p>Tăng khi nói đúng câu của thẻ lúc đánh quái, gặp lại NPC, hoặc nói lại từ ở chỗ trưng bày.</p></div>
+    <div class="card"><h3>Cửa lên cấp</h3><p>Từ Lv.3, mỗi loại thẻ phải có ≥ 70% hạn mức đạt ⭐⭐, thiếu thì kinh nghiệm dừng ở 100%.</p></div>
+   </div>
+   <h2>Ví dụ thẻ từ vựng</h2>
+   <div class="grid">${B.cards.vocabSample.map(p => `<div class="card"><h3>📍 ${esc(p.place)}</h3><ul class="tight small">${p.words.map(w => `<li>${w.pic} <b>${esc(w.w)}</b> · ${esc(w.ex)}</li>`).join("")}</ul></div>`).join("")}</div>
+   <h2>Bộ thẻ khởi đầu</h2>
+   <div class="chips">${B.starterDeck.map(s => `<span class="pill" style="text-transform:none;letter-spacing:0;font-size:13px">${s.pic} ${esc(s.say)}</span>`).join("")}</div>`; } },
+ { id:"de-noi", name:"Đề nói & logic", blurb:"Dạng bài, cách máy chọn đề, cách chấm", render(){
+   const bands = [1,2,3,4,5];
+   return `<h1 class="pg">Đề nói & logic chọn đề</h1>
+   <p class="lede">Loại đề khi đánh quái không phụ thuộc quái: thuật toán Voice Deck chọn theo người chơi (điểm yếu, thẻ ít sao, cấp). Quái chỉ "sợ" một dạng bài, trúng thì sát thương ×1,5.</p>
+   <h2>Các dạng bài</h2>
+   <div class="tbl"><table><thead><tr><th>Dạng</th><th>Mở</th><th>Người chơi làm gì</th><th>Ví dụ</th><th>Vì sao (sư phạm)</th></tr></thead><tbody>${B.CHALLENGES.map(c => `<tr><td>${B.TASK_ICON[c.t] || ""} <b>${esc((B.TASK_NAME[c.t] || c.t).split(" · ")[0])}</b>${c.soon ? ' <span class="pill new">sắp làm</span>' : ""}</td><td class="num">Lv.${c.lv}</td><td class="small">${esc(c.do)}</td><td class="small">${esc(c.ex)}</td><td class="small muted">${esc(c.why)}</td></tr>`).join("")}</tbody></table></div>
+   <h2>Máy chọn đề thế nào</h2>
+   <div class="grid">
+    <div class="card"><h3>1 · Người mới (Lv.1–4)</h3><p>Chỉ REPEAT, NAME, LISTEN, lấy từ thẻ đã có và bộ thẻ khởi đầu.</p></div>
+    <div class="card"><h3>2 · Chọn dạng bài</h3><p>Mỗi dạng có tỉ lệ làm tốt riêng. Dạng nào yếu hơn trung bình thì ra nhiều hơn: tối thiểu 15%, tối đa 35%. Dạng vừa ra bị giảm còn 30% cơ hội.</p></div>
+    <div class="card"><h3>3 · Chọn câu</h3><p>80% lấy từ thẻ của chính người chơi, trọng số theo sao: 0⭐ ×${B.STAR_W[0]} · 1⭐ ×${B.STAR_W[1]} · 2⭐ ×${B.STAR_W[2]} · 3⭐ ×${B.STAR_W[3]}. Thẻ vừa ra trong 3 lượt gần nhất giảm mạnh.</p></div>
+    <div class="card"><h3>4 · Độ dài câu</h3><p>Theo bậc chiêu: ${bands.map(b => `bậc ${b} = ${B.BAND_WORDS[b][0]}–${B.BAND_WORDS[b][1]} từ`).join(" · ")}. LISTEN: Lv &lt; 10 tối đa 4 từ, Lv &lt; 20 tối đa 6 từ.</p></div>
+    <div class="card"><h3>5 · Chấm điểm</h3><p>Perfect khi khớp ≥ 85% · Good ≥ 60% · Weak ≥ 30%. Câu trả lời (ANSWER, ASK) chấm theo từ khoá bắt buộc. SOUNDS bắt lỗi nghe nhầm từ dễ lẫn (ship / sheep).</p></div>
+    <div class="card"><h3>6 · Tiếng Việt là giàn giáo</h3><p>Nghĩa tiếng Việt chỉ hiện 2 lần đầu gặp một câu mới, từ lần 3 ẩn đi, còn nút nhỏ "VI".</p></div>
+   </div>
+   <h2>Ngân hàng đề</h2>
+   <div class="tbl"><table><thead><tr><th>Loại</th><th>Tổng</th>${bands.map(b => `<th>Bậc ${b}</th>`).join("")}<th>Ví dụ</th></tr></thead><tbody>${Object.entries(B.deck).map(([t, d]) => `<tr><td>${B.TASK_ICON[t] || ""} ${esc((B.TASK_NAME[t] || t).split(" · ")[0])}</td><td class="num">${d.n}</td>${bands.map(b => `<td class="num">${d.bands[b] || "–"}</td>`).join("")}<td class="small">${esc((d.sample[0] || {}).q || (d.sample[0] || {}).say || "")}</td></tr>`).join("")}
+     <tr><td>👄 SOUNDS</td><td class="num">${B.sounds.n}</td><td colspan="5" class="small">${Object.entries(B.sounds.focus).map(([k, f]) => `${esc(k)} (${f.n})`).join(" · ")}</td><td class="small">${esc((Object.values(B.sounds.focus)[0] || {}).sample ? Object.values(B.sounds.focus)[0].sample.say : "")}</td></tr></tbody></table></div>`; } },
+ { id:"the-gioi", name:"Thế giới", blurb:"Thành phố, vùng hoang dã, khu văn hoá", render(){
+   const SM = B.SEASON_MON, SM2 = B.SEASON_MON2, mn = k => (B.MON[k] || {}).icon + " " + (B.MON[k] || {}).name;
+   return `<h1 class="pg">Thế giới</h1>
+   <p class="lede">Bên trong Vòm Thần là Verse City, an toàn. Ra ngoài là vùng hoang dã, càng xa Vòm The Mute càng mạnh. Vòng ngoài cùng là 8 khu văn hoá qua cổng vết rách.</p>
+   <h2>Verse City · các khu</h2>
+   <div class="grid sm">${B.zones.map(z => `<div class="card"><h3><span class="sw" style="background:${z.color}"></span>${esc(z.name)}</h3><p class="small muted">${esc(z.vi)}</p></div>`).join("")}</div>
+   <h2>Địa điểm có người tiếp · ${B.city.filter(c => c.keeper).length}</h2>
+   <div class="chips">${B.city.filter(c => c.keeper).map(c => `<span class="pill" style="text-transform:none;letter-spacing:0;font-size:13px">${esc(c.name)}</span>`).join("")}</div>
+   <h2>Vùng hoang dã · 5 hướng × 2 vòng</h2>
+   <div class="tbl"><table><thead><tr><th>Hướng</th><th>Mùa</th><th>Vòng 1</th><th>Quái vòng 1</th><th>Vòng 2</th><th>Quái vòng 2</th></tr></thead><tbody>${Object.keys(B.wild.SEC).map(d => { const a = B.wild.SEC[d], b = B.wild.SEC2[d]; return `<tr><td>${d}</td><td>${esc(a.season)}</td><td>${esc(a.name)}</td><td class="small">${[...new Set(SM[a.season] || [])].map(mn).join(", ")}</td><td>${esc(b.name)}</td><td class="small">${[...new Set(SM2[a.season] || [])].map(mn).join(", ")}</td></tr>`; }).join("")}</tbody></table></div>
+   <h2>8 khu văn hoá (Lv.50–100)</h2>
+   <div class="tbl"><table><thead><tr><th>Khu</th><th>Thần / chữ viết</th><th>Cấp</th><th>Trùm</th></tr></thead><tbody>
+    <tr><td>⛩️ Nhật · Sakura Rift</td><td>Kotodama</td><td class="num">50–60</td><td>Oni · hiếm: Hollow Samurai</td></tr>
+    <tr><td>🏜️ Ai Cập · Nile Rift</td><td>Thoth · tượng hình</td><td class="num">60–70</td><td>Nhân sư · hiếm: Apep</td></tr>
+    <tr><td>❄️ Bắc Âu · Rune Rift</td><td>Odin · rune</td><td class="num">70–80</td><td>Fenrir · hiếm: Surtr</td></tr>
+    <tr><td>🍁 Celt · Mist Rift</td><td>Ogma · Ogham</td><td class="num">80–90</td><td>Banshee · hiếm: Balor</td></tr>
+    <tr><td>🏝️ Maya · Jungle Rift</td><td>Itzamna · glyph</td><td class="num">80–90</td><td>Kukulkan · hiếm: Vucub Caquix</td></tr>
+    <tr><td>🏛️ Hy Lạp · Marble Rift</td><td>Hermes</td><td class="num">80–90</td><td>Siren, Echo · hiếm: Cerberus</td></tr>
+    <tr><td>🖌️ Trung Hoa · Ink Rift</td><td>Thương Hiệt · chữ Hán</td><td class="num">80–90</td><td>Niên · hiếm: Cửu Anh</td></tr>
+    <tr><td>🗿 Lưỡng Hà · Babel Rift</td><td>Nabu · hình nêm</td><td class="num">90–100</td><td>Lamassu · hiếm: Tiamat</td></tr>
+   </tbody></table></div>`; } },
+ { id:"he-thong", name:"Thiết kế hệ thống", blurb:"Bản gốc mục 3 ROADMAP: chiến đấu, chỉ số, kinh tế, xã hội", render(){ return `<div class="md">${md("# Thiết kế hệ thống" + B.roadmap3)}</div>`; } }
+];
+
+/* ---------------- tiện ích ---------------- */
+function chips(id, fn){ const el = document.getElementById(id); el.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return;
+  el.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); fn(b.dataset.v); }); }
+const ov = document.getElementById("ov"), ovBox = document.getElementById("ovBox");
+function openMon(m){ if (!m) return;
+  ovBox.innerHTML = `<button class="close" id="ovX">Đóng</button><span class="tier">${esc(B.tierName[m.tier] || m.tier)}</span><h2 style="margin-top:2px">${m.emo} ${esc(m.name)}</h2><p class="muted" style="margin-top:-6px">${esc(m.vn)} · ${esc(m.zone)}</p>
+   <div class="two">${m.img ? `<img src="${m.img}" alt="${esc(m.name)}">` : `<div class="mon"><div class="art">${m.emo}</div></div>`}
+   <div><p>${esc(m.lore)}</p>${m.mean ? `<p><b>Lời chưa nói:</b> ${esc(m.mean)}</p>` : ""}${m.idiom ? `<p><b>Thành ngữ:</b> ${esc(m.idiom)}</p>` : ""}
+   <p><b>Thân:</b> ${esc(m.body)}</p><ul class="tight">${(m.shape || []).map(s => `<li>${esc(s)}</li>`).join("")}</ul>
+   <p>${(m.pal || []).map(([c, n]) => `<span class="sw" style="background:${c}"></span>${esc(n)}`).join(" &nbsp; ")}</p>
+   <p><b>Tính cách:</b> ${esc(m.pers)}</p><p><b>Cách đánh:</b> ${esc(m.fight)}</p></div></div>`;
+  ov.hidden = false; document.getElementById("ovX").focus(); }
+ov.addEventListener("click", e => { if (e.target === ov || e.target.id === "ovX") ov.hidden = true; });
+addEventListener("keydown", e => { if (e.key === "Escape") ov.hidden = true; });
+
+const tabs = document.getElementById("tabs"), view = document.getElementById("view");
+tabs.innerHTML = PAGES.map(p => `<a href="#${p.id}">${p.name}</a>`).join("");
+function route(){ const id = (location.hash || "").slice(1), P = PAGES.find(p => p.id === id) || PAGES[0];
+  view.innerHTML = P.render(); if (P.after) P.after(); ov.hidden = true;
+  tabs.querySelectorAll("a").forEach(a => { const on = a.getAttribute("href") === "#" + P.id; a.toggleAttribute("aria-current", on); if (on) { a.setAttribute("aria-current", "page"); a.scrollIntoView({ block:"nearest", inline:"center" }); } });
+  window.scrollTo(0, 0); }
+addEventListener("hashchange", route); route();
+})();
+</script>
