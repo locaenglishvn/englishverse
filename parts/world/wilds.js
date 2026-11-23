@@ -405,11 +405,11 @@ const WILDS = (function () {
     crystals(cx - 1.8, cz - 5); crystals(cx + 1.8, cz - 2); crystals(cx - 1.5, cz + 2.5); crystals(cx + 2, cz - 6.5);
     reserve(cx, cz, 13);
   }
-  function hill(x, z, r) {   // đồi hoa (vật cản tròn), rải hoa trên mặt đồi
-    put("sph", 0x6fc24f, x, -r * 0.12, z, r, r * 0.5, r, rnd() * 3, 0, 0, 0.05);
-    for (let i = 0; i < 14; i++) { const a = rnd() * 6.28, d = Math.sqrt(rnd()) * r * 0.9, h = r * 0.5 * Math.sqrt(Math.max(0, 1 - (d / r) * (d / r)));
-      put("ico", [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc][(rnd() * 4) | 0], x + Math.cos(a) * d, -r * 0.12 + h + 0.05, z + Math.sin(a) * d, 0.2, 0.16, 0.2); }
-    solid(x, z, r * 0.8, r * 0.8); reserve(x, z, r + 1);
+  function hill(x, z, r) {   // gò hoa thấp: đi xuyên qua được (chủ dự án 23/11: đồi to chắn đường → bỏ vật cản, ép dẹt), rải hoa trên mặt gò
+    put("sph", 0x6fc24f, x, -0.05, z, r, 0.3, r, rnd() * 3, 0, 0, 0.05);
+    for (let i = 0; i < 14; i++) { const a = rnd() * 6.28, d = Math.sqrt(rnd()) * r * 0.9, h = 0.3 * Math.sqrt(Math.max(0, 1 - (d / r) * (d / r)));
+      put("ico", [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc][(rnd() * 4) | 0], x + Math.cos(a) * d, h + 0.05, z + Math.sin(a) * d, 0.2, 0.16, 0.2); }
+    reserve(x, z, r + 1);
   }
   function bambooTall(x, z, sol) {   // khóm tre cao
     for (let i = 0; i < 7; i++) { const dx = (rnd() - 0.5) * 2.0, dz = (rnd() - 0.5) * 2.0, h = 8 + rnd() * 5;

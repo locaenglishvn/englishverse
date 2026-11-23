@@ -84,7 +84,7 @@ const RIFTS = (function () {
   }
   function drawMap(x) {
     DEFS.forEach(D => { try { x.save(); x.translate(D.ox, D.oz); D.drawMap(x, D.K); x.restore(); } catch (e) { x.restore(); }
-      x.fillStyle = "#9b6dff"; x.strokeStyle = "#fff"; x.lineWidth = 1.2; x.beginPath(); x.arc(D.gate.x, D.gate.z, 4.5, 0, 7); x.fill(); x.stroke(); });   // dấu cổng vết rách trên bản đồ chính
+      x.fillStyle = "#ff4fa3"; x.strokeStyle = "#fff"; x.lineWidth = 2; x.beginPath(); x.arc(D.gate.x, D.gate.z, 7, 0, 7); x.fill(); x.stroke(); x.fillStyle = "#fff"; x.beginPath(); x.arc(D.gate.x, D.gate.z, 2.6, 0, 7); x.fill(); });   // dấu cổng vết rách: vòng hồng tâm trắng (khác chấm tím của quái mạnh)
   }
   function camTarget() {   // vùng hoang dã (camera cố định hướng Bắc): trong 30 m quanh cổng thì quay mặt về cổng để thấy được cổng
     if (typeof player === "undefined") return null; const p = player.position;
