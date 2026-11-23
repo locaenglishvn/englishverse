@@ -33,6 +33,7 @@ const NATURE = (function () {
   function tree(x, z, s, cherry) { Q.push([pick(TREES), x, z, s, cherry ? "pink" : null, "t"]); }
   function place(kind, x, z, s) { const [n, v] = KIND[kind](); Q.push([n, x, z, s, v, kind[0] === "c" ? "c" : "t"]); }
   function bush(x, z, s) { Q.push([pick(["Bush_1", "Bush_2", "BushBerries_1"]), x, z, s || 1, null, "g"]); }
+  function clearArea(x, z, r) { for (let i = Q.length - 1; i >= 0; i--) if (Math.hypot(Q[i][1] - x, Q[i][2] - z) < r) Q.splice(i, 1); }   // bỏ chỗ cây đã xếp (dọn chỗ cho cổng vết rách – rifts.js)
   function ground(x, z, kind) { Q.push([pick(GROUND[kind] || GROUND.flower), x, z, 0.8 + rnd() * 0.45, null, "g"]); }
 
   /* ---------- vật liệu (dùng chung) ---------- */
@@ -134,5 +135,5 @@ const NATURE = (function () {
     Promise.all(names.map(n => new Promise(ok => L.load(DIR + n + ".glb", g => { try { prep(n, g.scene); } catch (e) {} ok(); }, undefined, () => ok()))))
       .then(() => { buildChunks(); updateVis(); setInterval(updateVis, 250); });
   }
-  return { tree, place, bush, ground, build, _managed: () => managed };
+  return { tree, place, bush, ground, build, clearArea, _managed: () => managed };
 })();

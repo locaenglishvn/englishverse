@@ -20,7 +20,7 @@ Vấn đề gốc: không có môi trường tiếng Anh ngoài lớp học; d�
 4. **Đồ hiếm nhất không mua được bằng tiền**, chỉ đạt được bằng thành tích tiếng Anh. Vì vậy địa vị trong cộng đồng gắn với việc dùng tiếng Anh.
 5. **Hạn chế tiếng Việt bằng thiết kế, không bằng lệnh cấm:** không có ô gõ tự do; chat bằng câu có sẵn hoặc giọng nói (máy chỉ nghe ra tiếng Anh); tên nhân vật chỉ chữ cái tiếng Anh.
 6. **Mọi mini-game là một "trạm" trong thế giới.** Chơi xong thì quay lại thành phố.
-7. **Không bạo lực:** quái bị "giải thoát" chứ không bị giết; vũ khí là nhạc cụ, chiêu thức là câu nói.
+7. **Không bạo lực:** quái bị "giải thoát" chứ không bị giết; chiêu thức là câu nói. Vũ khí loại nào cũng được (kiếm, trượng, búa…) nhưng dáng tròn, hoạt hình, không sắc bén (chốt 20/11, xem `docs/STORY.md`); nhạc cụ thành vật phẩm đặc biệt.
 8. **Giữ nút để nói** ở mọi chỗ có micro (giữ → nói → thả tay là chấm ngay).
 
 ### Lý thuyết nền (để giải thích với nhà trường, phụ huynh, nhà đầu tư)
@@ -44,6 +44,8 @@ Vấn đề gốc: không có môi trường tiếng Anh ngoài lớp học; d�
 ---
 
 ## 2. Cốt truyện & bối cảnh
+
+> **20/11: cốt truyện mới (bản nháp v1, chờ chốt) ở [`docs/STORY.md`](STORY.md)**: Vocara + Vox Prima, tháp Babel, The Great Silence, Vòm Thần ở vùng Đông Nam thế giới, tiếng Anh = thần chú. Phần bên dưới là bản cũ, chỉ giữ lại để tham khảo (Mutelings, Word Spirit, thanh Voice chung vẫn dùng được).
 
 **Verse City** – thành phố nằm giữa các cánh cổng thời gian. Ngày xưa ai cũng nói, rồi người ta **sợ nói sai** và im lặng dần. Những lời không dám nói đọng lại thành **The Mute**: màn sương xám làm mọi thứ mất màu, mất tiếng.
 
@@ -312,10 +314,30 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 ---
 
-## 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 19/11 khi bàn giao sang phiên mới
-**Trạng thái:** `main` = PR #59 (`8495b5f`), QA toàn bộ ✅. Phiên 18–19/11 (visual) đã xong PR #50–#59: cây "bông" + vân cỏ + game feel chiến đấu (#50), Blossom Valley rừng cụm (#52), nền sạch + đường mòn/sông mép sắc + chấm quái bản đồ nhỏ (#53), cây mô hình Quaternius cho 5 mùa + thành phố (#54, #55), thành phố: cỏ có vân, đường nhựa có vạch + lề, cây dừa quanh toà nhà (#56), nội thất hết lóa – đèn ấm + tự cân sáng (#57), ngã tư + vạch đi bộ (#58, #59). Chi tiết kỹ thuật từng đợt: các đoạn **in đậm** ngay dưới đây.
+## 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 23/11 khi bàn giao sang phiên mới
+**Trạng thái:** `main` = gộp nhánh `claude/inspiring-pasteur-1xop2q` (phiên 20–23/11), QA toàn bộ ✅ (7 cảnh báo cũ về số NPC). Mốc khôi phục trước đợt này: `dcfc24a` (docs/RELEASES.md).
 
-**👉 TRỌNG TÂM PHIÊN MỚI: CHỐT CỐT TRUYỆN** (chủ dự án 19/11) – bàn kỹ và chốt hẳn cốt truyện (mục 2) TRƯỚC, rồi mới từ đó thiết kế nhân vật + quái. Nền hiện có: Verse City, The Mute, Mutelings = lời chưa dám nói, Word Spirit, người chơi là "a Voice". Sau khi chốt: CTO viết **sổ tay nhân vật** (trang web xem trên điện thoại): ~10 quái (2 / vùng mùa, khớp dạng bài nói) + ~5 NPC chính, mỗi mục: tên, ý nghĩa học (nỗi sợ / lỗi khi nói tiếng Anh), nguồn cảm hứng văn hoá Việt (con vật, đồ vật, truyện cổ – không có bản quyền), dáng, màu, tính cách, **câu lệnh vẽ AI viết sẵn**. Chủ dự án là "giám đốc nghệ thuật": chọn / gạch / sửa; vẽ 2D bằng ChatGPT/Gemini → chọn 1 → Tripo 3D → CTO đưa vào game. Công thức ý tưởng đã đề xuất: lai 2–3 nguồn (con vật / đồ vật Việt + lỗi tiếng Anh + mùa của vùng); ví dụ đã đưa: Mumble Snail (xuân), Tense Twister (thu), Lantern Shy (trùm Trung thu). Luật hình khối chung: quái tròn mềm, mắt to (không đáng sợ với trẻ 8 tuổi), mỗi mùa 1 bảng màu, trùm to ×3.
+**Phiên 20–23/11 đã làm:**
+- **Cốt truyện ĐÃ CHỐT** – `docs/STORY.md` (13 mục: Vocara / Vox Prima, Babel, The Great Silence, 3 chiều không gian, Resonance Dome, tiếng Anh = tiếng nói chung, Silentium + 4 tướng Distortia / Oblivia / Vorax / Tremora, Council of Langua, 8 khu văn hoá + trùm hiếm, thành trì & thành lũy).
+- **Sổ tay nhân vật** `docs/design/bestiary.html` (artifact: https://claude.ai/artifact/JFDiirGusB2wF3viV4ELpx): 105 mục (khu Việt 27 · 8 khu văn hoá · mục "Thần & The Mute" 14), **104 ảnh chốt** ở `assets/concept/` (thiếu Oblivia). Mỗi mục có câu lệnh vẽ AI; quy trình: ChatGPT/Gemini → chọn ảnh → Tripo (GLB tĩnh, không cần rig vì quái tự hoạt hoạ bằng code).
+- **LISTEN giới hạn số từ theo cấp** (`listenMax()` engine.js).
+- **Khu văn hoá = bản đồ riêng** (`parts/world/rifts.js` + `rift-jp.js`): khu Nhật **Sakura Rift** đã dựng map (chưa có quái) – xem đoạn "🌀 KHU VĂN HOÁ" bên dưới. Cổng ở cuối đường mòn hướng NAM (Bamboo Hills, (0, 318)), bản đồ nhỏ đánh dấu vòng hồng tâm trắng.
+- **Đồi hoa vùng Nam** (Blossom Valley / Bamboo Hills) thành gò thấp đi xuyên qua được (chủ dự án: đồi to chắn đường).
+
+**👉 TRỌNG TÂM PHIÊN MỚI (đề xuất, hỏi chủ dự án chọn):**
+1. Chủ dự án đi thử khu Nhật trên điện thoại → chỉnh gu (bố cục, màu, công trình).
+2. **Thả quái vào khu Nhật**: combat engine đang lấy vùng đánh từ `WILDS.sectorAt` → cần thêm "sector" cho khu (vd `RIFTS.sectorAt` trả { dir, ring: 3, season: "jp", name }) + bảng quái Lv.50–60 theo sổ tay (hiện quái là khối code tạm trong `parts/combat/models.js`).
+3. **7 khu còn lại** theo khuôn `rift-jp.js` (thành trì + thành lũy ở STORY mục 13; cổng: mép ngoài 4 hướng còn lại của khu Việt + 3 cổng đảo Arena cho Trung Hoa / Hy Lạp / Lưỡng Hà).
+4. **Đưa quái mới vào game** qua Tripo (thử 1 con trước, đo nặng).
+5. **Chương mở đầu cốt truyện** (prologue, lời kể A2 ở STORY mục 10) – chưa làm.
+
+<details>Trọng tâm phiên 19/11 (đã xong): chốt cốt truyện → sổ tay nhân vật.</details>
+
+~~TRỌNG TÂM 19/11: CHỐT CỐT TRUYỆN~~ (đã xong 20–22/11) – bàn kỹ và chốt hẳn cốt truyện (mục 2) TRƯỚC, rồi mới từ đó thiết kế nhân vật + quái. Nền hiện có: Verse City, The Mute, Mutelings = lời chưa dám nói, Word Spirit, người chơi là "a Voice". Sau khi chốt: CTO viết **sổ tay nhân vật** (trang web xem trên điện thoại): ~10 quái (2 / vùng mùa, khớp dạng bài nói) + ~5 NPC chính, mỗi mục: tên, ý nghĩa học (nỗi sợ / lỗi khi nói tiếng Anh), nguồn cảm hứng văn hoá Việt (con vật, đồ vật, truyện cổ – không có bản quyền), dáng, màu, tính cách, **câu lệnh vẽ AI viết sẵn**. Chủ dự án là "giám đốc nghệ thuật": chọn / gạch / sửa; vẽ 2D bằng ChatGPT/Gemini → chọn 1 → Tripo 3D → CTO đưa vào game. Công thức ý tưởng đã đề xuất: lai 2–3 nguồn (con vật / đồ vật Việt + lỗi tiếng Anh + mùa của vùng); ví dụ đã đưa: Mumble Snail (xuân), Tense Twister (thu), Lantern Shy (trùm Trung thu). ~~Luật hình khối chung: quái tròn mềm, không đáng sợ~~ → **20/11 đổi: surreal fantasy, hơi rợn được** (xem `docs/STORY.md`); trùm to ×3. Sổ tay quái bản thử 1 (13 con): `docs/design/bestiary.html`.
+
+**🌀 KHU VĂN HOÁ – BẢN ĐỒ RIÊNG (22/11, đã làm khu Nhật, chưa có quái):** `parts/world/rifts.js` (khung chung: cổng vết rách ở bản đồ chính, đi qua lại có màn mờ, va chạm, bản đồ nhỏ, sương riêng, nhịp riêng xoay cổng / hiệu ứng) + `parts/world/rift-<khu>.js` (nội dung từng khu, `RIFTS.define({...})`). Mỗi khu đặt ở toạ độ rất xa (khu Nhật: tâm (0, 2300), 300 × 300 m) nên camera (tầm 220 m) không bao giờ vẽ 2 nơi cùng lúc; dựng 1 lần lúc tải, trước `bakeWorld` (wilds.js gọi `RIFTS.build()` trước `NATURE.build()`) → khối tĩnh được gộp theo ô 40 m. Logic hướng: cổng ở hướng D → xuất hiện ở mép đối diện, thành chính cuối bản đồ theo hướng D. Camera vùng hoang dã vẫn cố định hướng Bắc, chỉ trong 30 m quanh cổng thì quay mặt về cổng (`RIFTS.camTarget`, gate.view). Nối vào lõi: `blocked()` (RIFTS.blocked), `updateCity()` (nút 🌀 qua RIFTS.nearSpot), `drawCity()` (RIFTS.drawMap), `nature.js` thêm `clearArea` (dọn cây quanh cổng). **Khu Nhật – Sakura Rift** (`rift-jp.js`): cổng kiểu Nhật ở mép Nam Bamboo Hills (0, 318) → vào cổng Bắc khu; phố gỗ machiya, đại lộ anh đào + đèn đá, ĐÔNG hàng torii → chùa tháp 5 tầng + gác chuông, TÂY chánh điện + vườn đá Thiền, hồ koi + cầu cong, góc TB rừng trúc, góc ĐB phong đỏ, NAM hào nước + đảo thành + lâu đài kiểu Himeji (tháp chính 5 tầng + 2 tháp phụ, chân đá xếp), tường thành vôi trắng chân đá + 7 vọng lâu, núi tuyết phông nền, sương hồng + cánh anh đào bay. Đo: ≤ ~190 lần vẽ, ≤ ~68k tam giác ở góc chơi; thành phố không đổi (242–243 lần vẽ). Việc tiếp: thả quái khu Nhật (cần nối combat engine: sector của khu thay cho WILDS.sectorAt), rồi 7 khu còn lại theo cùng khuôn.
+
+**📖 CỐT TRUYỆN – ĐÃ CHỐT (20/11):** toàn bộ ở `docs/STORY.md`. Sổ tay quái bản 2 (13 con) `docs/design/bestiary.html`. **Ảnh chuẩn phong cách đã duyệt:** `assets/concept/mud-buffalo.webp` (Gemini) – đính kèm ảnh này khi vẽ các con còn lại để giữ đồng bộ. Quái hiện là khối code tự hoạt hoạ (`parts/combat/models.js`: lấy đà, bẹp nảy…) nên mô hình Tripo **không cần rig**, chỉ cần GLB tĩnh. Việc tiếp: vẽ 12 con còn lại → Tripo thử 1 con → CTO đưa vào game đo hiệu năng → làm loạt; song song: chương mở đầu (prologue) + NPC chính (The Oracle Lady…).
 
 **🧍 NHÂN VẬT – ĐÃ CHỐT (19/11):** chia 3 tầng · (1) người chơi + (2) NPC thường dùng **2 thân gốc chibi: 1 nam, 1 nữ** (bộ xương chuẩn, đổi tóc / mặt / da / trang phục; cùng 1 món đồ, nam mặc ra kiểu nam, nữ mặc ra kiểu nữ; NPC thường máy tự phối) · (3) NPC chính (~10–15), **mỗi loại quái**, trùm = **mô hình riêng** bằng Tripo. Phong cách: chibi hoạt hình 3D mềm (mục dưới). Mặt vẽ bằng ảnh dán (đổi biểu cảm). Tripo: chủ dự án định mua gói Pro (~20 USD/tháng, trả theo tháng, dùng thương mại + mô hình riêng tư), xuất **Smart Mesh** ít mặt (5–10k), texture 1024–2048, GLB, Auto Rig cho thân người; sau đó có thể dùng API (`request_credential`) tạo hàng loạt theo 1 mẫu chuẩn.
 
@@ -349,6 +371,8 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 - **Cần thử trên điện thoại thật:** bộ đàm đội trên iPhone (có tự chuyển bộ đàm chữ không), lag khi ra chiêu (đã chống bằng `warmSkillFx` + chấm sau khi tắt micro), độ to nhạc nền, chấm điểm SOUNDS (máy nhận dạng hay tự sửa từ).
 - **Gọi chiêu cho đồng đội** (Harmony chỉ hồi máu / khiên khi đồng đội nói "Heal me!", "Shield now!" qua bộ đàm) – chủ dự án hoãn, làm sau visual.
 - **Lưu tiến độ lên server theo tài khoản** (🔴 dữ liệu trẻ em): hiện trình duyệt xoá dữ liệu là mất tiến độ.
+
+**LISTEN giới hạn độ dài theo cấp (chốt 20/11, đã làm):** Lv < 10 → câu ≤ 4 từ, Lv < 20 → ≤ 6 từ, sau đó tự do (`listenMax()` trong parts/combat/engine.js). Loại đề không phụ thuộc quái (trừ DESCRIBE).
 
 0. **4 dạng bài đã duyệt ý tưởng (17/11), đã có trong bảng 📚 Challenges với nhãn "Coming soon" (`soon: true` trong `CHALLENGES`, engine.js):**
    - **REPLY (Lv.15):** đáp lại câu tình huống ("Can I help you?" → "Yes, I need a map."). Cần ngân hàng ~120 cặp câu – câu đáp theo `keys` như ANSWER. Writer viết.
