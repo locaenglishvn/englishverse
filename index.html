@@ -221,7 +221,7 @@ button{font:inherit;cursor:pointer}
 <div id="namep"><div class="box">
   <div style="font-size:20px;font-weight:700">Welcome to EnglishVerse! 👋</div>
   <div style="font-size:13px;opacity:.8;margin-top:2px">Trang phục đẹp hơn: mua ở Clothes Shop hoặc giành bằng thành tích tiếng Anh!</div>
-  <div style="margin-top:6px">Choose your face &amp; hair:</div>
+  <div style="margin-top:6px">Choose your Voice Guard:</div>
   <div id="avPick" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px"></div>
   <div style="margin-top:10px">What’s your name?</div>
   <input id="nameIn" maxlength="12" placeholder="e.g. Lily" autocomplete="off">
@@ -493,12 +493,24 @@ const HAIR = [0x3b2a1a, 0x5c3d2e, 0x111111, 0xa0522d, 0xe0b04f];
 const AVATARS = { Mage: "Wizard", Knight: "Knight", Rogue: "Explorer", Barbarian: "Viking", Rogue_Hooded: "Ninja" };   // tên file → tên hiển thị (tiếng Anh)
 const AV_KEYS = Object.keys(AVATARS);
 const FACES = { Rogue: "Alex", Knight: "Sam", Mage: "Robin", Barbarian: "Max" };   // khuôn mặt + kiểu tóc (đầu của từng bộ)
+/* Nhân vật chính mới (Tripo, 25/11): mô hình liền khối có xương riêng + 5 động tác (idle, walk, run, slash, hurt).
+   save.head = "hero_m" | "hero_f". Tạm thời chưa mặc được đồ rời (áo/quần/mũ) – chỉ chỉ số trang bị có tác dụng. */
+const HERO = { hero_m: { file: "voice-guard-m", name: "Boy" }, hero_f: { file: "voice-guard-f", name: "Girl" } };
+const HERO_CLIP = { Idle: "idle", Walking_A: "walk", Running_A: "run", Hit_A: "hurt", "1H_Melee_Attack_Chop": "slash", Spellcast_Shoot: "slash" };   // tên động tác KayKit → Tripo
+const isHero = look => typeof look === "object" && look && !!HERO[look.head];
+function heroInPlace(clip) {   // đi / chạy của Tripo có kèm di chuyển gốc xương → khoá trục trôi để nhân vật chạy tại chỗ (game tự di chuyển)
+  clip.tracks.forEach(t => { if (!/^(Root|Hip)\.position$/.test(t.name)) return; const v = t.values, n = v.length / 3; if (n < 2) return;
+    for (let ax = 0; ax < 3; ax++) { const d = v[(n - 1) * 3 + ax] - v[ax]; let lo = Infinity, hi = -Infinity;
+      for (let i = 0; i < n; i++) { lo = Math.min(lo, v[i * 3 + ax]); hi = Math.max(hi, v[i * 3 + ax]); }
+      if (hi - lo > 1e-6 && Math.abs(d) > 0.5 * (hi - lo)) for (let i = 0; i < n; i++) v[i * 3 + ax] -= d * i / (n - 1); } });
+  return clip; }
 const modelTpl = {}, modelWait = {};
 function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật cùng loại
   if (modelTpl[name] || modelWait[name] || !THREE.GLTFLoader) return;
   modelWait[name] = [];
   new THREE.GLTFLoader().load("assets/characters/" + name + ".glb", gltf => {
-    const box = new THREE.Box3().setFromObject(gltf.scene);
+    gltf.scene.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(gltf.scene);
+    if (/^voice-guard/.test(name)) gltf.animations.forEach(heroInPlace);
     modelTpl[name] = { scene: gltf.scene, clips: gltf.animations, scale: 1.9 / (box.max.y - box.min.y) };
     const w = modelWait[name]; modelWait[name] = null; w.forEach(attachModel);
   }, undefined, () => { modelWait[name] = null; });   // lỗi tải: giữ chibi
@@ -571,7 +583,11 @@ function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương
   root.scale.setScalar(tpl.scale);
   return root;
 }
-function lookFiles(look) { return typeof look === "object" ? ["Rogue"].concat(lookParts(look).map(p => p.file)) : [look]; }
+function buildHero(look) {   // nhân vật chính Tripo: nhân bản cả bộ (có xương), xoay mặt về +Z như KayKit
+  const tpl = modelTpl[HERO[look.head].file], inner = THREE.SkeletonUtils.clone(tpl.scene), root = new THREE.Group();
+  inner.rotation.y = -Math.PI / 2; root.add(inner); root.scale.setScalar(tpl.scale); return root;
+}
+function lookFiles(look) { return isHero(look) ? [HERO[look.head].file] : typeof look === "object" ? ["Rogue"].concat(lookParts(look).map(p => p.file)) : [look]; }
 function attachModel(g) {
   const look = g.userData.model, files = lookFiles(look).filter((f, i, a) => a.indexOf(f) === i);
   for (const f of files) {   // còn bộ nào chưa tải xong: chờ
@@ -580,7 +596,8 @@ function attachModel(g) {
   if (g.userData.model !== look) return;
   if (g.userData.mesh) g.remove(g.userData.mesh);
   let m;
-  if (typeof look === "object") m = buildComposite(look);
+  if (isHero(look)) m = buildHero(look);
+  else if (typeof look === "object") m = buildComposite(look);
   else { const tpl = modelTpl[look]; m = THREE.SkeletonUtils.clone(tpl.scene); m.scale.setScalar(tpl.scale); }
   m.traverse(o => { if (o.isMesh) { o.castShadow = g === player; o.receiveShadow = false; o.frustumCulled = false; } });   // chỉ nhân vật của mình đổ bóng thật; NPC dùng bóng tròn dưới chân (nhẹ hơn 6 lần)
   if (g.userData.blob) g.userData.blob.visible = g !== player;
@@ -588,6 +605,7 @@ function attachModel(g) {
   g.userData.chibi.forEach(c => c.visible = false);
   const mixer = new THREE.AnimationMixer(m), acts = {};
   modelTpl[files[0]].clips.forEach(c => acts[c.name] = mixer.clipAction(c));
+  if (isHero(look)) Object.keys(HERO_CLIP).forEach(k => { if (acts[HERO_CLIP[k]]) acts[k] = acts[HERO_CLIP[k]]; });   // gọi bằng tên KayKit vẫn chạy
   g.userData.mixer = mixer; g.userData.acts = acts; g.userData.cur = null;
   playLoop(g, "Idle");
 }
@@ -676,7 +694,8 @@ if (!save.equip) {   // người chơi cũ (trước khi có trang phục) hoặ
   delete E.weapon;
 }
 save.chest = save.chest || {}; save.decor = save.decor || []; save.spoken = save.spoken || 0; save.legends = save.legends || [];
-if (!FACES[save.head]) save.head = Object.keys(FACES)[Math.floor(Math.random() * 4)];
+if (!save.heroV1) { save.heroV1 = 1; save.head = save.head === "Rogue" ? "hero_f" : save.head && FACES[save.head] ? "hero_m" : null; }   // 25/11: mọi người chuyển sang nhân vật chính mới (Alex tóc dài → nữ)
+if (!FACES[save.head] && !HERO[save.head]) save.head = Math.random() < 0.5 ? "hero_m" : "hero_f";
 function myLook() { const E = save.equip; return { head: save.head, hat: E.hat, top: E.armor, legs: E.pants, cape: E.cape, gloves: E.gloves, shoes: E.shoes, belt: E.belt }; }
 const player = makeChar(0x3b82f6, myLook());
 player.position.set(0, 0, 34);   // xuất hiện trên quảng trường, nhìn về Town Hall
@@ -984,7 +1003,7 @@ function safeLook(a) {   // kiểm tra trang phục người khác gửi tới (
   if (typeof a === "string") return AVATARS[a] ? a : "Rogue";
   if (!a || typeof a !== "object") return "Rogue";
   const ok = (id, slot) => ITEMS[id] && slotOf(ITEMS[id]) === slot ? id : null;
-  return { head: FACES[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_basic", legs: ok(a.legs, "pants") || "shorts_basic", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
+  return { head: FACES[a.head] || HERO[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_basic", legs: ok(a.legs, "pants") || "shorts_basic", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
 }
 function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
@@ -1365,8 +1384,8 @@ function startWithName() {
 /* Tạo nhân vật: chỉ chọn KHUÔN MẶT + KIỂU TÓC. Ai cũng bắt đầu với áo thun trắng, quần xám;
    trang phục đẹp phải mua ở Clothes Shop hoặc giành bằng thành tích → mặc đồ mới mới có ý nghĩa. */
 let creating = false;
-Object.keys(FACES).forEach(k => {   // nút chọn khuôn mặt
-  const b = document.createElement("button"); b.textContent = FACES[k]; b.dataset.k = k;
+Object.keys(HERO).forEach(k => {   // nút chọn nhân vật chính (nam / nữ)
+  const b = document.createElement("button"); b.textContent = HERO[k].name; b.dataset.k = k;
   b.style.cssText = "border:2px solid rgba(128,128,128,.4);background:transparent;color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:700";
   b.onclick = () => { save.head = k; setAvatar(player, myLook()); markFace(); };
   $("avPick").appendChild(b);

@@ -64,11 +64,11 @@ function bgBuild(look, weaponItem) {   // dựng bản sao nhân vật (đợi m
   const files = lookFiles(look).filter((f, i, a) => a.indexOf(f) === i);
   for (const f of files) if (!modelTpl[f]) { loadModel(f); clearTimeout(BG.wait); BG.wait = setTimeout(() => { BG.key = ""; if (BG.open) drawBag(); }, 300); return; }
   bgDisposeChar();
-  const root = buildComposite(look), grp = new THREE.Group(); grp.add(root); grp.rotation.y = BG.rot;
+  const hero = typeof isHero === "function" && isHero(look), root = hero ? buildHero(look) : buildComposite(look), grp = new THREE.Group(); grp.add(root); grp.rotation.y = BG.rot;
   root.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
   BG.sc.add(grp); BG.char = grp;
   BG.mixer = new THREE.AnimationMixer(root);
-  const idle = modelTpl.Rogue.clips.find(c => c.name === "Idle"); if (idle) BG.mixer.clipAction(idle).play();
+  const idle = hero ? modelTpl[lookFiles(look)[0]].clips.find(c => c.name === "idle") : modelTpl.Rogue.clips.find(c => c.name === "Idle"); if (idle) BG.mixer.clipAction(idle).play();
   BG.mixer.update(0.01);
   if (weaponItem && typeof WEAPON_MODELS !== "undefined") try { BG.fake = { userData: { mesh: root } }; if (!WEAPON_MODELS.attach(BG.fake, WEAPON_MODELS.make(weaponItem))) BG.fake = null; } catch (e) { BG.fake = null; }
 }
