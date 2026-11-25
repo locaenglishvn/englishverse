@@ -4,7 +4,7 @@
    Hàm toàn cục: openBag() · closeBag() · drawBag() (vẽ lại nếu đang mở) · gearWith(equip) · calcStats(equip) · mpMax() · powerScore() · powerScoreWith(equip)
                  slotOf(item) (đổi tên ô cũ top→armor, legs→pants) · addGearExtras(root, look) (găng / giày / thắt lưng gắn vào xương, index.html gọi)
    Renderer 3D riêng chỉ chạy khi bảng mở; đóng bảng là dọn sạch (dispose). */
-const SLOT_ORDER_L = ["hat", "armor", "pants", "shoes"], SLOT_ORDER_R = ["gloves", "belt", "cape", "weapon"];
+const SLOT_ORDER_L = ["hat", "armor", "pants", "shoes", "belt"], SLOT_ORDER_R = ["gloves", "cape", "weapon", "mount"];   // mount: ô vật cưỡi để sẵn (chưa có đồ – tăng tốc chạy, làm sau)
 const SLOT_INFO = { hat: ["🧢", "Hat"], armor: ["🛡️", "Armor"], pants: ["👖", "Pants"], shoes: ["👟", "Shoes"], gloves: ["🧤", "Gloves"], belt: ["🎗️", "Belt"], cape: ["🧣", "Cape"], weapon: ["📢", "Weapon"] };
 const SLOT_ALIAS = { top: "armor", legs: "pants" };   // tên cũ → tên mới
 const LOOK_KEY = { hat: "hat", armor: "top", pants: "legs", shoes: "shoes", gloves: "gloves", belt: "belt", cape: "cape" };   // ô trang bị → khoá trong "look" (đưa cho buildComposite)
@@ -167,6 +167,7 @@ function drawBag() {
   const fill = (el, list) => {
     el.innerHTML = "";
     list.forEach(sl => {
+      if (sl === "mount") { const b = document.createElement("button"); b.className = "ev-slot empty"; b.disabled = true; b.style.opacity = ".55"; b.innerHTML = '<span class="ic">🐎</span><small>Mount · soon</small>'; el.appendChild(b); return; }
       const id = sl === "weapon" ? (curW && Object.keys(ITEMS).find(k => ITEMS[k] === curW)) : save.equip[sl], o = id && ITEMS[id], shown = ov && ov[sl] ? ITEMS[ov[sl]] : o;
       const b = document.createElement("button"); b.className = "ev-slot" + (shown && shown.rarity ? " r-" + shown.rarity : "") + (shown ? "" : " empty") + (worn === sl ? " sel" : "");
       b.innerHTML = (shown ? shown.icon : '<span class="ic">' + SLOT_INFO[sl][0] + "</span>") + "<small>" + SLOT_INFO[sl][1] + "</small>";
