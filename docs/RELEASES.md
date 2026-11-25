@@ -27,3 +27,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-25 | `8e8d369` | PR #68 – túi đồ dáng đứng (trước khi thêm bàn tay nắm, PR #69) | ✅ |
 | 2026-11-25 | `2cf7503` | PR #69 – bàn tay nắm (trước khi sửa tay / bỏ tai nghe / chân dung HUD, PR #70) | ✅ |
 | 2026-11-25 | `70ddea2` | PR #70 – tay nắm, bỏ tai nghe bằng code (trước khi thay mô hình nhân vật chính bản 2, PR #71) | ✅ |
+| 2026-11-26 | `1fd9ac3` | PR #71 – nhân vật chính bản 2 (trước khi sửa tay ngược + thêm kiểu tóc, PR #72) | ✅ |
