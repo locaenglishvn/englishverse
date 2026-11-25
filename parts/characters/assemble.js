@@ -45,7 +45,28 @@ const ASSEMBLE = (function () {
       return n ? new THREE.Color(r / n / 255, g / n / 255, b / n / 255) : new THREE.Color(0xf2c9a8);
     } catch (e) { return new THREE.Color(0xf2c9a8); }
   }
-  let FIST = null;   // { geo, mat, h } chuẩn hóa: cổ tay ở y = 0, đốt ngón hướng +y, lòng bàn tay +x, lỗ cầm theo trục z
+  let FIST = null; const OPEN = new WeakMap(), FISTG = new WeakMap();   // hình học tay mở ↔ tay nắm (dùng chung cho mọi bản sao)
+  function setFist(sk, root, on) {   // bật / tắt nắm tay cho 1 nhân vật (chỉ khi mô hình làm bằng fists(..., { toggle: true }))
+    const g = on ? FISTG.get(sk.geometry) : OPEN.get(sk.geometry); if (!g) return; sk.geometry = g;
+    root.traverse(o => { if (/^fist_/.test(o.name)) o.visible = on; });
+  }
+  const warmCache = new WeakMap();
+  /* Da hồng hào (26/11, chủ dự án: da nhợt nhạt): tăng độ bão hoà + ngả hồng cho điểm ảnh màu da trong ảnh màu (giữ nguyên tóc, áo). */
+  function warmSkin(map) {
+    const img = map && map.image; if (!img || !img.width) return map; if (warmCache.has(map)) return warmCache.get(map);
+    try {
+      const W = img.width, H = img.height, cv = document.createElement("canvas"); cv.width = W; cv.height = H; const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0);
+      const D = cx.getImageData(0, 0, W, H), d = D.data, c = new THREE.Color(), o = {};
+      for (let k = 0; k < d.length; k += 4) {
+        c.setRGB(d[k] / 255, d[k + 1] / 255, d[k + 2] / 255); c.getHSL(o);
+        if (o.h < 0.015 || o.h > 0.12 || o.s < 0.12 || o.s > 0.75 || o.l < 0.4 || o.l > 0.93) continue;   // chỉ vùng màu da
+        c.setHSL(o.h - 0.012, Math.min(1, o.s * 1.45 + 0.06), Math.min(0.92, o.l * 1.02));
+        d[k] = c.r * 255; d[k + 1] = c.g * 255; d[k + 2] = c.b * 255;
+      }
+      cx.putImageData(D, 0, 0);
+      const t = new THREE.CanvasTexture(cv); t.flipY = map.flipY; t.encoding = THREE.LinearEncoding; t.wrapS = map.wrapS; t.wrapT = map.wrapT; warmCache.set(map, t); return t;
+    } catch (e) { return map; }
+  }   // { geo, mat, h } chuẩn hóa: cổ tay ở y = 0, đốt ngón hướng +y, lòng bàn tay +x, lỗ cầm theo trục z
   function fistTemplate(fistScene) {
     if (FIST) return FIST; let src = null; fistScene.updateMatrixWorld(true); fistScene.traverse(o => { if (!src && o.isMesh) src = o; }); if (!src) return null;
     let geo = src.geometry.clone().applyMatrix4(src.matrixWorld); geo.computeBoundingBox(); let bb = geo.boundingBox; const c = bb.getCenter(new THREE.Vector3());
@@ -86,7 +107,10 @@ const ASSEMBLE = (function () {
       bones[bi].userData.grip = { pos: gp.toArray(), quat: gr.toArray() };   // mảng số: userData bị sao chép kiểu JSON khi nhân bản nhân vật
 
     });
-    if (done.length) hide(sk, [], i => done.indexOf(R.dom[i]) >= 0, true);
+    if (done.length) {
+      const open = sk.geometry; hide(sk, [], i => done.indexOf(R.dom[i]) >= 0, true);
+      if (opt && opt.toggle) { OPEN.set(sk.geometry, open); FISTG.set(open, sk.geometry); sk.geometry = open; done.forEach(bi => bones[bi].children.forEach(c => { if (/^fist_/.test(c.name)) c.visible = false; })); }   // mặc định tay mở
+    }
     return true;
   }
   /* Bỏ tai nghe dính liền trong mô hình nhân vật chính (25/11, chủ dự án: để mũ / tai nghe sau này không bị trùng):
@@ -143,5 +167,5 @@ const ASSEMBLE = (function () {
     cx.putImageData(D, 0, 0);
     const tex = new THREE.CanvasTexture(cv); tex.flipY = map.flipY; tex.encoding = THREE.LinearEncoding; tex.wrapS = map.wrapS; tex.wrapT = map.wrapT; tintCache[key] = tex; return tex;
   }
-  return { regions, hide, rigid, fists, skinOf, stripHeadset, hairTexture };
+  return { regions, hide, rigid, fists, skinOf, stripHeadset, hairTexture, setFist, warmSkin };
 })();

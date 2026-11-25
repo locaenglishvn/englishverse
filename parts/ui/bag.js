@@ -4,9 +4,9 @@
    Hàm toàn cục: openBag() · closeBag() · drawBag() (vẽ lại nếu đang mở) · gearWith(equip) · calcStats(equip) · mpMax() · powerScore() · powerScoreWith(equip)
                  slotOf(item) (đổi tên ô cũ top→armor, legs→pants) · addGearExtras(root, look) (găng / giày / thắt lưng gắn vào xương, index.html gọi)
    Renderer 3D riêng chỉ chạy khi bảng mở; đóng bảng là dọn sạch (dispose). */
-const SLOT_ORDER_L = ["hat", "armor", "pants", "shoes", "belt"], SLOT_ORDER_R = ["gloves", "cape", "weapon", "mount"];   // mount: ô vật cưỡi để sẵn (chưa có đồ – tăng tốc chạy, làm sau)
-const SLOT_INFO = { hat: ["🧢", "Hat"], armor: ["🛡️", "Armor"], pants: ["👖", "Pants"], shoes: ["👟", "Shoes"], gloves: ["🧤", "Gloves"], belt: ["🎗️", "Belt"], cape: ["🧣", "Cape"], weapon: ["📢", "Weapon"] };
-const SLOT_ALIAS = { top: "armor", legs: "pants" };   // tên cũ → tên mới
+const SLOT_ORDER_L = ["hat", "armor", "shoes", "belt"], SLOT_ORDER_R = ["gloves", "cape", "weapon", "mount"];   // mount: ô vật cưỡi để sẵn (chưa có đồ – tăng tốc chạy, làm sau)
+const SLOT_INFO = { hat: ["🧢", "Hat"], armor: ["🛡️", "Body"], pants: ["👖", "Pants"], shoes: ["👟", "Shoes"], gloves: ["🧤", "Gloves"], belt: ["🎗️", "Belt"], cape: ["🧣", "Cape"], weapon: ["📢", "Weapon"] };
+const SLOT_ALIAS = { top: "armor", legs: "pants" };   // ô "pants" bỏ khỏi túi (26/11: áo + quần = 1 ô Body); giày đi kèm quần cũ → ô Shoes (places.js)   // tên cũ → tên mới
 const LOOK_KEY = { hat: "hat", armor: "top", pants: "legs", shoes: "shoes", gloves: "gloves", belt: "belt", cape: "cape" };   // ô trang bị → khoá trong "look" (đưa cho buildComposite)
 function slotOf(it) { return it && it.slot ? (SLOT_ALIAS[it.slot] || it.slot) : null; }
 

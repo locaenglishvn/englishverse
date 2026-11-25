@@ -502,7 +502,8 @@ const HERO = { hero_m: { file: "voice-guard-m", name: "Boy", extra: [] }, hero_f
 const HAIRS = {
   hero_m: [{ id: "m-classic", name: "Classic", file: null }, { id: "m-undercut", name: "Undercut", file: "hair/m-undercut" }, { id: "m-spiky", name: "Spiky", file: "hair/m-spiky" },
     { id: "m-korean", name: "K-style", file: "hair/m-korean" }, { id: "m-ponytail", name: "Samurai", file: "hair/m-ponytail" }, { id: "m-curly", name: "Curly", file: "hair/m-curly" }],
-  hero_f: [{ id: "f-classic", name: "Classic", file: null }, { id: "f-ponytail", name: "Ponytail", file: "hair/f-ponytail" }]
+  hero_f: [{ id: "f-classic", name: "Classic", file: null }, { id: "f-ponytail", name: "Ponytail", file: "hair/f-ponytail" }, { id: "f-braids", name: "Braids", file: "hair/f-braids" },
+    { id: "f-bob", name: "Bob", file: "hair/f-bob" }, { id: "f-buns", name: "Buns", file: "hair/f-buns" }, { id: "f-wavy", name: "Wavy", file: "hair/f-wavy" }]
 };
 const HAIR_COLORS = [null, 0x5a3a24, 0x8a4b2a, 0xd9b06a, 0xb9bcc4, 0xb3362c, 0x3f63c9, 0xd06aa0];   // null = màu gốc
 function hairOf(look) { const L = HAIRS[look.head] || []; return L.find(h => h.id === look.hair) || L[0] || null; }
@@ -517,11 +518,12 @@ function fxRot(b, ax, a) { if (b && a) b.quaternion.multiply(_fxQ.setFromAxisAng
 function fxEnv(t, up, hold, down) { return t < up ? Math.sin(t / up * Math.PI / 2) : t < up + hold ? 1 : Math.max(0, 1 - (t - up - hold) / down); }   // lên nhanh – giữ – về
 function heroBonesOf(m) {   // các khớp heroPose dùng (tên xương Tripo)
   const bn = n => m.getObjectByName(n);
-  return { sp: bn("Spine02"), sp1: bn("Spine01"), head: bn("Head"), ru: bn("R_Upperarm"), rf: bn("R_Forearm"), lu: bn("L_Upperarm"), lf: bn("L_Forearm"), lt: bn("L_Thigh"), rt: bn("R_Thigh"), lft: bn("L_Foot"), rft: bn("R_Foot"), lh: bn("L_Hand"), rh: bn("R_Hand") };
+  return { root: m, sk: typeof ASSEMBLE !== "undefined" ? ASSEMBLE.skinOf(m) : null, sp: bn("Spine02"), sp1: bn("Spine01"), head: bn("Head"), ru: bn("R_Upperarm"), rf: bn("R_Forearm"), lu: bn("L_Upperarm"), lf: bn("L_Forearm"), lt: bn("L_Thigh"), rt: bn("R_Thigh"), lft: bn("L_Foot"), rft: bn("R_Foot"), lh: bn("L_Hand"), rh: bn("R_Hand") };
 }
 function heroPose(u, dt) {   // gọi sau mixer.update mỗi khung hình. Trục đo bằng ảnh (25/11): Spine02 / Head x+ = NGẢ RA SAU, x- = cúi tới
   const B = u.heroBones; if (!B) return;
   const girl = u.heroKind === "hero_f";
+  if (girl && B.rh && B.sk) { const arm = B.rh.children.some(c => !/^fist_/.test(c.name)); if (arm !== B.armed) { B.armed = arm; ASSEMBLE.setFist(B.sk, B.root, arm); } }   // nữ: tay mở, chỉ nắm khi cầm vũ khí
   if (!girl && (B.lt || B.rt)) {   // dáng nam (chủ dự án 25/11): chân dang bằng vai, vai mở, tay hơi xa thân, ngực ưỡn nhẹ, cổ tay khép (rig không có xương ngón)
     const st = u.cur === "Idle" ? 1 : u.cur === "Walking_A" ? 0.3 : 0.15;
     fxRot(B.lt, "z", 0.13 * st); fxRot(B.rt, "z", -0.13 * st); fxRot(B.lft, "z", -0.13 * st); fxRot(B.rft, "z", 0.13 * st);
@@ -565,11 +567,12 @@ function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật
   new THREE.GLTFLoader().load("assets/characters/" + name + ".glb", gltf => {
     gltf.scene.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(gltf.scene);
     if (/^voice-guard/.test(name)) gltf.animations.forEach(heroInPlace);
+    if ((/^voice-guard|^hair\//).test(name) && typeof ASSEMBLE !== "undefined") gltf.scene.traverse(o => { if (o.isMesh && o.material && o.material.map) o.material.map = ASSEMBLE.warmSkin(o.material.map); });   // da hồng hào
     const H = Object.values(HERO).find(h => h.file === name), extra = H ? H.extra.slice() : [];
     const done = () => { modelTpl[name] = { scene: gltf.scene, clips: gltf.animations, scale: 1.9 / (box.max.y - box.min.y) }; const w = modelWait[name]; modelWait[name] = null; w.forEach(attachModel); };
     const finish = () => {   // nhân vật chính: thay bàn tay mở bằng bàn tay nắm (nam: 2 tay, nữ: tay phải cầm vũ khí) – parts/characters/assemble.js
       if (!H || typeof ASSEMBLE === "undefined") return done();
-      withFist(fs => { try { ASSEMBLE.fists(gltf.scene, fs, { left: name === "voice-guard-m", sink: name === "voice-guard-m" ? 0.1 : 0.48 }); } catch (e) {} done(); });
+      withFist(fs => { try { ASSEMBLE.fists(gltf.scene, fs, { left: name === "voice-guard-m", sink: name === "voice-guard-m" ? 0.1 : 0.48, toggle: name === "voice-guard-f" }); } catch (e) {} done(); });
     };
     const next = () => { const f = extra.shift(); if (!f) return finish();   // nạp thêm động tác (cùng tên xương) rồi mới dùng
       new THREE.GLTFLoader().load("assets/characters/" + f + ".glb", g2 => { g2.animations.forEach(c => gltf.animations.push(heroInPlace(c))); next(); }, undefined, next); };
@@ -765,6 +768,7 @@ if (!save.equip) {   // người chơi cũ (trước khi có trang phục) hoặ
   const E = save.equip;
   if ("top" in E) { if (E.armor == null) E.armor = E.top; delete E.top; }
   if ("legs" in E) { if (E.pants == null) E.pants = E.legs; delete E.legs; }
+  if (E.pants && ITEMS[E.pants] && ITEMS[E.pants].slot === "shoes") { if (!E.shoes) E.shoes = E.pants; else { save.items[E.pants] = (save.items[E.pants] || 0) + 1; } E.pants = "shorts_basic"; }   // 26/11: giày tách khỏi ô quần
   ["hat", "armor", "pants", "shoes", "gloves", "belt", "cape"].forEach(k => { if (!(k in E)) E[k] = null; });
   delete E.weapon;
 }
