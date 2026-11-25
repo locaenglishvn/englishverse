@@ -223,6 +223,7 @@ button{font:inherit;cursor:pointer}
   <div style="font-size:13px;opacity:.8;margin-top:2px">Trang phục đẹp hơn: mua ở Clothes Shop hoặc giành bằng thành tích tiếng Anh!</div>
   <div style="margin-top:6px">Choose your Voice Guard:</div>
   <div id="avPick" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px"></div>
+  <div style="margin-top:8px">Hair style &amp; color:</div><div id="hairPick"></div>
   <div style="margin-top:10px">What’s your name?</div>
   <input id="nameIn" maxlength="12" placeholder="e.g. Lily" autocomplete="off">
   <div id="nameErr" style="font-size:14px;margin-top:8px;color:var(--bad)"></div>
@@ -497,6 +498,14 @@ const FACES = { Rogue: "Alex", Knight: "Sam", Mage: "Robin", Barbarian: "Max" };
 /* Nhân vật chính mới (Tripo, 25/11): mô hình liền khối có xương riêng + 5 động tác (idle, walk, run, slash, hurt).
    save.head = "hero_m" | "hero_f". Tạm thời chưa mặc được đồ rời (áo/quần/mũ) – chỉ chỉ số trang bị có tác dụng. */
 const HERO = { hero_m: { file: "voice-guard-m", name: "Boy", extra: [] }, hero_f: { file: "voice-guard-f", name: "Girl", extra: [] } };   // extra = file chỉ chứa động tác thêm (bỏ 25/11: cheer/bow/shoot của Tripo dài 9–12 s, thay bằng động tác code HERO_FX)
+/* Kiểu tóc nhân vật chính (26/11): file = mô hình Tripo đầy đủ (assets/characters/hair/), game chỉ lấy vùng đầu ghép vào. null = tóc gốc. */
+const HAIRS = {
+  hero_m: [{ id: "m-classic", name: "Classic", file: null }, { id: "m-undercut", name: "Undercut", file: "hair/m-undercut" }, { id: "m-spiky", name: "Spiky", file: "hair/m-spiky" },
+    { id: "m-korean", name: "K-style", file: "hair/m-korean" }, { id: "m-ponytail", name: "Samurai", file: "hair/m-ponytail" }, { id: "m-curly", name: "Curly", file: "hair/m-curly" }],
+  hero_f: [{ id: "f-classic", name: "Classic", file: null }]
+};
+const HAIR_COLORS = [null, 0x5a3a24, 0x8a4b2a, 0xd9b06a, 0xb9bcc4, 0xb3362c, 0x3f63c9, 0xd06aa0];   // null = màu gốc
+function hairOf(look) { const L = HAIRS[look.head] || []; return L.find(h => h.id === look.hair) || L[0] || null; }
 const HERO_CLIP = { Idle: "idle", Walking_A: "walk", Running_A: "run" };   // chỉ 3 vòng lặp dùng clip Tripo
 /* Động tác một lần của nhân vật chính = code chỉnh khớp xương CHỒNG LÊN dáng đứng / đi đang chạy (không khoá nhân vật, không trượt).
    Clip Tripo hurt (ngồi bệt 13,9 s), slash (6,6 s), shoot (9 s) không hợp chiến đấu (chủ dự án góp ý 25/11).
@@ -638,9 +647,18 @@ function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương
 function buildHero(look) {   // nhân vật chính Tripo: nhân bản cả bộ (có xương), xoay mặt về +Z như KayKit
   const tpl = modelTpl[HERO[look.head].file], inner = THREE.SkeletonUtils.clone(tpl.scene), root = new THREE.Group();
   inner.traverse(o => { if (o.isMesh && o.material && o.material.map && !o.material.isMeshLambertMaterial) { const mp = o.material.map; mp.encoding = THREE.LinearEncoding; mp.needsUpdate = true; o.material = new THREE.MeshLambertMaterial({ map: mp, side: o.material.side, skinning: !!o.isSkinnedMesh }); } });   // skinning: bắt buộc ở three r128, thiếu thì da không đi theo xương (đứng dang tay)   // Lambert + hiện đúng màu ảnh (game không đổi sRGB) – sáng như nhân vật KayKit
+  const hs = hairOf(look), hc = look.hc != null ? look.hc : null;
+  if (typeof ASSEMBLE !== "undefined") try {
+    const sk = ASSEMBLE.skinOf(inner);
+    if (hs && hs.file && modelTpl[hs.file]) {   // đổi kiểu tóc: bỏ vùng đầu gốc, ghép đầu của mô hình kiểu tóc vào xương Head
+      const T = modelTpl[hs.file]; if (!T.headMesh) { const hsk = ASSEMBLE.skinOf(T.scene); T.headSk = hsk; T.headMesh = ASSEMBLE.rigid(hsk, "head", "Head"); if (T.headMesh) T.headMesh.material.map.encoding = THREE.LinearEncoding; }
+      if (T.headMesh && sk) { ASSEMBLE.hide(sk, ["head"], null, true); const hm = T.headMesh.clone(); if (hc != null) { hm.material = hm.material.clone(); hm.material.map = ASSEMBLE.hairTexture(T.headSk, hc); }
+        const hb = inner.getObjectByName("Head"); if (hb) { hm.castShadow = true; hm.frustumCulled = false; hb.add(hm); } }
+    } else if (hc != null && sk) { sk.material = sk.material.clone(); sk.material.map = ASSEMBLE.hairTexture(ASSEMBLE.skinOf(tpl.scene), hc); }   // tóc gốc: nhuộm thẳng ảnh màu
+  } catch (e) {}
   inner.rotation.y = -Math.PI / 2; root.add(inner); root.scale.setScalar(tpl.scale); return root;
 }
-function lookFiles(look) { return isHero(look) ? [HERO[look.head].file] : typeof look === "object" ? ["Rogue"].concat(lookParts(look).map(p => p.file)) : [look]; }
+function lookFiles(look) { return isHero(look) ? [HERO[look.head].file].concat((hairOf(look) || {}).file ? [hairOf(look).file] : []) : typeof look === "object" ? ["Rogue"].concat(lookParts(look).map(p => p.file)) : [look]; }
 function attachModel(g) {
   const look = g.userData.model, files = lookFiles(look).filter((f, i, a) => a.indexOf(f) === i);
   for (const f of files) {   // còn bộ nào chưa tải xong: chờ
@@ -679,7 +697,7 @@ function charAct(g, name) {   // hoạt ảnh một lần: reo mừng, niệm ph
   u.cur = name; u.busy = a.getClip().duration - 0.2;
 }
 function setAvatar(g, look) {   // look: tên bộ nhân vật (NPC) hoặc { head, hat, top, legs, cape } (người chơi)
-  if (typeof look === "object" && look) look = { head: look.head, hat: look.hat || null, top: look.top, legs: look.legs, cape: look.cape || null, gloves: look.gloves || null, shoes: look.shoes || null, belt: look.belt || null };
+  if (typeof look === "object" && look) look = { head: look.head, hair: look.hair || null, hc: look.hc != null ? look.hc : null, hat: look.hat || null, top: look.top, legs: look.legs, cape: look.cape || null, gloves: look.gloves || null, shoes: look.shoes || null, belt: look.belt || null };
   else if (!AVATARS[look]) return;
   g.userData.model = look; attachModel(g);
 }
@@ -753,7 +771,7 @@ if (!save.equip) {   // người chơi cũ (trước khi có trang phục) hoặ
 save.chest = save.chest || {}; save.decor = save.decor || []; save.spoken = save.spoken || 0; save.legends = save.legends || [];
 if (!save.heroV1) { save.heroV1 = 1; save.head = save.head === "Rogue" ? "hero_f" : save.head && FACES[save.head] ? "hero_m" : null; }   // 25/11: mọi người chuyển sang nhân vật chính mới (Alex tóc dài → nữ)
 if (!FACES[save.head] && !HERO[save.head]) save.head = Math.random() < 0.5 ? "hero_m" : "hero_f";
-function myLook() { const E = save.equip; return { head: save.head, hat: E.hat, top: E.armor, legs: E.pants, cape: E.cape, gloves: E.gloves, shoes: E.shoes, belt: E.belt }; }
+function myLook() { const E = save.equip; return { head: save.head, hair: save.hair || null, hc: save.hairColor != null ? save.hairColor : null, hat: E.hat, top: E.armor, legs: E.pants, cape: E.cape, gloves: E.gloves, shoes: E.shoes, belt: E.belt }; }
 const player = makeChar(0x3b82f6, myLook());
 player.position.set(0, 0, 34);   // xuất hiện trên quảng trường, nhìn về Town Hall
 LESSONS.forEach(L => {
@@ -1060,7 +1078,8 @@ function safeLook(a) {   // kiểm tra trang phục người khác gửi tới (
   if (typeof a === "string") return AVATARS[a] ? a : "Rogue";
   if (!a || typeof a !== "object") return "Rogue";
   const ok = (id, slot) => ITEMS[id] && slotOf(ITEMS[id]) === slot ? id : null;
-  return { head: FACES[a.head] || HERO[a.head] ? a.head : "Rogue", hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_basic", legs: ok(a.legs, "pants") || "shorts_basic", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
+  const hl = HERO[a.head] && (HAIRS[a.head] || []).some(h => h.id === a.hair) ? a.hair : null, hc = HAIR_COLORS.indexOf(a.hc) > 0 ? a.hc : null;
+  return { head: FACES[a.head] || HERO[a.head] ? a.head : "Rogue", hair: hl, hc, hat: ok(a.hat, "hat"), top: ok(a.top, "armor") || "tee_basic", legs: ok(a.legs, "pants") || "shorts_basic", cape: ok(a.cape, "cape"), gloves: ok(a.gloves, "gloves"), shoes: ok(a.shoes, "shoes"), belt: ok(a.belt, "belt") };
 }
 function countOnline() { $("online").textContent = online ? "🟢 " + (Object.keys(others).length + 1) + " online" : "⚪ offline"; }
 function removeOther(id) { const o = others[id]; if (!o) return; scene.remove(o.g); delete others[id]; countOnline(); }
@@ -1444,11 +1463,21 @@ let creating = false;
 Object.keys(HERO).forEach(k => {   // nút chọn nhân vật chính (nam / nữ)
   const b = document.createElement("button"); b.textContent = HERO[k].name; b.dataset.k = k;
   b.style.cssText = "border:2px solid rgba(128,128,128,.4);background:transparent;color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:700";
-  b.onclick = () => { save.head = k; setAvatar(player, myLook()); markFace(); };
+  b.onclick = () => { save.head = k; save.hair = null; setAvatar(player, myLook()); markFace(); drawHairPick(); };
   $("avPick").appendChild(b);
 });
+function drawHairPick(el) {   // chọn kiểu tóc + màu tóc (màn tạo nhân vật, tiệm cắt tóc)
+  el = el || $("hairPick"); if (!el) return; el.innerHTML = "";
+  const btn = (txt, on, fn, css) => { const b = document.createElement("button"); b.innerHTML = txt; b.style.cssText = "border:2px solid " + (on ? "var(--accent)" : "rgba(128,128,128,.4)") + ";background:transparent;color:var(--ink);border-radius:999px;padding:5px 11px;font-weight:700;font-size:13px;" + (css || ""); b.onclick = fn; return b; };
+  const row = () => { const r = document.createElement("div"); r.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px"; el.appendChild(r); return r; };
+  const cur = hairOf(myLook()), r1 = row();
+  (HAIRS[save.head] || []).forEach(h => r1.appendChild(btn(h.name, cur && cur.id === h.id, () => { save.hair = h.id; setAvatar(player, myLook()); saveNow(); drawHairPick(el); })));
+  const r2 = row();
+  HAIR_COLORS.forEach(c => r2.appendChild(btn(c == null ? "⟲" : "", (save.hairColor != null ? save.hairColor : null) === c, () => { save.hairColor = c; setAvatar(player, myLook()); saveNow(); drawHairPick(el); },
+    "width:30px;height:30px;padding:0;" + (c == null ? "" : "background:#" + c.toString(16).padStart(6, "0") + ";"))));
+}
 function markFace() { document.querySelectorAll("#avPick button").forEach(x => x.style.borderColor = x.dataset.k === save.head ? "var(--accent)" : "rgba(128,128,128,.4)"); }
-markFace();
+markFace(); drawHairPick();
 $("nameGo").onclick = () => {
   const n = $("nameIn").value.trim();
   if (!/^[A-Za-z][A-Za-z ]{1,11}$/.test(n)) { $("nameErr").textContent = "Use English letters only, 2–12 letters. (Chỉ dùng chữ cái tiếng Anh, không dấu.)"; return; }
@@ -3162,9 +3191,11 @@ function buy(id, voice, polite) {
   const it = ITEMS[id], cost = priceOf(id, voice);
   if (it.lv > playerLevel()) { $("shopFb").textContent = "🔒 Need Lv." + it.lv + " / Cần cấp " + it.lv; $("shopFb").style.color = "var(--bad)"; speak("Sorry, you need level " + it.lv + " for that."); return; }
   if (save.coins < cost) { $("shopFb").textContent = "😕 Not enough coins. / Không đủ xu."; $("shopFb").style.color = "var(--bad)"; speak("Sorry, you don't have enough coins."); return; }
-  if (it.head) {   // dịch vụ cắt tóc: đổi ngay khuôn mặt + kiểu tóc
-    if (save.head === it.head) { $("shopFb").textContent = "You already have this style!"; return; }
-    save.head = it.head; refreshLook();
+  if (it.hair || it.dye) {   // tiệm cắt tóc: đổi kiểu tóc / nhuộm màu cho nhân vật chính
+    if (it.hair) { const h = (HAIRS[save.head] || []).find(x => x.id === it.hair); if (!h) { $("shopFb").textContent = "This style is for " + (save.head === "hero_m" ? "girls" : "boys") + ". / Kiểu này dành cho " + (save.head === "hero_m" ? "nữ" : "nam") + "."; return; }
+      if (save.hair === it.hair) { $("shopFb").textContent = "You already have this style!"; return; } save.hair = it.hair; }
+    else { const i = HAIR_COLORS.indexOf(save.hairColor != null ? save.hairColor : null); save.hairColor = HAIR_COLORS[(i + 1) % HAIR_COLORS.length]; }
+    refreshLook();
   } else if (it.decor) {   // đồ nội thất: chuyển thẳng về nhà
     if (save.decor.length >= DECOR_SPOTS.length) { $("shopFb").textContent = "🏠 Your home is full! / Nhà đã đầy đồ."; return; }
     save.decor.push(id);
@@ -3176,7 +3207,7 @@ function buy(id, voice, polite) {
   $("shopFb").innerHTML = "✅ " + it.icon + " " + it.name + " – " + cost + " 🪙" + (voice ? " (−10%" + (polite ? ", polite +4 ⭐)" : ", +2 ⭐)") : "") +
     (it.slot ? "<div style='font-size:13px'>Mở 🎒 để mặc thử! / Open your bag to wear it.</div>" : it.decor ? "<div style='font-size:13px'>Delivered to 🏠 My Home!</div>" : "");
   $("shopFb").style.color = "var(--ok)";
-  speak(it.head ? "Wow, you look so cool!" : voice ? "Here you are! " + (polite ? "Thank you for saying please!" : "") : "Here you are!");
+  speak(it.hair || it.dye ? "Wow, you look so cool!" : voice ? "Here you are! " + (polite ? "Thank you for saying please!" : "") : "Here you are!");
   drawShop(false);
 }
 function drawShop(first) {
