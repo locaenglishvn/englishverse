@@ -66,7 +66,7 @@ ul.tight li{margin:2px 0}
 .md h1{font-family:var(--display);font-size:30px;line-height:1.15}
 .md h2{font-size:22px}
 .md h3{font-size:17px;margin-top:20px}
-.md table{display:block;overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.md table{display:block;overflow-x:auto;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .md blockquote{margin:12px 0;padding:8px 14px;border-left:4px solid var(--teal);background:var(--panel);border-radius:0 10px 10px 0}
 .md code{background:var(--sunk);padding:1px 5px;border-radius:5px;font-size:13px}
 .md img{border-radius:10px}
@@ -109,6 +109,7 @@ a{color:var(--teal)}
 <script src="marked.min.js"></script>
 <script src="data.js"></script>
 <script src="core-npcs.js"></script>
+<script src="scholars.js"></script>
 <script>
 (function(){
 const B = window.BIBLE, NPC = window.CORE_NPCS || [];
@@ -127,7 +128,7 @@ const weapons = Object.entries(B.W_LINES).reduce((n, [k, v]) => n + v.names.leng
 const PAGES = [
  { id:"tong-quan", name:"Tổng quan", render(){
    const deckN = Object.values(B.deck).reduce((a, d) => a + d.n, 0) + B.sounds.n + B.starterDeck.length;
-   const S = [[B.monsters.length,"quái, trùm, thần trong sổ tay"],[B.monsters.filter(m=>m.img).length,"ảnh concept đã chốt"],[B.npcs.length,"NPC trong thành phố"],[NPC.length,"NPC cốt lõi (đề xuất)"],[skills.length,"chiêu thức · 4 nhánh"],[B.items.length + weapons,"vật phẩm, trang phục, vũ khí"],[B.cards.vocab + B.cards.phrase + B.cards.question,"thẻ học sưu tầm được"],[deckN,"đề nói trong ngân hàng"],[B.CHALLENGES.length,"dạng bài nói"],[8,"khu văn hoá thế giới"]];
+   const S = [[B.monsters.length,"quái, trùm, thần trong sổ tay"],[B.monsters.filter(m=>m.img).length,"ảnh concept đã chốt"],[B.npcs.length,"NPC trong thành phố"],[NPC.length,"NPC cốt lõi (đề xuất)"],[(window.SCHOLARS||[]).length,"danh nhân khôi phục tri thức"],[skills.length,"chiêu thức · 4 nhánh"],[B.items.length + weapons,"vật phẩm, trang phục, vũ khí"],[B.cards.vocab + B.cards.phrase + B.cards.question,"thẻ học sưu tầm được"],[deckN,"đề nói trong ngân hàng"],[B.CHALLENGES.length,"dạng bài nói"],[8,"khu văn hoá thế giới"]];
    return `<h1 class="pg">EnglishVerse</h1>
    <p class="lede">Metaverse 3D trên điện thoại cho học sinh Việt Nam. Người chơi là một <b>Voice</b>, dùng tiếng Anh nói thành tiếng làm phép để giải thoát thế giới khỏi The Mute. Tiếng Anh là công cụ để chơi và để thắng, không phải môn học.</p>
    <div class="stats">${S.map(([n,t])=>`<div class="stat"><b>${num(n)}</b><span>${t}</span></div>`).join("")}</div>
@@ -166,6 +167,17 @@ const PAGES = [
    after(){ const T = document.getElementById("npcT");
      const draw = f => T.innerHTML = B.npcs.filter(n => f === "all" || n.place === f).map(n => `<tr><td>${esc(n.name)}${n.keeper ? ' <span class="pill">chủ quán</span>' : ""}</td><td>${esc(n.place)}</td><td class="num">Lv.${n.minLv}</td><td class="num">${n.cards} 💬 · ${n.qs} ❓</td><td class="small">${esc(n.first)}</td></tr>`).join("");
      chips("npcF", draw); draw("all"); } },
+ { id:"danh-nhan", name:"Danh nhân", blurb:"30 danh nhân khôi phục tri thức bị Oblivia xoá", render(){
+   const SC = window.SCHOLARS || [], CH = window.SCHOLAR_CHAPTERS || [];
+   return `<h1 class="pg">Danh nhân · Khôi phục tri thức</h1>
+   <p class="lede">Tướng Oblivia đã xoá khoa học của nhân loại. Khi Babel Tower đủ mạnh, The Knowledge Collector gọi linh hồn danh nhân về. Mỗi nhiệm vụ là một phát minh thật của họ, học bằng tiếng Anh (CLIL). Làm xong thì khôi phục một công trình trong thành phố. <span class="pill new">đề xuất, chờ duyệt</span></p>
+   <div class="stats"><div class="stat"><b>${SC.length}</b><span>danh nhân</span></div><div class="stat"><b>${SC.reduce((a, s) => a + s.quests.length, 0)}</b><span>nhiệm vụ (mỗi phát minh 1 nhiệm vụ)</span></div><div class="stat"><b>${SC.filter(s => /Việt Nam/.test(s.from)).length}</b><span>danh nhân Việt Nam</span></div></div>
+   ${CH.map(c => `<h2>Chương ${c.n} · ${esc(c.name)} <span class="muted small">${esc(c.lv)}</span></h2><p class="muted small" style="margin-top:-6px">Mở khi: ${esc(c.need)}</p>
+    <div class="grid">${SC.filter(s => s.ch === c.n).map(s => `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><h3>${esc(s.name)}</h3><span class="pill have">Lv.${s.lv}</span></div>
+     <p class="small muted">${esc(s.years)} · ${esc(s.from)} · ${esc(s.field)}</p>${s.need ? `<p class="small"><b>Điều kiện:</b> ${esc(s.need)}</p>` : ""}
+     <ul class="tight small">${s.quests.map(q => `<li>${esc(q)}</li>`).join("")}</ul>
+     <p class="small" style="margin-top:6px">🏗️ ${esc(s.where)}</p><p class="small">🎁 ${esc(s.reward)}</p></div>`).join("")}</div>`).join("")}
+   <p class="muted small" style="margin-top:16px">Luật nội dung: đúng lịch sử, không bịa trích dẫn, chỉ người đã mất, không nhân vật chính trị. "(truyện kể)" là giai thoại. Dự bị: Einstein, Copernicus, Katherine Johnson, Shakespeare, Edward Jenner, James Watt, Tuệ Tĩnh, Lê Quý Đôn.</p>`; } },
  { id:"quai", name:"Quái", blurb:"Sổ tay quái, trùm, thần · ảnh chốt", render(){
    const areas = Object.keys(AREA).filter(a => B.monsters.some(m => areaOf(m) === a)), tiers = [...new Set(B.monsters.map(m => m.tier))];
    return `<h1 class="pg">Sổ tay quái</h1>
