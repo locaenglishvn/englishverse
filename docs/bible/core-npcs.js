@@ -49,3 +49,16 @@ window.CORE_NPCS = [
     jobs: ["Kiểm tra cấp trước khi vào khu văn hoá", "Dịch chuyển nhanh giữa các cổng đã mở", "Kể truyền thuyết và văn hoá từng khu (nội dung học văn hoá)", "Báo trùm hiếm đang xuất hiện"],
     look: "Áo choàng du hành có miếng vá từ 8 nền văn hoá, gậy chống gắn la bàn vết rách xoay tròn." },
 ];
+
+/* Câu lệnh vẽ Gemini cho NPC cốt lõi (dùng chung ART_STYLE / ART_TAIL ở scholars.js; NPC không phải người thật nên bỏ câu "giống người thật"). */
+window.NPC_ART = {
+  oracle: "The Oracle Lady, a mysterious gentle woman around 30, long white robe with soft golden glow and gold trim, a thin sheer veil covering the lower half of her face, long silver hair, calm glowing eyes.",
+  commander: "Commander Vy, a young Vietnamese woman around 20, leader of the Voice Guard, officer version of the teal Voice Guard uniform: short teal cape with gold trim, white shirt, navy trousers, tall boots, golden headset, black hair in a high ponytail, determined confident face.",
+  huy: "Mr. Huy, a young Vietnamese teacher around 30, friendly smile, thin-framed glasses, short neat black hair, light blue shirt with rolled-up sleeves, dark trousers, brown shoes.",
+  collector: "The Knowledge Collector, a mysterious kind old scholar, long grey beard, monocle, long dark-green travel coat with many pockets stuffed with paper scrolls, small round hat.",
+  mayor: "Mayor Bao, a round cheerful Vietnamese man around 55, short grey hair, brown suit, scarf with Vietnamese cloud patterns, small mayor's badge on the chest.",
+  dan: "Uncle Dan, a burly friendly blacksmith around 45, thick black beard, rolled-up sleeves, scorched leather apron, soot on his cheeks, sturdy boots.",
+  lua: "Ms. Lua, a young Vietnamese tailor around 25, long black hair in a low braid, silk ao ba ba top and wide trousers in soft pastel colors, a tape measure around her neck.",
+  kai: "Coach Kai, an energetic sports coach around 30, short spiky hair, headband, sporty tracksuit jacket and shorts, sneakers.",
+  warden: "Warden Torin, a calm traveller around 40, short beard, long travel cloak patched with fabrics from 8 cultures (Japanese, Egyptian, Norse, Celtic, Maya, Greek, Chinese, Mesopotamian), sturdy boots."
+};
