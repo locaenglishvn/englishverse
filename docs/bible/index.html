@@ -63,6 +63,7 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 ul.tight{margin:4px 0;padding-left:18px}
 ul.tight li{margin:2px 0}
 .md{max-width:78ch}
+.kc{margin:6px 0;padding:6px 10px;border:1px dashed var(--line);border-radius:10px}
 .wow{margin:6px 0;padding:8px 10px;border-radius:10px;background:var(--gold-soft);font-weight:600;line-height:1.45}
 .md h1{font-family:var(--display);font-size:30px;line-height:1.15}
 .md h2{font-size:22px}
@@ -171,14 +172,14 @@ const PAGES = [
  { id:"danh-nhan", name:"Danh nhân", blurb:"30 danh nhân khôi phục tri thức bị Oblivia xoá", render(){
    const SC = window.SCHOLARS || [], CH = window.SCHOLAR_CHAPTERS || [];
    return `<h1 class="pg">Danh nhân · Khôi phục tri thức</h1>
-   <p class="lede">Tướng Oblivia đã xoá khoa học của nhân loại. Khi Babel Tower đủ mạnh, The Knowledge Collector gọi linh hồn danh nhân về. Mỗi nhiệm vụ là một phát minh thật của họ, học bằng tiếng Anh (CLIL). Làm xong thì khôi phục một công trình trong thành phố. <span class="pill new">đề xuất, chờ duyệt</span></p>
+   <p class="lede">Tướng Oblivia đã xoá khoa học của nhân loại. Khi Babel Tower đủ mạnh, The Knowledge Collector gọi linh hồn danh nhân về. Mỗi nhiệm vụ là một phát minh thật của họ, học bằng tiếng Anh (CLIL). Xong một danh nhân thì nhận 🎴 thẻ kiến thức: một câu tiếng Anh dễ nhớ về khoa học. Làm xong thì khôi phục một công trình trong thành phố. <span class="pill new">đề xuất, chờ duyệt</span></p>
    <div class="stats"><div class="stat"><b>${SC.length}</b><span>danh nhân</span></div><div class="stat"><b>${SC.reduce((a, s) => a + s.quests.length, 0)}</b><span>nhiệm vụ (mỗi phát minh 1 nhiệm vụ)</span></div><div class="stat"><b>${SC.filter(s => /Việt Nam/.test(s.from)).length}</b><span>danh nhân Việt Nam</span></div></div>
    ${CH.map(c => `<h2>Chương ${c.n} · ${esc(c.name)} <span class="muted small">${esc(c.lv)}</span></h2><p class="muted small" style="margin-top:-6px">Mở khi: ${esc(c.need)}</p>
     <div class="grid">${SC.filter(s => s.ch === c.n).map(s => `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><h3>${esc(s.name)}</h3><span class="pill have">Lv.${s.lv}</span></div>
-     <p class="small muted">${esc(s.years)} · ${esc(s.from)}</p><p class="wow">${esc(s.wow)}</p>${s.say ? `<p class="small">🎤 <i>“${esc(s.say)}”</i></p>` : ""}${s.need ? `<p class="small"><b>Điều kiện:</b> ${esc(s.need)}</p>` : ""}
+     <p class="small muted">${esc(s.years)} · ${esc(s.from)}</p><p class="wow">${esc(s.wow)}</p>${s.card ? `<p class="small kc">🎴 <b>${esc(s.card[0])}</b><br><span class="muted">${esc(s.card[1])}</span></p>` : ""}${s.need ? `<p class="small"><b>Điều kiện:</b> ${esc(s.need)}</p>` : ""}
      <ul class="tight small">${s.quests.map(q => `<li>${esc(q)}</li>`).join("")}</ul>
-     <p class="small" style="margin-top:6px">🏗️ Khôi phục: ${esc(s.where)}</p></div>`).join("")}</div>`).join("")}
-   <p class="muted small" style="margin-top:16px">Luật nội dung: đúng lịch sử, không bịa trích dẫn, chỉ người đã mất, không nhân vật chính trị. "(truyện kể)" là giai thoại. Tiêu chí chọn: phát minh trẻ thấy hoặc dùng hằng ngày, đủ để "wow". Dự bị: Archimedes, Grace Hopper, Percy Spencer (lò vi sóng), Edward Jenner, Einstein, Faraday.</p>`; } },
+     ${s.note ? `<p class="small muted">ℹ️ ${esc(s.note)}</p>` : ""}<p class="small" style="margin-top:6px">🏗️ Khôi phục: ${esc(s.where)}</p></div>`).join("")}</div>`).join("")}
+   <p class="muted small" style="margin-top:16px">Luật nội dung: đúng lịch sử, không bịa trích dẫn, chỉ người đã mất, không nhân vật chính trị. "(truyện kể)" là giai thoại. Tiêu chí chọn: phát minh trẻ thấy hoặc dùng hằng ngày, đủ để "wow". Dự bị: Archimedes, Grace Hopper, Percy Spencer (lò vi sóng), Edward Jenner, Faraday, Louis Daguerre.</p>`; } },
  { id:"quai", name:"Quái", blurb:"Sổ tay quái, trùm, thần · ảnh chốt", render(){
    const areas = Object.keys(AREA).filter(a => B.monsters.some(m => areaOf(m) === a)), tiers = [...new Set(B.monsters.map(m => m.tier))];
    return `<h1 class="pg">Sổ tay quái</h1>
