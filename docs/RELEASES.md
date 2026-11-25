@@ -19,3 +19,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-23 | `dcfc24a` | Mốc trước khi gộp phiên 20–23/11 (cốt truyện, sổ tay quái, LISTEN theo cấp, khu Nhật bản đồ riêng, đồi hoa đi qua được) | ✅ |
 | 2026-11-25 | `86b707f` | Mốc trước khi gộp phiên 23–25/11 (nhân vật chính Voice Guard Tripo, 2 quái Tripo To He + Tacke Gecko, sổ tay tổng hợp game, danh nhân, thử giáp) | ✅ |
 | 2026-11-25 | `8596d6e` | PR #62 – nhân vật chính Voice Guard + 2 quái Tripo (bản trước khi sửa màu / cử động quái, PR #63) | ✅ |
+| 2026-11-25 | `81f565f` | PR #63 – màu Tripo + quái cử động (bản trước khi sửa lỗi nhân vật đứng dang tay, PR #64) | ✅ |
