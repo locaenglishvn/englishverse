@@ -94,8 +94,8 @@ window.OUTFIT_TIERS = [
 window.OUTFITS = [
   /* COMMON */
   { id: "vg_uniform", r: "common", lv: 1, name: "Voice Guard Uniform", vi: "Đồng phục Voice Guard", how: "Có sẵn khi tạo nhân vật", stats: {}, head: "Tai nghe Voice Guard", gloves: "Tay trần (nắm)", boots: "Giày thể thao xanh ngọc",
-    idea: "Bộ người mới – chính là nhân vật chính hiện tại.", img: { m: "concept/characters/voice-guard-m.webp", f: "concept/characters/voice-guard-f.webp" },
-    m: "the current Voice Guard uniform (teal vest with gold trim, white shirt, navy trousers, teal sneakers, teal headset).", f: "the current Voice Guard uniform (open teal jacket, white shirt, navy pleated skirt, dark leggings, teal sneakers, teal headset)." },
+    idea: "Bộ người mới – chính là nhân vật chính hiện tại.", img: { m: "concept/characters/voice-guard-v2-m.webp", f: "concept/characters/voice-guard-v2-f.webp" },
+    m: "the current Voice Guard uniform (teal vest with gold trim, white shirt, navy trousers, teal sneakers).", f: "the current Voice Guard uniform (open teal jacket, white shirt, navy pleated skirt, dark leggings, teal sneakers)." },
   { id: "cadet", r: "common", lv: 5, name: "Cadet Leathers", vi: "Giáp da tân binh", how: "Shop · thưởng nhiệm vụ Commander Vy", stats: { hp: 10, resist: 3 }, head: "Tai nghe mic đôi", gloves: "Găng da không ngón", boots: "Ủng da cổ thấp",
     idea: "Áo da bó, đai chéo, miếng đệm vai nhỏ – trông đã là \"chiến binh\" chứ không còn là học sinh.",
     m: "brown leather cadet armor: fitted leather jerkin with a cross strap, small leather shoulder guard, teal undershirt, reinforced trousers, fingerless leather gloves, low leather boots, dual-mic combat headset.", f: "brown leather cadet armor: fitted leather jerkin with a cross strap, small leather shoulder guard, teal undershirt, short pleated leather skirt over leggings, fingerless leather gloves, low leather boots, dual-mic combat headset." },

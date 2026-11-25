@@ -560,8 +560,7 @@ function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật
     const done = () => { modelTpl[name] = { scene: gltf.scene, clips: gltf.animations, scale: 1.9 / (box.max.y - box.min.y) }; const w = modelWait[name]; modelWait[name] = null; w.forEach(attachModel); };
     const finish = () => {   // nhân vật chính: thay bàn tay mở bằng bàn tay nắm (nam: 2 tay, nữ: tay phải cầm vũ khí) – parts/characters/assemble.js
       if (!H || typeof ASSEMBLE === "undefined") return done();
-      try { const sk0 = ASSEMBLE.skinOf(gltf.scene); if (sk0) ASSEMBLE.stripHeadset(sk0); } catch (e) {}   // bỏ tai nghe dính trong mô hình
-      withFist(fs => { try { ASSEMBLE.fists(gltf.scene, fs, { left: name === "voice-guard-m", sink: name === "voice-guard-m" ? 0.05 : 0.3 }); } catch (e) {} done(); });
+      withFist(fs => { try { ASSEMBLE.fists(gltf.scene, fs, { left: name === "voice-guard-m", sink: name === "voice-guard-m" ? 0.1 : 0.48 }); } catch (e) {} done(); });
     };
     const next = () => { const f = extra.shift(); if (!f) return finish();   // nạp thêm động tác (cùng tên xương) rồi mới dùng
       new THREE.GLTFLoader().load("assets/characters/" + f + ".glb", g2 => { g2.animations.forEach(c => gltf.animations.push(heroInPlace(c))); next(); }, undefined, next); };
