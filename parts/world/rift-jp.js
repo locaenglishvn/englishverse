@@ -93,7 +93,7 @@
 
   RIFTS.define({
     id: "jp", name: "Sakura Rift", vi: "Khu Nhật · Lv.50–60 · lâu đài ở cuối bản đồ phía Nam", ox: OX, oz: OZ, half: 150,
-    gate: { x: 0, z: 318, view: Math.PI, back: { x: 0, z: 311, ang: 0 } },   // view: hướng camera khi đứng gần cổng (cổng ở phía nam → nhìn về nam)   // cổng ở mép nam vùng hoang dã; về lại: đứng trước cổng, nhìn về thành phố (bắc)
+    gate: { x: 0, z: 318, view: Math.PI, back: { x: 0, z: 311, ang: 0 }, door: { x: 0, z: 320.3, r: 1.8 } },   // door: bước vào vòng này (mặt vết rách) là tự sang khu   // view: hướng camera khi đứng gần cổng (cổng ở phía nam → nhìn về nam)   // cổng ở mép nam vùng hoang dã; về lại: đứng trước cổng, nhìn về thành phố (bắc)
     arrive: { x: 0, z: -128, ang: Math.PI },   // vào khu: đứng ngay trong cổng bắc, nhìn về phía nam (lâu đài)
     portal: { x: 0, z: -145 },
     fog: wide => wide ? (fogW || (fogW = new THREE.Fog(0xf3e4ea, 70, 210))) : (fogN || (fogN = new THREE.Fog(0xf3e4ea, 42, 165))),   // sương hồng mùa anh đào, nhìn xa hơn thành phố
@@ -185,16 +185,14 @@
         pg.attributes.position.needsUpdate = true; });
     },
     buildGate(K, R) {   // cổng kiểu Nhật ở mép nam vùng hoang dã (toạ độ thế giới), mặt quay về phía bắc (thành phố)
-      const gx = 0, gz = 320;
-      [-1, 1].forEach(s => { K.cyl(0.42, 0.48, 6.6, C.wood, gx + s * 5.6, 0, gz, 10); K.fr(8, 4.5, 7, 3.2, 2.6, stoneMat(), gx + s * 10.5, 0, gz + 0.5); K.box(7, 2.2, 0.7, plaster(K), gx + s * 10.5, 2.6, gz + 0.5); K.fr(7.4, 1.8, 7, 0.3, 0.6, C.roof, gx + s * 10.5, 4.8, gz + 0.5);
-        K.solid(gx + s * 5.6, gz, 0.6, 0.6); K.solid(gx + s * 10.5, gz + 0.5, 3.8, 2.3); });
-      K.box(13.4, 0.6, 0.7, C.wood, gx, 6.0, gz); K.pr(4.4, 2.4, 15, C.roof, gx, 6.6, gz, Math.PI / 2); K.box(9, 0.4, 0.6, C.roofD, gx, 9.0, gz);
-      [-1, 1].forEach(s => K.box(0.5, 1.0, 0.5, C.gold, gx + s * 4.4, 9.0, gz));
+      const gx = 0, gz = 320;   // 26/11 (chủ dự án): cổng torii đỏ son – biểu tượng Nhật Bản; vết rách xoáy giữa hai cột
+      torii(K, gx, gz, 0, 1.75);
+      [-1, 1].forEach(s => { K.cyl(0.5, 0.6, 0.5, stoneMat(), gx + s * 6.2, 0, gz - 1.2, 8); K.box(0.7, 1.4, 0.7, stoneMat(), gx + s * 6.2, 0.5, gz - 1.2); K.box(1.3, 0.25, 1.3, stoneMat(), gx + s * 6.2, 1.9, gz - 1.2); K.solid(gx + s * 6.2, gz - 1.2, 0.6, 0.6); });   // đèn đá hai bên
       // biển tên
       const cv = document.createElement("canvas"); cv.width = 256; cv.height = 64; const x = cv.getContext("2d"); x.fillStyle = "#2b1d14"; x.fillRect(0, 0, 256, 64); x.strokeStyle = "#d4a83a"; x.lineWidth = 4; x.strokeRect(4, 4, 248, 56);
       x.fillStyle = "#f6e7c1"; x.font = "bold 26px system-ui, sans-serif"; x.textAlign = "center"; x.fillText("SAKURA RIFT", 128, 32); x.font = "bold 15px system-ui"; x.fillStyle = "#ffc4d6"; x.fillText("Lv.50+", 128, 52);
-      const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.05), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv) })); sign.position.set(gx, 5.2, gz - 0.42); sign.rotation.y = Math.PI; sign.userData.flag = true; scene.add(sign);
-      R.portal(gx, 2.9, gz + 0.1, 2.8, 1.85, Math.PI);   // mặt quay về bắc (phía người chơi đi tới)
+      const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.05), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv) })); sign.position.set(gx, 6.55, gz - 0.42); sign.scale.setScalar(0.8); sign.rotation.y = Math.PI; sign.userData.flag = true; scene.add(sign);
+      R.portal(gx, 2.9, gz + 0.1, 2.75, 1.15, Math.PI);   // mặt quay về bắc (phía người chơi đi tới)
       if (typeof NATURE !== "undefined") [-1, 1].forEach(s => NATURE.tree(gx + s * 16, gz - 4, 1.2, true));
     },
     drawMap(x) {   // bản đồ nhỏ (toạ độ cục bộ đã dịch sẵn)

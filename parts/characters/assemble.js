@@ -92,8 +92,9 @@ const ASSEMBLE = (function () {
       const up = tip.clone().sub(wrist).normalize();
       const palm = new THREE.Vector3(0, 0, -Math.sign(wrist.z) || -1); palm.sub(up.clone().multiplyScalar(palm.dot(up))).normalize();   // lòng bàn tay hướng vào thân (mô hình Tripo: mặt trước +x, hai bên ±z)
       const zAx = new THREE.Vector3().crossVectors(palm, up).normalize();
+      // bend 0.35: nghiêng nắm tay ra ngoài (26/11: cụp vào trong làm lòi cổ tay)
       const spin = (window.__FIST_SPIN || [0, 0])[hn === "L_Hand" ? 1 : 0],   // không xoay; tay phải dùng bản soi gương, tay trái bản gốc (chủ dự án 26/11 chốt; trước bị ngược)
-      basis = new THREE.Matrix4().makeBasis(palm, up, zAx).multiply(new THREE.Matrix4().makeRotationY(spin)), s = (far * 0.8) / F.h;
+      basis = new THREE.Matrix4().makeBasis(palm, up, zAx).multiply(new THREE.Matrix4().makeRotationY(spin)).multiply(new THREE.Matrix4().makeRotationZ(window.__FIST_BEND != null ? window.__FIST_BEND : (opt && opt.bend != null ? opt.bend : 0.35))), s = (far * 0.8) / F.h;
       const T = new THREE.Matrix4().compose(wrist.clone().add(up.clone().multiplyScalar(-far * ((opt && opt.sink) || 0.05))), new THREE.Quaternion().setFromRotationMatrix(basis), new THREE.Vector3(s, s, s * (hn === "R_Hand" ? -1 : 1)));
       const L = new THREE.Matrix4().multiplyMatrices(boneMeshMatrix(sk, bi), T);
       const mat = new THREE.MeshLambertMaterial({ color: skinColor(sk, ids).offsetHSL(0, 0.12, 0.04), side: THREE.FrontSide });
