@@ -124,6 +124,7 @@ a{color:var(--teal)}
 <script src="core-npcs.js"></script>
 <script src="scholars.js"></script>
 <script src="outfits.js"></script>
+<script src="hairstyles.js"></script>
 <script>
 (function(){
 const B = window.BIBLE, NPC = window.CORE_NPCS || [];
@@ -164,6 +165,9 @@ const PAGES = [
     <div class="card"><h3>Chia món trang bị</h3><ul class="tight"><li><b>Giáp thân</b> = áo + quần gộp 1 món (Tripo, có xương)</li><li><b>Đầu + tóc, giày, mũ, vũ khí</b> = món cứng gắn vào khớp (đầu, bàn chân, tay)</li><li>Không có balo</li><li>Cùng 1 món: nam mặc ra kiểu nam, nữ ra kiểu nữ</li></ul></div>
     <div class="card"><h3>Đẹp nhờ đâu</h3><p>Lớp màu vẽ sẵn từ Tripo, tà áo và tóc lay, hiệu ứng (viền sáng, hào quang, vệt chém). Không ghép khối bằng code.</p></div>
    </div>
+   <h2>Kiểu tóc (chọn lúc tạo nhân vật)</h2>
+   <p class="small muted">Màu tóc chọn tự do bằng code. Mỗi kiểu: vẽ Voice Guard với tóc mới (bỏ tai nghe) → Tripo → game chỉ lấy phần đầu. Mỗi kiểu một cuộc trò chuyện Gemini mới, đính kèm ảnh Voice Guard.</p>
+   <div class="grid">${["m", "f"].map(g => `<div class="card"><h3>${g === "m" ? "Nam" : "Nữ"}</h3>${((window.HAIRSTYLES || {})[g] || []).map(([n, d]) => { const t = HAIR_STYLE[g] + d + HAIR_STYLE.tail; return `<details class="art-p"><summary>💇 ${esc(n)}</summary><p class="prompt">${esc(t)}</p><button class="copy" data-t="${esc(t)}">Chép câu lệnh</button></details>`; }).join("")}</div>`).join("")}</div>
    <h2>Phong cách nhân vật</h2>
    <p class="md">Chibi hoạt hình 3D mềm, mặt thân thiện, màu tươi, trang phục kín đáo, có thể mang chất Việt (hoa văn mây, nón lá, áo bà ba). Không dùng: low-poly góc cạnh, anh hùng dáng người lớn, trang phục hở. Ảnh game thương mại chỉ để tham khảo, không chép.</p>`; } },
  { id:"npc", name:"NPC", blurb:"NPC cốt lõi + toàn bộ NPC thành phố", render(){
@@ -216,7 +220,7 @@ const PAGES = [
      G.addEventListener("click", e => { const b = e.target.closest(".mon"); if (b) openMon(B.monsters.find(m => m.id === b.dataset.id)); }); } },
  { id:"trang-phuc", name:"Trang bị", blurb:"5 ô trang bị, chỉ số hên xui, 8 loại vũ khí, 21 bộ giáp", render(){
    const O = window.OUTFITS || [], T = window.OUTFIT_TIERS || [], ST = window.OUTFIT_STYLE || {}, SL = window.GEAR_SLOTS || [], RL = window.GEAR_ROLL || {}, WT = window.WEAPON_TYPES || [];
-   const SN = { voice:"Voice", ears:"Ears", stamina:"Stamina", resist:"Resist", luck:"Luck", hp:"HP", mana:"Mana", speed:"Speed %" };
+   const SN = { voice:"Voice", ears:"Ears", stamina:"Stamina", resist:"Resist", luck:"Luck", hp:"HP", mana:"Mana", speed:"Speed %", dodge:"Né %" };
    const stats = st => Object.entries(st || {}).map(([k, v]) => `${SN[k] || k} +${v}`).join(" · ") || "Không chỉ số";
    const copyBlk = (label, t) => `<p class="small"><b>${label}</b></p><p class="prompt">${esc(t)}</p><button class="copy" data-t="${esc(t)}">Chép câu lệnh</button>`;
    const card = o => { const im = o.img || {}; return `<div class="card"><div class="duo">${["m", "f"].map(g => im[g] ? `<img src="${im[g]}" alt="${esc(o.name)}" loading="lazy">` : `<div class="noimg">${g === "m" ? "Nam" : "Nữ"}<br>chưa có ảnh</div>`).join("")}</div>
@@ -228,7 +232,7 @@ const PAGES = [
    const BR = B => B && window.BIBLE.BRANCH[B] ? window.BIBLE.BRANCH[B].icon + " " + window.BIBLE.BRANCH[B].name : "";
    return `<h1 class="pg">Trang bị</h1>
    <p class="lede">Đẹp, "wow", khiến người chơi muốn có. Được phép góc cạnh, gai vừa phải; <b>cấp càng cao càng hầm hố</b>. Sợi chỉ cốt truyện: mọi trang bị khắc chữ cái / sóng âm, <b>bừng sáng khi người chơi nói đúng</b>. <span class="pill new">đề xuất, chờ duyệt</span></p>
-   <h2>5 ô trang bị</h2>
+   <h2>8 ô trang bị</h2>
    <div class="grid sm">${SL.map(x => `<div class="card"><h3>${x.ic} ${esc(x.name)}</h3><p class="small">${esc(x.note)}</p></div>`).join("")}</div>
    <h2>Chỉ số hên xui · phẩm chất ★</h2>
    <p class="md">${esc(RL.idea || "")}</p>

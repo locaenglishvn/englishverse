@@ -17,14 +17,14 @@ const ASSEMBLE = (function () {
     for (let i = 0; i < n; i++) { let best = 0, bi = 0; for (let k = 0; k < 4; k++) { const w = sw[i * 4 + k]; if (w > best) { best = w; bi = si[i * 4 + k]; } } dom[i] = bi; reg[i] = REG[bones[bi].name] || "body"; }
     const R = { reg, dom }; cache.set(G, R); return R;
   }
-  function tris(G, keep) {   // giữ tam giác mà đa số đỉnh thỏa keep(i)
-    const idx = G.index ? G.index.array : null, n = idx ? idx.length : G.attributes.position.count, out = [];
-    for (let t = 0; t < n; t += 3) { const a = idx ? idx[t] : t, b = idx ? idx[t + 1] : t + 1, c = idx ? idx[t + 2] : t + 2; if ((keep(a) + keep(b) + keep(c)) >= 2) out.push(a, b, c); }
+  function tris(G, keep, all) {   // giữ tam giác mà đa số đỉnh (all: cả 3 đỉnh) thỏa keep(i)
+    const idx = G.index ? G.index.array : null, n = idx ? idx.length : G.attributes.position.count, out = [], need = all ? 3 : 2;
+    for (let t = 0; t < n; t += 3) { const a = idx ? idx[t] : t, b = idx ? idx[t + 1] : t + 1, c = idx ? idx[t + 2] : t + 2; if ((keep(a) + keep(b) + keep(c)) >= need) out.push(a, b, c); }
     return out;
   }
-  function hide(sk, names, extra) {   // extra(i) = true thì cũng bỏ
+  function hide(sk, names, extra, strict) {   // extra(i) = true thì cũng bỏ · strict: bỏ cả tam giác chạm vùng (không để mảnh vụn kéo dài ở mép)
     const R = regions(sk), G = sk.geometry.clone(); cache.set(G, R);
-    G.setIndex(tris(sk.geometry, i => names.indexOf(R.reg[i]) < 0 && !(extra && extra(i)))); sk.geometry = G; return sk;
+    G.setIndex(tris(sk.geometry, i => names.indexOf(R.reg[i]) < 0 && !(extra && extra(i)), strict)); sk.geometry = G; return sk;
   }
   function boneMeshMatrix(sk, bi) { return new THREE.Matrix4().multiplyMatrices(sk.skeleton.boneInverses[bi], sk.bindMatrix); }   // mesh (tư thế gốc) → không gian xương
   function rigid(srcSk, name, boneName) {
@@ -47,8 +47,13 @@ const ASSEMBLE = (function () {
   let FIST = null;   // { geo, mat, h } chuẩn hóa: cổ tay ở y = 0, đốt ngón hướng +y, lòng bàn tay +x, lỗ cầm theo trục z
   function fistTemplate(fistScene) {
     if (FIST) return FIST; let src = null; fistScene.updateMatrixWorld(true); fistScene.traverse(o => { if (!src && o.isMesh) src = o; }); if (!src) return null;
-    const geo = src.geometry.clone().applyMatrix4(src.matrixWorld); geo.computeBoundingBox(); const bb = geo.boundingBox, c = bb.getCenter(new THREE.Vector3());
-    geo.translate(-c.x, -bb.min.y, -c.z); const h = bb.max.y - bb.min.y;
+    let geo = src.geometry.clone().applyMatrix4(src.matrixWorld); geo.computeBoundingBox(); let bb = geo.boundingBox; const c = bb.getCenter(new THREE.Vector3());
+    // khúc cổ tay của mô hình nắm tay (30% dưới) phải nằm trong ống tay áo, không lòi ra ngoài
+    const cut = bb.min.y + (bb.max.y - bb.min.y) * 0.3;   // gốc toạ độ ở 30% chiều cao: khúc cổ tay (y < 0) thụt vào trong ống tay áo, giữ nguyên mặt kín
+    geo.translate(-c.x, -cut, -c.z); geo.computeBoundingBox(); bb = geo.boundingBox; const h = bb.max.y;
+    { const Q = geo.attributes.position, H = bb.max.y, lo = bb.min.y, top = H * 0.18;   // vuốt nhỏ cổ tay để lọt trong ống tay áo (mô hình nắm tay có cổ tay to bằng bàn tay)
+      for (let i = 0; i < Q.count; i++) { const y = Q.getY(i); if (y >= top) continue; const k = Math.max(0, Math.min(1, (y - lo) / (top - lo))), f = 0.68 + 0.32 * k * k * (3 - 2 * k); Q.setX(i, Q.getX(i) * f); Q.setZ(i, Q.getZ(i) * f); }
+      Q.needsUpdate = true; }   // giữ pháp tuyến gốc (tính lại làm da loang lổ)
     FIST = { geo, map: src.material.map, h }; return FIST;
   }
   function fists(root, fistScene, opt) {   // opt.left = false: chỉ tay phải nắm (tay trái để mở)
@@ -63,8 +68,8 @@ const ASSEMBLE = (function () {
       const up = tip.clone().sub(wrist).normalize();
       const palm = new THREE.Vector3(0, 0, -Math.sign(wrist.z) || -1); palm.sub(up.clone().multiplyScalar(palm.dot(up))).normalize();   // lòng bàn tay hướng vào thân (mô hình Tripo: mặt trước +x, hai bên ±z)
       const zAx = new THREE.Vector3().crossVectors(palm, up).normalize();
-      const basis = new THREE.Matrix4().makeBasis(palm, up, zAx), s = (far * 1.05) / F.h;
-      const T = new THREE.Matrix4().compose(wrist.clone().add(up.clone().multiplyScalar(-far * 0.08)), new THREE.Quaternion().setFromRotationMatrix(basis), new THREE.Vector3(s, s, s * (hn === "L_Hand" ? -1 : 1)));
+      const basis = new THREE.Matrix4().makeBasis(palm, up, zAx), s = (far * 0.8) / F.h;
+      const T = new THREE.Matrix4().compose(wrist.clone().add(up.clone().multiplyScalar(-far * ((opt && opt.sink) || 0.05))), new THREE.Quaternion().setFromRotationMatrix(basis), new THREE.Vector3(s, s, s * (hn === "L_Hand" ? -1 : 1)));
       const L = new THREE.Matrix4().multiplyMatrices(boneMeshMatrix(sk, bi), T);
       const mat = new THREE.MeshLambertMaterial({ color: skinColor(sk, ids).offsetHSL(0, 0.12, 0.04), side: hn === "L_Hand" ? THREE.BackSide : THREE.FrontSide });
       const fm = new THREE.Mesh(F.geo, mat); fm.matrixAutoUpdate = false; fm.matrix.copy(L); fm.name = "fist_" + hn; fm.castShadow = true; fm.frustumCulled = false;
@@ -77,8 +82,36 @@ const ASSEMBLE = (function () {
       bones[bi].userData.grip = { pos: gp.toArray(), quat: gr.toArray() };   // mảng số: userData bị sao chép kiểu JSON khi nhân bản nhân vật
 
     });
-    if (done.length) hide(sk, [], i => done.indexOf(R.dom[i]) >= 0);
+    if (done.length) hide(sk, [], i => done.indexOf(R.dom[i]) >= 0, true);
     return true;
   }
-  return { regions, hide, rigid, fists, skinOf };
+  /* Bỏ tai nghe dính liền trong mô hình nhân vật chính (25/11, chủ dự án: để mũ / tai nghe sau này không bị trùng):
+     nhận diện bằng màu ảnh (xanh ngọc / xám) + vị trí trên đầu; cần mic (thò ra trước mặt) → xoá; vòng đầu + chụp tai → tô màu tóc (xoá sẽ thủng đầu). */
+  function stripHeadset(sk) {
+    const R = regions(sk), G = sk.geometry, pos = G.attributes.position, uv = G.attributes.uv, map = sk.material && sk.material.map, img = map && map.image; if (!uv || !img) return false;
+    const W = img.width, H = img.height, cv = document.createElement("canvas"); cv.width = W; cv.height = H; const cx = cv.getContext("2d"); cx.drawImage(img, 0, 0); const D = cx.getImageData(0, 0, W, H).data;
+    const px = i => { const u = uv.getX(i), v = map.flipY === false ? uv.getY(i) : 1 - uv.getY(i); return [Math.min(W - 1, Math.max(0, Math.floor(u * W))), Math.min(H - 1, Math.max(0, Math.floor(v * H)))]; };
+    const col = i => { const [x, y] = px(i), k = (y * W + x) * 4; return new THREE.Color(D[k] / 255, D[k + 1] / 255, D[k + 2] / 255); };
+    const head = []; for (let i = 0; i < pos.count; i++) if (R.reg[i] === "head") head.push(i); if (!head.length) return false;
+    const bb = new THREE.Box3(), v = new THREE.Vector3(); head.forEach(i => bb.expandByPoint(v.fromBufferAttribute(pos, i)));
+    const c = bb.getCenter(new THREE.Vector3()), sz = bb.getSize(new THREE.Vector3()), hsl = {};
+    const kind = new Int8Array(pos.count);   // 0 giữ · 1 tô màu tóc · 2 xoá (mic)
+    head.forEach(i => { v.fromBufferAttribute(pos, i); const yn = (v.y - bb.min.y) / sz.y, side = Math.abs(v.z - c.z) / (sz.z / 2), fwd = (v.x - c.x) / (sz.x / 2); if (yn < 0.16) return;   // dưới mức này là cổ áo
+      col(i).getHSL(hsl); const teal = hsl.h > 0.36 && hsl.h < 0.58 && hsl.s > 0.12 && hsl.l > 0.18 && (yn > 0.3 || fwd > 0.3), grey = hsl.s < 0.12 && hsl.l > 0.25 && hsl.l < 0.75;
+      const tip = fwd > 0.8 && yn < 0.5 && !(hsl.h < 0.12 && hsl.s > 0.2);   // đầu mic trước miệng (không phải màu da)
+      if (!(teal || tip || (grey && (side > 0.55 || yn > 0.82)))) return;
+      kind[i] = yn < 0.74 && (side > 0.62 || fwd > 0.15) ? 2 : 1; });   // dưới đỉnh đầu (chụp tai, cần mic) → xoá; vòng đầu → tô màu tóc
+    // màu tóc: trung bình các đỉnh đỉnh đầu không thuộc tai nghe
+    let r = 0, g = 0, b = 0, n = 0; head.forEach(i => { v.fromBufferAttribute(pos, i); if ((v.y - bb.min.y) / sz.y > 0.85 && !kind[i]) { const q = col(i); r += q.r; g += q.g; b += q.b; n++; } });
+    const hair = n ? `rgb(${Math.round(r / n * 255)},${Math.round(g / n * 255)},${Math.round(b / n * 255)})` : "#222";
+    const idx = G.index.array, keep = []; cx.fillStyle = hair; cx.strokeStyle = hair; cx.lineWidth = 3;
+    for (let t = 0; t < idx.length; t += 3) { const a = idx[t], b2 = idx[t + 1], c2 = idx[t + 2], k = Math.max(kind[a], kind[b2], kind[c2]);
+      if (k === 2) continue;   // chạm phần xoá là bỏ (không để mảnh vụn)
+      if (kind[a] && kind[b2] && kind[c2]) { const A = px(a), B = px(b2), C = px(c2); cx.beginPath(); cx.moveTo(A[0], A[1]); cx.lineTo(B[0], B[1]); cx.lineTo(C[0], C[1]); cx.closePath(); cx.fill(); cx.stroke(); }
+      keep.push(a, b2, c2); }
+    const G2 = G.clone(); cache.set(G2, R); G2.setIndex(keep); sk.geometry = G2;
+    const tex = new THREE.CanvasTexture(cv); tex.flipY = map.flipY; tex.encoding = map.encoding; tex.wrapS = map.wrapS; tex.wrapT = map.wrapT; sk.material.map = tex; sk.material.needsUpdate = true;
+    return true;
+  }
+  return { regions, hide, rigid, fists, skinOf, stripHeadset };
 })();

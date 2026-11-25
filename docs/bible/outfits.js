@@ -5,11 +5,14 @@
 
 /* ---------- 5 Ô TRANG BỊ ---------- */
 window.GEAR_SLOTS = [
-  { k: "head", ic: "🎧", name: "Đầu", note: "KHÔNG che tóc: tai nghe chiến đấu, kính chắn (visor), mặt nạ nửa mặt, vòng đầu / vương miện, sừng, tai giáp. Mũ trùm kín chỉ có ở vài bộ huyền thoại + nút \"Ẩn mũ\". Tóc chọn lúc tạo nhân vật, chỉ để đẹp." },
-  { k: "body", ic: "🛡️", name: "Thân", note: "Áo + quần là 1 món (giáp ngực, vai, váy giáp / quần giáp)." },
-  { k: "gloves", ic: "🧤", name: "Găng", note: "Thay bàn tay nắm (đã có kỹ thuật): găng vải → găng da → găng giáp có móng." },
-  { k: "boots", ic: "🥾", name: "Giày", note: "Thay vùng bàn chân: giày vải → ủng da → ủng giáp." },
-  { k: "weapon", ic: "⚔️", name: "Vũ khí", note: "Cầm tay phải, cán xuyên lỗ nắm tay. Loại vũ khí quyết định nhánh chiêu được cộng thêm." }
+  { k: "head", ic: "🎧", name: "Đầu", note: "KHÔNG che tóc: tai nghe chiến đấu, kính chắn (visor), mặt nạ nửa mặt, vòng đầu / vương miện, sừng. Mũ trùm kín chỉ ở vài bộ huyền thoại + nút \"Ẩn mũ\". Tóc chọn lúc tạo nhân vật, chỉ để đẹp." },
+  { k: "body", ic: "🛡️", name: "Thân", note: "Áo + quần là 1 món (giáp ngực, vai, váy / quần giáp). Chỉ số chính: HP, chống chịu." },
+  { k: "gloves", ic: "🧤", name: "Găng", note: "Thay bàn tay nắm: găng vải → da → giáp có móng. Chỉ số: sát thương, chí mạng." },
+  { k: "boots", ic: "🥾", name: "Giày", note: "Thay vùng bàn chân. Chỉ số: NÉ TRÁNH, may mắn (không tăng tốc chạy – tốc độ để cho vật cưỡi)." },
+  { k: "belt", ic: "🎗️", name: "Đai", note: "Không hiện hình, chỉ cộng chỉ số (HP, mana, hồi mana)." },
+  { k: "cape", ic: "🧣", name: "Áo choàng", note: "Hiện sau lưng, bay theo gió. Chỉ số: chống độc, Ears." },
+  { k: "weapon", ic: "⚔️", name: "Vũ khí", note: "Cầm tay phải, cán xuyên lỗ nắm tay. Loại vũ khí quyết định nhánh chiêu được cộng thêm." },
+  { k: "mount", ic: "🐎", name: "Vật cưỡi", note: "Để sẵn ô (làm sau). Là nguồn TĂNG TỐC DI CHUYỂN duy nhất." }
 ];
 
 /* ---------- CHỈ SỐ NGẪU NHIÊN (hên xui) ---------- */
@@ -22,7 +25,7 @@ window.GEAR_ROLL = {
     { s: "★★★★", name: "Hoàn hảo", pct: "115–125%", lines: 2, quest: false, drop: "8%" },
     { s: "★★★★★", name: "Thần phẩm", pct: "125–140%", lines: 3, quest: false, drop: "2%" }
   ],
-  lines: ["Voice +%", "Ears +giây", "HP tối đa +", "Mana tối đa +", "Hồi mana +%", "Chống độc Mute +%", "Chạy nhanh +%", "Luck +%", "Chí mạng +%", "Hồi chiêu −%"],
+  lines: ["Voice +%", "Ears +giây", "HP tối đa +", "Mana tối đa +", "Hồi mana +%", "Chống độc Mute +%", "Né tránh +%", "Luck +%", "Chí mạng +%", "Hồi chiêu −%"],
   rules: [
     "Đồ nhiệm vụ / phần thưởng cố định: luôn ★ hoặc ★★ (đủ dùng, không mạnh nhất).",
     "Đồ ★★★ trở lên: chỉ rơi từ quái, trùm, rương – may mắn. Trùm và quái hoàng kim có tỉ lệ ★ cao gấp đôi; chỉ số Luck tăng nhẹ tỉ lệ.",
@@ -100,7 +103,7 @@ window.OUTFITS = [
   { id: "vg_armor", r: "uncommon", lv: 12, name: "Voice Guard Mail", vi: "Giáp Voice Guard", how: "Shop · rơi từ quái", stats: { hp: 25, resist: 6 }, head: "Visor xanh trong suốt", gloves: "Găng nửa giáp", boots: "Ủng đinh tán",
     idea: "Áo teal + giáp ngực thép có huy hiệu sóng âm, vai giáp góc cạnh, đinh tán.",
     m: "teal Voice Guard armor: angular steel chest plate with a gold sound-wave emblem, layered angular shoulder plates with rivets, armored belt, dark trousers with knee guards, half-plate gauntlets, riveted boots, transparent teal visor over the eyes.", f: "teal Voice Guard armor: fitted angular steel chest plate with a gold sound-wave emblem, small layered shoulder plates, armored belt with tassets over a dark skirt, knee guards, half-plate gauntlets, riveted boots, transparent teal visor over the eyes." },
-  { id: "ranger", r: "uncommon", lv: 18, name: "Wild Ranger", vi: "Du hiệp hoang dã", how: "Rơi từ quái vòng 2", stats: { speed: 6, ears: 1, luck: 3 }, head: "Mặt nạ vải che mũi", gloves: "Găng bảo vệ cổ tay", boots: "Ủng cao buộc dây",
+  { id: "ranger", r: "uncommon", lv: 18, name: "Wild Ranger", vi: "Du hiệp hoang dã", how: "Rơi từ quái vòng 2", stats: { dodge: 6, ears: 1, luck: 3 }, head: "Mặt nạ vải che mũi", gloves: "Găng bảo vệ cổ tay", boots: "Ủng cao buộc dây",
     idea: "Áo choàng ngắn rách mép, giáp da lớp, mặt nạ vải che nửa mặt – ngầu kiểu thợ săn.",
     m: "a wild ranger outfit: dark green layered leather armor, short tattered hooded cape (hood down), bracers, belt pouches, tall laced boots, cloth half-mask covering the nose and mouth.", f: "a wild ranger outfit: dark green fitted layered leather armor, short tattered hooded cape (hood down), bracers, belt pouches, leggings with tall laced boots, cloth half-mask covering the nose and mouth." },
   /* RARE – 4 nhánh */
@@ -113,7 +116,7 @@ window.OUTFITS = [
   { id: "dawn_cleric", r: "rare", lv: 36, name: "Dawn Warden", vi: "Hộ vệ Bình Minh (Harmony)", how: "Rơi từ quái tinh anh · rương", stats: { hp: 50, mana: 25, resist: 8 }, head: "Vòng nguyệt quế vàng", gloves: "Găng trắng viền vàng", boots: "Ủng trắng",
     idea: "Giáp trắng-vàng, vai hình lông vũ, áo choàng dài – kiểu thánh kỵ sĩ.",
     m: "white and gold paladin armor with feather-shaped shoulder plates, sun emblem on the chest, long white cape, gold-trimmed gauntlets and boots, golden laurel circlet.", f: "white and gold paladin armor dress with feather-shaped shoulder plates, sun emblem on the chest, long white cape, gold-trimmed gauntlets and boots, golden laurel circlet." },
-  { id: "beat_blade", r: "rare", lv: 40, name: "Beat Striker", vi: "Kiếm khách Nhịp Điệu (Rhythm)", how: "Rơi từ quái tinh anh · rương", stats: { voice: 8, speed: 10 }, head: "Mặt nạ nửa mặt cam", gloves: "Găng có móng ngắn", boots: "Giày chạy giáp nhẹ",
+  { id: "beat_blade", r: "rare", lv: 40, name: "Beat Striker", vi: "Kiếm khách Nhịp Điệu (Rhythm)", how: "Rơi từ quái tinh anh · rương", stats: { voice: 8, dodge: 10 }, head: "Mặt nạ nửa mặt cam", gloves: "Găng có móng ngắn", boots: "Giày chạy giáp nhẹ",
     idea: "Giáp nhẹ đen-cam, khăn quàng dài bay, mặt nạ nửa mặt – nhanh và ngầu.",
     m: "black and orange light armor, asymmetric shoulder plate, long flowing orange scarf, armored forearm guards with short claw tips on the gloves, light armored running boots, orange half mask over the lower face.", f: "black and orange fitted light armor, asymmetric shoulder plate, long flowing orange scarf, armored forearm guards with short claw tips on the gloves, light armored running boots, orange half mask over the lower face." },
   /* EPIC – giáp văn hoá */
@@ -132,10 +135,10 @@ window.OUTFITS = [
   { id: "ogham", r: "epic", lv: 82, zone: "🍁 Khu Celt", name: "Oak Druid Knight", vi: "Kỵ sĩ Sồi", how: "Trùm Mist Rift rơi", stats: { mana: 50, luck: 10, hp: 50 }, head: "Gạc hươu bằng gỗ", gloves: "Găng vỏ cây", boots: "Ủng rễ cây",
     idea: "Giáp gỗ sồi + đồng, gạc hươu, dây leo, chữ Ogham xanh lục.",
     m: "Celtic druid knight armor made of carved oak bark and bronze, Celtic knot engravings, glowing green Ogham letters, moss cape, bark gauntlets, root-shaped boots, wooden antler headpiece (hair visible).", f: "Celtic druid knight armor dress made of carved oak bark and bronze, Celtic knot engravings, glowing green Ogham letters, moss cape, bark gauntlets, root-shaped boots, wooden antler headpiece (hair visible)." },
-  { id: "jaguar", r: "epic", lv: 85, zone: "🏝️ Khu Maya", name: "Jaguar Sun Warrior", vi: "Chiến binh Báo Mặt Trời", how: "Trùm Jungle Rift rơi", stats: { speed: 12, voice: 15 }, head: "Mặt nạ báo nửa mặt", gloves: "Găng móng báo", boots: "Dép ngọc giáp",
+  { id: "jaguar", r: "epic", lv: 85, zone: "🏝️ Khu Maya", name: "Jaguar Sun Warrior", vi: "Chiến binh Báo Mặt Trời", how: "Trùm Jungle Rift rơi", stats: { dodge: 12, voice: 15 }, head: "Mặt nạ báo nửa mặt", gloves: "Găng móng báo", boots: "Dép ngọc giáp",
     idea: "Giáp hoạ tiết báo đốm, ngọc bích, lông quetzal, glyph Maya.",
     m: "Maya jaguar warrior armor: jaguar-pattern padded armor, jade and gold plates, quetzal feather mantle, glowing glyph belt, jaguar-claw gauntlets, jade greaves, jaguar half mask on the upper face (hair visible).", f: "Maya jaguar warrior armor: jaguar-pattern fitted padded armor, jade and gold plates, quetzal feather mantle, glowing glyph belt, jaguar-claw gauntlets, jade greaves, jaguar half mask on the upper face (hair visible)." },
-  { id: "hermes", r: "epic", lv: 85, zone: "🏛️ Khu Hy Lạp", name: "Olympian Herald", vi: "Sứ giả Olympus", how: "Trùm Marble Rift rơi", stats: { speed: 14, ears: 3, voice: 12 }, head: "Mũ chiến đấu có cánh (hở mặt, lộ tóc)", gloves: "Găng đồng", boots: "Dép giáp có cánh",
+  { id: "hermes", r: "epic", lv: 85, zone: "🏛️ Khu Hy Lạp", name: "Olympian Herald", vi: "Sứ giả Olympus", how: "Trùm Marble Rift rơi", stats: { dodge: 14, ears: 3, voice: 12 }, head: "Mũ chiến đấu có cánh (hở mặt, lộ tóc)", gloves: "Găng đồng", boots: "Dép giáp có cánh",
     idea: "Giáp ngực cơ bắp bằng đồng, áo choàng đỏ, cánh nhỏ ở mũ và giày.",
     m: "Greek bronze muscle cuirass, red cape, pteruges skirt, bronze vambraces, winged greaves and sandals, open bronze helmet with small wings (face and hair visible).", f: "Greek bronze fitted cuirass, red cape, layered pteruges skirt, bronze vambraces, winged greaves and sandals, open bronze helmet with small wings (face and hair visible)." },
   { id: "ink", r: "epic", lv: 88, zone: "🖌️ Khu Trung Hoa", name: "Ink Immortal", vi: "Tiên Mực Tàu (tu tiên)", how: "Trùm Ink Rift rơi", stats: { mana: 60, voice: 14 }, head: "Trâm ngọc + mũ miện nhỏ", gloves: "Bao tay lụa", boots: "Hài thêu",

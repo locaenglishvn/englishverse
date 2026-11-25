@@ -112,3 +112,23 @@ function evTutorial() {
   o.addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); if (e.target.classList.contains("skip")) { done(); return; } if (++i >= EV_TUT.length) done(); else show(); });
   show();
 }
+
+/* ---------- chân dung trên thanh máu = đầu nhân vật người chơi (25/11) ---------- */
+let evPR = null;
+function evPortrait(model) {   // model = mô hình đang hiện của người chơi; chụp 1 lần mỗi khi đổi ngoại hình
+  const span = document.querySelector("#evHud .hex span"); if (!span || !model || !THREE.SkeletonUtils) return;
+  try {
+    if (!evPR) { const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); r.setSize(128, 128); r.setPixelRatio(1);
+      const s = new THREE.Scene(); s.add(new THREE.HemisphereLight(0xffffff, 0x8890a0, 1.05)); const d = new THREE.DirectionalLight(0xffffff, 0.55); d.position.set(1, 1.5, 2); s.add(d);
+      evPR = { r, s, cam: new THREE.PerspectiveCamera(24, 1, 0.01, 20) }; }
+    const c = THREE.SkeletonUtils.clone(model); c.position.set(0, 0, 0); c.rotation.set(0, 0, 0); evPR.s.add(c); c.updateMatrixWorld(true);
+    let head = null; c.traverse(o => { if (!head && o.isBone && /^head$/i.test(o.name)) head = o; });
+    const box = new THREE.Box3().setFromObject(c), H = box.max.y - box.min.y, p = new THREE.Vector3();
+    if (head) head.getWorldPosition(p); else p.set(0, box.max.y - H * 0.15, 0);
+    const top = box.max.y, cy = (p.y + top) / 2 - H * 0.005, span2 = (top - p.y) * 1.2;
+    evPR.cam.position.set(0, cy + span2 * 0.05, span2 / (2 * Math.tan(12 * Math.PI / 180)) + 0.2); evPR.cam.lookAt(0, cy, 0);
+    evPR.r.render(evPR.s, evPR.cam); evPR.s.remove(c);
+    span.innerHTML = '<img src="' + evPR.r.domElement.toDataURL("image/png") + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block">';
+    span.style.cssText = "display:block;width:100%;height:100%;overflow:hidden;border-radius:inherit";
+  } catch (e) {}
+}

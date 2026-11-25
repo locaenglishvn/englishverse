@@ -25,3 +25,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-25 | `1f84c71` | PR #66 – chạy nam + tung phép nữ (trước khi chỉnh dáng đứng nam, PR #67) | ✅ |
 | 2026-11-25 | `227729c` | PR #67 – dáng đứng nam (trước khi sửa túi đồ, PR #68) | ✅ |
 | 2026-11-25 | `8e8d369` | PR #68 – túi đồ dáng đứng (trước khi thêm bàn tay nắm, PR #69) | ✅ |
+| 2026-11-25 | `2cf7503` | PR #69 – bàn tay nắm (trước khi sửa tay / bỏ tai nghe / chân dung HUD, PR #70) | ✅ |
