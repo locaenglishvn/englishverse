@@ -213,8 +213,29 @@ const MONSTER_MODELS = (function () {
     }
   };
 
+  /* ----- quái dựng bằng Tripo (GLB tĩnh, cử động bằng code như quái khối). Khoá = mùa:loại quái cũ → đổi hình + tên hiển thị.
+     yaw = xoay cho mặt hướng +z · h = chiều cao (m). Chưa tải xong thì dùng quái khối, con sinh sau sẽ là mô hình mới. ----- */
+  const GLB = {
+    "spring:ghost": { file: "to-he", name: "To He", yaw: -Math.PI / 2, h: 1.25 },
+    "spring:bug": { file: "tacke-gecko", name: "Tacke Gecko", yaw: 0, h: 1.7 }
+  };
+  const GT = {}, GW = {};
+  function loadGlb(file) {
+    if (GT[file] || GW[file] || !THREE.GLTFLoader) return; GW[file] = 1;
+    new THREE.GLTFLoader().load("assets/monsters/" + file + ".glb", gl => {
+      const inner = gl.scene, wrap = new THREE.Group(); wrap.add(inner); GT[file] = wrap;
+      Object.values(GLB).filter(o => o.file === file).slice(0, 1).forEach(o => {
+        inner.rotation.y = o.yaw; inner.updateMatrixWorld(true); const b = new THREE.Box3().setFromObject(inner), c = b.getCenter(new THREE.Vector3()), k = o.h / (b.max.y - b.min.y);
+        inner.scale.setScalar(k); inner.position.set(-c.x * k, -b.min.y * k, -c.z * k);
+      });
+      inner.traverse(m => { if (m.isMesh) { m.castShadow = false; m.frustumCulled = true; } });
+    }, undefined, () => { GW[file] = 0; });
+  }
+  function preload() { Object.values(GLB).forEach(o => loadGlb(o.file)); }
   function make(type, season, lv) {
     init();
+    const G = GLB[season + ":" + type]; if (G) loadGlb(G.file);
+    if (G && GT[G.file]) return makeGlb(G, lv);
     const P = PAL[season] || PAL.none, build = BUILD[type] || BUILD.ghost, g = new THREE.Group(), body = new THREE.Group(); g.add(body);
     body.scale.setScalar((1 + Math.min(lv || 1, 30) * 0.005) * ({ ghost: 0.86, worm: 0.84, bug: 0.9, parrot: 0.82, owl: 0.92, slime: 0.95 }[type] || 1));   // chỉnh để mọi loài cao khoảng 1,2–1,8 m
     const ctx = { mats: [] }, X = build(ctx, body, P, PAL[season] ? season : "none"), k0 = body.scale.x, phase = Math.random() * 6.28;
@@ -254,5 +275,33 @@ const MONSTER_MODELS = (function () {
     }
     return { g, update };
   }
-  return { make };
+  function makeGlb(G, lv) {   // bản sao mô hình Tripo + chất liệu riêng mỗi con (để nháy trắng / mờ dần)
+    const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
+    const m = GT[G.file].clone(true), mats = []; body.add(m);
+    m.traverse(o => { if (o.isMesh) { const s0 = o.material; o.material = new THREE.MeshLambertMaterial({ map: s0.map, color: 0xffffff, side: s0.side, emissive: 0x3a3a3a, emissiveMap: s0.map }); mats.push({ m: o.material, base: 1 }); } });   // Lambert: cùng kiểu ánh sáng với cả game, nhẹ máy hơn; tự sáng nhẹ để không tối khi quay lưng về mặt trời
+    body.scale.setScalar(1 + Math.min(lv || 1, 30) * 0.005);
+    const k0 = body.scale.x, phase = Math.random() * 6.28; let cur = "idle", st = 0, flashOn = false, lastAlpha = 1, dead = false;
+    function setAlpha(a) { if (a === lastAlpha) return; lastAlpha = a; mats.forEach(o => { o.m.transparent = a < 1; o.m.opacity = a; o.m.depthWrite = a >= 1; }); }
+    function setFlash(on) { if (on === flashOn) return; flashOn = on; mats.forEach(o => { if (o.m.emissive) o.m.emissive.setHex(on ? 0xdddddd : 0x3a3a3a); }); }
+    function update(dt, t, state) {
+      state = state || "idle";
+      if (state !== cur) { cur = state; st = 0; if (state !== "die" && dead) { dead = false; body.visible = true; setAlpha(1); } }
+      st += dt;
+      const ph = t * 2.2 + phase; let bx = 0, by = 0, bz = 0, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, alpha = 1, flash = false;
+      if (state === "idle") { by = Math.sin(ph) * 0.03; sy = 1 + Math.sin(ph) * 0.025; sx = 1 - Math.sin(ph) * 0.012; }
+      else if (state === "walk") { const w = t * 8 + phase; rz = Math.sin(w) * 0.1; by = Math.abs(Math.sin(w)) * 0.08; sy = 1 + Math.sin(w * 2) * 0.03; }
+      else if (state === "attack") {
+        if (st < 0.5) { const w = Math.sin(Math.min(1, st / 0.5) * Math.PI / 2); bz = -0.4 * w; rx = -0.25 * w; sy = 1 + 0.12 * w; sx = 1 - 0.05 * w; bx = Math.sin(st * 60) * 0.03 * w; flash = st > 0.3 && Math.floor(st * 20) % 2 === 0; }
+        else { const p = Math.min(1, (st - 0.5) / 0.3), l = Math.sin(p * Math.PI); bz = -0.4 * (1 - p) + l * 1.1; rx = l * 0.4; by = l * 0.15; sy = 1 - l * 0.12; sx = 1 + l * 0.08; } }
+      else if (state === "hit") { const f = Math.max(0, 1 - st / 0.4), j = Math.cos(st * 32) * f; bx = Math.sin(st * 55) * 0.12 * f; rz = Math.sin(st * 40) * 0.1 * f; rx = -0.3 * f; flash = st < 0.09; sy = 1 - 0.18 * j; sx = 1 + 0.12 * j; }
+      else if (state === "die") { const p = Math.min(1, st / 0.8), up = Math.min(1, p / 0.3), dn = Math.max(0, (p - 0.3) / 0.7);
+        by = Math.sin(up * Math.PI / 2) * 0.7 * (1 - dn); ry = p * 7; sy = p < 0.3 ? 1 + 0.2 * up : 1.2 - 1.0 * dn; sx = p < 0.3 ? 1 - 0.1 * up : 0.9 + 0.5 * dn; flash = p < 0.12; alpha = 1 - dn * dn;
+        if (p >= 1 && !dead) { dead = true; body.visible = false; } }
+      body.position.set(bx, by, bz); body.rotation.set(rx, ry, rz); body.scale.set(k0 * sx, k0 * sy, k0 * sx);
+      setAlpha(alpha); setFlash(flash);
+    }
+    return { g, update, name: G.name };
+  }
+  if (typeof setTimeout === "function") setTimeout(preload, 4000);   // tải sẵn sau khi game đã lên hình
+  return { make, preload };
 })();

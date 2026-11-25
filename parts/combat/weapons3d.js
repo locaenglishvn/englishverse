@@ -184,7 +184,7 @@ const WEAPON_MODELS = (function () {
   }
   function findHand(root) {
     let slot = null, hand = null;
-    root.traverse(o => { if (!o.isBone) return; const n = o.name.toLowerCase().replace(/[^a-z]/g, ""); if (/^handslot(r|right)$/.test(n)) slot = slot || o; else if (/^hand(r|right)$/.test(n)) hand = hand || o; });
+    root.traverse(o => { if (!o.isBone) return; const n = o.name.toLowerCase().replace(/[^a-z]/g, ""); if (/^handslot(r|right)$/.test(n)) slot = slot || o; else if (/^hand(r|right)$/.test(n) || /^(r|right)hand$/.test(n)) hand = hand || o; });
     return slot || hand;
   }
   function doAttach(rec) {
