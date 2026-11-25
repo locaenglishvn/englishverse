@@ -332,8 +332,9 @@ function makeMon(type, sec, x, z) {
   let model = null; try { if (MONSTER_MODELS.make) model = MONSTER_MODELS.make(type, sec.season, lv); } catch (e) {}
   if (!model) { const g = new THREE.Group(); const b = new THREE.Mesh(new THREE.SphereGeometry(0.6, 12, 10), mat(0xffd43b)); b.position.y = 0.7; g.add(b); model = { g, update() {} }; }
   const g = model.g; g.position.set(x, 0, z); scene.add(g);
+  const TT = model.name ? Object.assign({}, T, { name: model.name }) : T;   // quái Tripo mang tên riêng (To He, Tacke Gecko…), giữ chỉ số loài cũ
   const hpm = Math.round((40 + lv * 15) * T.hp);
-  const M = { tag: null, key: myId + "-" + (++monSeq), ring: sec.ring, type, T, lv, dir: sec.dir, contrib: {}, g, model, hp: hpm, hpMax: hpm, home: { x, z }, tx: x, tz: z, state: "idle", atkT: 0, tele: null, stun: 0, dmgSkill: 0, dmgAll: 0, dead: false, gone: false, hurtT: 0 };
+  const M = { tag: null, key: myId + "-" + (++monSeq), ring: sec.ring, type, T: TT, lv, dir: sec.dir, contrib: {}, g, model, hp: hpm, hpMax: hpm, home: { x, z }, tx: x, tz: z, state: "idle", atkT: 0, tele: null, stun: 0, dmgSkill: 0, dmgAll: 0, dead: false, gone: false, hurtT: 0 };
   evMonTag(M); g.add(M.tag);   // nhãn tên đổi màu theo cấp + thanh máu (parts/ui/hud.js)
   CB.mons.push(M); return M;
 }

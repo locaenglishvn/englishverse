@@ -17,3 +17,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-18 | `e093389` | PR #49: bộ đàm đội, giao diện theme.js – mốc trước đợt visual (cây mịn + game feel) | ✅ |
 | 2026-11-19 | `8495b5f` | PR #50–#59: đợt visual 18–19/11 (cây mô hình 5 mùa + thành phố, đường nhựa, nội thất hết lóa, game feel) – mốc cuối phiên | ✅ |
 | 2026-11-23 | `dcfc24a` | Mốc trước khi gộp phiên 20–23/11 (cốt truyện, sổ tay quái, LISTEN theo cấp, khu Nhật bản đồ riêng, đồi hoa đi qua được) | ✅ |
+| 2026-11-25 | `86b707f` | Mốc trước khi gộp phiên 23–25/11 (nhân vật chính Voice Guard Tripo, 2 quái Tripo To He + Tacke Gecko, sổ tay tổng hợp game, danh nhân, thử giáp) | ✅ |
