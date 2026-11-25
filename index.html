@@ -505,6 +505,10 @@ const FX_LEN = { flinch: 0.32, chop: 0.42, cast: 0.95, cheer: 1.1, bow: 0.9 };  
 const _fxQ = new THREE.Quaternion(), _fxA = { x: new THREE.Vector3(1, 0, 0), y: new THREE.Vector3(0, 1, 0), z: new THREE.Vector3(0, 0, 1) };
 function fxRot(b, ax, a) { if (b && a) b.quaternion.multiply(_fxQ.setFromAxisAngle(_fxA[ax], a)); }
 function fxEnv(t, up, hold, down) { return t < up ? Math.sin(t / up * Math.PI / 2) : t < up + hold ? 1 : Math.max(0, 1 - (t - up - hold) / down); }   // lên nhanh – giữ – về
+function heroBonesOf(m) {   // các khớp heroPose dùng (tên xương Tripo)
+  const bn = n => m.getObjectByName(n);
+  return { sp: bn("Spine02"), sp1: bn("Spine01"), head: bn("Head"), ru: bn("R_Upperarm"), rf: bn("R_Forearm"), lu: bn("L_Upperarm"), lf: bn("L_Forearm"), lt: bn("L_Thigh"), rt: bn("R_Thigh"), lft: bn("L_Foot"), rft: bn("R_Foot"), lh: bn("L_Hand"), rh: bn("R_Hand") };
+}
 function heroPose(u, dt) {   // gọi sau mixer.update mỗi khung hình. Trục đo bằng ảnh (25/11): Spine02 / Head x+ = NGẢ RA SAU, x- = cúi tới
   const B = u.heroBones; if (!B) return;
   const girl = u.heroKind === "hero_f";
@@ -645,7 +649,7 @@ function attachModel(g) {
   const mixer = new THREE.AnimationMixer(m), acts = {};
   modelTpl[files[0]].clips.forEach(c => acts[c.name] = mixer.clipAction(c));
   if (isHero(look)) { Object.keys(HERO_CLIP).forEach(k => { if (acts[HERO_CLIP[k]]) acts[k] = acts[HERO_CLIP[k]]; });   // gọi bằng tên KayKit vẫn chạy
-    const bn = n => m.getObjectByName(n); g.userData.heroKind = look.head; g.userData.heroBones = { sp: bn("Spine02"), sp1: bn("Spine01"), head: bn("Head"), ru: bn("R_Upperarm"), rf: bn("R_Forearm"), lu: bn("L_Upperarm"), lf: bn("L_Forearm"), lt: bn("L_Thigh"), rt: bn("R_Thigh"), lft: bn("L_Foot"), rft: bn("R_Foot"), lh: bn("L_Hand"), rh: bn("R_Hand") }; }
+    g.userData.heroKind = look.head; g.userData.heroBones = heroBonesOf(m); }
   else g.userData.heroBones = null;
   g.userData.mixer = mixer; g.userData.acts = acts; g.userData.cur = null;
   playLoop(g, "Idle");
