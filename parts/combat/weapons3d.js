@@ -192,6 +192,7 @@ const WEAPON_MODELS = (function () {
     const bone = findHand(m); if (!bone) return false;
     m.updateMatrixWorld(true); const ws = bone.getWorldScale(new THREE.Vector3()), k = ws.x > 1e-4 ? 1 / ws.x : 1;
     rec.grp.scale.setScalar(k); rec.grp.position.set(0, 0, 0); rec.grp.rotation.set(0, 0, PI / 2 - 0.3);   // trục xương tay: X hướng xuống, Y hướng trước → xoay để vũ khí chĩa lên, nghiêng nhẹ về trước
+    const G = bone.userData.grip; if (G) { rec.grp.position.fromArray(G.pos); rec.grp.quaternion.fromArray(G.quat); }   // nhân vật Tripo có bàn tay nắm: cán xuyên qua lỗ nắm (parts/characters/assemble.js)
     bone.add(rec.grp); rec.mesh = m; rec.bone = bone; rec.boneName = bone.name; return true;
   }
   function attach(ch, grp) {

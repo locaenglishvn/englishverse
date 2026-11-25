@@ -250,6 +250,7 @@ button{font:inherit;cursor:pointer}
 <script src="lib/supabase.js"></script>
 <script src="lessons.js"></script>
 <script src="places.js"></script>
+<script src="parts/characters/assemble.js"></script>
 <script src="parts/ui/theme.js"></script>
 <script src="parts/ui/invite.js"></script>
 <script src="parts/ui/hud.js"></script>
@@ -544,6 +545,11 @@ function heroInPlace(clip) {   // đi / chạy của Tripo có kèm di chuyển 
       if (hi - lo > 1e-6 && Math.abs(d) > 0.5 * (hi - lo)) for (let i = 0; i < n; i++) v[i * 3 + ax] = 0; } });   // khoá hẳn trục tiến về 0 (= vị trí lúc đứng), không chỉ trừ trôi trung bình
   return clip; }
 const modelTpl = {}, modelWait = {};
+let fistScene = null, fistWait = null;
+function withFist(cb) {   // tải bàn tay nắm 1 lần (assets/parts/fist.glb, Tripo text-to-3D 25/11)
+  if (fistScene) return cb(fistScene); if (fistWait) return fistWait.push(cb); fistWait = [cb];
+  new THREE.GLTFLoader().load("assets/parts/fist.glb", g => { fistScene = g.scene; const w = fistWait; fistWait = null; w.forEach(f => f(fistScene)); }, undefined, () => { const w = fistWait; fistWait = null; w.forEach(f => f(null)); });
+}
 function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật cùng loại
   if (modelTpl[name] || modelWait[name] || !THREE.GLTFLoader) return;
   modelWait[name] = [];
@@ -552,7 +558,11 @@ function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật
     if (/^voice-guard/.test(name)) gltf.animations.forEach(heroInPlace);
     const H = Object.values(HERO).find(h => h.file === name), extra = H ? H.extra.slice() : [];
     const done = () => { modelTpl[name] = { scene: gltf.scene, clips: gltf.animations, scale: 1.9 / (box.max.y - box.min.y) }; const w = modelWait[name]; modelWait[name] = null; w.forEach(attachModel); };
-    const next = () => { const f = extra.shift(); if (!f) return done();   // nạp thêm động tác (cùng tên xương) rồi mới dùng
+    const finish = () => {   // nhân vật chính: thay bàn tay mở bằng bàn tay nắm (nam: 2 tay, nữ: tay phải cầm vũ khí) – parts/characters/assemble.js
+      if (!H || typeof ASSEMBLE === "undefined") return done();
+      withFist(fs => { try { ASSEMBLE.fists(gltf.scene, fs, { left: name === "voice-guard-m" }); } catch (e) {} done(); });
+    };
+    const next = () => { const f = extra.shift(); if (!f) return finish();   // nạp thêm động tác (cùng tên xương) rồi mới dùng
       new THREE.GLTFLoader().load("assets/characters/" + f + ".glb", g2 => { g2.animations.forEach(c => gltf.animations.push(heroInPlace(c))); next(); }, undefined, next); };
     next();
   }, undefined, () => { modelWait[name] = null; });   // lỗi tải: giữ chibi
