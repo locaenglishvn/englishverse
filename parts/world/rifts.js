@@ -78,9 +78,7 @@ const RIFTS = (function () {
   function nearSpot() {
     if (typeof player === "undefined" || busy) return null; const p = player.position;
     const D = zoneAt(p.x, p.z);
-    if (D) { if (Math.hypot(p.x - D.ox - D.portal.x, p.z - D.oz - D.portal.z) < 5.5) return { label: "🌀 Verse City", fn: () => go(D, false) }; return null; }
-    for (const E of DEFS) if (Math.hypot(p.x - E.gate.x, p.z - E.gate.z) < 6) return { label: "🌀 " + E.name, fn: () => go(E, true) };
-    return null;
+    return null;   // 26/11 (chủ dự án): không còn nút – bước vào vết rách là tự qua (autoWalk trong tick)
   }
   function drawMap(x) {
     DEFS.forEach(D => { try { x.save(); x.translate(D.ox, D.oz); D.drawMap(x, D.K); x.restore(); } catch (e) { x.restore(); }
@@ -102,6 +100,10 @@ const RIFTS = (function () {
       if (D && !inRoom && D.fog) { const want = D.fog(typeof camWide !== "undefined" && camWide); if (scene.fog !== want) scene.fog = want; }
       else if (!D && cur) { cur = null; }
       tickers.forEach(f => f(dt, D, p));
+      if (!busy && !inRoom) {   // bước vào vết rách → tự chuyển bản đồ
+        if (D) { if (Math.hypot(p.x - D.ox - D.portal.x, p.z - D.oz - D.portal.z) < (D.portal.r || 3.2)) go(D, false); }
+        else for (const E of DEFS) { const d = E.gate.door || { x: E.gate.x, z: E.gate.z, r: 2 }; if (Math.hypot(p.x - d.x, p.z - d.z) < d.r) { go(E, true); break; } }
+      }
     } catch (e) {}
     requestAnimationFrame(tick);
   }

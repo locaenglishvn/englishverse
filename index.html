@@ -859,6 +859,12 @@ function pickVoice() {
   VOICE = vs.sort((a, b) => rate(b) - rate(a))[0] || null;
 }
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
+/* iPhone / Safari chỉ cho đọc tiếng sau khi lần đọc đầu tiên xảy ra trong 1 lần chạm. Đề LISTEN đọc tự động (không nằm trong lần chạm)
+   nên lần đầu vào game chưa nói với NPC thì bị câm (chủ dự án 26/11) → mở khoá ngay lần chạm đầu tiên ở bất cứ đâu bằng 1 câu đọc im lặng. */
+(function () { let done = false; const unlock = () => { if (done) return; done = true;
+  try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; speechSynthesis.speak(u); } catch (e) {}
+  ["pointerdown", "touchend", "keydown"].forEach(t => removeEventListener(t, unlock, true)); };
+  ["pointerdown", "touchend", "keydown"].forEach(t => addEventListener(t, unlock, true)); })();
 function speak(t) {
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = VOICE ? VOICE.lang : "en-US"; if (VOICE) u.voice = VOICE; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {}
 }
