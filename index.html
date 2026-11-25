@@ -588,7 +588,7 @@ function buildComposite(look) {   // dựng nhân vật ghép trên bộ xương
 }
 function buildHero(look) {   // nhân vật chính Tripo: nhân bản cả bộ (có xương), xoay mặt về +Z như KayKit
   const tpl = modelTpl[HERO[look.head].file], inner = THREE.SkeletonUtils.clone(tpl.scene), root = new THREE.Group();
-  inner.traverse(o => { if (o.isMesh && o.material && o.material.map && !o.material.isMeshLambertMaterial) { const mp = o.material.map; mp.encoding = THREE.LinearEncoding; mp.needsUpdate = true; o.material = new THREE.MeshLambertMaterial({ map: mp, side: o.material.side }); } });   // Lambert + hiện đúng màu ảnh (game không đổi sRGB) – sáng như nhân vật KayKit
+  inner.traverse(o => { if (o.isMesh && o.material && o.material.map && !o.material.isMeshLambertMaterial) { const mp = o.material.map; mp.encoding = THREE.LinearEncoding; mp.needsUpdate = true; o.material = new THREE.MeshLambertMaterial({ map: mp, side: o.material.side, skinning: !!o.isSkinnedMesh }); } });   // skinning: bắt buộc ở three r128, thiếu thì da không đi theo xương (đứng dang tay)   // Lambert + hiện đúng màu ảnh (game không đổi sRGB) – sáng như nhân vật KayKit
   inner.rotation.y = -Math.PI / 2; root.add(inner); root.scale.setScalar(tpl.scale); return root;
 }
 function lookFiles(look) { return isHero(look) ? [HERO[look.head].file] : typeof look === "object" ? ["Rogue"].concat(lookParts(look).map(p => p.file)) : [look]; }
