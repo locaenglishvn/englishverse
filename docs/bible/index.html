@@ -100,7 +100,7 @@ ul.tight li{margin:2px 0}
 /* nhân vật chính */
 .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .hero figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.hero img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center}
+.hero img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center 40%}
 .hero figcaption{font-size:12px;color:var(--muted);padding:6px 10px}
 .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
 .flow span{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:14px}
@@ -157,7 +157,7 @@ const PAGES = [
    const F = (f, c) => `<figure><img src="concept/characters/${f}" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`;
    return `<h1 class="pg">Nhân vật chính · The Voice Guard</h1>
    <p class="lede">Người chơi chọn nam hoặc nữ. Cả hai bắt đầu bằng đồng phục Voice Guard. Ảnh dưới đây là ảnh chốt để đưa vào Tripo (dựng 3D có xương).</p>
-   <div class="hero">${F("voice-guard-m.webp","Nam · trước")}${F("voice-guard-m-side.webp","Nam · nghiêng")}${F("voice-guard-m-back.webp","Nam · sau")}${F("voice-guard-f.webp","Nữ · trước")}${F("voice-guard-f-side.webp","Nữ · nghiêng")}${F("voice-guard-f-back.webp","Nữ · sau")}</div>
+   <div class="hero">${F("voice-guard-v2-m.webp","Nam · trước (bản 2)")}${F("voice-guard-v2-m-back.webp","Nam · sau")}${F("voice-guard-v2-f.webp","Nữ · trước (bản 2)")}${F("voice-guard-v2-f-back.webp","Nữ · sau")}</div>
    <h2>Đã chốt</h2>
    <div class="grid">
     <div class="card"><h3>Tỉ lệ 3,9 đầu</h3><p>Kiểu chibi nhẹ: chân dài, thân thon, đầu vẫn hơi to và dễ thương. Mũ, nón, tóc bồng làm đầu trông to thêm.</p></div>
