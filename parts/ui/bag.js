@@ -69,7 +69,8 @@ function bgBuild(look, weaponItem) {   // dựng bản sao nhân vật (đợi m
   BG.sc.add(grp); BG.char = grp;
   BG.mixer = new THREE.AnimationMixer(root);
   const idle = hero ? modelTpl[lookFiles(look)[0]].clips.find(c => c.name === "idle") : modelTpl.Rogue.clips.find(c => c.name === "Idle"); if (idle) BG.mixer.clipAction(idle).play();
-  BG.mixer.update(0.01);
+  BG.heroU = hero ? { heroBones: heroBonesOf(root), heroKind: look.head, cur: "Idle", fx: null } : null;   // dáng đứng riêng nam / nữ giống ngoài game
+  BG.mixer.update(0.01); if (BG.heroU) heroPose(BG.heroU, 0);
   if (weaponItem && typeof WEAPON_MODELS !== "undefined") try { BG.fake = { userData: { mesh: root } }; if (!WEAPON_MODELS.attach(BG.fake, WEAPON_MODELS.make(weaponItem))) BG.fake = null; } catch (e) { BG.fake = null; }
 }
 function bgStart() {
@@ -88,7 +89,7 @@ function bgStart() {
     const dt = Math.min(0.05, (now - BG.last) / 1000); BG.last = now;
     const w = cv.clientWidth, h = cv.clientHeight;
     if (w && h && (w !== BG.w || h !== BG.h)) { BG.w = w; BG.h = h; BG.r.setSize(w, h, false); BG.cam.aspect = w / h; BG.cam.updateProjectionMatrix(); }
-    if (BG.char) { BG.char.rotation.y = BG.rot; if (BG.mixer) BG.mixer.update(dt); }
+    if (BG.char) { BG.char.rotation.y = BG.rot; if (BG.mixer) { BG.mixer.update(dt); if (BG.heroU) heroPose(BG.heroU, dt); } }
     BG.r.render(BG.sc, BG.cam);
   };
   BG.raf = requestAnimationFrame(loop);

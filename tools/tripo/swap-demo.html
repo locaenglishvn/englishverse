@@ -1,0 +1,58 @@
+<!doctype html><html><body style="margin:0;background:#cfd4da"><canvas id="c" width="1200" height="420"></canvas>
+<script src="../../lib/three.min.js"></script><script src="../../lib/GLTFLoader.js"></script><script src="../../lib/SkeletonUtils.js"></script><script>
+const r = new THREE.WebGLRenderer({ canvas: c, antialias: true, preserveDrawingBuffer: true }); r.setClearColor(0xcfd4da);
+const s = new THREE.Scene(); s.add(new THREE.HemisphereLight(0xffffff, 0x888888, 1.15)); const dl = new THREE.DirectionalLight(0xffffff, .5); dl.position.set(1, 2, 3); s.add(dl);
+const cam = new THREE.PerspectiveCamera(30, 300 / 420, .01, 100);
+const REG = { Head: 'head', NeckTwist01: 'head', NeckTwist02: 'head', L_Hand: 'hand', R_Hand: 'hand', L_Foot: 'foot', R_Foot: 'foot', L_ToeBase: 'foot', R_ToeBase: 'foot' };
+function skinOf(m) { let k; m.traverse(o => { if (o.isSkinnedMesh) k = o; }); return k; }
+function regionOf(sk) { const G = sk.geometry, si = G.attributes.skinIndex.array, sw = G.attributes.skinWeight.array, n = G.attributes.position.count, bones = sk.skeleton.bones, reg = new Array(n), dom = new Int16Array(n);
+  for (let i = 0; i < n; i++) { let best = 0, bi = 0; for (let k = 0; k < 4; k++) { const w = sw[i * 4 + k]; if (w > best) { best = w; bi = si[i * 4 + k]; } } dom[i] = bi; reg[i] = REG[bones[bi].name] || 'body'; } return { reg, dom }; }
+function triKeep(G, reg, test) { const idx = G.index.array, out = []; for (let t = 0; t < idx.length; t += 3) { const a = idx[t], b = idx[t + 1], c2 = idx[t + 2]; const R = [reg[a], reg[b], reg[c2]]; const maj = R.filter(x => x === R[0]).length >= 2 ? R[0] : R[1]; if (test(maj)) out.push(a, b, c2); } return out; }
+function hideRegion(sk, R, names) { const G = sk.geometry.clone(); G.setIndex(triKeep(G, R.reg, x => names.indexOf(x) < 0)); sk.geometry = G; }
+// lấy vùng (vd đầu) của mô hình nguồn thành khối cứng gắn vào xương đích
+function rigidPart(srcSk, R, name, boneName) {
+  const G = srcSk.geometry, pos = G.attributes.position, bone = srcSk.skeleton.bones.find(b => b.name === boneName), bi = srcSk.skeleton.bones.indexOf(bone);
+  const M = new THREE.Matrix4().multiplyMatrices(srcSk.skeleton.boneInverses[bi], srcSk.bindMatrix);   // mesh (bind) → không gian xương
+  const g2 = new THREE.BufferGeometry(); const P = new Float32Array(pos.count * 3), v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(M); P.set([v.x, v.y, v.z], i * 3); }
+  g2.setAttribute('position', new THREE.BufferAttribute(P, 3)); g2.setAttribute('uv', G.attributes.uv); const keepB = new Set(srcSk.skeleton.bones.map((b, j) => (b.name === boneName || (boneName === 'L_Foot' && b.name === 'L_ToeBase') || (boneName === 'R_Foot' && b.name === 'R_ToeBase')) ? j : -1).filter(j => j >= 0)); const reg2 = R.reg.map((x, j) => x === name && (name !== 'foot' || keepB.has(R.dom[j])) ? name : 'x'); g2.setIndex(triKeep(G, reg2, x => x === name)); g2.computeVertexNormals();
+  return new THREE.Mesh(g2, new THREE.MeshLambertMaterial({ map: srcSk.material.map }));
+}
+// uốn ngón tay thành nắm tay (làm 1 lần ở tư thế gốc)
+function makeFist(sk, R) {
+  const G = sk.geometry = sk.geometry.clone(), pos = G.attributes.position, bones = sk.skeleton.bones; sk.skeleton.pose(); sk.updateMatrixWorld(true);
+  ['L_Hand', 'R_Hand'].forEach(hn => {
+    const bi = bones.findIndex(b => b.name === hn), inv = new THREE.Matrix4().copy(sk.bindMatrixInverse);
+    const wrist = new THREE.Vector3().setFromMatrixPosition(bones[bi].matrixWorld).applyMatrix4(inv);
+    const ids = []; for (let i = 0; i < pos.count; i++) if (R.dom[i] === bi) ids.push(i);
+    const v = new THREE.Vector3(); let far = 0, tip = new THREE.Vector3();
+    ids.forEach(i => { v.fromBufferAttribute(pos, i); const d = v.distanceTo(wrist); if (d > far) { far = d; tip.copy(v); } });
+    const dir = tip.clone().sub(wrist).normalize(), side = Math.sign(wrist.x) || 1;
+    const palm = new THREE.Vector3(-side, 0, 0); palm.sub(dir.clone().multiplyScalar(palm.dot(dir))).normalize();   // lòng bàn tay hướng vào thân
+    const axis = new THREE.Vector3().crossVectors(dir, palm).normalize(), knuckle = wrist.clone().add(dir.clone().multiplyScalar(far * 0.42));
+    const q = new THREE.Quaternion();
+    ids.forEach(i => { v.fromBufferAttribute(pos, i); const along = v.clone().sub(wrist).dot(dir); if (along <= far * 0.42) return;
+      const k = Math.min(1, (along - far * 0.42) / (far * 0.58)), ang = 1.9 * k;   // càng xa đầu ngón càng gập
+      q.setFromAxisAngle(axis, -ang); v.sub(knuckle).applyQuaternion(q).add(knuckle).add(palm.clone().multiplyScalar(-0.004 * k)); pos.setXYZ(i, v.x, v.y, v.z); });
+  });
+  pos.needsUpdate = true; G.computeVertexNormals();
+}
+const L = new THREE.GLTFLoader(), files = {};
+['voice-guard-m', 'voice-guard-f'].forEach(f => L.load("../../assets/characters/" + f + ".glb", g => { files[f] = g; if (Object.keys(files).length === 2) go(); }));
+function inst(f) { const m = THREE.SkeletonUtils.clone(files[f].scene); m.traverse(o => { if (o.isMesh) o.material = new THREE.MeshLambertMaterial({ map: o.material.map, skinning: o.isSkinnedMesh }); }); return m; }
+function go() {
+  const out = [];
+  const A = inst('voice-guard-m'); out.push(A);   // gốc
+  const B = inst('voice-guard-m'); { const k = skinOf(B); makeFist(k, regionOf(k)); } out.push(B);   // nắm tay
+  const C = inst('voice-guard-m'); { const k = skinOf(C), R = regionOf(k); hideRegion(k, R, ['head']); const sf = skinOf(files['voice-guard-f'].scene), Rf = regionOf(sf);
+    const head = rigidPart(sf, Rf, 'head', 'Head'); k.skeleton.bones.find(b => b.name === 'Head').add(head); } out.push(C);   // thân nam + đầu nữ
+  const D = inst('voice-guard-f'); { const k = skinOf(D), R = regionOf(k); hideRegion(k, R, ['head', 'foot']); const sm = skinOf(files['voice-guard-m'].scene), Rm = regionOf(sm);
+    k.skeleton.bones.find(b => b.name === 'Head').add(rigidPart(sm, Rm, 'head', 'Head'));
+    ['L_Foot', 'R_Foot'].forEach(fb => { const part = rigidPart(sm, Rm, 'foot', fb); k.skeleton.bones.find(b => b.name === fb).add(part); });   // giày nam (2 chân lấy cả vùng chân, lọc theo xương ở dưới)
+  } out.push(D);
+  r.setScissorTest(true);
+  out.forEach((m, i) => { s.add(m); m.rotation.y = -Math.PI / 2 + 0.35; const mix = new THREE.AnimationMixer(m); const clip = files['voice-guard-m'].animations.find(c => c.name === 'idle'); mix.clipAction(clip).play(); mix.setTime(0.6);
+    m.updateMatrixWorld(true); cam.position.set(0, 0.55, 2.2); cam.lookAt(0, 0.5, 0); r.setViewport(i * 300, 0, 300, 420); r.setScissor(i * 300, 0, 300, 420); r.render(s, cam); s.remove(m); });
+  document.title = 'done';
+}
+</script></body></html>
