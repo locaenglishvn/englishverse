@@ -508,6 +508,11 @@ function fxEnv(t, up, hold, down) { return t < up ? Math.sin(t / up * Math.PI / 
 function heroPose(u, dt) {   // gọi sau mixer.update mỗi khung hình. Trục đo bằng ảnh (25/11): Spine02 / Head x+ = NGẢ RA SAU, x- = cúi tới
   const B = u.heroBones; if (!B) return;
   const girl = u.heroKind === "hero_f";
+  if (!girl && (B.lt || B.rt)) {   // dáng nam (chủ dự án 25/11): chân dang bằng vai, vai mở, tay hơi xa thân, ngực ưỡn nhẹ, cổ tay khép (rig không có xương ngón)
+    const st = u.cur === "Idle" ? 1 : u.cur === "Walking_A" ? 0.3 : 0.15;
+    fxRot(B.lt, "z", 0.13 * st); fxRot(B.rt, "z", -0.13 * st); fxRot(B.lft, "z", -0.13 * st); fxRot(B.rft, "z", 0.13 * st);
+    fxRot(B.lu, "z", 0.1); fxRot(B.ru, "z", -0.1); fxRot(B.sp, "x", 0.05 * st); fxRot(B.lh, "x", 0.45); fxRot(B.rh, "x", 0.45);
+  }
   if (u.cur === "Running_A") { if (girl) { fxRot(B.sp, "x", 0.3); fxRot(B.sp1, "x", 0.12); fxRot(B.head, "x", -0.1); }   // clip chạy chồm quá: dựng người thẳng lên
     else { fxRot(B.sp, "x", 0.2); fxRot(B.sp1, "x", 0.06); fxRot(B.head, "x", -0.32); } }   // nam: thân vẫn thẳng nhưng đầu, mặt đổ tới (chủ dự án: ngửa đầu trông như bị đuổi)
   const f = u.fx; if (!f) return; f.t += dt; const t = f.t, L = f.k === "cast" && !girl ? 0.62 : FX_LEN[f.k]; if (t >= L) { u.fx = null; return; }
@@ -640,7 +645,7 @@ function attachModel(g) {
   const mixer = new THREE.AnimationMixer(m), acts = {};
   modelTpl[files[0]].clips.forEach(c => acts[c.name] = mixer.clipAction(c));
   if (isHero(look)) { Object.keys(HERO_CLIP).forEach(k => { if (acts[HERO_CLIP[k]]) acts[k] = acts[HERO_CLIP[k]]; });   // gọi bằng tên KayKit vẫn chạy
-    const bn = n => m.getObjectByName(n); g.userData.heroKind = look.head; g.userData.heroBones = { sp: bn("Spine02"), sp1: bn("Spine01"), head: bn("Head"), ru: bn("R_Upperarm"), rf: bn("R_Forearm"), lu: bn("L_Upperarm"), lf: bn("L_Forearm") }; }
+    const bn = n => m.getObjectByName(n); g.userData.heroKind = look.head; g.userData.heroBones = { sp: bn("Spine02"), sp1: bn("Spine01"), head: bn("Head"), ru: bn("R_Upperarm"), rf: bn("R_Forearm"), lu: bn("L_Upperarm"), lf: bn("L_Forearm"), lt: bn("L_Thigh"), rt: bn("R_Thigh"), lft: bn("L_Foot"), rft: bn("R_Foot"), lh: bn("L_Hand"), rh: bn("R_Hand") }; }
   else g.userData.heroBones = null;
   g.userData.mixer = mixer; g.userData.acts = acts; g.userData.cur = null;
   playLoop(g, "Idle");

@@ -22,3 +22,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-25 | `81f565f` | PR #63 – màu Tripo + quái cử động (bản trước khi sửa lỗi nhân vật đứng dang tay, PR #64) | ✅ |
 | 2026-11-25 | `858b9a6` | PR #64 – sửa nhân vật dang tay (bản trước khi thay động tác chiến đấu bằng code, PR #65) | ✅ |
 | 2026-11-25 | `6630d0e` | PR #65 – động tác chiến đấu bằng code (trước khi chỉnh chạy nam + tung phép nữ, PR #66) | ✅ |
+| 2026-11-25 | `1f84c71` | PR #66 – chạy nam + tung phép nữ (trước khi chỉnh dáng đứng nam, PR #67) | ✅ |
