@@ -495,14 +495,38 @@ const AV_KEYS = Object.keys(AVATARS);
 const FACES = { Rogue: "Alex", Knight: "Sam", Mage: "Robin", Barbarian: "Max" };   // khuôn mặt + kiểu tóc (đầu của từng bộ)
 /* Nhân vật chính mới (Tripo, 25/11): mô hình liền khối có xương riêng + 5 động tác (idle, walk, run, slash, hurt).
    save.head = "hero_m" | "hero_f". Tạm thời chưa mặc được đồ rời (áo/quần/mũ) – chỉ chỉ số trang bị có tác dụng. */
-const HERO = { hero_m: { file: "voice-guard-m", name: "Boy", extra: ["voice-guard-m-cheer", "voice-guard-m-bow", "voice-guard-m-shoot"] }, hero_f: { file: "voice-guard-f", name: "Girl", extra: ["voice-guard-f-extra"] } };   // extra = file chỉ chứa động tác thêm (cheer, bow, shoot)
-const HERO_CLIP = { Idle: "idle", Walking_A: "walk", Running_A: "run", Hit_A: "hurt", "1H_Melee_Attack_Chop": "slash", Spellcast_Shoot: "shoot", Cheer: "cheer", Interact: "bow" };   // tên động tác KayKit → Tripo
+const HERO = { hero_m: { file: "voice-guard-m", name: "Boy", extra: [] }, hero_f: { file: "voice-guard-f", name: "Girl", extra: [] } };   // extra = file chỉ chứa động tác thêm (bỏ 25/11: cheer/bow/shoot của Tripo dài 9–12 s, thay bằng động tác code HERO_FX)
+const HERO_CLIP = { Idle: "idle", Walking_A: "walk", Running_A: "run" };   // chỉ 3 vòng lặp dùng clip Tripo
+/* Động tác một lần của nhân vật chính = code chỉnh khớp xương CHỒNG LÊN dáng đứng / đi đang chạy (không khoá nhân vật, không trượt).
+   Clip Tripo hurt (ngồi bệt 13,9 s), slash (6,6 s), shoot (9 s) không hợp chiến đấu (chủ dự án góp ý 25/11).
+   Trục khớp (đo thử): Spine02 x+ = cúi tới, x- = ngả sau, y = xoay người · Upperarm x+ = đưa tay lên trước · Forearm x+ = gập khuỷu. */
+const HERO_FX = { Hit_A: "flinch", "1H_Melee_Attack_Chop": "chop", Spellcast_Shoot: "cast", Cheer: "cheer", Interact: "bow", Use_Item: "bow" };
+const FX_LEN = { flinch: 0.32, chop: 0.42, cast: 0.62, cheer: 1.1, bow: 0.9 };
+const _fxQ = new THREE.Quaternion(), _fxA = { x: new THREE.Vector3(1, 0, 0), y: new THREE.Vector3(0, 1, 0), z: new THREE.Vector3(0, 0, 1) };
+function fxRot(b, ax, a) { if (b && a) b.quaternion.multiply(_fxQ.setFromAxisAngle(_fxA[ax], a)); }
+function fxEnv(t, up, hold, down) { return t < up ? Math.sin(t / up * Math.PI / 2) : t < up + hold ? 1 : Math.max(0, 1 - (t - up - hold) / down); }   // lên nhanh – giữ – về
+function heroPose(u, dt) {   // gọi sau mixer.update mỗi khung hình. Trục đo bằng ảnh (25/11): Spine02 / Head x+ = NGẢ RA SAU, x- = cúi tới
+  const B = u.heroBones; if (!B) return;
+  if (u.cur === "Running_A") { fxRot(B.sp, "x", 0.3); fxRot(B.sp1, "x", 0.12); fxRot(B.head, "x", -0.1); }   // clip chạy chồm quá: dựng người thẳng lên, mắt nhìn trước
+  const f = u.fx; if (!f) return; f.t += dt; const t = f.t, L = FX_LEN[f.k]; if (t >= L) { u.fx = null; return; }
+  if (f.k === "flinch") { const e = fxEnv(t, 0.06, 0.04, 0.22); fxRot(B.sp, "x", 0.32 * e); fxRot(B.head, "x", 0.18 * e); fxRot(B.ru, "x", 0.3 * e); fxRot(B.lu, "x", 0.3 * e); }   // giật lùi nhẹ, tay hất lên, rồi về thế thủ
+  else if (f.k === "chop") {   // giơ tay phải – vung chéo xuống (người đổ tới) – về
+    const w = t < 0.13 ? Math.sin(t / 0.13 * Math.PI / 2) : 0, s = t >= 0.13 && t < 0.26 ? (t - 0.13) / 0.13 : t >= 0.26 ? 1 : 0, back = t > 0.26 ? Math.max(0, 1 - (t - 0.26) / 0.16) : 1;
+    const up = (2.6 * w) * (1 - s) + 0.8 * s, k = t < 0.13 ? 1 : back;
+    fxRot(B.sp, "y", (0.35 * w * (1 - s) - 0.35 * s) * k); fxRot(B.sp, "x", (0.12 * w * (1 - s) - 0.25 * s) * k);
+    fxRot(B.ru, "x", up * k); fxRot(B.rf, "x", (0.5 * w * (1 - s) + 0.1 * s) * k); fxRot(B.lu, "x", -0.3 * s * k); }
+  else if (f.k === "cast") {   // thẳng ngực (ngả nhẹ), xoay vai, tay phải đẩy thẳng ra trước, tay trái kéo về sau
+    const e = fxEnv(t, 0.14, 0.3, 0.18); fxRot(B.sp, "x", 0.12 * e); fxRot(B.sp, "y", 0.3 * e);
+    fxRot(B.ru, "x", 1.6 * e); fxRot(B.rf, "x", -0.15 * e); fxRot(B.lu, "x", -0.6 * e); fxRot(B.lf, "x", 0.7 * e); fxRot(B.head, "x", -0.05 * e); }
+  else if (f.k === "cheer") { const e = fxEnv(t, 0.15, 0.7, 0.25), wv = Math.sin(t * 16) * 0.18 * e; fxRot(B.ru, "x", 2.9 * e + wv); fxRot(B.lu, "x", 2.9 * e - wv); fxRot(B.rf, "x", -0.4 * e); fxRot(B.lf, "x", -0.4 * e); fxRot(B.sp, "x", 0.1 * e); }   // hai tay giơ cao vẫy
+  else if (f.k === "bow") { const e = fxEnv(t, 0.25, 0.3, 0.35); fxRot(B.sp, "x", -0.5 * e); fxRot(B.sp1, "x", -0.15 * e); fxRot(B.head, "x", -0.2 * e); }   // cúi chào lễ phép
+}
 const isHero = look => typeof look === "object" && look && !!HERO[look.head];
 function heroInPlace(clip) {   // đi / chạy của Tripo có kèm di chuyển gốc xương → khoá trục trôi để nhân vật chạy tại chỗ (game tự di chuyển)
   clip.tracks.forEach(t => { if (!/^(Root|Hip)\.position$/.test(t.name)) return; const v = t.values, n = v.length / 3; if (n < 2) return;
     for (let ax = 0; ax < 3; ax++) { const d = v[(n - 1) * 3 + ax] - v[ax]; let lo = Infinity, hi = -Infinity;
       for (let i = 0; i < n; i++) { lo = Math.min(lo, v[i * 3 + ax]); hi = Math.max(hi, v[i * 3 + ax]); }
-      if (hi - lo > 1e-6 && Math.abs(d) > 0.5 * (hi - lo)) for (let i = 0; i < n; i++) v[i * 3 + ax] -= d * i / (n - 1); } });
+      if (hi - lo > 1e-6 && Math.abs(d) > 0.5 * (hi - lo)) for (let i = 0; i < n; i++) v[i * 3 + ax] = 0; } });   // khoá hẳn trục tiến về 0 (= vị trí lúc đứng), không chỉ trừ trôi trung bình
   return clip; }
 const modelTpl = {}, modelWait = {};
 function loadModel(name) {   // tải 1 lần, dùng chung cho mọi nhân vật cùng loại
@@ -609,7 +633,9 @@ function attachModel(g) {
   g.userData.chibi.forEach(c => c.visible = false);
   const mixer = new THREE.AnimationMixer(m), acts = {};
   modelTpl[files[0]].clips.forEach(c => acts[c.name] = mixer.clipAction(c));
-  if (isHero(look)) Object.keys(HERO_CLIP).forEach(k => { if (acts[HERO_CLIP[k]]) acts[k] = acts[HERO_CLIP[k]]; });   // gọi bằng tên KayKit vẫn chạy
+  if (isHero(look)) { Object.keys(HERO_CLIP).forEach(k => { if (acts[HERO_CLIP[k]]) acts[k] = acts[HERO_CLIP[k]]; });   // gọi bằng tên KayKit vẫn chạy
+    const bn = n => m.getObjectByName(n); g.userData.heroBones = { sp: bn("Spine02"), sp1: bn("Spine01"), head: bn("Head"), ru: bn("R_Upperarm"), rf: bn("R_Forearm"), lu: bn("L_Upperarm"), lf: bn("L_Forearm") }; }
+  else g.userData.heroBones = null;
   g.userData.mixer = mixer; g.userData.acts = acts; g.userData.cur = null;
   playLoop(g, "Idle");
 }
@@ -620,7 +646,8 @@ function playLoop(g, name) {   // hoạt ảnh lặp: đứng / đi / chạy
   u.cur = name;
 }
 function charAct(g, name) {   // hoạt ảnh một lần: reo mừng, niệm phép, bị trúng...
-  const u = g.userData, a = u.acts && u.acts[name]; if (!a) return;
+  const u = g.userData; if (u.heroBones && HERO_FX[name]) { u.fx = { k: HERO_FX[name], t: 0 }; return; }   // nhân vật chính: động tác code, không khoá
+  const a = u.acts && u.acts[name]; if (!a) return;
   a.reset().setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = false; a.fadeIn(0.15).play();
   if (u.cur && u.acts[u.cur] && u.cur !== name) u.acts[u.cur].fadeOut(0.15);
   u.cur = name; u.busy = a.getClip().duration - 0.2;
@@ -671,7 +698,7 @@ function animateChars(dt) {   // vung tay chân theo tốc độ di chuyển
     if (u.mixer) {   // mô hình 3D: chọn hoạt ảnh theo tốc độ
       if (u.busy > 0) u.busy -= dt;
       else playLoop(g, sp > 3.3 ? "Running_A" : sp > 0.4 ? "Walking_A" : "Idle");
-      if (g.visible) u.mixer.update(dt);
+      if (g.visible) { u.mixer.update(dt); if (u.heroBones) heroPose(u, dt); }
       continue;
     }
     const amp = Math.min(1, sp / 3) * 0.7;
