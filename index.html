@@ -502,7 +502,7 @@ const HERO = { hero_m: { file: "voice-guard-m", name: "Boy", extra: [] }, hero_f
 const HAIRS = {
   hero_m: [{ id: "m-classic", name: "Classic", file: null }, { id: "m-undercut", name: "Undercut", file: "hair/m-undercut" }, { id: "m-spiky", name: "Spiky", file: "hair/m-spiky" },
     { id: "m-korean", name: "K-style", file: "hair/m-korean" }, { id: "m-ponytail", name: "Samurai", file: "hair/m-ponytail" }, { id: "m-curly", name: "Curly", file: "hair/m-curly" }],
-  hero_f: [{ id: "f-classic", name: "Classic", file: null }]
+  hero_f: [{ id: "f-classic", name: "Classic", file: null }, { id: "f-ponytail", name: "Ponytail", file: "hair/f-ponytail" }]
 };
 const HAIR_COLORS = [null, 0x5a3a24, 0x8a4b2a, 0xd9b06a, 0xb9bcc4, 0xb3362c, 0x3f63c9, 0xd06aa0];   // null = màu gốc
 function hairOf(look) { const L = HAIRS[look.head] || []; return L.find(h => h.id === look.hair) || L[0] || null; }
