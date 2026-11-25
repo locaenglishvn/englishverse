@@ -214,27 +214,38 @@ const PAGES = [
        G.innerHTML = list.map(m => `<button class="card mon" data-id="${m.id}"><div class="art">${m.img ? `<img src="${m.img}" alt="${esc(m.name)}" loading="lazy">` : m.emo}</div><span class="tier">${esc(B.tierName[m.tier] || m.tier)}</span><b>${esc(m.name)}</b><span class="small muted">${esc(m.vn)}</span></button>`).join("") || '<p class="muted">Không có quái nào khớp bộ lọc.</p>'; };
      chips("monA", v => { F.a = v; draw(); }); chips("monT", v => { F.t = v; draw(); }); draw();
      G.addEventListener("click", e => { const b = e.target.closest(".mon"); if (b) openMon(B.monsters.find(m => m.id === b.dataset.id)); }); } },
- { id:"trang-phuc", name:"Trang phục", blurb:"Giáp Cộng Hưởng: 23 bộ giáp + 35 vũ khí", render(){
-   const O = window.OUTFITS || [], T = window.OUTFIT_TIERS || [], ST = window.OUTFIT_STYLE || {};
+ { id:"trang-phuc", name:"Trang bị", blurb:"5 ô trang bị, chỉ số hên xui, 8 loại vũ khí, 21 bộ giáp", render(){
+   const O = window.OUTFITS || [], T = window.OUTFIT_TIERS || [], ST = window.OUTFIT_STYLE || {}, SL = window.GEAR_SLOTS || [], RL = window.GEAR_ROLL || {}, WT = window.WEAPON_TYPES || [];
    const SN = { voice:"Voice", ears:"Ears", stamina:"Stamina", resist:"Resist", luck:"Luck", hp:"HP", mana:"Mana", speed:"Speed %" };
    const stats = st => Object.entries(st || {}).map(([k, v]) => `${SN[k] || k} +${v}`).join(" · ") || "Không chỉ số";
-   const card = o => { const im = o.img || {}; return `<div class="card"><div class="duo">${["m", "f"].map(g => im[g] ? `<img src="${im[g]}" alt="${esc(o.name)} ${g === "m" ? "nam" : "nữ"}" loading="lazy">` : `<div class="noimg">${g === "m" ? "Nam" : "Nữ"}<br>chưa có ảnh</div>`).join("")}</div>
+   const copyBlk = (label, t) => `<p class="small"><b>${label}</b></p><p class="prompt">${esc(t)}</p><button class="copy" data-t="${esc(t)}">Chép câu lệnh</button>`;
+   const card = o => { const im = o.img || {}; return `<div class="card"><div class="duo">${["m", "f"].map(g => im[g] ? `<img src="${im[g]}" alt="${esc(o.name)}" loading="lazy">` : `<div class="noimg">${g === "m" ? "Nam" : "Nữ"}<br>chưa có ảnh</div>`).join("")}</div>
      <div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3>${esc(o.name)}</h3><span class="rar" style="color:${RC(o.r)};font-size:12px">Lv.${o.lv}</span></div>
      <p class="small muted">${esc(o.vi)}${o.zone ? " · " + esc(o.zone) : ""}</p><p class="small">${esc(o.idea)}</p>
-     <p class="small"><b>Chỉ số:</b> ${esc(stats(o.stats))}</p><p class="small"><b>Đi kèm:</b> 🧢 ${esc(o.hat)} · 👟 ${esc(o.shoes)}</p><p class="small"><b>Cách nhận:</b> ${esc(o.how)}</p>
-     <details class="art-p"><summary>🎨 Câu lệnh vẽ Gemini (nam + nữ)</summary><p class="small muted">Đính kèm ảnh Voice Guard nam (hoặc nữ). Mỗi bộ một cuộc trò chuyện mới.</p>
-      ${["m", "f"].map(g => { const t = ST[g] + o[g] + ST.tail; return `<p class="small"><b>${g === "m" ? "Nam" : "Nữ"}</b></p><p class="prompt">${esc(t)}</p><button class="copy" data-t="${esc(t)}">Chép câu lệnh</button>`; }).join("")}</details></div>`; };
-   return `<h1 class="pg">Trang phục · Giáp Cộng Hưởng</h1>
-   <p class="lede">The Mute cướp giọng nói, nên giáp của Voice là thứ <b>bảo vệ giọng nói</b>: sóng âm, vòng loa, âm thoa, chữ cái phát sáng. Leo bậc từ đồng phục tới giáp văn hoá của 8 vùng đất rồi giáp thần. <span class="pill new">đề xuất, chờ duyệt</span></p>
-   <div class="grid">
-    <div class="card"><h3>Chia món</h3><p class="small">Giáp thân (áo + quần) · giày · mũ là 3 món rời. Vũ khí cầm tay phải. Cùng một bộ: nam vai rộng giáp chắc, nữ eo gọn có váy giáp.</p></div>
-    <div class="card"><h3>Xem trước trước khi dựng 3D</h3><p class="small">Mỗi bộ có 2 câu lệnh vẽ <b>mặc lên chính Voice Guard</b>, nên ảnh 2D giống cái sẽ dựng. Bộ nào có ảnh là đã duyệt, rồi mới dựng 3D (~$0,75 / bản).</p></div>
-    <div class="card"><h3>Vì sao không giáp trụ / tu tiên làm gốc</h3><p class="small">Giáp hiệp sĩ chung chung, nặng, không nói "sức mạnh giọng nói". Tu tiên là thế giới quan Trung Hoa → chỉ là 1 bộ của khu Trung Hoa. Trục chính là 8 nền văn hoá + chữ viết.</p></div>
-   </div>
-   ${T.map(t => { const L = O.filter(o => o.r === t.r); return L.length ? `<h2><span class="rar" style="color:${RC(t.r)}">${esc(t.name)}</span> · ${L.length} bộ</h2><p class="small muted" style="margin-top:-6px">${esc(t.lv)} · ${esc(t.how)}</p><div class="grid">${L.map(card).join("")}</div>` : ""; }).join("")}
-   <h2>🎵 Vũ khí · 35 món đang có trong game</h2>
-   <p class="small muted" style="margin-top:-6px">Mô hình code (nhẹ), chụp trực tiếp từ game. 4 dòng × 8 bậc theo 4 nhánh chiêu + 3 gậy Maestro huyền thoại. Sau này dựng lại đẹp hơn bằng Tripo theo cùng danh sách.</p>
-   <div class="card" style="padding:8px;overflow-x:auto"><img src="weapons.png" alt="35 vũ khí" style="min-width:560px;width:100%"></div>`; } },
+     <p class="small">🎧 ${esc(o.head)} · 🧤 ${esc(o.gloves)} · 🥾 ${esc(o.boots)}</p>
+     <p class="small"><b>Chỉ số gốc cả bộ:</b> ${esc(stats(o.stats))}</p><p class="small"><b>Cách nhận:</b> ${esc(o.how)}</p>
+     <details class="art-p"><summary>🎨 Câu lệnh vẽ (nam + nữ)</summary><p class="small muted">Đính kèm ảnh Voice Guard nam / nữ. Mỗi bộ một cuộc trò chuyện Gemini mới.</p>${copyBlk("Nam", ST.m + o.m + ST.tail)}${copyBlk("Nữ", ST.f + o.f + ST.tail)}</details></div>`; };
+   const BR = B => B && window.BIBLE.BRANCH[B] ? window.BIBLE.BRANCH[B].icon + " " + window.BIBLE.BRANCH[B].name : "";
+   return `<h1 class="pg">Trang bị</h1>
+   <p class="lede">Đẹp, "wow", khiến người chơi muốn có. Được phép góc cạnh, gai vừa phải; <b>cấp càng cao càng hầm hố</b>. Sợi chỉ cốt truyện: mọi trang bị khắc chữ cái / sóng âm, <b>bừng sáng khi người chơi nói đúng</b>. <span class="pill new">đề xuất, chờ duyệt</span></p>
+   <h2>5 ô trang bị</h2>
+   <div class="grid sm">${SL.map(x => `<div class="card"><h3>${x.ic} ${esc(x.name)}</h3><p class="small">${esc(x.note)}</p></div>`).join("")}</div>
+   <h2>Chỉ số hên xui · phẩm chất ★</h2>
+   <p class="md">${esc(RL.idea || "")}</p>
+   <div class="tbl"><table><thead><tr><th>Phẩm chất</th><th>% chỉ số gốc</th><th>Dòng phụ ngẫu nhiên</th><th>Tỉ lệ rơi</th><th>Từ nhiệm vụ</th></tr></thead><tbody>${(RL.grades || []).map(g => `<tr><td><b>${g.s}</b> ${esc(g.name)}</td><td class="num">${g.pct}</td><td class="num">${g.lines}</td><td class="num">${g.drop}</td><td>${g.quest ? "✅" : "—"}</td></tr>`).join("")}</tbody></table></div>
+   <p class="small muted" style="margin-top:8px">Dòng phụ có thể ra: ${esc((RL.lines || []).join(" · "))}</p>
+   <ul class="tight small">${(RL.rules || []).map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+   <h2>⚔️ Vũ khí · 8 loại</h2>
+   <p class="small muted" style="margin-top:-6px">Mỗi nhánh chiêu có 2 loại vũ khí. Mỗi loại 3 mốc ngoại hình (Lv.1 · Lv.28 · Lv.75) để vẽ thử; các bậc giữa nội suy theo.</p>
+   <div class="grid">${WT.map(w => `<div class="card"><h3>${w.ic} ${esc(w.name)}</h3><p class="small muted">${esc(BR(w.branch))} · ${esc(w.feel)}</p>
+     <ul class="tight small">${w.ladder.map(l => `<li><span class="rar" style="color:${RC(l[1])}">${l[0]}</span> <b>${esc(l[2])}</b></li>`).join("")}</ul>
+     <details class="art-p"><summary>🎨 Câu lệnh vẽ (3 mốc)</summary>${w.ladder.map(l => copyBlk(l[0] + " · " + l[2], (window.WEAPON_STYLE || "") + l[3] + "." + (window.WEAPON_TAIL || ""))).join("")}</details></div>`).join("")}</div>
+   <ul class="tight small" style="margin-top:10px">${(window.WEAPON_EXTRA || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+   <h2>🛡️ Giáp · ${O.length} bộ</h2>
+   <p class="small muted" style="margin-top:-6px">Mỗi bộ = đầu + thân + găng + giày (mặc lẻ được, đủ bộ có thưởng). Ảnh 2D vẽ lên chính Voice Guard nên giống cái sẽ dựng 3D.</p>
+   ${T.map(t => { const L = O.filter(o => o.r === t.r); return L.length ? `<h2 style="font-size:20px"><span class="rar" style="color:${RC(t.r)}">${esc(t.name)}</span> · ${L.length} bộ</h2><p class="small muted" style="margin-top:-6px">${esc(t.lv)} · ${esc(t.look)} · ${esc(t.how)}</p><div class="grid">${L.map(card).join("")}</div>` : ""; }).join("")}
+   <h2>Vũ khí hiện có trong game (sẽ thay)</h2>
+   <div class="card" style="padding:8px;overflow-x:auto"><img src="weapons.png" alt="vũ khí cũ" style="min-width:560px;width:100%"></div>`; } },
  { id:"vat-pham", name:"Vật phẩm", blurb:"Đồ ăn, thuốc, trang phục, vũ khí nhạc cụ, nội thất", render(){
    const grp = [["🍜 Đồ ăn hồi máu", i => i.energy], ["🥤 Đồ uống hồi mana", i => i.mana], ["💊 Thuốc giải độc Mute", i => i.cure], ["👕 Trang phục", i => i.slot], ["💇 Kiểu tóc (Saigon Barber)", i => i.head], ["🛋️ Nội thất nhà riêng", i => i.decor]];
    const SL = { armor:"Áo / giáp", pants:"Quần + giày", hat:"Mũ", cape:"Áo choàng", shoes:"Giày", gloves:"Găng", belt:"Thắt lưng" };
