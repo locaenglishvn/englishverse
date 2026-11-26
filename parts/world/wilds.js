@@ -313,6 +313,7 @@ const WILDS = (function () {
   const taken = (x, z, r) => occ.some(o => (o.x - x) * (o.x - x) + (o.z - z) * (o.z - z) < (o.r + r) * (o.r + r));
   const reserve = (x, z, r) => occ.push({ x, z, r });
   function pine(x, z, s, sol) {
+    if (ring1(x, z) === "N") { NATURE.sprite(rnd() < 0.15 ? "bare" : "fir", x, z, 0.8 + (s - 0.9) * 0.35); if (sol) solid(x, z, 0.45 * s, 0.45 * s); return; }   // thông vẽ tay (Bleed)
     if (typeof NATURE !== "undefined") { SHADE.push(x, z, 1.7 * s); NATURE.place("pine", x, z, s); if (sol) solid(x, z, 0.5 * s, 0.5 * s); return; }   // mô hình (nature.js)
     SHADE.push(x, z, 1.7 * s);
     put("cyl5", 0x6d4b33, x, 0, z, 0.22 * s, 0.9 * s, 0.22 * s);
@@ -345,10 +346,13 @@ const WILDS = (function () {
     put("box", 0xb55234, x, 0, z, w, h * 0.5, d, 0, 0, 0, 0.1); put("box", 0xc9663f, x, h * 0.5, z, w * 0.82, h * 0.3, d * 0.82, 0, 0, 0, 0.1); put("box", 0xdc7b4b, x, h * 0.8, z, w * 0.6, h * 0.2, d * 0.6, 0, 0, 0, 0.1);
     if (sol) solid(x, z, w / 2, d / 2);
   }
+  const ring1 = (x, z) => { if (typeof NATURE === "undefined" || !NATURE.sprite) return null; const s = sectorAt(x, z); return s && s.ring === 1 ? s.dir : null; };   // bản 2.5D: vòng 1 mọi vùng dùng cây / đá vẽ tay
+  const RTINT = { N: [1.42, 1.44, 1.5], E: [1.1, 0.84, 0.7], SE: [1.06, 1.0, 0.88] };   // nhuộm đá vẽ tay theo vùng (tuyết: xám xanh · sa mạc: đỏ · biển: màu cát)
   const neHere = (x, z) => { if (typeof NATURE === "undefined" || !NATURE.sprite) return false; const s = sectorAt(x, z); return !!(s && s.dir === "NE" && s.ring === 1); };   // Maple Highlands: thử nền + cây vẽ tay TẢI VỀ (26/11)
   const kkHere = (x, z) => { if (typeof NATURE === "undefined" || !NATURE.sprite) return false; const s = sectorAt(x, z); return !!(s && s.dir === "S" && s.ring === 1); };   // Blossom Valley (bản 2.5D): cây / đá / bụi vẽ tay dạng ảnh (nature.js)
   function rock(x, z, r, col, cap, sol) {
-    if (kkHere(x, z) || neHere(x, z)) { NATURE.sprite("rock", x, z, r * 0.62); if (sol && r >= 1.1) solid(x, z, r * 0.7, r * 0.5); return; }   // đá vẽ tay (ảnh)
+    const d1 = ring1(x, z);
+    if (d1) { NATURE.sprite("rock", x, z, r * 0.62, cap ? [1.6, 1.63, 1.68] : RTINT[d1]); if (sol && r >= 1.1) solid(x, z, r * 0.7, r * 0.5); return; }   // đá vẽ tay (ảnh)
     putBlob(col, x, r * 0.3, z, r, r * 0.68, r * 0.85, rnd() * 6, 0.4); if (cap) put("ico", 0xffffff, x, r * 0.78, z, r * 0.7, r * 0.4, r * 0.6, rnd() * 6, 0, 0, 0.03);
     if (sol && r >= 1.1) solid(x, z, r * 0.8, r * 0.8);
   }
@@ -358,6 +362,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, 0.6, 0.6);
   }
   function palm(x, z, s, sol) {
+    if (ring1(x, z) === "SE") { NATURE.sprite("palm", x, z, 0.8 + (s - 0.8) * 0.35); if (sol) solid(x, z, 0.35 * s, 0.35 * s); return; }   // dừa vẽ tay (Bleed)
     if (typeof NATURE !== "undefined") { SHADE.push(x, z, 1.6 * s); NATURE.place("palm", x, z, s); if (sol) solid(x, z, 0.3 * s, 0.3 * s); return; }   // mô hình (nature.js)
     const lx = (rnd() - 0.5) * 0.5, lz = (rnd() - 0.5) * 0.5;
     for (let i = 0; i < 4; i++) put("cyl5", 0x9c7448, x + lx * i * s * 0.6, i * 1.2 * s, z + lz * i * s * 0.6, (0.26 - i * 0.03) * s, 1.25 * s, (0.26 - i * 0.03) * s, 0, 0, 0, 0.1);
@@ -367,6 +372,7 @@ const WILDS = (function () {
     if (sol) solid(x + lx * 0.6 * s, z + lz * 0.6 * s, 0.4 * s, 0.4 * s);
   }
   function mangrove(x, z, s, sol) {
+    if (ring1(x, z) === "SE") { palm(x, z, s, sol); return; }
     put("ico", 0x2f7d46, x, 2.0 * s, z, 1.4 * s, 0.9 * s, 1.4 * s, rnd() * 6);
     for (let i = 0; i < 5; i++) { const f = i * 1.2566 + rnd() * 0.4, th = 0.45; put("cyl5", 0x6b4a2f, x + Math.cos(f) * 0.8 * s, 0, z + Math.sin(f) * 0.8 * s, 0.08 * s, 2.0 * s, 0.08 * s, 0, -th * Math.sin(f), th * Math.cos(f), 0.1); }
     if (sol) solid(x, z, 0.9 * s, 0.9 * s);
@@ -395,7 +401,8 @@ const WILDS = (function () {
   }
   function flowers(x, z) {
     if (typeof NATURE !== "undefined") { NATURE.ground(x, z, "flower"); return; } const cs = [0xff7eb6, 0xffd43b, 0xffffff, 0xb197fc, 0xff922b]; const c = cs[(rnd() * 5) | 0]; for (let i = 0; i < 5; i++) { const dx = (rnd() - 0.5) * 1.6, dz = (rnd() - 0.5) * 1.6; put("cone6", 0x4e9e3a, x + dx, 0, z + dz, 0.05, 0.3, 0.05); put("ico", i === 0 ? 0xffd43b : c, x + dx, 0.34, z + dz, 0.13); } }
-  function mound(x, z, s) { put("sph", 0xffffff, x, 0, z, 1.4 * s, 0.6 * s, 1.2 * s, rnd() * 3, 0, 0, 0.04); }
+  function mound(x, z, s) { if (ring1(x, z) === "N") { if (rnd() < 0.6) NATURE.sprite("rock", x, z, 0.5 + s * 0.4, [1.62, 1.65, 1.7]); return; }   // bản 2.5D: tảng đá phủ tuyết vẽ tay thay ụ tuyết khối
+    put("sph", 0xffffff, x, 0, z, 1.4 * s, 0.6 * s, 1.2 * s, rnd() * 3, 0, 0, 0.04); }
   function crystals(x, z) { for (let i = 0; i < 4; i++) put("cone6", 0x9fe0ff, x + (rnd() - 0.5) * 1.4, 0, z + (rnd() - 0.5) * 1.4, 0.3, 1.0 + rnd() * 1.2, 0.3, 0, (rnd() - 0.5) * 0.4, (rnd() - 0.5) * 0.4, 0.05); }
   function dune(x, z) { put("sph", 0xe9cf98, x, -0.2, z, 5 + rnd() * 4, 1.2 + rnd(), 4 + rnd() * 3, rnd() * 3, 0, 0, 0.05); }
   function pumpkin(x, z) { put("sph", 0xf08a1c, x, 0.05, z, 0.45, 0.35, 0.45); put("cone6", 0x4e9e3a, x, 0.35, z, 0.08, 0.18, 0.08); }
@@ -589,7 +596,7 @@ const WILDS = (function () {
         const sx = x + (rnd() - 0.5) * 3, sz = z + (rnd() - 0.5) * 3; if (!clear(sx, sz, 0.8)) continue;
         if (d === "N") { if (rnd() < 0.5) mound(sx, sz, 0.6 + rnd() * 0.8); else rock(sx, sz, 0.5 + rnd() * 0.5, 0x8f9aa8, true, false); }
         else if (d === "NE") { if (neHere(sx, sz)) { if (rnd() < 0.3) rock(sx, sz, 0.5 + rnd() * 0.5, 0x8d7355, false, false); } else if (rnd() < 0.5) put("sph", [0xd9481f, 0xf08a24, 0xe9b82f][(rnd() * 3) | 0], sx, 0.02, sz, 1 + rnd() * 0.6, 0.18, 0.9 + rnd() * 0.5, rnd() * 3, 0, 0, 0.06); else rock(sx, sz, 0.5 + rnd() * 0.5, 0x8d7355, false, false); }
-        else if (d === "E") { if (rnd() < 0.3) put("ico", 0x9a8a55, sx, 0.2, sz, 0.45, 0.35, 0.45); else rock(sx, sz, 0.5 + rnd() * 0.6, 0xc07a52, false, false); }
+        else if (d === "E") { if (rnd() < 0.3) { if (ring1(sx, sz)) NATURE.sprite("bush", sx, sz, 0.55 + rnd() * 0.3, [1.05, 0.92, 0.55]); else put("ico", 0x9a8a55, sx, 0.2, sz, 0.45, 0.35, 0.45); } else rock(sx, sz, 0.5 + rnd() * 0.6, 0xc07a52, false, false); }   // bụi khô vẽ tay
         else if (d === "SE") { if (rnd() < 0.5) rock(sx, sz, 0.5 + rnd() * 0.5, 0xc9c1ab, false, false); else put("ico", 0xff9fb0, sx, 0.1, sz, 0.25, 0.18, 0.25); }
         else { if (rnd() < 0.7) flowers(sx, sz); else rock(sx, sz, 0.5 + rnd() * 0.4, 0x9aa5a0, false, false); }
       }

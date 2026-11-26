@@ -13,6 +13,8 @@
 const LOOK25 = (function () {
   const FOV0 = 55, FOV1 = 30, PITCH = 0.93, YAW_MAX = 0.42;
   const SUN0 = [12, 22, 9], SUN1 = [15, 15, 3];   // vị trí nắng so với người chơi: thường / 2.5D (thấp + xiên ngang → bóng dài đổ sang trái)
+  let dir = "S";   // vùng đang đứng → bộ màu đèn / sương riêng
+  const LIGHT = { S: [0xffd9a0, 0xf2e2c4], NE: [0xffcf8e, 0xf0d6b0], N: [0xfff2e2, 0xe3ecf6], E: [0xffd08a, 0xf4d6a8], SE: [0xfff0c8, 0xdcf0ee] };   // [màu nắng, màu sương xa]
   let blend = 0, yaw = 0, here = false, fovSet = false, btn = null, veil = null;
   const U = { on: { value: 0 }, time: { value: 0 } };   // shader nền: 0 = tắt, 1 = bật (đổi mượt); time: nước chảy
   let enabled = true;
@@ -105,6 +107,7 @@ const LOOK25 = (function () {
     T = { g: { value: tex(gC) }, d: { value: tex(dC) }, m: { value: tex(macroTile()) }, ga: { value: avg(gC) }, da: { value: avg(dC) } };
     // Maple Highlands (thử 26/11): nền là ảnh VẼ TAY TẢI VỀ (OpenGameArt, CC0): cỏ "Hand Painted Grass" – PamNawi; đất nứt "4 hand-painted ground textures" – Drummyfish
     const ld = f => { const t = new THREE.TextureLoader().load(f); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t; };
+    Object.assign(T, { s3: { value: ld("assets/painted/ground-sand.webp") }, s3a: { value: new THREE.Vector3(0.879, 0.838, 0.608) } });   // cát gợn "4 hand-painted ground textures" – Drummyfish (CC0): sa mạc, bãi biển, và nhuộm trắng xanh làm tuyết dạt
     Object.assign(T, { g2: { value: ld("assets/painted/ground-grass.webp") }, d2: { value: ld("assets/painted/ground-dirt.webp") }, lf: { value: leafTile() }, g2a: { value: new THREE.Vector3(0.284, 0.516, 0.047) }, d2a: { value: new THREE.Vector3(0.679, 0.491, 0.271) } });
     return T;
   }
@@ -113,9 +116,10 @@ const LOOK25 = (function () {
      Màu lớn = ảnh nền cũ (trước vân mịn) × màu đỉnh; ảnh vẽ tay chia cho màu trung bình của nó → giữ đúng tông vùng. */
   function patchGround(sh) {
     const t = textures();
-    Object.assign(sh.uniforms, { l25On: U.on, l25G: t.g, l25D: t.d, l25M: t.m, l25GA: t.ga, l25DA: t.da, l25G2: t.g2, l25D2: t.d2, l25G2A: t.g2a, l25D2A: t.d2a, l25L: t.lf });
+    Object.assign(sh.uniforms, { l25On: U.on, l25G: t.g, l25D: t.d, l25M: t.m, l25GA: t.ga, l25DA: t.da, l25G2: t.g2, l25D2: t.d2, l25G2A: t.g2a, l25D2A: t.d2a, l25L: t.lf, l25S: t.s3, l25SA: t.s3a });
     sh.vertexShader = "varying vec3 vW25;\n#ifdef RIB\nattribute float ea; varying float vEA;\n#endif\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\n  vW25 = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#ifdef RIB\n  vEA = ea;\n#endif");
-    sh.fragmentShader = "uniform float l25On; uniform sampler2D l25G, l25D, l25M, l25G2, l25D2, l25L; uniform vec3 l25GA, l25DA, l25G2A, l25D2A; varying vec3 vW25;\n#ifdef RIB\nvarying float vEA;\n#endif\n" +
+    sh.fragmentShader = "uniform float l25On; uniform sampler2D l25G, l25D, l25M, l25G2, l25D2, l25L, l25S; uniform vec3 l25GA, l25DA, l25G2A, l25D2A, l25SA; varying vec3 vW25;\n#ifdef RIB\nvarying float vEA;\n#endif\n" +
+      "float l25Sec(vec2 p, float a0, float a1) { float a = degrees(atan(p.x, -p.y)), m = max(abs(p.x), abs(p.y)); return smoothstep(a0, a0 + 3.0, a) * (1.0 - smoothstep(a1 - 3.0, a1, a)) * smoothstep(149.0, 156.0, m) * (1.0 - smoothstep(236.0, 241.0, m)); }\n" +
       "float l25MaskNE(vec2 p) { float a = degrees(atan(p.x, -p.y)), m = max(abs(p.x), abs(p.y)); return smoothstep(30.0, 33.0, a) * (1.0 - smoothstep(57.0, 60.0, a)) * smoothstep(149.0, 156.0, m) * (1.0 - smoothstep(236.0, 241.0, m)); }\n" +
       "float l25Mask(vec2 p) { float r = p.x / max(p.y, 1.0); return smoothstep(149.0, 157.0, p.y) * smoothstep(-1.0, -0.94, r) * (1.0 - smoothstep(0.52, 0.577, r)) * (1.0 - smoothstep(236.0, 241.0, max(abs(p.x), abs(p.y)))); }\n" +
       sh.fragmentShader.replace("#include <map_fragment>", "#include <map_fragment>\n  vec3 c25 = diffuseColor.rgb;")
@@ -124,7 +128,7 @@ const LOOK25 = (function () {
   { // dải đường mòn / bờ suối: mép lởm chởm theo ngọn cỏ + nhiễu → cỏ bên dưới mọc lấn vào, không còn mép cắt thẳng
     vec2 q = vec2(vW25.x, -vW25.z);
     float hg = dot(texture2D(l25G, q / 4.2).rgb, vec3(0.3, 0.6, 0.1)) / dot(l25GA, vec3(0.3, 0.6, 0.1)), nz = texture2D(l25M, q / 7.0).r;
-    float mk = max(l25Mask(vW25.xz), l25MaskNE(vW25.xz)), th = mix(1.01, 0.8 + (nz - 0.5) * 0.4 - (hg - 1.0) * 0.3, mk), sw = max(0.002, 0.1 * mk);   // chỉ trong Blossom Valley (vùng khác: mép trơn như cũ)
+    float mk = max(max(l25Mask(vW25.xz), l25MaskNE(vW25.xz)), l25Sec(vW25.xz, -45.0, 30.0) + l25Sec(vW25.xz, 60.0, 120.0) + l25Sec(vW25.xz, 120.0, 150.0)), th = mix(1.01, 0.8 + (nz - 0.5) * 0.4 - (hg - 1.0) * 0.3, mk), sw = max(0.002, 0.1 * mk);   // chỉ trong Blossom Valley (vùng khác: mép trơn như cũ)
     float al = 1.0 - smoothstep(th - sw, th + sw, abs(vEA)); if (al < 0.01) discard; diffuseColor.a *= al; }   // mép lởm chởm nhưng mờ dần, không sắc
   #endif
   { float msk = l25On * l25Mask(vW25.xz);
@@ -171,6 +175,44 @@ const LOOK25 = (function () {
       dC = mix(dC, Lf.rgb * 0.85, Lf.a * dens * 0.35);
       vec3 hp = mix(dC, gC, tg) * (0.86 + mac * 0.28);
       diffuseColor.rgb = mix(diffuseColor.rgb, hp, mN);
+    } }
+  { // Frost Peaks (N) · Sunset Canyon (E) · Coral Coast (SE): ảnh vẽ tay tải về (cát gợn, đất nứt, cỏ) + chi tiết nhỏ vẽ code
+    vec2 p2 = vW25.xz; float rN = l25Sec(p2, -45.0, 30.0), rE = l25Sec(p2, 60.0, 120.0), rS = l25Sec(p2, 120.0, 150.0), mR = l25On * (rN + rE + rS);
+    if (mR > 0.002) {
+      vec3 c = c25;
+      #ifdef USE_COLOR
+        c *= vColor;
+      #endif
+      vec2 w = vec2(vW25.x, -vW25.z);
+      float mac = texture2D(l25M, w / 43.0).r, mac2 = texture2D(l25M, w / 11.0 + 0.37).r, sel = smoothstep(0.38, 0.62, mac2);
+      vec2 w2 = mat2(0.8, -0.6, 0.6, 0.8) * w / 7.7 + vec2(0.31, 0.57);
+      vec3 L3 = vec3(0.3, 0.6, 0.1);
+      float sl = dot(mix(texture2D(l25S, w / 4.0).rgb, texture2D(l25S, w2 * 2.2).rgb, sel), L3) / dot(l25SA, L3);   // gợn cát / tuyết dạt
+      float dl = dot(mix(texture2D(l25D2, w / 2.6).rgb, texture2D(l25D2, w2 * 2.4).rgb, sel), L3) / dot(l25D2A, L3);   // vết nứt
+      float fd = dot(texture2D(l25D, w / 1.7).rgb, L3) / dot(l25DA, L3), fg = dot(texture2D(l25G, w / 1.8).rgb, L3) / dot(l25GA, L3);   // chi tiết nhỏ (code): sỏi, ngọn cỏ
+      float lc = dot(c, L3);
+      vec3 hp = vec3(0.0);
+      if (rN > 0.001) {   // tuyết: gợn dạt + lấp lánh nhẹ; hồ băng (xanh): vết nứt; đá lộ: sỏi
+        float ice = smoothstep(0.12, 0.2, c.b - c.r);   // chỉ hồ băng (xanh rõ); tuyết hơi ánh xanh không tính
+        vec3 snow = c * mix(sl, 1.0, 0.45) * mix(1.0, fd, 0.12) * vec3(0.98, 1.0, 1.03);
+        vec3 icec = c * mix(1.0, mix(dl, 1.0, 0.45), 1.0) * vec3(0.97, 1.0, 1.04);
+        hp += mix(snow, icec, ice) * rN;
+      }
+      if (rE > 0.001) {   // sa mạc: cát gợn; mảng đỏ sẫm: đất nứt khô; sỏi nhỏ
+        float crack = smoothstep(0.6, 0.48, lc + (mac2 - 0.5) * 0.08);
+        vec3 sand = c * mix(sl, 1.0, 0.25) * mix(1.0, fd, 0.18), dry = c * mix(dl, 1.0, 0.08) * mix(1.0, fd, 0.25);
+        hp += mix(sand, dry, crack) * rE;
+      }
+      if (rS > 0.001) {   // biển nhiệt đới: cỏ vẽ tay (ảnh tải về) + cát gợn; nước biển giữ nguyên
+        float gm = clamp((c.g - max(c.r, c.b)) * 6.0, 0.0, 1.0), water = smoothstep(0.03, 0.1, c.b - c.r * 0.9 - 0.08);
+        vec3 G = mix(texture2D(l25G2, w / 3.0).rgb, texture2D(l25G2, w2 * 1.9).rgb, sel);
+        float gl = min(dot(G, L3) / dot(l25G2A, L3), 1.3); G = min(G, l25G2A * 1.6);
+        vec3 cg = mix(vec3(dot(c, L3)), c, 0.78) * vec3(1.02, 0.97, 0.9), grass = mix(gl * cg, G / l25G2A * cg, 0.35) * mix(1.0, fg, 0.5), sand = c * mix(sl, 1.0, 0.3) * mix(1.0, fd, 0.2);
+        vec3 land = mix(sand, grass, smoothstep(0.25, 0.75, gm + (gl - 1.0) * 0.3 + (mac2 - 0.5) * 0.2));
+        hp += mix(land, c, water) * rS;
+      }
+      hp = hp / max(rN + rE + rS, 0.001) * (0.88 + mac * 0.24);
+      diffuseColor.rgb = mix(diffuseColor.rgb, hp, mR);
     } }`);
   }
 
@@ -196,7 +238,7 @@ const LOOK25 = (function () {
     try {
       if (room || maze || creating) return false;
       if (typeof RIFTS !== "undefined" && RIFTS.blocked(player.position.x, player.position.z) !== undefined) return false;
-      const s = WILDS.sectorAt(player.position.x, player.position.z); return !!(s && (s.dir === "S" || s.dir === "NE") && s.ring === 1);   // Blossom Valley + Maple Highlands (thử ảnh tải về)
+      const s = WILDS.sectorAt(player.position.x, player.position.z); if (s && s.ring === 1) { dir = s.dir; return true; } return false;   // vòng 1 cả 5 vùng (26/11)
     } catch (e) { return false; }
   }
   function ui() {
@@ -228,7 +270,7 @@ const LOOK25 = (function () {
       const f = lerp(FOV0, FOV1, blend); if (Math.abs(camera.fov - f) > 0.01) { camera.fov = f; camera.updateProjectionMatrix(); }
       fovSet = blend > 0;
       // đèn + sương (chỉ ngoài trời)
-      sun.intensity = lerp(0.75, 0.98, blend); sun.color.copy(cSun0).lerp(cSun1, blend);
+      sun.intensity = lerp(0.75, 0.98, blend); const LP = LIGHT[dir] || LIGHT.S; cSun1.setHex(LP[0]); cFog1.setHex(LP[1]); sun.color.copy(cSun0).lerp(cSun1, blend);
       hemi.intensity = lerp(0.62, 0.5, blend); hemi.color.copy(cSky0).lerp(cSky1, blend); hemi.groundColor.copy(cGr0).lerp(cGr1, blend);
       const p = player.position; sun.position.set(p.x + lerp(SUN0[0], SUN1[0], blend), lerp(SUN0[1], SUN1[1], blend), p.z + lerp(SUN0[2], SUN1[2], blend));
       if (scene.fog) { const n0 = camWide ? 70 : 34, f0 = camWide ? 170 : 85; scene.fog.near = lerp(n0, n0 * 1.6, blend); scene.fog.far = lerp(f0, f0 * 1.5, blend); scene.fog.color.copy(cFog0).lerp(cFog1, blend * 0.8); }
