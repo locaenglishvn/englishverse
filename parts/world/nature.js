@@ -66,12 +66,18 @@ const NATURE = (function () {
     const up = [0, Math.cos(TILT), -Math.sin(TILT)], B = new Map();
     SQ.forEach(([k, H, x, z, wx]) => {
       const [px, py, pw, ph, bx] = SPR[k], w = H * pw / ph * wx, h = H * STRETCH, ck = Math.floor(x / CH) + "," + Math.floor(z / CH);
-      let C = B.get(ck); if (!C) B.set(ck, C = { v: [], u: [], c: [], cu: [], b: [] });
+      let C = B.get(ck); if (!C) B.set(ck, C = { v: [], u: [], c: [], cu: [], b: [], d: [], du: [] });
       const u0 = (px + pw) / SW, u1 = px / SW, v0 = 1 - (py + ph) / SHT, v1 = 1 - py / SHT;   // lật ngang: u0 bên trái là mép phải ảnh
       const l = x - w * (1 - bx), y0 = -0.15;
       const P = [[l, y0, z], [l + w, y0, z], [l + w + up[0] * h, y0 + up[1] * h, z + up[2] * h], [l + up[0] * h, y0 + up[1] * h, z + up[2] * h]];
       [0, 1, 2, 0, 2, 3].forEach(i => { C.v.push(...P[i]); C.b.push(z); });
       [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]].forEach(q => C.u.push(...q));
+      if (k[0] === "r" || k[0] === "b") {   // đá, bụi (thấp): bóng = vệt mềm nằm đất sát chân, lệch nhẹ theo nắng (tấm đổ bóng dựng đứng làm bóng đá bị lệch – 26/11)
+        const cx = x - H * 0.22, cz = z - H * 0.08, rx = w * 0.5 + H * 0.25, rz = Math.max(0.5, w * 0.3);
+        const D4 = [[cx - rx, cz + rz, 0, 0], [cx + rx, cz + rz, 1, 0], [cx + rx, cz - rz, 1, 1], [cx - rx, cz - rz, 0, 1]];
+        [0, 1, 2, 0, 2, 3].forEach(i => { C.d.push(D4[i][0], 0.035, D4[i][1]); C.du.push(D4[i][2], D4[i][3]); });
+        return;
+      }
       const a = -w * (1 - bx), b = w * bx, Q = [[x + tx * a, y0, z + tz * a], [x + tx * b, y0, z + tz * b], [x + tx * b, H, z + tz * b], [x + tx * a, H, z + tz * a]];
       [0, 1, 2, 0, 2, 3].forEach(i => C.c.push(...Q[i]));
       [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]].forEach(q => C.cu.push(...q));
@@ -80,8 +86,14 @@ const NATURE = (function () {
       g.setAttribute("normal", new THREE.Float32BufferAttribute(pos.map((v, i) => i % 3 === 2 ? 1 : 0), 3)); g.computeBoundingSphere();
       const o = new THREE.Mesh(g, m); o.userData.flat = true; o.userData.flag = true; o.visible = false; scene.add(o);
       managed.push({ o, x: g.boundingSphere.center.x, z: g.boundingSphere.center.z, r: g.boundingSphere.radius, layer: "k" }); return o; };
-    B.forEach(C => { const o = mk(C.v, C.u, mt); o.geometry.setAttribute("bz", new THREE.Float32BufferAttribute(C.b, 1)); o.onBeforeRender = setPS;
-      const s = mk(C.c, C.cu, cast); s.castShadow = true; s.customDepthMaterial = cdm; });
+    let blobM = null;
+    B.forEach(C => { if (C.d.length) { if (!blobM) { const cv = document.createElement("canvas"); cv.width = cv.height = 64; const x = cv.getContext("2d"), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gr.addColorStop(0, "rgba(25,35,20,.55)"); gr.addColorStop(0.55, "rgba(25,35,20,.32)"); gr.addColorStop(1, "rgba(25,35,20,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+        blobM = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false }); }
+      const bo = mk(C.d, C.du, blobM); bo.renderOrder = 1; }
+      if (!C.v.length) return;
+      const o = mk(C.v, C.u, mt); o.geometry.setAttribute("bz", new THREE.Float32BufferAttribute(C.b, 1)); o.onBeforeRender = setPS;
+      if (!C.c.length) return; const s = mk(C.c, C.cu, cast); s.castShadow = true; s.customDepthMaterial = cdm; });
     SQ.length = 0;
   }
   function ground(x, z, kind) { Q.push([pick(GROUND[kind] || GROUND.flower), x, z, 0.8 + rnd() * 0.45, null, "g"]); }

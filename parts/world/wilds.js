@@ -119,7 +119,7 @@ const WILDS = (function () {
         if (m > R1) mixc(o, o, K.s2, 0.25);
         else {   // vòng 1: nền rừng sẫm dưới các cụm cây + mảng đất trống (như video tham khảo)
           const fo = fbm(x, z); if (fo > 0.5) mixc(o, o, K.sF, sm(0.5, 0.64, fo) * 0.55);
-          const dn = vnoise(x * 0.045 + 50, z * 0.045 + 20) * 0.75 + n2 * 0.25; if (dn > 0.66 && fo < 0.55) mixc(o, o, K.dirt, sm(0.66, 0.74, dn) * 0.7);
+          const rx = x * 0.8 - z * 0.6 + n1 * 14, rz = x * 0.6 + z * 0.8 + n2 * 14, dn = vnoise(rx * 0.045 + 50, rz * 0.045 + 20) * 0.7 + n2 * 0.2 + vnoise(x * 0.23 + 7, z * 0.23 + 3) * 0.1;   // lưới nhiễu xoay + méo: mảng đất không còn mép thẳng theo ô lưới (26/11) if (dn > 0.66 && fo < 0.55) mixc(o, o, K.dirt, sm(0.66, 0.74, dn) * 0.7);
         }
       }
     }
@@ -175,7 +175,7 @@ const WILDS = (function () {
     for (let gx = -150; gx < R1; gx += 2.8) for (let gz = CITY; gz < R1; gz += 2.8) {
       const x = gx + rnd() * 2.8, z = gz + rnd() * 2.8, sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== 1) continue;
       if (rnd() > 0.05 + fbm(x, z) * 0.08) continue;
-      if (pathDist(x, z) < 2.2 || taken(x, z, 0.8) || blocked(x, z) || (z > 148 && Math.abs(x - streamX(z)) < streamW(z) + 1.6)) continue;
+      if (pathDist(x, z) < 3.2 || taken(x, z, 0.8) || blocked(x, z) || (z > 148 && Math.abs(x - streamX(z)) < streamW(z) + 1.6)) continue;
       const k = rnd(); if (k < 0.45) { if (kkHere(x, z)) NATURE.sprite("bush", x, z, 0.7 + rnd() * 0.5); else NATURE.bush(x, z, 0.8 + rnd() * 0.5); } else if (k < 0.92) NATURE.ground(x, z, "flower"); else NATURE.ground(x, z, "plant");
     }
   }
@@ -192,40 +192,43 @@ const WILDS = (function () {
   }
   /* Dải hình mép sắc nằm trên nền: đường mòn (5 hướng), sân trước cổng, suối mùa xuân (nước + bờ). Màu theo đỉnh, vân mịn như nền. */
   const RIB = [];
-  function ribbon(pts, cMid, cEdge, y, mt) {   // pts: [tâm x, tâm z, pháp tuyến ngang x, z, nửa bề rộng]; 3 cột đỉnh: trái – giữa – phải
+  function ribbon(pts, cMid, cEdge, y, mt, solidIn) {   // solidIn: mép trong (k < 0) không lởm chởm (sân tròn trước cổng)   // pts: [tâm x, tâm z, pháp tuyến ngang x, z, nửa bề rộng]; 3 cột đỉnh: trái – giữa – phải
     const pos = [], col = [], uv = [], idx = [], A = new THREE.Color(cEdge), B = new THREE.Color(cMid), t = new THREE.Color();
+    const ea = [];   // ea: vị trí ngang −1 (mép trái) … 0 (giữa) … 1 (mép phải) → shader làm mép lởm chởm tự nhiên (look25.js)
     pts.forEach(([cx, cz, px, pz, hw], i) => {
-      [[1, A], [0, B], [-1, A]].forEach(([k, c]) => { const x = cx + px * hw * k, z = cz + pz * hw * k, j = 0.94 + vnoise(x * 0.4, z * 0.4) * 0.12;
-        pos.push(x, y, z); t.copy(c).multiplyScalar(j); col.push(t.r, t.g, t.b); uv.push(x / 3.2, z / 3.2); });
-      if (i) { const a = (i - 1) * 3, b = i * 3; idx.push(a, b, a + 1, a + 1, b, b + 1, a + 1, b + 1, a + 2, a + 2, b + 1, b + 2); }
+      [[1, A], [0.5, B], [0, B], [-0.5, B], [-1, A]].forEach(([k, c]) => { const x = cx + px * hw * k, z = cz + pz * hw * k, j = 0.94 + vnoise(x * 0.4, z * 0.4) * 0.12;
+        pos.push(x, y, z); t.copy(c).multiplyScalar(j); col.push(t.r, t.g, t.b); uv.push(x / 3.2, z / 3.2); ea.push(solidIn && k < 0 ? 0 : k); });
+      if (i) { const a = (i - 1) * 5, b = i * 5; for (let q = 0; q < 4; q++) idx.push(a + q, b + q, a + q + 1, a + q + 1, b + q, b + q + 1); }
     });
     if (idx.length) {   // mặt phải ngửa lên (nếu úp thì đảo thứ tự đỉnh) – không dùng 2 mặt vì Lambert tô mặt sau tối
       const P = i => new THREE.Vector3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]), a = P(idx[0]), n = new THREE.Vector3().subVectors(P(idx[1]), a).cross(new THREE.Vector3().subVectors(P(idx[2]), a));
       if (n.y < 0) for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
     }
-    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); g.setAttribute("ea", new THREE.Float32BufferAttribute(ea, 1));
     g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute("normal", new THREE.Float32BufferAttribute(pos.map((v, i) => i % 3 === 1 ? 1 : 0), 3)); g.setIndex(idx); g.computeBoundingSphere();
     const m = new THREE.Mesh(g, mt); m.userData.flat = true; m.userData.flag = true; m.receiveShadow = true; scene.add(m); RIB.push(m);
   }
   function ribbons() {
     const W1 = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1); W1.needsUpdate = true;   // ảnh trắng 1 điểm: để shader có vUv cho vân mịn (detailed)
     const dirtM = detailed(new THREE.MeshLambertMaterial({ vertexColors: true, map: W1 }), 1, 1), waterM = new THREE.MeshLambertMaterial({ vertexColors: true });
+    dirtM.defines = { RIB: 1 };   // mép lởm chởm (look25.js patchGround)
+    if (typeof LOOK25 !== "undefined") waterM.onBeforeCompile = LOOK25.patchWater;   // suối: lạch cạn thấy sỏi đáy, gợn nước trôi
     const hex = c => (c[0] * 0.86) << 16 | (c[1] * 0.86) << 8 | (c[2] * 0.86);
     PATHS.forEach((p, i) => {   // đường mòn: bề rộng ~3,4 m, mép hơi lượn
       const dir = GATES[i].dir, pts = [];
       for (let al = -1; al <= p.len; al += 1.5) { const o = pathOff(p, al), x = p.x0 + p.dx * al - p.dz * o, z = p.z0 + p.dz * al + p.dx * o;
-        if (p.se && cheb(x, z) > SEA - 4) break; pts.push([x, z, -p.dz, p.dx, 1.7 + (vnoise(al * 0.25, i * 9) - 0.5) * 0.5]); }
+        if (p.se && cheb(x, z) > SEA - 4) break; pts.push([x, z, -p.dz, p.dx, 2.5 + (vnoise(al * 0.25, i * 9) - 0.5) * 0.7]); }   // rộng hơn (26/11: ~5 m, mép ngoài 20% bị cỏ lấn)
       const c = hex(PATHC[dir]); ribbon(pts, c, new THREE.Color(c).multiplyScalar(0.9).getHex(), 0.012, dirtM);
     });
     GATES.forEach(g => {   // sân trước cổng: hình tròn mép lượn (dải vòng quanh tâm)
       const c = hex(PATHC[g.dir]), pts = [];
       for (let a = 0; a <= 48; a++) { const t = a / 48 * Math.PI * 2, r = 6.5 + (vnoise(Math.cos(t) * 2 + 9, Math.sin(t) * 2) - 0.5) * 1.6; pts.push([g.x + Math.cos(t) * r / 2, g.z + Math.sin(t) * r / 2, Math.cos(t), Math.sin(t), r / 2]); }
-      ribbon(pts, c, c, 0.013, dirtM);
+      ribbon(pts, c, c, 0.013, dirtM, true);
     });
     const bank = [], water = [];   // suối mùa xuân (từ mép thành phố ra hết vòng 2)
     for (let z = 149; z <= R2 + 30; z += 1.2) { const d = 14 * 0.08 * Math.cos((z - 150) * 0.08), L = Math.hypot(1, d), px = 1 / L, pz = -d / L, x = streamX(z);
-      bank.push([x, z, px, pz, streamW(z) + 1.1]); water.push([x, z, px, pz, streamW(z)]); }
-    ribbon(bank, hex(K.bank), hex(K.bank), 0.008, dirtM);
+      bank.push([x, z, px, pz, streamW(z) + 1.6]); water.push([x, z, px, pz, streamW(z)]); }
+    ribbon(bank, 0x75684f, 0x847b62, 0.008, dirtM);   // bờ suối: đất ướt + sỏi (trước: dải cỏ xanh đậm)
     ribbon(water, 0x3f9fe0, 0x8fd0ff, 0.016, waterM);
     RIB.forEach(m => managed.push({ o: m, x: m.geometry.boundingSphere.center.x, z: m.geometry.boundingSphere.center.z, r: m.geometry.boundingSphere.radius }));
   }
@@ -688,6 +691,7 @@ const WILDS = (function () {
 
   /* ---------- 8. BẢN ĐỒ 2D (hệ toạ độ thế giới x, z, giống drawCity) ---------- */
   const MAPC = { N: "#e6f0f8", NE: "#e3a64a", E: "#dcae72", SE: "#f1e0a8", S: "#8fdb68" };
+  let MAPF = null;
   function drawMap(x) {
     x.save(); x.beginPath(); x.rect(-150, -R2, 480, R2 - CITY); x.rect(CITY, -CITY, R2 - CITY, CITY * 2); x.rect(-150, CITY, 480, R2 - CITY); x.clip();
     ORDER.forEach(d => {
@@ -697,12 +701,18 @@ const WILDS = (function () {
         x.fillStyle = "#f1e0a8"; ISL.forEach(I => { x.beginPath(); x.arc(I.x, I.z, I.r, 0, 7); x.fill(); }); x.fillStyle = "#8fdb68"; ISL.forEach(I => { x.beginPath(); x.arc(I.x, I.z, I.r * 0.8, 0, 7); x.fill(); });
         x.strokeStyle = "#a0522d"; x.lineWidth = BRG_HW * 2; BRG.forEach(b => { x.beginPath(); x.moveTo(b[0], b[1]); x.lineTo(b[2], b[3]); x.stroke(); }); x.restore(); }
     });
+    if (!MAPF) { MAPF = []; for (let gx = -150; gx < R2; gx += 5) for (let gz = CITY; gz < R2; gz += 5) { const sc = sectorAt(gx, gz); if (sc && sc.dir === "S" && fbm(gx, gz) > 0.6) MAPF.push(gx, gz); } }   // rừng mùa xuân (tính 1 lần)
+    x.fillStyle = "rgba(47,110,52,.55)"; for (let i = 0; i < MAPF.length; i += 2) { x.beginPath(); x.arc(MAPF[i], MAPF[i + 1], 3.6, 0, 7); x.fill(); }
+    x.strokeStyle = "#4dabf7"; x.lineWidth = 4.4; x.lineCap = "round"; x.beginPath(); for (let z = 150; z <= R2; z += 4) { const sx = streamX(z); z === 150 ? x.moveTo(sx, z) : x.lineTo(sx, z); } x.stroke();   // suối
+    PATHS.forEach((p, i) => { x.strokeStyle = "#" + PATHC[GATES[i].dir].map(v => v.toString(16).padStart(2, "0")).join(""); x.lineWidth = 4; x.beginPath();   // đường mòn
+      for (let al = 0; al <= p.len; al += 4) { const o = pathOff(p, al), px = p.x0 + p.dx * al - p.dz * o, pz = p.z0 + p.dz * al + p.dx * o; if (p.se && cheb(px, pz) > SEA - 4) break; al ? x.lineTo(px, pz) : x.moveTo(px, pz); } x.stroke(); });
     x.fillStyle = "#c9ddf0"; x.beginPath(); x.ellipse(CAVE.x, CAVE.z - 2, 8, 10, 0, 0, 7); x.fill();   // hang băng
     x.fillStyle = "#6ec6ff"; x.beginPath(); x.ellipse(WF.x, WF.z, WF.rx, WF.rz, 0, 0, 7); x.fill();   // hồ dưới thác
     x.fillStyle = "#d9c9a3"; x.fillRect(TEMPLE.x - 8, TEMPLE.z - 8, 16, 16);   // đền cổ
     x.strokeStyle = "rgba(120,80,40,.6)"; x.lineWidth = 1; x.strokeRect(-150, -R1, 390, 480);   // ranh vòng 1
     x.strokeStyle = "rgba(120,60,20,.45)"; x.setLineDash([3, 2]); x.strokeRect(-150, -R2, 480, 660); x.setLineDash([]);   // ranh ngoài vòng 2
     x.restore();
+    if (x._big) return;   // bản đồ lớn: tên vùng + cổng vẽ riêng bằng nhãn (index.html drawBig → WILDS.labels)
     x.font = "bold 8px system-ui"; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = 2.2; x.strokeStyle = "rgba(255,255,255,.9)"; x.fillStyle = "#3b2a1a";
     [["N", -10, -198], ["NE", 196, -196], ["E", 205, -50], ["SE", 188, 180], ["S", -45, 198]].forEach(t => { const nm = SEC[t[0]].name; x.strokeText(nm, t[1], t[2]); x.fillText(nm, t[1], t[2]); });
     [["N", -10, -290], ["NE", 262, -300], ["E", 285, -60], ["SE", 292, 285], ["S", -45, 290]].forEach(t => { const nm = SEC2[t[0]].name; x.strokeText(nm, t[1], t[2]); x.fillText(nm, t[1], t[2]); });
@@ -710,7 +720,9 @@ const WILDS = (function () {
     GATES2.forEach(g => { x.fillStyle = "#5a1d6e"; x.beginPath(); x.arc(g.x, g.z, 3, 0, 7); x.fill(); x.fillStyle = "#ffa8e8"; x.beginPath(); x.arc(g.x, g.z, 1.8, 0, 7); x.fill(); });   // cổng vòng 2 (tím)
   }
 
-  const api = { walkable, sectorAt, gates: GATES.map(g => ({ dir: g.dir, x: g.x, z: g.z })), gates2: GATES2.map(g => ({ dir: g.dir, x: g.x, z: g.z })), spawnPoints, drawMap, _build() {
+  const LAB1 = { N: [-10, -198], NE: [196, -196], E: [205, -50], SE: [188, 180], S: [-45, 198] }, LAB2 = { N: [-10, -290], NE: [262, -300], E: [285, -60], SE: [292, 285], S: [-45, 290] };
+  function labels() { const out = []; ORDER.forEach(d => { out.push([ICON[d] + " " + SEC[d].name, LAB1[d][0], LAB1[d][1], 1]); out.push([ICON[d] + " " + SEC2[d].name, LAB2[d][0], LAB2[d][1], 2]); }); return out; }   // tên vùng cho bản đồ lớn
+  const api = { walkable, sectorAt, labels, gates: GATES.map(g => ({ dir: g.dir, x: g.x, z: g.z })), gates2: GATES2.map(g => ({ dir: g.dir, x: g.x, z: g.z })), spawnPoints, drawMap, _build() {
     initTpl();
     ground = groundMesh(TX0, TX1, TZ0, TZ1, [[TX0, -R1 - 1, R1 + 1, -CITY + 1], [CITY - 1, -CITY + 1, R1 + 1, CITY - 1], [TX0, CITY - 1, R1 + 1, R1 + 1]], -0.02, CITY - 1.5, R1 + 5); scene.add(ground);
     ground2 = groundMesh(UX0, UX1, UZ0, UZ1, [[UX0, UZ0, UX1, -R1 - 1], [R1 + 1, -R1 - 1, UX1, R1 + 1], [UX0, R1 + 1, UX1, UZ1]], -0.01, R1 - 4, 1e9); scene.add(ground2);
