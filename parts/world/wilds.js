@@ -343,6 +343,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, 0.4 * s, 0.4 * s);
   }
   function mesa(x, z, w, h, d, sol) {
+    if (ring1(x, z)) { const k = h / 1.8; NATURE.sprite("rock", x, z, k * 0.62, RTINT.E); NATURE.sprite("rock", x - w * 0.45, z + d * 0.2, k * 0.38, RTINT.E); NATURE.sprite("rock", x + w * 0.42, z + d * 0.3, k * 0.3, RTINT.E); if (sol) solid(x, z, w / 2, d / 2); return; }   // bản 2.5D: cụm đá đỏ vẽ tay
     put("box", 0xb55234, x, 0, z, w, h * 0.5, d, 0, 0, 0, 0.1); put("box", 0xc9663f, x, h * 0.5, z, w * 0.82, h * 0.3, d * 0.82, 0, 0, 0, 0.1); put("box", 0xdc7b4b, x, h * 0.8, z, w * 0.6, h * 0.2, d * 0.6, 0, 0, 0, 0.1);
     if (sol) solid(x, z, w / 2, d / 2);
   }
@@ -357,6 +358,7 @@ const WILDS = (function () {
     if (sol && r >= 1.1) solid(x, z, r * 0.8, r * 0.8);
   }
   function column(x, z, h, sol) {
+    if (ring1(x, z)) { NATURE.sprite("rock", x, z, h / 1.8 * 0.5, [1.2, 1.05, 0.82]); if (sol) solid(x, z, 0.6, 0.6); return; }   // bản 2.5D: trụ đá sa thạch vẽ tay (chờ ảnh cột phế tích)
     put("box", 0xd9c79c, x, 0, z, 1.5, 0.35, 1.5); put("cyl5", 0xe8d6ab, x, 0.35, z, 0.55, h, 0.55, rnd() * 3);
     if (h > 3) put("box", 0xd9c79c, x, 0.35 + h, z, 1.4, 0.3, 1.4);
     if (sol) solid(x, z, 0.6, 0.6);
@@ -405,16 +407,20 @@ const WILDS = (function () {
     put("sph", 0xffffff, x, 0, z, 1.4 * s, 0.6 * s, 1.2 * s, rnd() * 3, 0, 0, 0.04); }
   function crystals(x, z) { for (let i = 0; i < 4; i++) put("cone6", 0x9fe0ff, x + (rnd() - 0.5) * 1.4, 0, z + (rnd() - 0.5) * 1.4, 0.3, 1.0 + rnd() * 1.2, 0.3, 0, (rnd() - 0.5) * 0.4, (rnd() - 0.5) * 0.4, 0.05); }
   function dune(x, z) { put("sph", 0xe9cf98, x, -0.2, z, 5 + rnd() * 4, 1.2 + rnd(), 4 + rnd() * 3, rnd() * 3, 0, 0, 0.05); }
-  function pumpkin(x, z) { put("sph", 0xf08a1c, x, 0.05, z, 0.45, 0.35, 0.45); put("cone6", 0x4e9e3a, x, 0.35, z, 0.08, 0.18, 0.08); }
-  function hay(x, z, sol) { put("cyl5", 0xe3b341, x, 0, z, 0.95, 1.2, 0.95); put("cone6", 0xc99a2e, x, 1.2, z, 1.05, 0.7, 1.05); if (sol) solid(x, z, 0.9, 0.9); }
+  function pumpkin(x, z) { if (ring1(x, z)) { if (rnd() < 0.3) NATURE.sprite("pumpkins", x, z, 0.9 + rnd() * 0.3); return; }   // cụm bí ngô vẽ tay
+    put("sph", 0xf08a1c, x, 0.05, z, 0.45, 0.35, 0.45); put("cone6", 0x4e9e3a, x, 0.35, z, 0.08, 0.18, 0.08); }
+  function hay(x, z, sol) { if (ring1(x, z)) { NATURE.sprite("hay", x, z, 0.9 + rnd() * 0.2); if (sol) solid(x, z, 1.1, 0.9); return; }   // đống rơm vẽ tay
+    put("cyl5", 0xe3b341, x, 0, z, 0.95, 1.2, 0.95); put("cone6", 0xc99a2e, x, 1.2, z, 1.05, 0.7, 1.05); if (sol) solid(x, z, 0.9, 0.9); }
   function coral(x, z) { const c = [0xff7a9c, 0xff9f68, 0xd96bd0][(rnd() * 3) | 0]; for (let i = 0; i < 4; i++) put("cone6", c, x + (rnd() - 0.5) * 1.2, 0, z + (rnd() - 0.5) * 1.2, 0.22, 0.6 + rnd() * 0.5, 0.22, 0, (rnd() - 0.5) * 0.6, (rnd() - 0.5) * 0.6); }
   function snowman(x, z) {
+    if (ring1(x, z)) { NATURE.sprite("snowman", x, z, 0.95 + rnd() * 0.15); solid(x, z, 0.7, 0.7); return; }   // vẽ tay (Canva AI)
     put("sph", 0xffffff, x, 0.1, z, 0.66, 0.6, 0.66, 0, 0, 0, 0.03); put("sph", 0xffffff, x, 0.95, z, 0.48, 0.45, 0.48, 0, 0, 0, 0.03); put("sph", 0xffffff, x, 1.65, z, 0.35, 0.34, 0.35, 0, 0, 0, 0.03);
     put("cone6", 0xff8f1f, x, 1.67, z + 0.3, 0.07, 0.45, 0.07, 0, 1.5708); put("ico", 0x222222, x - 0.12, 1.78, z + 0.3, 0.05); put("ico", 0x222222, x + 0.12, 1.78, z + 0.3, 0.05);
     put("cyl5", 0xd33a2c, x, 1.32, z, 0.4, 0.14, 0.4); put("cyl5", 0x2d3037, x, 1.95, z, 0.26, 0.3, 0.26); put("cyl5", 0x2d3037, x, 1.95, z, 0.4, 0.05, 0.4);
     solid(x, z, 0.7, 0.7);
   }
   function windmill(x, z) {
+    if (ring1(x, z)) { NATURE.sprite("windmill", x, z, 1); solid(x, z, 2.6, 2.6); return; }   // vẽ tay (Canva AI); cánh không quay
     put("tcyl8", 0xf4e4c1, x, 0, z, 3.4, 6.4, 3.4); put("cone6", 0xb5442a, x, 6.4, z, 3.2, 2.6, 3.2); put("box", 0x7a5236, x, 0, z + 1.6, 1.0, 1.7, 0.3);
     put("box", 0x6bb5e8, x - 1.0, 3.2, z + 1.55, 0.7, 0.9, 0.2); put("box", 0x6bb5e8, x + 1.0, 3.2, z + 1.55, 0.7, 0.9, 0.2);
     solid(x, z, 3.0, 3.0);
@@ -572,7 +578,7 @@ const WILDS = (function () {
     [[215, -62, 9, 11, 7], [203, 64, 8, 9, 8], [188, -104, 7, 8, 6], [226, 18, 6, 7, 6], [182, 100, 6, 7, 6]].forEach(p => { mesa(p[0], p[1], p[2], p[3], p[4], true); reserve(p[0], p[1], p[2] * 0.7 + 1); });
     for (let i = 0; i < 8; i++) { const a = i / 8 * 6.28, x = 204 + Math.cos(a) * 7, z = -30 + Math.sin(a) * 7; column(x, z, i % 3 === 0 ? 2.0 : 3.8 + (i % 2), true); }
     reserve(204, -30, 11);
-    column(226, 40, 4.6, true); column(233, 40, 4.6, true); put("box", 0xd9c79c, 229.5, 4.95, 40, 9.2, 0.7, 1.7); reserve(229, 40, 7);
+    column(226, 40, 4.6, true); column(233, 40, 4.6, true); if (!ring1(229.5, 40)) put("box", 0xd9c79c, 229.5, 4.95, 40, 9.2, 0.7, 1.7); reserve(229, 40, 7);
     // ĐÔNG NAM: thuyền mắc cạn, san hô ven bờ
     boat(207, 193); reserve(207, 193, 4);
     for (let i = 0; i < 12; i++) { const m = 211 + rnd() * 9, a = (122 + rnd() * 26) * Math.PI / 180, x = Math.sin(a) * m / Math.max(Math.abs(Math.sin(a)), Math.abs(Math.cos(a))), z = -Math.cos(a) * m / Math.max(Math.abs(Math.sin(a)), Math.abs(Math.cos(a))); if (walkable(x, z)) coral(x, z); }

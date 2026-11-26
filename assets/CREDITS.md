@@ -42,3 +42,10 @@ Nguồn: https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0 (dùng 
 | `ground-sand.webp` | 4 hand-painted ground textures (cát) | Drummyfish | như trên |
 
 `extra.webp` (thông, dừa 1 thân, dừa 2 thân) – **Tree Collection v2.6 – Bleed** (CC-BY), xử lý như trên.
+
+## Vật trang trí vẽ tay (`assets/painted/props.webp`) – tạo bằng AI (Canva, 26/11)
+Cối xay gió, đống rơm, bí ngô, người tuyết: ảnh do dự án tạo bằng công cụ AI của Canva (tài khoản chủ dự án), xoá nền + phóng 2× bằng code. Không cần ghi tên tác giả.
+
+## Hiệu ứng chiêu dạng chuỗi ảnh (`assets/fx/fx.webp`) – CC0
+Gộp 8 hiệu ứng (lưới 8 × 8 ô 128 px) từ OpenGameArt, tác giả **Cethiel**, CC0: Weapon Slash Effect (bản Fire + Classic), Arcane Magic Effect, Water Magic Effect, Light Magic Effect.
+https://opengameart.org/content/weapon-slash-effect · /arcane-magic-effect · /water-magic-effect · /light-magic-effect
