@@ -88,28 +88,31 @@ const WILDS = (function () {
     a1: C(0xdcaa45), a2: C(0xcf7b2b), a3: C(0xb4431f), a4: C(0xeac95e),
     d1: C(0xe7cb92), d2: C(0xd8ab68), d3: C(0xc8704a),
     g1: C(0x6cb64c), g2: C(0x58a24a), sand: C(0xf4e4b0), wet: C(0xd9c78f), sea1: C(0x6dd7ea), sea2: C(0x2fa9de), foam: C(0xffffff),
+    dirtNE: C(0x8c7b63),   // đất trống vùng thu (ít bão hoà màu → shader look25 nhận ra là đất)
     s1: C(0x82b955), s2: C(0x6ba545), s3: C(0x98c867), sF: C(0x4c8a3c), dirt: C(0xa38a5c), water1: C(0x6ec6ff), water2: C(0x9ad8ff), bank: C(0x4f9a3a),
     fl: [C(0xff7eb6), C(0xffd43b), C(0xffffff), C(0xb197fc)],
     stone: C(0xd9c9a3), ice3: C(0x8fd0ee), deep: C(0x1f8fc4)
   };
-  const PATHC = { N: C(0xc3cdd8), NE: C(0xb8863f), E: C(0xcfa56a), SE: C(0xe9d6a4), S: C(0xc9ae7e) };
+  const PATHC = { N: C(0xc3cdd8), NE: C(0x957f62), E: C(0xcfa56a), SE: C(0xe9d6a4), S: C(0xc9ae7e) };
   const tmpW = [0, 0, 0, 0, 0], tmp = [0, 0, 0];
   const CEN = { N: -7.5, NE: 45, E: 90, SE: 135, S: 187.5 }, HW = { N: 37.5, NE: 15, E: 30, SE: 15, S: 37.5 };
   /* Mảng đất trống mùa xuân vòng 1 (0 = cỏ … 1 = đất): dùng chung cho tô nền và rải cây (cây ít mọc trên đất – chủ dự án 26/11).
      Như công thức cũ, chỉ lệch toạ độ theo nhiễu ±11 m → mép hết thẳng theo ô lưới nhiễu nhưng mảng vẫn ở chỗ cũ. */
-  function soilDirt(x, z, n1, n2, fo) {
+  function soilDirt(x, z, n1, n2, fo, lo) {   // lo: ngưỡng (nhỏ = nhiều đất hơn)
+    lo = lo || 0.64;
     if (n1 === undefined) { n1 = vnoise(x * 0.06, z * 0.06) * 0.6 + vnoise(x * 0.17, z * 0.17) * 0.4; n2 = vnoise(x * 0.09 + 31, z * 0.09 + 17); fo = fbm(x, z); }
     if (fo >= 0.6) return 0;
     const dn = vnoise((x + (n1 - 0.5) * 22) * 0.045 + 50, (z + (n2 - 0.5) * 22) * 0.045 + 20) * 0.75 + n2 * 0.25;
-    return dn > 0.64 ? sm(0.64, 0.76, dn) * (1 - sm(0.5, 0.6, fo)) : 0;   // gần rừng: nhạt dần (trước: cắt cụt ở fo 0,55 → cạnh sắc, gãy góc)
+    return dn > lo ? sm(lo, lo + 0.12, dn) * (1 - sm(0.5, 0.6, fo)) : 0;   // gần rừng: nhạt dần (trước: cắt cụt ở fo 0,55 → cạnh sắc, gãy góc)
   }
   const GRASSP = [];
-  function onSoil(x, z, s) {   // cây trên bãi đất: 85% bỏ (chỗ đất đậm); cây còn lại có vòng cỏ dưới gốc
-    const dd = soilDirt(x, z); if (dd <= 0.08) return true; if (dd > 0.3 && rnd() < 0.85) return false; GRASSP.push(x, z, 2.8 + s * 0.8); return true; }   // vòng cỏ nhỏ dưới gốc cây lỡ mọc giữa bãi đất [x, z, bán kính]
+  const dirtNE = (x, z) => soilDirt(x + 517, z - 331, vnoise(x * 0.06, z * 0.06) * 0.6 + vnoise(x * 0.17, z * 0.17) * 0.4, vnoise(x * 0.09 + 31, z * 0.09 + 17), fbm(x, z), 0.47);
+  function onSoil(x, z, s, ne) {   // cây trên bãi đất: 85% bỏ (chỗ đất đậm); cây còn lại có vòng cỏ dưới gốc
+    const dd = ne ? dirtNE(x, z) : soilDirt(x, z); if (dd <= 0.08) return true; if (dd > 0.3 && rnd() < 0.85) return false; GRASSP.push(x, z, 2.8 + s * 0.8, ne ? 1 : 0); return true; }   // vòng cỏ nhỏ dưới gốc cây lỡ mọc giữa bãi đất [x, z, bán kính]
   function grassUnder(m) {
     if (!GRASSP.length) return;
-    const [X0, X1, Z0, Z1] = m.userData.box, cv = m.material.map.image, g = cv.getContext("2d"), kx = cv.width / (X1 - X0), kz = cv.height / (Z1 - Z0), c = K.s1.map(v => v * 0.86 | 0);
-    for (let i = 0; i < GRASSP.length; i += 3) { const x = (GRASSP[i] - X0) * kx, z = (GRASSP[i + 1] - Z0) * kz, r = GRASSP[i + 2] * kx;
+    const [X0, X1, Z0, Z1] = m.userData.box, cv = m.material.map.image, g = cv.getContext("2d"), kx = cv.width / (X1 - X0), kz = cv.height / (Z1 - Z0), CC = [K.s1, K.a1].map(k => k.map(v => v * 0.86 | 0));
+    for (let i = 0; i < GRASSP.length; i += 4) { const x = (GRASSP[i] - X0) * kx, z = (GRASSP[i + 1] - Z0) * kz, r = GRASSP[i + 2] * kx, c = CC[GRASSP[i + 3]];
       const gr = g.createRadialGradient(x, z, 0, x, z, r); gr.addColorStop(0, "rgba(" + c + ",1)"); gr.addColorStop(0.55, "rgba(" + c + ",.9)"); gr.addColorStop(1, "rgba(" + c + ",0)"); g.fillStyle = gr; g.fillRect(x - r, z - r, 2 * r, 2 * r); }
     m.material.map.needsUpdate = true;
   }
@@ -119,6 +122,7 @@ const WILDS = (function () {
         if (m > R1) { if (n2 > 0.5) mixc(o, o, K.rockW, Math.min(0.75, (n2 - 0.5) * 1.6)); const ic = Math.abs(x - CAVE.x) < 4.5 && z > CAVE.z - 9 && z < CAVE.z + 14; if (ic) mixc(o, o, K.ice3, 0.8); }   // vòng 2: sườn núi lộ đá, nền hang băng
         break; }
       case "NE": { mixc(o, K.a1, K.a2, n1); if (n2 > 0.68) mixc(o, o, K.a3, Math.min(1, (n2 - 0.68) * 3)); else if (n2 < 0.24) mixc(o, o, K.a4, (0.24 - n2) * 3);
+        if (m <= R1) { const dd = soilDirt(x + 517, z - 331, n1, n2, fbm(x, z), 0.47); if (dd > 0) mixc(o, o, K.dirtNE, dd * 0.85); }   // bản 2.5D thử: mảng đất trống vùng thu
         if (m > R1) { mixc(o, o, K.a3, 0.28 + n1 * 0.2); const e = wfE(x, z); if (e < 1) { mixc(o, K.water1, K.water2, n2); if (e > 0.8) mixc(o, o, K.bank, (e - 0.8) * 3); } else if (e < 1.3) mixc(o, o, K.bank, (1.3 - e) * 1.6); }   // vòng 2: nền rừng sẫm + hồ dưới thác
         break; }
       case "E": { const b = 0.5 + 0.5 * Math.sin((x * 0.7 + z * 0.45) * 0.3 + n1 * 7); mixc(o, K.d1, K.d2, b); if (n2 > 0.72) mixc(o, o, K.d3, Math.min(1, (n2 - 0.72) * 3));
@@ -317,6 +321,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, 0.5 * s, 0.5 * s);
   }
   function maple(x, z, s, sol) {
+    if (neHere(x, z)) { if (!onSoil(x, z, s, true)) return; const k = rnd(); NATURE.sprite(k < 0.15 ? "tree" : k < 0.22 ? "bare" : "maple", x, z, 0.8 + (s - 0.9) * 0.35); if (sol) solid(x, z, 0.4 * s, 0.4 * s); return; }   // cây thu vẽ tay (Bleed)
     if (typeof NATURE !== "undefined") { SHADE.push(x, z, 2 * s); NATURE.place("maple", x, z, s); if (sol) solid(x, z, 0.45 * s, 0.45 * s); return; }   // mô hình (nature.js)
     SHADE.push(x, z, 2 * s);
     const cols = [0xd9481f, 0xf08a24, 0xe9b82f, 0xc23a1c];
@@ -340,9 +345,10 @@ const WILDS = (function () {
     put("box", 0xb55234, x, 0, z, w, h * 0.5, d, 0, 0, 0, 0.1); put("box", 0xc9663f, x, h * 0.5, z, w * 0.82, h * 0.3, d * 0.82, 0, 0, 0, 0.1); put("box", 0xdc7b4b, x, h * 0.8, z, w * 0.6, h * 0.2, d * 0.6, 0, 0, 0, 0.1);
     if (sol) solid(x, z, w / 2, d / 2);
   }
+  const neHere = (x, z) => { if (typeof NATURE === "undefined" || !NATURE.sprite) return false; const s = sectorAt(x, z); return !!(s && s.dir === "NE" && s.ring === 1); };   // Maple Highlands: thử nền + cây vẽ tay TẢI VỀ (26/11)
   const kkHere = (x, z) => { if (typeof NATURE === "undefined" || !NATURE.sprite) return false; const s = sectorAt(x, z); return !!(s && s.dir === "S" && s.ring === 1); };   // Blossom Valley (bản 2.5D): cây / đá / bụi vẽ tay dạng ảnh (nature.js)
   function rock(x, z, r, col, cap, sol) {
-    if (kkHere(x, z)) { NATURE.sprite("rock", x, z, r * 0.62); if (sol && r >= 1.1) solid(x, z, r * 0.7, r * 0.5); return; }   // đá vẽ tay (ảnh)
+    if (kkHere(x, z) || neHere(x, z)) { NATURE.sprite("rock", x, z, r * 0.62); if (sol && r >= 1.1) solid(x, z, r * 0.7, r * 0.5); return; }   // đá vẽ tay (ảnh)
     putBlob(col, x, r * 0.3, z, r, r * 0.68, r * 0.85, rnd() * 6, 0.4); if (cap) put("ico", 0xffffff, x, r * 0.78, z, r * 0.7, r * 0.4, r * 0.6, rnd() * 6, 0, 0, 0.03);
     if (sol && r >= 1.1) solid(x, z, r * 0.8, r * 0.8);
   }
@@ -366,7 +372,7 @@ const WILDS = (function () {
     if (sol) solid(x, z, 0.9 * s, 0.9 * s);
   }
   function bamboo(x, z, sol) {
-    if (kkHere(x, z)) { if (!onSoil(x, z, 1)) return; NATURE.sprite("slim", x, z, 0.85 + rnd() * 0.3); if (sol) solid(x, z, 0.5, 0.5); return; }   // bản 2.5D: tạm thay khóm tre khối bằng cây thân mảnh vẽ tay (chưa có tre vẽ tay)
+    if (kkHere(x, z)) { if (!onSoil(x, z, 1, false)) return; NATURE.sprite("slim", x, z, 0.85 + rnd() * 0.3); if (sol) solid(x, z, 0.5, 0.5); return; }   // bản 2.5D: tạm thay khóm tre khối bằng cây thân mảnh vẽ tay (chưa có tre vẽ tay)
     for (let i = 0; i < 6; i++) { const dx = (rnd() - 0.5) * 1.6, dz = (rnd() - 0.5) * 1.6, h = 4.5 + rnd() * 2.5;
       put("cyl5", i % 2 ? 0x7bc558 : 0x5da843, x + dx, 0, z + dz, 0.1, h, 0.1, 0, 0, 0, 0.1); put("ico", 0x4e9e3a, x + dx, h, z + dz, 0.55, 0.25, 0.55, rnd() * 6); }
     if (sol) solid(x, z, 1.0, 1.0);
@@ -375,7 +381,7 @@ const WILDS = (function () {
   const SHADE = [];   // bóng râm dưới tán cây [x, z, bán kính] → vẽ thẳng vào ảnh nền sau khi rải cây (miễn phí khi chơi)
   function lushTree(x, z, s, cherry, sol) {   // cây tán tròn kiểu "bông": 1 chùm lớn + 3–4 chùm nhỏ quanh, tô mượt
     SHADE.push(x, z, 2.1 * s);
-    if (kkHere(x, z)) { if (!onSoil(x, z, s)) return;   // trên bãi đất: hiếm cây; có thì dưới gốc có vòng cỏ
+    if (kkHere(x, z)) { if (!onSoil(x, z, s, false)) return;   // trên bãi đất: hiếm cây; có thì dưới gốc có vòng cỏ
       NATURE.sprite(cherry ? "cherry" : z > 148 && Math.abs(x - streamX(z)) < streamW(z) + 7 ? "willow" : "tree", x, z, 0.8 + (s - 0.95) * 0.35); if (sol) solid(x, z, 0.4 * s, 0.4 * s); return; }   // cây vẽ tay (ảnh); gần suối: liễu
     if (typeof NATURE !== "undefined") { NATURE.tree(x, z, s, cherry); if (sol) solid(x, z, 0.45 * s, 0.45 * s); return; }   // có mô hình (parts/world/nature.js) thì dùng mô hình
     const cs = cherry ? [0xf2a3c0, 0xf8b8cf, 0xe98fb0] : [0x4f9a3c, 0x5daa45, 0x468f37], pick = () => cs[(rnd() * 3) | 0];
@@ -528,6 +534,14 @@ const WILDS = (function () {
       if (bambooZone(x, z, ring)) { if (ring === 2) bambooTall(x, z, true); else bamboo(x, z, true); } else lushTree(x, z, 0.95 + rnd() * 0.75, rnd() < 0.2, true); reserve(x, z, 1.7);
     }
   }
+  function grovesNE() {   // Maple Highlands (bản 2.5D thử): cụm rừng phong ở chỗ nhiễu fbm cao, chừa trảng + đường mòn
+    for (let gx = CITY; gx < R1; gx += 3.8) for (let gz = -R1; gz < -CITY + 40; gz += 3.8) {
+      const x = gx + rnd() * 3.8, z = gz + rnd() * 3.8; if (!neHere(x, z)) continue;
+      const f = fbm(x, z); if (f < 0.54 || rnd() > 0.45 + (f - 0.54) * 2.5) continue;
+      if (!clear(x, z, 1.9)) continue;
+      maple(x, z, 0.95 + rnd() * 0.7, true); reserve(x, z, 1.9);
+    }
+  }
   function boulders() {   // tảng đá xám to (2–3 tảng một cụm, đỉnh phủ rêu) làm điểm nhấn ở trảng trống
     for (let i = 0, n = 0; i < 400 && n < 30; i++) {
       const x = -150 + rnd() * 345, z = CITY + 8 + rnd() * (R1 - CITY - 12), sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== 1 || fbm(x, z) > 0.55 || !clear(x, z, 3.2)) continue;
@@ -574,7 +588,7 @@ const WILDS = (function () {
       } else if (rnd() < 0.5) {   // đồ nhỏ, đi xuyên qua được
         const sx = x + (rnd() - 0.5) * 3, sz = z + (rnd() - 0.5) * 3; if (!clear(sx, sz, 0.8)) continue;
         if (d === "N") { if (rnd() < 0.5) mound(sx, sz, 0.6 + rnd() * 0.8); else rock(sx, sz, 0.5 + rnd() * 0.5, 0x8f9aa8, true, false); }
-        else if (d === "NE") { if (rnd() < 0.5) put("sph", [0xd9481f, 0xf08a24, 0xe9b82f][(rnd() * 3) | 0], sx, 0.02, sz, 1 + rnd() * 0.6, 0.18, 0.9 + rnd() * 0.5, rnd() * 3, 0, 0, 0.06); else rock(sx, sz, 0.5 + rnd() * 0.5, 0x8d7355, false, false); }
+        else if (d === "NE") { if (neHere(sx, sz)) { if (rnd() < 0.3) rock(sx, sz, 0.5 + rnd() * 0.5, 0x8d7355, false, false); } else if (rnd() < 0.5) put("sph", [0xd9481f, 0xf08a24, 0xe9b82f][(rnd() * 3) | 0], sx, 0.02, sz, 1 + rnd() * 0.6, 0.18, 0.9 + rnd() * 0.5, rnd() * 3, 0, 0, 0.06); else rock(sx, sz, 0.5 + rnd() * 0.5, 0x8d7355, false, false); }
         else if (d === "E") { if (rnd() < 0.3) put("ico", 0x9a8a55, sx, 0.2, sz, 0.45, 0.35, 0.45); else rock(sx, sz, 0.5 + rnd() * 0.6, 0xc07a52, false, false); }
         else if (d === "SE") { if (rnd() < 0.5) rock(sx, sz, 0.5 + rnd() * 0.5, 0xc9c1ab, false, false); else put("ico", 0xff9fb0, sx, 0.1, sz, 0.25, 0.18, 0.25); }
         else { if (rnd() < 0.7) flowers(sx, sz); else rock(sx, sz, 0.5 + rnd() * 0.4, 0x9aa5a0, false, false); }
@@ -746,7 +760,7 @@ const WILDS = (function () {
     initTpl();
     ground = groundMesh(TX0, TX1, TZ0, TZ1, [[TX0, -R1 - 1, R1 + 1, -CITY + 1], [CITY - 1, -CITY + 1, R1 + 1, CITY - 1], [TX0, CITY - 1, R1 + 1, R1 + 1]], -0.02, CITY - 1.5, R1 + 5); scene.add(ground);
     ground2 = groundMesh(UX0, UX1, UZ0, UZ1, [[UX0, UZ0, UX1, -R1 - 1], [R1 + 1, -R1 - 1, UX1, R1 + 1], [UX0, R1 + 1, UX1, UZ1]], -0.01, R1 - 4, 1e9); scene.add(ground2);
-    ribbons(); GATES.forEach(buildGate); landmarks(); scatter(); groves(); groves(2); boulders();
+    ribbons(); GATES.forEach(buildGate); landmarks(); scatter(); groves(); groves(2); grovesNE(); boulders();
     GATES2.forEach(buildGate); landmarks2(); scatter2(); perimeter(); mist(); carpet(); grassUnder(ground); shadeGround(ground); shadeGround(ground2); finalize();
     if (typeof RIFTS !== "undefined") RIFTS.build();   // khu văn hoá (bản đồ riêng) + cổng vết rách – dựng trước NATURE.build để cây của khu được xếp chung
     if (typeof NATURE !== "undefined") NATURE.build();

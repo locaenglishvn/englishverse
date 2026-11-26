@@ -39,31 +39,27 @@ const NATURE = (function () {
      Đã xoá bóng vẽ sẵn trong ảnh, lật ngang (ánh sáng vẽ từ phải, khớp nắng trong game). Mỗi cây = 1 tấm ảnh nghiêng ra sau 20° (camera cố định nhìn hướng Bắc),
      kéo cao bù góc nhìn; + 1 tấm "đổ bóng" quay về phía nắng, không hiện ra màn hình, chỉ để đổ bóng thật theo dáng cây. Gộp theo ô 40 m. */
   const SPR = {"t01a":[0,0,301,320,0.504],"t01b":[303,0,322,320,0.495],"t08a":[627,0,186,320,0.43],"t08b":[815,0,193,320,0.565],"t09a":[1010,0,231,320,0.465],"t09b":[1243,0,240,320,0.533],"t12a":[1485,0,411,320,0.539],"t12b":[0,322,385,320,0.778],"t13a":[387,322,149,320,0.497],"t13b":[538,322,150,320,0.491],"t05a":[690,322,353,320,0.521],"b11a":[1045,322,395,320,0.197],"b11b":[1442,322,414,320,0.514],"cherry":[0,644,308,320,0.623],"r200":[310,644,94,160,0.464],"r201":[406,644,94,160,0.583],"r202":[502,644,97,160,0.522],"r210":[601,644,100,160,0.517],"r211":[703,644,111,160,0.593],"r212":[816,644,122,160,0.55],"r300":[940,644,94,160,0.464],"r301":[1036,644,94,160,0.583],"r302":[1132,644,97,160,0.522],"r310":[1231,644,100,160,0.517],"r311":[1333,644,111,160,0.593],"r312":[1446,644,122,160,0.55]};   // tên: [x, y, rộng, cao (px trong ảnh gộp), vị trí gốc thân theo chiều ngang 0–1]
-  const SKIND = { tree: ["t01a", "t01b", "t08a", "t08b", "t09a", "t09b", "t12a", "t12b", "t13a", "t13b"], cherry: ["cherry"], willow: ["t05a"], bush: ["b11a", "b11b"], slim: ["t08a", "t08b", "t13a", "t13b"], rock: Object.keys(SPR).filter(k => k[0] === "r") };
-  const SH = { tree: 5.4, cherry: 4.8, willow: 5.2, bush: 1.7, slim: 5.0, rock: 1.8 }, SWX = { rock: 1.55 }, SW = 2048, SHT = 1024, TILT = 0.35, STRETCH = 1.15;
-  const SQ = [], UPS = { value: new THREE.Vector4(-1e4, -1e4, 1, 1e4) }, _pv = new THREE.Vector3(), _ds = new THREE.Vector2();
-  let psFrame = -1;
-  function setPS(r, sc, cam) {   // vị trí nhân vật trên màn hình (điểm ảnh thật) + bán kính lỗ + z chân nhân vật; tính 1 lần mỗi khung
-    try { const f = r.info.render.frame; if (f === psFrame) return; psFrame = f;
-      r.getDrawingBufferSize(_ds); _pv.copy(player.position); _pv.y += 0.8; _pv.project(cam);
-      UPS.value.set((_pv.x + 1) / 2 * _ds.x, (_pv.y + 1) / 2 * _ds.y, _ds.y * 0.13, player.position.z); } catch (e) {}
-  }
-  function sprite(kind, x, z, s) { SQ.push([pick(SKIND[kind]), SH[kind] * (s || 1), x, z, SWX[kind] || 1]); }   // đá: kéo ngang cho thành tảng
+  const SKIND = { tree: ["t01a", "t01b", "t08a", "t08b", "t09a", "t09b", "t12a", "t12b", "t13a", "t13b"], cherry: ["cherry"], willow: ["t05a"], bush: ["b11a", "b11b"], slim: ["t08a", "t08b", "t13a", "t13b"], maple: ["m14a", "m14b", "m14a", "m14b", "m06a", "m06b", "m07a", "m07b"], bare: ["m10a"], rock: Object.keys(SPR).filter(k => k[0] === "r") };
+  const SH = { tree: 5.4, cherry: 4.8, willow: 5.2, bush: 1.7, slim: 5.0, rock: 1.8, maple: 5.6, bare: 5.0 }, SWX = { rock: 1.55 }, TILT = 0.35, STRETCH = 1.15;
+  const SQ = [], CNT = {};   // CNT: đếm số hình đã đặt theo loại (kiểm tra)
+  const SPR2 = {"m14a":[0,0,220,320,0.492],"m14b":[222,0,206,320,0.505],"m06a":[430,0,240,320,0.612],"m06b":[672,0,234,320,0.379],"m07a":[908,0,146,320,0.502],"m07b":[1056,0,151,320,0.493],"m10a":[1209,0,193,320,0.461]};   // ảnh gộp 2: assets/painted/autumn.webp (2048 × 512) – cây thu của Bleed: phong đỏ (m14), liễu vàng (m06), thông cam (m07), cây trụi (m10)
+  const ATL = [{ src: "assets/painted/trees.webp", W: 2048, H: 1024, S: SPR }, { src: "assets/painted/autumn.webp", W: 2048, H: 512, S: SPR2 }];
+  function sprite(kind, x, z, s) { CNT[kind] = (CNT[kind] || 0) + 1; const k = pick(SKIND[kind]); SQ.push([k, SH[kind] * (s || 1), x, z, SWX[kind] || 1, SPR[k] ? 0 : 1]); }   // đá: kéo ngang cho thành tảng
   function buildSprites() {
     if (!SQ.length) return;
-    const tex = TL.load("assets/painted/trees.webp"); tex.anisotropy = 4;
-    const mt = new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.5, color: 0xf2f2ea });   // ảnh đã vẽ sẵn sáng tối → không cần đèn
-    const cast = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });   // tấm đổ bóng: không vẽ ra màn hình
-    const cdm = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 });
+    const used = new Set(SQ.map(q => q[5])), cast = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });   // tấm đổ bóng: không vẽ ra màn hình
+    ATL.forEach((A, i) => { if (!used.has(i)) return; const tex = TL.load(A.src); tex.anisotropy = 4;   // chỉ tải ảnh gộp có dùng
+      A.mt = new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.5, color: 0xf2f2ea });   // ảnh đã vẽ sẵn sáng tối → không cần đèn
+      A.cdm = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 }); });
     const sd = new THREE.Vector3(15, 0, 3).normalize(), tx = -sd.z, tz = sd.x;   // hướng nắng (look25.js SUN1) → tấm bóng vuông góc
     const up = [0, Math.cos(TILT), -Math.sin(TILT)], B = new Map();
-    SQ.forEach(([k, H, x, z, wx]) => {
-      const [px, py, pw, ph, bx] = SPR[k], w = H * pw / ph * wx, h = H * STRETCH, ck = Math.floor(x / CH) + "," + Math.floor(z / CH);
-      let C = B.get(ck); if (!C) B.set(ck, C = { v: [], u: [], c: [], cu: [], b: [], d: [], du: [] });
+    SQ.forEach(([k, H, x, z, wx, ai]) => {
+      const A = ATL[ai], SW = A.W, SHT = A.H, [px, py, pw, ph, bx] = A.S[k], w = H * pw / ph * wx, h = H * STRETCH, ck = ai + ":" + Math.floor(x / CH) + "," + Math.floor(z / CH);
+      let C = B.get(ck); if (!C) B.set(ck, C = { A, v: [], u: [], c: [], cu: [], d: [], du: [] });
       const u0 = (px + pw) / SW, u1 = px / SW, v0 = 1 - (py + ph) / SHT, v1 = 1 - py / SHT;   // lật ngang: u0 bên trái là mép phải ảnh
       const l = x - w * (1 - bx), y0 = -0.15;
       const P = [[l, y0, z], [l + w, y0, z], [l + w + up[0] * h, y0 + up[1] * h, z + up[2] * h], [l + up[0] * h, y0 + up[1] * h, z + up[2] * h]];
-      [0, 1, 2, 0, 2, 3].forEach(i => { C.v.push(...P[i]); C.b.push(z); });
+      [0, 1, 2, 0, 2, 3].forEach(i => C.v.push(...P[i]));
       [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]].forEach(q => C.u.push(...q));
       if (k[0] === "r" || k[0] === "b") {   // đá, bụi (thấp): bóng = vệt mềm nằm đất sát chân, lệch nhẹ theo nắng (tấm đổ bóng dựng đứng làm bóng đá bị lệch – 26/11)
         const cx = x - H * 0.22, cz = z - H * 0.08, rx = w * 0.5 + H * 0.25, rz = Math.max(0.5, w * 0.3);
@@ -85,8 +81,8 @@ const NATURE = (function () {
         blobM = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false }); }
       const bo = mk(C.d, C.du, blobM); bo.renderOrder = 1; }
       if (!C.v.length) return;
-      const o = mk(C.v, C.u, mt); o.geometry.setAttribute("bz", new THREE.Float32BufferAttribute(C.b, 1));   // (bỏ khoét lỗ quanh nhân vật – chủ dự án 26/11: lá thưa, nhìn xuyên được)
-      if (!C.c.length) return; const s = mk(C.c, C.cu, cast); s.castShadow = true; s.customDepthMaterial = cdm; });
+      mk(C.v, C.u, C.A.mt);   // (đã bỏ khoét lỗ quanh nhân vật – chủ dự án 26/11: lá thưa, nhìn xuyên được)
+      if (!C.c.length) return; const s = mk(C.c, C.cu, cast); s.castShadow = true; s.customDepthMaterial = C.A.cdm; });
     SQ.length = 0;
   }
   function ground(x, z, kind) { Q.push([pick(GROUND[kind] || GROUND.flower), x, z, 0.8 + rnd() * 0.45, null, "g"]); }
@@ -190,5 +186,5 @@ const NATURE = (function () {
     Promise.all(names.map(n => new Promise(ok => L.load(DIR + n + ".glb", g => { try { prep(n, g.scene); } catch (e) {} ok(); }, undefined, () => ok()))))
       .then(() => { buildChunks(); buildSprites(); updateVis(); setInterval(updateVis, 250); });
   }
-  return { tree, place, bush, ground, sprite, build, clearArea, _managed: () => managed };
+  return { tree, place, bush, ground, sprite, build, _count: CNT, clearArea, _managed: () => managed };
 })();

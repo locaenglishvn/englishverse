@@ -32,3 +32,10 @@ Nguồn: https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0 (dùng 
 | 10 cây xanh, cây liễu, 2 bụi | Tree Collection v2.6 | **Bleed** (Bleed's Game Art) | https://opengameart.org/content/tree-collection-v26-bleeds-game-art |
 | Cây anh đào | Hand Painted Trees | **Robert Ramsay** | https://opengameart.org/content/hand-painted-trees |
 | 12 tảng đá | Large rocks | **davidbv** | https://opengameart.org/content/large-rocks |
+
+`autumn.webp` (cây thu: phong đỏ, liễu vàng, thông cam, cây trụi) – cũng từ **Tree Collection v2.6 – Bleed** (CC-BY), xử lý như trên.
+Ảnh nền vùng thu Maple Highlands (bản thử 26/11), **CC0**:
+| File | Bộ gốc | Tác giả | Nguồn |
+|---|---|---|---|
+| `ground-grass.webp` | Hand Painted Grass | PamNawi | https://opengameart.org/content/hand-painted-grass |
+| `ground-dirt.webp` | 4 hand-painted ground textures | Drummyfish | https://opengameart.org/content/4-hand-painted-ground-textures |
