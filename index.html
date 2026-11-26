@@ -259,6 +259,7 @@ button{font:inherit;cursor:pointer}
 <script src="parts/registry.js"></script>
 <script src="parts/world/nature.js"></script>
 <script src="parts/world/wilds.js"></script>
+<script src="parts/world/look25.js"></script>
 <script src="parts/world/rifts.js"></script>
 <script src="parts/world/rift-jp.js"></script>
 <script src="parts/combat/models.js"></script>
@@ -823,15 +824,16 @@ function wildCamTick(dt) {
   const on = wildCam();
   if (on && !wasWildCam) camPitch = (save.combat && save.combat.camPitch) || 0.96;   // nhớ góc lần trước, mặc định 55°
   wasWildCam = on; if (!on) return;
-  const tg = (typeof RIFTS !== "undefined" && RIFTS.camTarget && RIFTS.camTarget()) || 0;   // gần cổng vết rách: tạm quay mặt về cổng (rifts.js), còn lại luôn hướng Bắc
+  const tg = ((typeof RIFTS !== "undefined" && RIFTS.camTarget && RIFTS.camTarget()) || 0) + (typeof LOOK25 !== "undefined" ? LOOK25.yaw() : 0);   // gần cổng vết rách: tạm quay mặt về cổng (rifts.js), còn lại luôn hướng Bắc
   let a = ((camAngle - tg + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;   // đưa về −π…π rồi quay mượt về hướng đích
   camAngle = tg + (Math.abs(a) < 0.01 ? 0 : a * Math.max(0, 1 - dt * 6));
-  camPitch = Math.min(WILD_PITCH[1], Math.max(WILD_PITCH[0], camPitch)); if (save.combat) save.combat.camPitch = camPitch;
+  camPitch = Math.min(WILD_PITCH[1], Math.max(WILD_PITCH[0], camPitch));
+  if (typeof LOOK25 !== "undefined" && LOOK25.active()) camPitch = LOOK25.pitch(camPitch); else if (save.combat) save.combat.camPitch = camPitch;   // bản thử 2.5D (Blossom Valley): góc cố định, không ghi đè góc đã nhớ
 }   // camPitch: góc ngẩng (nhỏ = nhìn ngang lên trời, lớn = nhìn từ trên xuống)
 const cv = renderer.domElement;
 cv.addEventListener("pointerdown", e => { look = { id: e.pointerId, x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
 cv.addEventListener("pointermove", e => {
-  if (look && look.id === e.pointerId) { if (!wildCam()) camAngle -= (e.clientX - look.x) * 0.008; look.x = e.clientX;   // vùng hoang dã: không xoay ngang
+  if (look && look.id === e.pointerId) { if (!wildCam()) camAngle -= (e.clientX - look.x) * 0.008; else if (typeof LOOK25 !== "undefined") LOOK25.drag(e.clientX - look.x); look.x = e.clientX;   // vùng hoang dã: không xoay ngang
     if (!maze) camPitch = room ? Math.min(1.0, Math.max(-0.7, camPitch + (e.clientY - look.y) * 0.006)) : Math.min(1.35, Math.max(0.1, camPitch + (e.clientY - look.y) * 0.006));   // kéo lên/xuống: ngẩng/cúi camera (trong nhà: ngẩng lên được để nhìn trần)
     look.y = e.clientY; }
 });
@@ -3471,6 +3473,7 @@ function loop() {
   updateMini(dt); updateZone(); updateAmbient(dt);
   $("zoomBtn").style.display = maze || room || creating ? "none" : "block";
   sun.position.set(player.position.x + 12, 22, player.position.z + 9); sun.target.position.copy(player.position);   // vùng bóng đổ đi theo người chơi
+  if (typeof LOOK25 !== "undefined") LOOK25.tick(dt);   // bản thử 2.5D ở Blossom Valley (parts/world/look25.js)
   animateChars(dt);
   spinners.forEach(h => h.rotation.z += dt * 1.2);
   flags.forEach((f, i) => f.rotation.y = Math.sin(t * 2 + i) * 0.25);   // cờ bay
@@ -3508,7 +3511,7 @@ function loop() {
       if (up) camera.lookAt(p.x - Math.sin(camAngle) * 3, 1.4 - Math.sin(camPitch) * 6, p.z - Math.cos(camAngle) * 3); else camera.lookAt(p.x, 1.4 - Math.sin(camPitch) * 1.6, p.z);
       sky.position.set(camera.position.x, 0, camera.position.z); renderer.render(scene, camera); return;
     }
-    camD += ((creating ? 5.5 : room ? (room.P.layout === "greenhouse" ? 7.5 : 9) : camWide && !talking ? 26 : wildCam() && !talking ? 15 : 11) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
+    camD += ((creating ? 5.5 : room ? (room.P.layout === "greenhouse" ? 7.5 : 9) : camWide && !talking ? 26 : wildCam() && !talking ? 15 : 11) * (typeof LOOK25 !== "undefined" ? LOOK25.distK() : 1) - camD) * 0.1;   // 2 chế độ: gần (giao tiếp) / rộng (nhìn tổng thể)
     const D = camD, ch = Math.cos(creating ? 0.25 : camPitch) * D;
     const want = new THREE.Vector3(p.x + Math.sin(camAngle) * ch, 1 + Math.sin(creating ? 0.25 : camPitch) * D, p.z + Math.cos(camAngle) * ch);
     if (!room && !camWide) {   // góc gần: có tường/nhà chắn giữa nhân vật và camera → kéo camera lại gần (góc rộng thì bỏ qua, camera ở trên cao)

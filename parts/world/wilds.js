@@ -166,6 +166,7 @@ const WILDS = (function () {
       sh.uniforms.dMap = { value: dt }; sh.uniforms.dRep = { value: new THREE.Vector2(rx, rz) };
       sh.fragmentShader = "uniform sampler2D dMap; uniform vec2 dRep;\n" + sh.fragmentShader.replace("#include <map_fragment>",
         "#include <map_fragment>\n  { vec3 c = diffuseColor.rgb; float gm = clamp((c.g - max(c.r, c.b)) * 6.0, 0.0, 1.0) * 0.8 + 0.2; if (c.b > c.g + 0.04) gm = 0.0;   // cỏ: vân rõ · đất/tuyết: nhẹ · nước: không\n    diffuseColor.rgb *= mix(vec3(1.0), texture2D(dMap, vUv * dRep).rgb * 1.09, gm); }");
+      if (typeof LOOK25 !== "undefined") LOOK25.patchGround(sh);   // bản thử 2.5D: mặt đất vẽ tay ở Blossom Valley (look25.js)
     };
     return mt;
   }
