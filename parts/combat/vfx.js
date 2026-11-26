@@ -80,6 +80,40 @@ const SKILL_VFX = (function () {
   }
   function shake(s) { if (PS) return; try { window.CAM_SHAKE = Math.max(window.CAM_SHAKE || 0, s); } catch (e) {} }
 
+  /* ---------- CHUỖI ẢNH 2D VẼ SẴN (flipbook) – 26/11 ----------
+     assets/fx/fx.webp: 1 ảnh 1024² = lưới 8 × 8 ô 128 px, mỗi hàng 1 hiệu ứng (khung chạy trái → phải). Nguồn: OpenGameArt, CC0, tác giả Cethiel
+     (Weapon Slash Effect, Arcane / Water / Light Magic Effect) – xem assets/CREDITS.md. Như game điện thoại: hiệu ứng là ảnh vẽ sẵn phát như phim hoạt hình.
+     Cách dựng cho nhẹ: 1 ảnh, 2 vật liệu dùng chung (thường / cộng sáng); mỗi hiệu ứng = 1 tấm vuông tự quay về camera (onBeforeRender), đổi khung bằng toạ độ ảnh
+     (không nhân bản ảnh → không tốn bộ nhớ đồ hoạ). Mờ dần: màu tối dần (tấm cộng sáng) hoặc khung cuối đã mờ sẵn. */
+  const FBK = { slashFire: [0, 6], slash: [1, 6], arcane: [2, 7], water: [3, 5], orb: [4, 5], burst: [5, 5], cross: [6, 5], swirl: [7, 5] };   // [hàng, số khung]
+  let FBM = null, FBA = null; const FBP = [], _fq = new THREE.Quaternion(), ZAX = new V3(0, 0, 1), _fc = new THREE.Color();
+  function fbMats() { if (FBM) return; const t = new THREE.TextureLoader().load("assets/fx/fx.webp");
+    FBM = new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, vertexColors: true, side: THREE.DoubleSide, fog: false });
+    FBA = FBM.clone(); FBA.blending = ADD; }
+  function fbItem() {
+    let m = FBP.pop(); if (m) return m;
+    const g = new THREE.PlaneGeometry(1, 1); g.setAttribute("color", new THREE.Float32BufferAttribute(new Array(12).fill(1), 3));
+    m = new THREE.Mesh(g, FBM.clone()); m.userData.add = FBA.clone(); m.userData.norm = m.material; m.frustumCulled = false; m.renderOrder = 6; m.userData.fxItem = true;   // vật liệu riêng (chung ảnh → không nạp lại ảnh) để chỉnh độ mờ
+    m.onBeforeRender = (r, sc, cam) => { m.quaternion.copy(cam.quaternion); if (m.userData.rot) m.quaternion.multiply(_fq.setFromAxisAngle(ZAX, m.userData.rot)); m.updateMatrixWorld(); };   // luôn quay mặt về camera
+    return m;
+  }
+  function flip(key, P, size, dur, delay, o) {   // o: { tint: màu, add: cộng sáng, rot: góc xoay (rad), y: độ cao }
+    o = Object.assign({}, o); const def = FBK[key]; if (!def) return; fbMats(); P = P.clone(); if (o.y !== undefined) P.y = o.y; if (o.from) { o.from = o.from.clone(); o.to = o.to.clone(); }
+    fx(dur, delay, E => {
+      const m = fbItem(), sc = E.sc || (typeof scene !== "undefined" ? scene : null); if (!sc) return;
+      m.material = o.add ? m.userData.add : m.userData.norm; m.material.opacity = 1; m.userData.rot = o.rot || 0; _fc.setHex(o.tint === undefined ? 0xffffff : o.tint);
+      const col = m.geometry.attributes.color, uv = m.geometry.attributes.uv; let last = -1; sc.add(m);
+      return k => {
+        const f = o.loop ? Math.floor(k * def[1] * o.loop) % def[1] : Math.min(def[1] - 1, Math.floor(k * def[1])), fade = o.loop ? 1 : 1 - Math.max(0, k - 0.65) / 0.35;   // loop: lặp khung (vật đang bay)
+        if (f !== last) { last = f; const u0 = f / 8, u1 = (f + 1) / 8, v1 = 1 - def[0] / 8, v0 = 1 - (def[0] + 1) / 8; uv.setXY(0, u0, v1); uv.setXY(1, u1, v1); uv.setXY(2, u0, v0); uv.setXY(3, u1, v0); uv.needsUpdate = true; }
+        if (o.add) { for (let i = 0; i < 4; i++) col.setXYZ(i, _fc.r * fade, _fc.g * fade, _fc.b * fade); } else { for (let i = 0; i < 4; i++) col.setXYZ(i, _fc.r, _fc.g, _fc.b); m.material.opacity = fade; }
+        col.needsUpdate = true;
+        if (o.from) m.position.lerpVectors(o.from, o.to, k); else m.position.copy(P); const s = size * (o.grow ? 0.8 + 0.4 * k : 1); m.scale.set(s, s, 1);
+        if (k >= 1) { sc.remove(m); FBP.push(m); }
+      };
+    });
+  }
+
   /* ---------- thành phần dùng lại ---------- */
   const flash = (P, c, size, dur, delay, y, key) => { P = P.clone(); fx(dur, delay, E => { const s = E.spr(key || "glow", c); return k => s.p(P.x, y === undefined ? P.y : y, P.z).s(size * (0.4 + k * 0.8)).a(0.8 * (1 - k * k)); }); };
   const ringWave = (P, c, r1, dur, delay, y, r0) => { P = P.clone(); fx(dur, delay, E => { const m = E.mesh("ring", c); return k => m.p(P.x, y === undefined ? 0.12 : y, P.z).s((r0 || 0.3) + (r1 - (r0 || 0.3)) * Math.sqrt(k)).a(0.95 * (1 - k)); }); };
@@ -127,14 +161,18 @@ const SKILL_VFX = (function () {
   /* ---------- 28 chiêu ---------- */
   const SK = {};
   /* ⚡ POWER */
-  SK.echo_blast = C => {   // sóng âm tròn lao tới: 2 → 3 → 4 vòng, bậc 5 lõi vàng + vòng đồng tâm
-    const { T, A, B, dir, col, k: K } = C, dur = 0.2 + A.distanceTo(B) * 0.018, nr = T + 1;
-    fx(dur, 0, E => { const core = E.spr("glow", col[2]), rs = [], tr = [];
-      for (let i = 0; i < nr; i++) rs.push(E.mesh("vring", col[i % 2], true)); for (let i = 0; i < T * 2; i++) tr.push(E.spr("glow", col[1]));
-      return k => { lerpP(A, B, k, _a); core.p(_a).s((0.7 + 0.35 * T) * K).a(1);
-        rs.forEach((r, i) => { const kk = Math.max(0, k - i * 0.09); lerpP(A, B, kk, _b); r.p(_b).face(dir).s((0.3 + 0.2 * T + kk * 0.5 + i * 0.12) * K).a(kk > 0 ? 0.9 : 0); });
-        tr.forEach((s, i) => { const kk = k - (i + 1) * 0.05; if (kk < 0) { s.a(0); return; } lerpP(A, B, kk, _b); s.p(_b).s((0.5 + 0.1 * T) * K * (1 - i * 0.08)).a(0.7 - i * 0.07); }); }; });
-    impact(C, dur, 1.2, false);
+  SK.echo_blast = C => {   // (26/11, chuỗi ảnh vẽ sẵn) loé ở tay → quả cầu âm thanh bay (chuỗi ảnh lặp) kéo đuôi sao → nổ gai sáng + quả cầu nổ + hạt bắn tung; bậc cao: thêm sao chữ thập, nổ to hơn
+    const { T, A, B, col, k: K } = C, dur = 0.22 + A.distanceTo(B) * 0.02;
+    flip("orb", A, 1.8 * K, 0.22, 0, { tint: col[1] });
+    flip("orb", A, (1.3 + 0.2 * T) * K, dur, 0, { tint: col[2], from: A, to: B, loop: 2 });   // quả cầu bay
+    fx(dur, 0.03, E => { const tr = []; for (let i = 0; i < 3 + T * 2; i++) tr.push(E.spr("glow", i % 2 ? col[1] : col[2]));
+      return k => tr.forEach((s, i) => { const kk = k - (i + 1) * 0.06; if (kk < 0) { s.a(0); return; } lerpP(A, B, kk, _b); s.p(_b).s(0.32 * K * (1 - i * 0.07)).a(0.9 - i * 0.1); }); });
+    flip("burst", B, (4.2 + 0.5 * T) * K, 0.42, dur, { tint: col[2], rot: R(0, PI) });
+    flip("orb", B, (3.0 + 0.4 * T) * K, 0.36, dur + 0.02, { tint: col[1] });
+    burst(B, col[1], 10 + T * 4, 5 + T, 0.16, 0.5, dur, "glow", 7); burst(B, col[2], 5, 4, 0.2, 0.45, dur, "star", 5);
+    if (T >= 2) flip("cross", B, (4.6 + 0.4 * T) * K, 0.48, dur + 0.06, { tint: col[0], rot: PI / 4 });
+    if (T >= 3) { flip("burst", B, 6.5 * K, 0.5, dur + 0.1, { tint: col[3], rot: R(0, PI) }); burst(B, col[3], 12, 8, 0.35, 0.7, dur, "glow", 5); }
+    shake(0.12 + 0.06 * T);
   };
   SK.sonic_spear = C => {   // giáo âm thanh → giáo dài có đuôi → bậc 5: giáo rồng vàng
     const { T, A, B, dir, col, k: K } = C, dur = 0.16 + A.distanceTo(B) * 0.012, len = (0.9 + 0.4 * T) * K;
@@ -216,16 +254,17 @@ const SKILL_VFX = (function () {
     burst(B, col[2], 16, 9, 0.5, 0.9, hit, "star", 5); risers(Tg, col[1], 10, 1.5, 6, 1.5, 0.8, hit, 0.7, "glow");
   };
   /* 🌀 CONTROL */
-  SK.question_arrow = C => {   // mũi tên → mũi tên pha lê + dấu ? → 3 mũi tên & 3 dấu ? xoay quanh mục tiêu
+  SK.question_arrow = C => {   // (26/11) mũi tên bay (3D) kéo đuôi sao → nổ phép tím (chuỗi ảnh) + sao choáng xoay trên đầu + dấu ?; bậc cao: 3 mũi tên
     const { T, A, B, Tg, dir, col, k: K } = C, dur = 0.2 + A.distanceTo(B) * 0.015, na = T >= 3 ? 3 : 1, side = _c.crossVectors(dir, UP).normalize().clone();
-    for (let n = 0; n < na; n++) fx(dur, n * 0.08, E => { const head = E.mesh("cone", col[2], false), shaft = E.mesh("box", col[0], true), tr = []; for (let i = 0; i < T * 2; i++) tr.push(E.spr(T >= 3 ? "star" : "glow", col[1]));
-      const off = (n - (na - 1) / 2) * 1.1; return k => { lerpP(A, B, k, _a); _a.addScaledVector(side, off * (1 - k)); const w = 0.15 * K * (T >= 3 ? 1.3 : 1);
-        head.p(_a).along(dir).s(w, 0.5 * K, w).a(1); shaft.p(_a.x - dir.x * 0.8 * K, _a.y - dir.y * 0.8 * K, _a.z - dir.z * 0.8 * K).along(dir).s(w * 0.3, 0.8 * K, w * 0.3).a(0.9);
-        tr.forEach((s, i) => { const kk = k - (i + 1) * 0.04; if (kk < 0) { s.a(0); return; } lerpP(A, B, kk, _b); _b.addScaledVector(side, off * (1 - kk)); s.p(_b).s(0.4 * K).a(0.7 - i * 0.08); }); }; });
-    impact(C, dur + 0.05, 0.9, false);
-    const nq = T >= 3 ? 3 : 1; fx(0.9, dur, E => { const qs = []; for (let i = 0; i < nq; i++) qs.push(E.spr("q", i % 2 ? col[1] : col[2])); const sp = nq > 1 ? E.spr("star", col[3]) : NIL;
-      return k => { qs.forEach((q, i) => { const an = i / nq * PI * 2 + k * 5, r = nq > 1 ? 1.1 : 0; q.p(Tg.x + Math.cos(an) * r, 2.4 + Math.sin(k * 14 + i) * 0.12 + k * 0.2, Tg.z + Math.sin(an) * r).s((1.1 + 0.25 * T) * K).a(k < 0.8 ? 1 : (1 - k) / 0.2); }); sp.p(Tg.x, 1, Tg.z).s(2.5 * K).a(0.5 * (1 - k)); }; });
-    if (T >= 3) orbit(Tg, col[3], 8, 1.4, 1, 1.5, 0.9, dur, 0.4, "star");
+    for (let n = 0; n < na; n++) fx(dur, n * 0.08, E => { const head = E.mesh("cone", col[2], false), shaft = E.mesh("box", col[0], true), tr = []; for (let i = 0; i < 4 + T; i++) tr.push(E.spr("glow", col[1]));
+      const off = (n - (na - 1) / 2) * 1.1; return k => { lerpP(A, B, k, _a); _a.addScaledVector(side, off * (1 - k)); const w = 0.17 * K;
+        head.p(_a).along(dir).s(w, 0.55 * K, w).a(1); shaft.p(_a.x - dir.x * 0.8 * K, _a.y - dir.y * 0.8 * K, _a.z - dir.z * 0.8 * K).along(dir).s(w * 0.3, 0.8 * K, w * 0.3).a(0.9);
+        tr.forEach((s, i) => { const kk = k - (i + 1) * 0.04; if (kk < 0) { s.a(0); return; } lerpP(A, B, kk, _b); _b.addScaledVector(side, off * (1 - kk)); s.p(_b).s(0.3 * K).a(0.8 - i * 0.1); }); }; });
+    flip("arcane", B, (4.2 + 0.4 * T) * K, 0.5, dur, { y: 1.3 });
+    burst(B, 0xc77dff, 10 + T * 3, 4.5, 0.15, 0.5, dur, "glow", 6);
+    for (let i = 0; i < (T >= 3 ? 3 : 2); i++) flip("cross", Tg, 1.5 * K, 0.6, dur + 0.1 + i * 0.12, { tint: i % 2 ? col[1] : 0xe0b0ff, y: 2.5, rot: i, from: _a.set(Tg.x + Math.cos(i * 2.1) * 0.8, 2.5, Tg.z + Math.sin(i * 2.1) * 0.8).clone(), to: _b.set(Tg.x + Math.cos(i * 2.1 + 3) * 0.8, 2.6, Tg.z + Math.sin(i * 2.1 + 3) * 0.8).clone() });   // sao choáng
+    fx(0.9, dur, E => { const q = E.spr("q", col[2]); return k => q.p(Tg.x, 3.1 + Math.sin(k * 14) * 0.1, Tg.z).s((1.1 + 0.2 * T) * K).a(k < 0.8 ? 1 : (1 - k) / 0.2); });
+    shake(0.1);
   };
   SK.riddle_trap = C => {   // lưới nhện ánh sáng trên đất, vùng trói chân
     const { T, Tg, col, rad, k: K } = C, r = rad * (0.85 + 0.1 * T), spokes = 5 + T * 2;
@@ -294,13 +333,14 @@ const SKILL_VFX = (function () {
     pillar(F, col[2], 14, 1.2, 1.0, 0.1); shake(0.6); burst(F.clone().setY(1), col[2], 14, 8, 0.4, 0.9, 0.1, "star", 2); orbit(F, col[1], 12, r * 0.6, 1.2, 0.7, 1.6, 0.2, 0.6, "snow", true);
   };
   /* 💚 HARMONY (lên bản thân) */
-  SK.harmony_heal = C => {   // vòng xanh bay lên → thêm nốt nhạc + xoắn → bậc 5 cánh hoa vàng, hồi cả đội
+  SK.harmony_heal = C => {   // (26/11) xoáy ánh sáng xanh (chuỗi ảnh) quanh người + quả cầu sáng nở + sao / nốt nhạc bay lên; bậc cao: cánh hoa, nở 2 lần
     const { T, F, col, k: K } = C;
-    fx(0.9, 0, E => { const rs = []; for (let i = 0; i < T; i++) rs.push(E.mesh("ring", i % 2 ? col[1] : col[0], true)); const g = E.mesh("cyl", col[1], true);
-      return k => { rs.forEach((m, i) => { const kk = clamp(k - i * 0.12, 0, 1); m.p(F.x, 0.1 + kk * 2.2, F.z).s(0.9 * K * (1 - kk * 0.25)).a(Math.sin(kk * PI)); }); g.p(F.x, 0, F.z).s(0.8 * K, 2.4 * K, 0.8 * K).a(0.2 * Math.sin(k * PI)); }; });
-    flash(F, col[1], 2.2 * K, 0.5, 0, 1); risers(F, col[2], 5 + T * 3, 0.8 * K, 2.8, 0.8, 0.9, 0, 0.35 * K, T >= 3 ? "petal" : T === 2 ? ["note", "star", "note2"] : "star");
-    if (T >= 2) { risers(F, col[0], 6, 0.5, 2.2, -0.6, 0.9, 0.1, 0.5 * K, "glow"); ringWave(F, col[1], 2.2, 0.7, 0.1); }
-    if (T >= 3) { ringWave(F, col[0], 5, 0.9, 0); ringWave(F, col[2], 3.5, 0.9, 0.15); pillar(F, col[1], 5, 1.1, 0.8, 0); risers(F, [col[0], col[3], col[1]], 12, 2.2, 4, 0.4, 1.1, 0.1, 0.7, "petal", true); shake(0.2); orbit(F, col[2], 6, 1.3, 1.4, 1, 0.9, 0, 0.5, "star"); }
+    flip("swirl", F, (3.8 + 0.3 * T) * K, 0.7, 0, { tint: col[0], y: 1.0, grow: true });
+    flip("orb", F, (2.8 + 0.3 * T) * K, 0.55, 0.15, { tint: col[1], y: 1.3, grow: true });
+    risers(F, col[1], 8 + T * 3, 0.8 * K, 2.8, 0.8, 0.9, 0.05, 0.17 * K, T >= 3 ? "petal" : T === 2 ? ["note", "glow", "note2"] : "glow");
+    burst(F.clone().setY(1.2), col[2], 8 + T * 2, 2.5, 0.14, 0.6, 0.1, "glow", -1);
+    if (T >= 2) flip("burst", F, 3.4 * K, 0.5, 0.35, { tint: col[2], y: 1.4, rot: R(0, PI) });
+    if (T >= 3) { flip("swirl", F, 5 * K, 0.8, 0.3, { tint: col[3], y: 1.0, grow: true, rot: 1 }); risers(F, [col[0], col[3], col[1]], 12, 2.2, 4, 0.4, 1.1, 0.1, 0.7, "petal", true); shake(0.2); }
   };
   SK.chord_shield = C => {   // khiên: 1 vỏ → vòm + sao quanh → vỏ vàng 2 lớp xoay + nốt nhạc
     const { T, F, col, k: K } = C;
@@ -352,13 +392,15 @@ const SKILL_VFX = (function () {
     orbit(F, RAINBOW, 6, 2.4, 1.2, 1.2, 1.5, 0.2, 0.9, "star"); burst(F, 0xffffff, 14, 8, 0.4, 0.9, 0.2, "star", 2, 1); shake(0.6);
   };
   /* 🔥 RHYTHM */
-  SK.drum_roll = C => {   // 3 nhịp trống trúng mục tiêu → thêm lửa + nốt nhạc → trống lửa đỏ vàng, 5 nhịp dồn
+  SK.drum_roll = C => {   // (26/11) nốt nhạc bay tới → mỗi nhịp: vệt chém lửa (chuỗi ảnh) + tia lửa bắn + rung nhẹ; bậc cao: 5 nhịp, nổ lửa cuối
     const { T, A, B, Tg, col, k: K } = C, nh = T >= 3 ? 5 : 3;
-    fx(0.2 + nh * 0.12, 0, E => { const dr = T >= 3 ? E.mesh("cyl", col[0], false) : NIL, top = T >= 3 ? E.mesh("disc", col[2], false) : NIL, rg = T >= 3 ? E.mesh("ring", col[1], true) : NIL, tr = []; for (let i = 0; i < 4; i++) tr.push(E.spr(T >= 2 ? "note" : "glow", col[1]));
-      return k => { const bob = Math.abs(Math.sin(k * nh * PI)); if (T >= 3) { const h = 2.6 - bob * 1.4; dr.p(B.x, h, B.z).s(0.85 * K, 0.5 * K, 0.85 * K).a(1); top.p(B.x, h + 0.5 * K, B.z).s(0.85 * K).a(1); rg.p(B.x, h + 0.5 * K, B.z).s(0.9 * K).a(0.9); }
-        tr.forEach((s, i) => { const kk = (k * 1.5 + i * 0.25) % 1; lerpP(A, B, kk, _a, 1.5); s.p(_a).s(0.45 * K).a(Math.sin(kk * PI) * (k < 0.8 ? 1 : 0)); }); }; });
-    for (let h = 0; h < nh; h++) { const d = 0.15 + h * 0.12, off = _d.set(R(-0.5, 0.5), 0, R(-0.5, 0.5)).add(Tg).clone(); flash(_a.copy(off).setY(0.9), h % 2 ? col[1] : col[2], (1.3 + 0.2 * T) * K, 0.22, d); ringWave(off, col[h % 2 ? 1 : 0], (1.1 + 0.4 * T) * K, 0.3, d); burst(_b.copy(off).setY(0.8), col[1], 4 + T * 2, 3 + T, 0.25, 0.4, d, T >= 2 ? "star" : "glow", 8); }
-    if (T >= 2) risers(Tg, col[3], 6, 0.7, 2, 0.4, 0.6, 0.2, 0.4, "glow"); if (T >= 3) { shake(0.35); fx(0.8, 0.3, E => { const f = []; for (let i = 0; i < 6; i++) f.push(E.mesh("cone", i % 2 ? col[1] : col[0], true)); return k => f.forEach((m, i) => { const an = i / 6 * PI * 2 + k * 3; m.p(Tg.x + Math.cos(an) * 1.2, 0, Tg.z + Math.sin(an) * 1.2).s(0.3, 1.6 * Math.sin(k * PI), 0.3).a(0.85 * (1 - k * 0.5)); }); }); }
+    fx(0.2 + nh * 0.12, 0, E => { const tr = []; for (let i = 0; i < 4; i++) tr.push(E.spr(T >= 2 ? "note" : "glow", col[1]));
+      return k => tr.forEach((s, i) => { const kk = (k * 1.5 + i * 0.25) % 1; lerpP(A, B, kk, _a, 1.5); s.p(_a).s(0.5 * K).a(Math.sin(kk * PI) * (k < 0.8 ? 1 : 0)); }); });
+    for (let h = 0; h < nh; h++) { const d = 0.15 + h * 0.12, off = _d.set(R(-0.5, 0.5), 0, R(-0.5, 0.5)).add(Tg).clone();
+      flip("slashFire", off, (3.2 + 0.3 * T) * K, 0.28, d - 0.04, { y: 1.0, rot: h % 2 ? 0.6 : -2.4 });
+      burst(off.clone().setY(1), h % 2 ? col[1] : col[2], 6 + T, 5, 0.13, 0.4, d, "glow", 9);
+      fx(0.05, d, () => { shake(0.08); }); }
+    if (T >= 3) { flip("burst", Tg, 5 * K, 0.45, 0.15 + nh * 0.12, { tint: col[0], y: 1.1, rot: R(0, PI) }); shake(0.3); }
   };
   SK.shock_wave = C => {   // sóng tròn → 2 sóng + bụi → bậc 5: lốc lửa hút quái vào giữa
     const { T, F, col, rad, k: K } = C, r = Math.min(rad, 5) * 0.95;
@@ -446,7 +488,7 @@ const SKILL_VFX = (function () {
   }
   function hit(pos, color) {
     if (typeof scene === "undefined") return; init(); let c = 0xffd43b; try { c = new THREE.Color(color).getHex(); } catch (e) {}
-    const P = pos.clone(); P.y = Math.max(P.y, 0.9); flash(P, 0xffffff, 1.2, 0.22, 0); burst(P, c, 5, 3.5, 0.26, 0.35, 0, "glow", 8); ringWave(_d.set(P.x, 0, P.z), c, 0.9, 0.3, 0);
+    const P = pos.clone(); P.y = Math.max(P.y, 0.9); flip("slash", P, 3.0, 0.24, 0, { rot: R(-1, 1) }); burst(P, c, 6, 4, 0.13, 0.35, 0.04, "glow", 8);   // vệt chém vẽ sẵn (chuỗi ảnh) + tia lửa nhỏ (bỏ chớp + vòng phẳng)
   }
-  return { play, hit, tick, _live: () => live, _fx: () => FX.length, _ids: () => Object.keys(SK) };
+  return { play, hit, tick, _flip: flip, _live: () => live, _fx: () => FX.length, _ids: () => Object.keys(SK) };
 })();
