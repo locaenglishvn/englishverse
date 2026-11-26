@@ -53,13 +53,6 @@ const NATURE = (function () {
     if (!SQ.length) return;
     const tex = TL.load("assets/painted/trees.webp"); tex.anisotropy = 4;
     const mt = new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.5, color: 0xf2f2ea });   // ảnh đã vẽ sẵn sáng tối → không cần đèn
-    mt.onBeforeCompile = sh => {   // cây / đá đứng TRƯỚC nhân vật (gốc gần camera hơn) mà che nhân vật: khoét 1 lỗ tròn mờ mép quanh nhân vật trên màn hình
-      sh.uniforms.uPS = UPS;
-      sh.vertexShader = "attribute float bz; varying float vBZ;\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\n  vBZ = bz;");
-      sh.fragmentShader = "uniform vec4 uPS; varying float vBZ;\n" + sh.fragmentShader.replace("void main() {", `void main() {
-  { float f = vBZ - uPS.w; if (f > 0.1 && f < 9.0) { float k = 1.0 - smoothstep(uPS.z * 0.55, uPS.z, length(gl_FragCoord.xy - uPS.xy));
-      float h = fract(sin(dot(floor(gl_FragCoord.xy), vec2(12.9898, 78.233))) * 43758.5453); if (h < k * 1.05) discard; } }`);
-    };
     const cast = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });   // tấm đổ bóng: không vẽ ra màn hình
     const cdm = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 });
     const sd = new THREE.Vector3(15, 0, 3).normalize(), tx = -sd.z, tz = sd.x;   // hướng nắng (look25.js SUN1) → tấm bóng vuông góc
@@ -92,7 +85,7 @@ const NATURE = (function () {
         blobM = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false }); }
       const bo = mk(C.d, C.du, blobM); bo.renderOrder = 1; }
       if (!C.v.length) return;
-      const o = mk(C.v, C.u, mt); o.geometry.setAttribute("bz", new THREE.Float32BufferAttribute(C.b, 1)); o.onBeforeRender = setPS;
+      const o = mk(C.v, C.u, mt); o.geometry.setAttribute("bz", new THREE.Float32BufferAttribute(C.b, 1));   // (bỏ khoét lỗ quanh nhân vật – chủ dự án 26/11: lá thưa, nhìn xuyên được)
       if (!C.c.length) return; const s = mk(C.c, C.cu, cast); s.castShadow = true; s.customDepthMaterial = cdm; });
     SQ.length = 0;
   }

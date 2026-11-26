@@ -104,7 +104,8 @@ const LOOK25 = (function () {
   { // dải đường mòn / bờ suối: mép lởm chởm theo ngọn cỏ + nhiễu → cỏ bên dưới mọc lấn vào, không còn mép cắt thẳng
     vec2 q = vec2(vW25.x, -vW25.z);
     float hg = dot(texture2D(l25G, q / 4.2).rgb, vec3(0.3, 0.6, 0.1)) / dot(l25GA, vec3(0.3, 0.6, 0.1)), nz = texture2D(l25M, q / 7.0).r;
-    if (abs(vEA) > mix(1.01, 0.76 + (nz - 0.5) * 0.45 - (hg - 1.0) * 0.6, l25Mask(vW25.xz))) discard; }   // chỉ trong Blossom Valley (vùng khác: mép trơn như cũ)
+    float mk = l25Mask(vW25.xz), th = mix(1.01, 0.8 + (nz - 0.5) * 0.4 - (hg - 1.0) * 0.3, mk), sw = max(0.002, 0.1 * mk);   // chỉ trong Blossom Valley (vùng khác: mép trơn như cũ)
+    float al = 1.0 - smoothstep(th - sw, th + sw, abs(vEA)); if (al < 0.01) discard; diffuseColor.a *= al; }   // mép lởm chởm nhưng mờ dần, không sắc
   #endif
   { float msk = l25On * l25Mask(vW25.xz);
     if (msk > 0.002) {
@@ -119,8 +120,8 @@ const LOOK25 = (function () {
       vec3 G = mix(texture2D(l25G, w / 4.2).rgb, texture2D(l25G, w2).rgb, sel), D = mix(texture2D(l25D, w / 3.4).rgb, texture2D(l25D, w2 * 1.2).rgb, sel);
       float gm = clamp((c.g - max(c.r, c.b)) * 7.0, 0.0, 1.0); if (c.b > c.g + 0.04) gm = 0.0;
       float hG = dot(G, vec3(0.3, 0.6, 0.1)) / dot(l25GA, vec3(0.3, 0.6, 0.1));
-      float tg = smoothstep(0.44, 0.56, gm + (hG - 1.0) * 0.45 + (mac2 - 0.5) * 0.4);   // mép đất – cỏ: sắc nhưng lượn theo khóm cỏ + nhiễu (không nhòe, không thẳng)
-      vec3 gRef = mix(vec3(0.44, 0.62, 0.29), c, smoothstep(0.6, 0.95, gm)), dRef = mix(vec3(0.55, 0.46, 0.31), c, smoothstep(0.4, 0.05, gm));   // vùng giáp: màu chuẩn (ảnh nền mờ trộn 2 màu → bẩn)
+      float tg = smoothstep(0.12, 0.88, gm + (hG - 1.0) * 0.55 + (mac2 - 0.5) * 0.35);   // mép đất – cỏ: cỏ thưa dần vào đất theo khóm cỏ + nhiễu (mềm, không thẳng, không sắc)
+      vec3 gRef = mix(vec3(0.40, 0.59, 0.26), c, smoothstep(0.6, 0.95, gm)), dRef = mix(vec3(0.50, 0.49, 0.30), c, smoothstep(0.4, 0.05, gm));   // vùng giáp: màu cỏ / màu đất bên trong mảng (khỏi viền nâu sậm)
       vec3 hp = mix(D / l25DA * dRef, G / l25GA * gRef, tg);
       hp *= 0.84 + mac * 0.3 + (mac2 - 0.5) * 0.12;
       hp = mix(vec3(dot(hp, vec3(0.3, 0.59, 0.11))), hp, 1.04) * vec3(1.05, 0.99, 0.9);   // ấm hơn, bớt xanh "neon"
