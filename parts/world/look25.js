@@ -76,6 +76,22 @@ const LOOK25 = (function () {
     for (let c = 0; c < 22; c++) { const cx = r() * N, cy = r() * N; for (let k = 0; k < 6; k++) blade(g, N, cx + (r() - 0.5) * 8, cy, 5 + r() * 7, 1.4, (r() - 0.5) * 7, "rgba(96,130,58,.8)"); }   // vài khóm cỏ dại
     return cv;
   }
+  function leafTile() {   // lá rụng mùa thu (nền trong suốt): lá phong 5 thuỳ + lá bầu dục, đỏ / cam / vàng / nâu, có bóng nhỏ, đè lên ảnh cỏ ở gần cho sắc nét
+    const N = 512, cv = document.createElement("canvas"); cv.width = cv.height = N; const g = cv.getContext("2d"), r = rng(47);
+    const cols = ["#c0392b", "#d35400", "#e67e22", "#f1c40f", "#a0522d", "#b03a1a", "#e8a33a", "#8e5a2b"];
+    for (let i = 0; i < 230; i++) {
+      const x = r() * N, y = r() * N, L = 6 + r() * 7, a = r() * 6.3, col = cols[(r() * cols.length) | 0], maple = r() < 0.55;
+      wrap(N, x, y, L + 3, (X, Y) => { g.save(); g.translate(X, Y); g.rotate(a);
+        const shape = () => { g.beginPath(); if (maple) { for (let k = 0; k < 5; k++) { const t = -Math.PI / 2 + (k - 2) * 0.62, rr = k === 2 ? L : k % 2 ? L * 0.8 : L * 0.62; g.lineTo(Math.cos(t) * rr, Math.sin(t) * rr); g.lineTo(Math.cos(t + 0.31) * rr * 0.42, Math.sin(t + 0.31) * rr * 0.42); } g.lineTo(0, L * 0.25); }
+          else g.ellipse(0, 0, L * 0.45, L, 0, 0, 7); g.closePath(); };
+        g.translate(1.2, 1.5); g.fillStyle = "rgba(30,20,10,.35)"; shape(); g.fill(); g.translate(-1.2, -1.5);   // bóng nhỏ
+        g.fillStyle = col; shape(); g.fill();
+        g.strokeStyle = "rgba(60,30,10,.55)"; g.lineWidth = 0.8; g.beginPath(); g.moveTo(0, L * (maple ? 0.5 : 1.1)); g.lineTo(0, -L * 0.7); g.stroke();   // gân + cuống
+        g.fillStyle = "rgba(255,240,200,.25)"; g.beginPath(); g.ellipse(-L * 0.15, -L * 0.25, L * 0.22, L * 0.35, 0.3, 0, 7); g.fill();   // ánh sáng
+        g.restore(); });
+    }
+    const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t;
+  }
   function macroTile() {   // nhiễu lớn mềm (chống lặp ảnh, loang sáng tối như mây che nắng)
     const N = 128, cv = document.createElement("canvas"); cv.width = cv.height = N; const g = cv.getContext("2d"), r = rng(5);
     g.fillStyle = "rgb(128,128,128)"; g.fillRect(0, 0, N, N);
@@ -89,7 +105,7 @@ const LOOK25 = (function () {
     T = { g: { value: tex(gC) }, d: { value: tex(dC) }, m: { value: tex(macroTile()) }, ga: { value: avg(gC) }, da: { value: avg(dC) } };
     // Maple Highlands (thử 26/11): nền là ảnh VẼ TAY TẢI VỀ (OpenGameArt, CC0): cỏ "Hand Painted Grass" – PamNawi; đất nứt "4 hand-painted ground textures" – Drummyfish
     const ld = f => { const t = new THREE.TextureLoader().load(f); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; return t; };
-    Object.assign(T, { g2: { value: ld("assets/painted/ground-grass.webp") }, d2: { value: ld("assets/painted/ground-dirt.webp") }, g2a: { value: new THREE.Vector3(0.284, 0.516, 0.047) }, d2a: { value: new THREE.Vector3(0.679, 0.491, 0.271) } });
+    Object.assign(T, { g2: { value: ld("assets/painted/ground-grass.webp") }, d2: { value: ld("assets/painted/ground-dirt.webp") }, lf: { value: leafTile() }, g2a: { value: new THREE.Vector3(0.284, 0.516, 0.047) }, d2a: { value: new THREE.Vector3(0.679, 0.491, 0.271) } });
     return T;
   }
 
@@ -97,9 +113,9 @@ const LOOK25 = (function () {
      Màu lớn = ảnh nền cũ (trước vân mịn) × màu đỉnh; ảnh vẽ tay chia cho màu trung bình của nó → giữ đúng tông vùng. */
   function patchGround(sh) {
     const t = textures();
-    Object.assign(sh.uniforms, { l25On: U.on, l25G: t.g, l25D: t.d, l25M: t.m, l25GA: t.ga, l25DA: t.da, l25G2: t.g2, l25D2: t.d2, l25G2A: t.g2a, l25D2A: t.d2a });
+    Object.assign(sh.uniforms, { l25On: U.on, l25G: t.g, l25D: t.d, l25M: t.m, l25GA: t.ga, l25DA: t.da, l25G2: t.g2, l25D2: t.d2, l25G2A: t.g2a, l25D2A: t.d2a, l25L: t.lf });
     sh.vertexShader = "varying vec3 vW25;\n#ifdef RIB\nattribute float ea; varying float vEA;\n#endif\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\n  vW25 = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#ifdef RIB\n  vEA = ea;\n#endif");
-    sh.fragmentShader = "uniform float l25On; uniform sampler2D l25G, l25D, l25M, l25G2, l25D2; uniform vec3 l25GA, l25DA, l25G2A, l25D2A; varying vec3 vW25;\n#ifdef RIB\nvarying float vEA;\n#endif\n" +
+    sh.fragmentShader = "uniform float l25On; uniform sampler2D l25G, l25D, l25M, l25G2, l25D2, l25L; uniform vec3 l25GA, l25DA, l25G2A, l25D2A; varying vec3 vW25;\n#ifdef RIB\nvarying float vEA;\n#endif\n" +
       "float l25MaskNE(vec2 p) { float a = degrees(atan(p.x, -p.y)), m = max(abs(p.x), abs(p.y)); return smoothstep(30.0, 33.0, a) * (1.0 - smoothstep(57.0, 60.0, a)) * smoothstep(149.0, 156.0, m) * (1.0 - smoothstep(236.0, 241.0, m)); }\n" +
       "float l25Mask(vec2 p) { float r = p.x / max(p.y, 1.0); return smoothstep(149.0, 157.0, p.y) * smoothstep(-1.0, -0.94, r) * (1.0 - smoothstep(0.52, 0.577, r)) * (1.0 - smoothstep(236.0, 241.0, max(abs(p.x), abs(p.y)))); }\n" +
       sh.fragmentShader.replace("#include <map_fragment>", "#include <map_fragment>\n  vec3 c25 = diffuseColor.rgb;")
@@ -140,12 +156,19 @@ const LOOK25 = (function () {
       vec2 w = vec2(vW25.x, -vW25.z);
       float mac = texture2D(l25M, w / 43.0).r, mac2 = texture2D(l25M, w / 11.0 + 0.37).r, sel = smoothstep(0.38, 0.62, mac2);
       vec2 w2 = mat2(0.8, -0.6, 0.6, 0.8) * w / 7.7 + vec2(0.31, 0.57);
-      vec3 G = mix(texture2D(l25G2, w / 6.5).rgb, texture2D(l25G2, w2).rgb, sel), D = mix(texture2D(l25D2, w / 2.6).rgb, texture2D(l25D2, w2 * 2.4).rgb, sel);
+      vec3 G = mix(texture2D(l25G2, w / 3.0).rgb, texture2D(l25G2, w2 * 1.9).rgb, sel),   // 3 m / lần lặp (trước 6,5 m: gần nhìn nét cọ to, nhòe)
+         D = mix(texture2D(l25D2, w / 2.6).rgb, texture2D(l25D2, w2 * 2.4).rgb, sel);
       float gl = min(dot(G, vec3(0.3, 0.6, 0.1)) / dot(l25G2A, vec3(0.3, 0.6, 0.1)), 1.3); G = min(G, l25G2A * 1.6);   // chặn chấm hoa trắng trong ảnh (nhuộm ra đốm tím)
       float mx = max(c.r, max(c.g, c.b)), sat = (mx - min(c.r, min(c.g, c.b))) / max(mx, 0.01);
       float tg = smoothstep(0.3, 0.62, sat + (gl - 1.0) * 0.3 + (mac2 - 0.5) * 0.18);   // ít bão hoà = đất; cỏ thưa dần vào đất
       vec3 aut = mix(c, vec3(0.5, 0.5, 0.24), 0.45);   // vàng úa pha ô liu (bớt cam chói)
       vec3 gC = mix(gl * aut, G / l25G2A * aut, 0.4), dC = mix(D / l25D2A, vec3(1.0), 0.5) * mix(vec3(0.6, 0.47, 0.32), c, 0.25);   // đất: vết nứt nhỏ, nhạt; màu nâu ấm
+      float fine = dot(texture2D(l25G, w / 1.8).rgb, vec3(0.3, 0.6, 0.1)) / dot(l25GA, vec3(0.3, 0.6, 0.1));   // ngọn cỏ mảnh (ảnh cỏ vẽ code) → gần vẫn sắc
+      gC *= mix(1.0, fine, 0.55);
+      vec4 Lf = texture2D(l25L, w / 2.4), Lf2 = texture2D(l25L, w2 * 2.9 + 0.5);
+      float dens = smoothstep(0.25, 0.75, mac2 * 0.7 + mac * 0.5);   // lá rụng: chỗ dày chỗ thưa
+      gC = mix(gC, Lf.rgb * 0.9, Lf.a * (0.35 + 0.6 * dens)); gC = mix(gC, Lf2.rgb * 0.85, Lf2.a * dens * 0.7);
+      dC = mix(dC, Lf.rgb * 0.85, Lf.a * dens * 0.35);
       vec3 hp = mix(dC, gC, tg) * (0.86 + mac * 0.28);
       diffuseColor.rgb = mix(diffuseColor.rgb, hp, mN);
     } }`);
