@@ -328,12 +328,12 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 - **11 kiểu tóc** (5 nam + 5 nữ chất lượng cao ~18k đỉnh, Classic là đầu gốc) + 7 màu: chọn ở màn tạo nhân vật và Saigon Barber.
 - Chân dung HUD = đầu nhân vật; túi đồ: ô **Body** (áo + quần), Shoes, Belt, Cape, Weapon, 🐎 Mount (để sẵn).
 - 2 quái Tripo (To He, Tacke Gecko) ở vùng mùa xuân, cử động bằng shader; khu Nhật: **cổng torii đỏ, bước vào vết rách tự qua** (bỏ nút); iPhone: mở khoá đọc tiếng lần chạm đầu (đề Listening không còn câm).
-- **Sổ tay tổng hợp** `docs/bible/` (artifact https://claude.ai/artifact/TtFyva9oHxZSQGCHvyA9Gr): 13 tab – cốt truyện, nhân vật chính (+ kiểu tóc), NPC cốt lõi (9), **36 danh nhân** (23 có ảnh chốt; danh nhân giữ **tỉ lệ người lớn**), quái, **Trang bị bản 2** (8 ô, chỉ số hên xui ★, 8 loại vũ khí, 21 bộ giáp – chờ duyệt, chưa vào code), vật phẩm, chiêu thức, thẻ, đề nói, thế giới. Dữ liệu: `node tools/bible/build.js`.
+- **Sổ tay tổng hợp** `docs/bible/` (artifact https://claude.ai/artifact/TtFyva9oHxZSQGCHvyA9Gr): 13 tab – cốt truyện, nhân vật chính (+ kiểu tóc), NPC cốt lõi (9), **36 danh nhân** (28 có ảnh chốt; danh nhân giữ **tỉ lệ người lớn**), quái, **Trang bị bản 2** (8 ô, chỉ số hên xui ★, 8 loại vũ khí, 21 bộ giáp – chờ duyệt, chưa vào code), vật phẩm, chiêu thức, thẻ, đề nói, thế giới. Dữ liệu: `node tools/bible/build.js`.
 
 **👉 TRỌNG TÂM PHIÊN MỚI (chủ dự án đồng ý 26/11):**
 1. **Thử hướng "2.5D" cho đẹp, ít "giả"** (chủ dự án so với game 2D pixel art): làm thử **1 khu – Blossom Valley** rồi so trước/sau: (a) camera góc cao cố định (cho xoay nhẹ), (b) mặt đất ảnh vẽ tay (đất, cỏ, lá, đá – không màu phẳng), (c) ánh sáng có không khí: bóng mềm, ánh ấm, viền tối mép màn hình, chỉnh màu riêng mỗi vùng, (d) dần thay nhà / cây / quái khối bằng mô hình cùng chất liệu nhân vật Tripo. Ưng thì áp dụng cả game. Kết luận đã báo chủ dự án: **giữ 3D** (thay đồ, tóc, giáp rẻ hơn nhiều so với 2D; online nhiều người không phụ thuộc 2D/3D).
 2. Sau khi nạp Tripo: dựng lại **Classic** nam/nữ chất lượng cao (~85 credit/kiểu); món đội đầu (vương miện, mặt nạ – gắn xương Head, không che tóc); thử 1–2 bộ giáp + vũ khí theo `docs/bible/outfits.js`.
-3. Ảnh 2D còn thiếu: 13 danh nhân (câu lệnh trong sổ tay), giáp, NPC cốt lõi, NPC phổ thông (đầu + bộ đồ theo nghề).
+3. Ảnh 2D còn thiếu: 8 danh nhân (câu lệnh trong sổ tay), giáp, NPC cốt lõi, NPC phổ thông (đầu + bộ đồ theo nghề).
 4. Đưa **Trang bị bản 2** vào code khi chủ dự án duyệt (ô, chỉ số ★ ngẫu nhiên, vũ khí kiếm/búa/… thay nhạc cụ).
 
 <details>Bàn giao 23/11 (cũ)</details>
@@ -375,7 +375,7 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 **26/11 tối:** cổng khu Nhật = **torii đỏ son** + 2 đèn đá; **bỏ nút "🌀 Sakura Rift"** – bước vào vết rách là tự qua (`gate.door` vòng 1,8 m ở bản đồ chính, `portal.r` 3,2 m trong khu; kiểm trong `tick` của rifts.js), cả 2 chiều. Nắm tay nghiêng ra ngoài 0,35 rad (`opt.bend`, hết lòi cổ tay). iPhone: mở khoá đọc tiếng ngay lần chạm đầu (đề LISTEN trước đây câm nếu chưa nói với NPC).
 
-**Danh nhân – tỉ lệ người lớn (chủ dự án chốt 26/11):** danh nhân giữ dáng người lớn (~5–6 đầu, giống người thật) để phân biệt với nhân vật chính / NPC thường (chibi 3,9 đầu). Ảnh chốt: 23/36 (`assets/concept/scholars/`, sổ tay tab Danh nhân).
+**Danh nhân – tỉ lệ người lớn (chủ dự án chốt 26/11):** danh nhân giữ dáng người lớn (~5–6 đầu, giống người thật) để phân biệt với nhân vật chính / NPC thường (chibi 3,9 đầu). Ảnh chốt: 28/36 (`assets/concept/scholars/`, sổ tay tab Danh nhân).
 
 **Bàn tay nắm + mô-đun lắp ghép (25/11):** `parts/characters/assemble.js` (`ASSEMBLE`: regions / hide / rigid / fists). Tripo không có xương ngón (chuẩn tripo + mixamo đều không), uốn đỉnh ngón trông như vuốt → mô hình nắm tay riêng `assets/parts/fist.glb` (Tripo text-to-3D, 40 credit, có lỗ cầm) thay bàn tay mở: nam 2 tay, nữ tay phải; màu da đọc từ ảnh mô hình. Vũ khí cắm xuyên lỗ nắm (`bone.userData.grip` dạng mảng số vì userData bị sao chép JSON khi nhân bản – từng làm vũ khí biến mất). Tạo ảnh 2D bằng Tripo (`generate_image`, FLUX.1 Kontext Pro) hết hạn chờ 2 lần, không trừ credit → chưa dùng được. Còn 1.525 credit.
 
