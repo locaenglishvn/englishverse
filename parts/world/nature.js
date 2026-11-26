@@ -34,6 +34,35 @@ const NATURE = (function () {
   function place(kind, x, z, s) { const [n, v] = KIND[kind](); Q.push([n, x, z, s, v, kind[0] === "c" ? "c" : "t"]); }
   function bush(x, z, s) { Q.push([pick(["Bush_1", "Bush_2", "BushBerries_1"]), x, z, s || 1, null, "g"]); }
   function clearArea(x, z, r) { for (let i = Q.length - 1; i >= 0; i--) if (Math.hypot(Q[i][1] - x, Q[i][2] - z) < r) Q.splice(i, 1); }   // bỏ chỗ cây đã xếp (dọn chỗ cho cổng vết rách – rifts.js)
+  /* ---------- KayKit Forest Nature Pack (CC0, assets/kaykit/) – bộ 2.5D cho Blossom Valley (26/11) ----------
+     Cả bộ dùng 1 ảnh màu 128 px = 8 cột màu (1 xanh lá · 2 xanh đậm · 3 xanh non · 4 xanh ngọc · 5 vàng · 6 cam · 7 đỏ · 8 hồng); hàng trên = lá, giữa = thân, dưới = đá.
+     Đổi màu = dời cột ảnh (u ± k/8) lúc gộp → 1 mẫu dáng dùng cho mọi mùa, không tải thêm file. Rất nhẹ: cây ~340 mặt, đá 50–400 mặt. Cây + đá đổ bóng thật. */
+  const KDIR = "assets/kaykit/";
+  const KF = { Tree_1_A: "Tree_1_A_Color1", Tree_1_B: "Tree_1_B_Color3", Tree_1_C: "Tree_1_C_Color1", Tree_3_A: "Tree_3_A_Color1", Tree_3_B: "Tree_3_B_Color1", Tree_3_C: "Tree_3_C_Color1",
+    Rock_1_E: "Rock_1_E_Color1", Rock_2_C: "Rock_2_C_Color1", Rock_2_F: "Rock_2_F_Color1", Rock_3_B: "Rock_3_B_Color1", Rock_3_C: "Rock_3_C_Color1",
+    Bush_1_A: "Bush_1_A_Color1", Bush_2_A: "Bush_2_A_Color1", Bush_4_A: "Bush_4_A_Color1" };
+  const KH = { Tree_1_A: 4.6, Tree_1_B: 4.2, Tree_1_C: 3.8, Tree_3_A: 4.4, Tree_3_B: 4.0, Tree_3_C: 3.6,   // chiều cao chuẩn (m)
+    Rock_1_E: 1.3, Rock_2_C: 1.5, Rock_2_F: 1.2, Rock_3_B: 1.6, Rock_3_C: 1.9, Bush_1_A: 0.9, Bush_2_A: 0.8, Bush_4_A: 1.0 };
+  const KSET = { tree: ["Tree_1_A", "Tree_1_B", "Tree_1_C", "Tree_3_A", "Tree_3_B", "Tree_3_C"], rock: ["Rock_1_E", "Rock_2_C", "Rock_2_F", "Rock_3_B", "Rock_3_C"], bush: ["Bush_1_A", "Bush_2_A", "Bush_4_A"] };
+  function kk(kind, x, z, s, col) {   // kind: tree | rock | bush; col: cột màu 1–8 (bỏ trống = theo loại); cây/đá lớp "k" (xa 100 m, đổ bóng), bụi lớp "g"
+    const n = pick(KSET[kind]); if (!col) col = kind === "tree" ? (rnd() < 0.2 ? 8 : rnd() < 0.3 ? 3 : 1) : kind === "rock" ? 3 : (rnd() < 0.4 ? 3 : 1);
+    Q.push(["kk:" + n, x, z, s || 1, col - 1, kind === "bush" ? "g" : "k"]);
+  }
+  let KMAT = null;
+  function kkMat(tree) {
+    if (!KMAT) { const t = TL.load(KDIR + "forest_texture.png"); t.flipY = false; t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false;   // ảnh bảng màu: không mipmap (khỏi lem sang cột bên)
+      KMAT = { t: new THREE.MeshLambertMaterial({ map: t }), g: new THREE.MeshLambertMaterial({ map: t }) }; seeThrough(KMAT.t); }
+    return tree ? KMAT.t : KMAT.g;
+  }
+  function prepKK(name, root) {
+    root.updateMatrixWorld(true);
+    const bb = new THREE.Box3().setFromObject(root), k = KH[name] / Math.max(0.01, bb.max.y - bb.min.y);
+    const M = new THREE.Matrix4().makeScale(k, k, k).multiply(new THREE.Matrix4().makeTranslation(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2)), parts = [];
+    root.traverse(o => { if (!o.isMesh) return; let g = o.geometry.clone(); if (g.index) g = g.toNonIndexed(); g.applyMatrix4(o.matrixWorld); g.applyMatrix4(M);
+      let mu = 1; const U = g.attributes.uv; for (let i = 0; i < U.count; i++) mu = Math.min(mu, U.getX(i));
+      parts.push({ kk: true, base: Math.floor(mu * 8 + 0.001), mesh: o, g }); });
+    TPL["kk:" + name] = parts;
+  }
   function ground(x, z, kind) { Q.push([pick(GROUND[kind] || GROUND.flower), x, z, 0.8 + rnd() * 0.45, null, "g"]); }
 
   /* ---------- vật liệu (dùng chung) ---------- */
@@ -92,20 +121,20 @@ const NATURE = (function () {
       if (layer === "c" && /Tree/.test(name)) DEC.push([x + 0.6, z + 0.5, 2.3 * s]);
       const ck = Math.floor(x / CH) + "," + Math.floor(z / CH) + "," + layer; let C = B.get(ck); if (!C) B.set(ck, C = { layer, mats: new Map() });
       _E.set(0, rnd() * 6.283, 0); _Q.setFromEuler(_E); _M.compose(_P.set(x, 0, z), _Q, _S.set(s, s * (0.9 + rnd() * 0.2), s)); _N.getNormalMatrix(_M);
-      T.forEach(P => { const mt = material(P.key, P.mesh, variant); let L = C.mats.get(mt); if (!L) C.mats.set(mt, L = []); L.push([P.g, _M.clone(), _N.clone()]); });
+      T.forEach(P => { const mt = P.kk ? kkMat(/^kk:Tree/.test(name)) : material(P.key, P.mesh, variant); let L = C.mats.get(mt); if (!L) C.mats.set(mt, L = []); L.push([P.g, _M.clone(), _N.clone(), P.kk ? (variant - P.base) / 8 : 0]); });
     });
     const v = new THREE.Vector3();
     B.forEach(C => C.mats.forEach((list, mt) => {
       let nv = 0; list.forEach(([g]) => nv += g.attributes.position.count);
       const Pp = new Float32Array(nv * 3), Nn = new Float32Array(nv * 3), Uu = new Float32Array(nv * 2); let o = 0;
-      list.forEach(([g, M, Nm]) => { const a = g.attributes;
+      list.forEach(([g, M, Nm, du]) => { const a = g.attributes;
         for (let i = 0; i < a.position.count; i++, o++) {
           v.fromBufferAttribute(a.position, i).applyMatrix4(M); Pp[o * 3] = v.x; Pp[o * 3 + 1] = v.y; Pp[o * 3 + 2] = v.z;
           v.fromBufferAttribute(a.normal, i).applyMatrix3(Nm).normalize(); Nn[o * 3] = v.x; Nn[o * 3 + 1] = v.y; Nn[o * 3 + 2] = v.z;
-          Uu[o * 2] = a.uv.getX(i); Uu[o * 2 + 1] = a.uv.getY(i);
+          Uu[o * 2] = a.uv.getX(i) + du; Uu[o * 2 + 1] = a.uv.getY(i);
         } });
       const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(Pp, 3)); g.setAttribute("normal", new THREE.BufferAttribute(Nn, 3)); g.setAttribute("uv", new THREE.BufferAttribute(Uu, 2)); g.computeBoundingSphere();
-      const m = new THREE.Mesh(g, mt); m.userData.flat = true; m.userData.flag = true; m.castShadow = m.receiveShadow = false; m.visible = false; m.onBeforeRender = setP; scene.add(m);
+      const m = new THREE.Mesh(g, mt); m.userData.flat = true; m.userData.flag = true; m.castShadow = m.receiveShadow = C.layer === "k"; m.visible = false; m.onBeforeRender = setP; scene.add(m);
       managed.push({ o: m, x: g.boundingSphere.center.x, z: g.boundingSphere.center.z, r: g.boundingSphere.radius, layer: C.layer });
     }));
     if (DEC.length) {   // bóng râm dưới cây thành phố (thành phố có bóng thật, cây gộp thì không đổ bóng → thêm vệt bóng mềm)
@@ -132,8 +161,9 @@ const NATURE = (function () {
     try { scene.updateMatrixWorld(true); const v = new THREE.Vector3(); scene.traverse(o => { if (o.userData.npalm) { o.getWorldPosition(v); place("cpalm", v.x, v.z, o.userData.npalm * 1.05); } }); } catch (e) {}   // chỗ cây quanh toà nhà
     if (!Q.length) return;
     const names = [...new Set(Q.map(q => q[0]))], L = new THREE.GLTFLoader();
-    Promise.all(names.map(n => new Promise(ok => L.load(DIR + n + ".glb", g => { try { prep(n, g.scene); } catch (e) {} ok(); }, undefined, () => ok()))))
+    Promise.all(names.map(n => new Promise(ok => { const K = n.slice(0, 3) === "kk:", b = K ? n.slice(3) : n;
+      L.load(K ? KDIR + KF[b] + ".gltf" : DIR + n + ".glb", g => { try { K ? prepKK(b, g.scene) : prep(n, g.scene); } catch (e) {} ok(); }, undefined, () => ok()); })))
       .then(() => { buildChunks(); updateVis(); setInterval(updateVis, 250); });
   }
-  return { tree, place, bush, ground, build, clearArea, _managed: () => managed };
+  return { tree, place, bush, ground, kk, build, clearArea, _managed: () => managed };
 })();

@@ -176,7 +176,7 @@ const WILDS = (function () {
       const x = gx + rnd() * 2.8, z = gz + rnd() * 2.8, sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== 1) continue;
       if (rnd() > 0.05 + fbm(x, z) * 0.08) continue;
       if (pathDist(x, z) < 2.2 || taken(x, z, 0.8) || blocked(x, z) || (z > 148 && Math.abs(x - streamX(z)) < streamW(z) + 1.6)) continue;
-      const k = rnd(); if (k < 0.45) NATURE.bush(x, z, 0.8 + rnd() * 0.5); else if (k < 0.92) NATURE.ground(x, z, "flower"); else NATURE.ground(x, z, "plant");
+      const k = rnd(); if (k < 0.45) { if (kkHere(x, z)) NATURE.kk("bush", x, z, 0.8 + rnd() * 0.7); else NATURE.bush(x, z, 0.8 + rnd() * 0.5); } else if (k < 0.92) NATURE.ground(x, z, "flower"); else NATURE.ground(x, z, "plant");
     }
   }
   function shadeGround(m) {   // vẽ bóng râm mềm (lệch theo hướng nắng) lên ảnh nền đã có
@@ -318,7 +318,9 @@ const WILDS = (function () {
     put("box", 0xb55234, x, 0, z, w, h * 0.5, d, 0, 0, 0, 0.1); put("box", 0xc9663f, x, h * 0.5, z, w * 0.82, h * 0.3, d * 0.82, 0, 0, 0, 0.1); put("box", 0xdc7b4b, x, h * 0.8, z, w * 0.6, h * 0.2, d * 0.6, 0, 0, 0, 0.1);
     if (sol) solid(x, z, w / 2, d / 2);
   }
+  const kkHere = (x, z) => { if (typeof NATURE === "undefined" || !NATURE.kk) return false; const s = sectorAt(x, z); return !!(s && s.dir === "S" && s.ring === 1); };   // Blossom Valley: cây / đá / bụi KayKit (bộ 2.5D, nature.js)
   function rock(x, z, r, col, cap, sol) {
+    if (kkHere(x, z)) { NATURE.kk("rock", x, z, r * 0.75); if (sol && r >= 1.1) solid(x, z, r * 0.75, r * 0.75); return; }
     putBlob(col, x, r * 0.3, z, r, r * 0.68, r * 0.85, rnd() * 6, 0.4); if (cap) put("ico", 0xffffff, x, r * 0.78, z, r * 0.7, r * 0.4, r * 0.6, rnd() * 6, 0, 0, 0.03);
     if (sol && r >= 1.1) solid(x, z, r * 0.8, r * 0.8);
   }
@@ -350,6 +352,7 @@ const WILDS = (function () {
   const SHADE = [];   // bóng râm dưới tán cây [x, z, bán kính] → vẽ thẳng vào ảnh nền sau khi rải cây (miễn phí khi chơi)
   function lushTree(x, z, s, cherry, sol) {   // cây tán tròn kiểu "bông": 1 chùm lớn + 3–4 chùm nhỏ quanh, tô mượt
     SHADE.push(x, z, 2.1 * s);
+    if (kkHere(x, z)) { NATURE.kk("tree", x, z, 0.75 + (s - 0.95) * 0.4, cherry ? 8 : rnd() < 0.3 ? 3 : 1); if (sol) solid(x, z, 0.4 * s, 0.4 * s); return; }
     if (typeof NATURE !== "undefined") { NATURE.tree(x, z, s, cherry); if (sol) solid(x, z, 0.45 * s, 0.45 * s); return; }   // có mô hình (parts/world/nature.js) thì dùng mô hình
     const cs = cherry ? [0xf2a3c0, 0xf8b8cf, 0xe98fb0] : [0x4f9a3c, 0x5daa45, 0x468f37], pick = () => cs[(rnd() * 3) | 0];
     put("tcyl8", 0x6e4f34, x, 0, z, 0.24 * s, 1.7 * s, 0.24 * s);
@@ -506,7 +509,7 @@ const WILDS = (function () {
       const x = -150 + rnd() * 345, z = CITY + 8 + rnd() * (R1 - CITY - 12), sc = sectorAt(x, z); if (!sc || sc.dir !== "S" || sc.ring !== 1 || fbm(x, z) > 0.55 || !clear(x, z, 3.2)) continue;
       const k = 1 + (rnd() < 0.6 ? 1 : 0) + (rnd() < 0.3 ? 1 : 0);
       for (let j = 0; j < k; j++) { const r = j ? 0.9 + rnd() * 0.7 : 1.5 + rnd() * 0.9, a = rnd() * 6.28, d = j ? 1.6 + rnd() : 0, bx = x + Math.cos(a) * d, bz = z + Math.sin(a) * d;
-        rock(bx, bz, r, [0x9aa2a4, 0xa8aeb0, 0x8f979a][(rnd() * 3) | 0], false, true); putBlob(0x6f9c48, bx, r * 0.62, bz, r * 0.62, r * 0.18, r * 0.55, rnd() * 6, 0.2); }   // rêu
+        rock(bx, bz, r, [0x9aa2a4, 0xa8aeb0, 0x8f979a][(rnd() * 3) | 0], false, true); if (!kkHere(bx, bz)) putBlob(0x6f9c48, bx, r * 0.62, bz, r * 0.62, r * 0.18, r * 0.55, rnd() * 6, 0.2); }   // rêu
       reserve(x, z, 3.2); n++;
     }
   }
