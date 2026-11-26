@@ -316,7 +316,29 @@ Verse City chia **9 khu như bàn cờ 3 × 3** (dữ liệu `ZONES`, `METRO`, `
 
 ---
 
-## 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 23/11 khi bàn giao sang phiên mới
+## 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 26/11 khi bàn giao sang phiên mới
+
+### 🔁 BÀN GIAO PHIÊN 23–26/11 (nhánh `claude/sharp-keller-74gko0`, đã gộp `main` tới PR #74)
+**Trạng thái:** `main` = PR #62–#74, QA toàn bộ ✅ (7 cảnh báo cũ về số NPC). Mốc khôi phục: bảng `docs/RELEASES.md` (mốc cuối `588f74e` trước PR #74).
+**Tripo API:** khoá lưu ở môi trường (host `api.tripo3d.ai`, proxy tự gắn); **còn 10 credit – chủ dự án cần nạp thêm** trước khi dựng gì mới. Quy trình + giá thật: `tools/tripo/README.md`; nén ảnh màu GLB: `tools/tripo/shrink_glb.py`.
+
+**Đã làm trong phiên (chi tiết từng đợt ở các đoạn in đậm bên dưới):**
+- **Nhân vật chính Voice Guard nam / nữ** (Tripo, 3,9 đầu, không tai nghe, miệng nhỏ) thay nhân vật ghép KayKit cho người chơi; động tác đi/đứng/chạy từ Tripo + **động tác chiến đấu bằng code** (`HERO_FX` / `heroPose`): giật lùi, chém, tung phép (nam đẩy tay, nữ giơ trời rồi chỉ), reo, cúi chào; dáng nam chân dang bằng vai; chạy nam đầu đổ tới.
+- **Lắp ghép** `parts/characters/assemble.js`: chia vùng theo xương, ghép đầu (kiểu tóc), **bàn tay nắm** riêng (`assets/parts/fist.glb`, đổi chéo trái/phải + nghiêng 0,35 – chủ dự án chốt; nữ tay mở, chỉ nắm khi cầm vũ khí), **da hồng hào** (`warmSkin`), nhuộm tóc (`hairTexture`).
+- **11 kiểu tóc** (5 nam + 5 nữ chất lượng cao ~18k đỉnh, Classic là đầu gốc) + 7 màu: chọn ở màn tạo nhân vật và Saigon Barber.
+- Chân dung HUD = đầu nhân vật; túi đồ: ô **Body** (áo + quần), Shoes, Belt, Cape, Weapon, 🐎 Mount (để sẵn).
+- 2 quái Tripo (To He, Tacke Gecko) ở vùng mùa xuân, cử động bằng shader; khu Nhật: **cổng torii đỏ, bước vào vết rách tự qua** (bỏ nút); iPhone: mở khoá đọc tiếng lần chạm đầu (đề Listening không còn câm).
+- **Sổ tay tổng hợp** `docs/bible/` (artifact https://claude.ai/artifact/TtFyva9oHxZSQGCHvyA9Gr): 13 tab – cốt truyện, nhân vật chính (+ kiểu tóc), NPC cốt lõi (9), **36 danh nhân** (23 có ảnh chốt; danh nhân giữ **tỉ lệ người lớn**), quái, **Trang bị bản 2** (8 ô, chỉ số hên xui ★, 8 loại vũ khí, 21 bộ giáp – chờ duyệt, chưa vào code), vật phẩm, chiêu thức, thẻ, đề nói, thế giới. Dữ liệu: `node tools/bible/build.js`.
+
+**👉 TRỌNG TÂM PHIÊN MỚI (chủ dự án đồng ý 26/11):**
+1. **Thử hướng "2.5D" cho đẹp, ít "giả"** (chủ dự án so với game 2D pixel art): làm thử **1 khu – Blossom Valley** rồi so trước/sau: (a) camera góc cao cố định (cho xoay nhẹ), (b) mặt đất ảnh vẽ tay (đất, cỏ, lá, đá – không màu phẳng), (c) ánh sáng có không khí: bóng mềm, ánh ấm, viền tối mép màn hình, chỉnh màu riêng mỗi vùng, (d) dần thay nhà / cây / quái khối bằng mô hình cùng chất liệu nhân vật Tripo. Ưng thì áp dụng cả game. Kết luận đã báo chủ dự án: **giữ 3D** (thay đồ, tóc, giáp rẻ hơn nhiều so với 2D; online nhiều người không phụ thuộc 2D/3D).
+2. Sau khi nạp Tripo: dựng lại **Classic** nam/nữ chất lượng cao (~85 credit/kiểu); món đội đầu (vương miện, mặt nạ – gắn xương Head, không che tóc); thử 1–2 bộ giáp + vũ khí theo `docs/bible/outfits.js`.
+3. Ảnh 2D còn thiếu: 13 danh nhân (câu lệnh trong sổ tay), giáp, NPC cốt lõi, NPC phổ thông (đầu + bộ đồ theo nghề).
+4. Đưa **Trang bị bản 2** vào code khi chủ dự án duyệt (ô, chỉ số ★ ngẫu nhiên, vũ khí kiếm/búa/… thay nhạc cụ).
+
+<details>Bàn giao 23/11 (cũ)</details>
+
+### (cũ) 6. Việc tiếp theo (theo thứ tự đề xuất) – cập nhật 23/11 khi bàn giao sang phiên mới
 **Trạng thái:** `main` = gộp nhánh `claude/inspiring-pasteur-1xop2q` (phiên 20–23/11), QA toàn bộ ✅ (7 cảnh báo cũ về số NPC). Mốc khôi phục trước đợt này: `dcfc24a` (docs/RELEASES.md).
 
 **Phiên 20–23/11 đã làm:**
