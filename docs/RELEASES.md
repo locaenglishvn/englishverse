@@ -33,3 +33,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-26 | `d194b17` | PR #74 – bàn giao phiên 23–26/11 (nhân vật chính Tripo, tóc, tay nắm, torii, sổ tay) – mốc cuối phiên | ✅ |
 | 2026-11-26 | `243382a` | Trước bản thử 2.5D Blossom Valley (PR #75 là bản cuối) | ✅ |
 | 2026-11-26 | `5409ac9` | PR #76 – bản thử 2.5D Blossom Valley (trước khi thay cây / đá bằng KayKit) | ✅ |
+| 2026-11-26 | `cbdebcb` | PR #77 – cây / đá KayKit (trước khi thay bằng cây vẽ tay) | ✅ |
