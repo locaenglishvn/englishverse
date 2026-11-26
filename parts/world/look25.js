@@ -14,7 +14,7 @@ const LOOK25 = (function () {
   const FOV0 = 55, FOV1 = 30, PITCH = 0.93, YAW_MAX = 0.42;
   const SUN0 = [12, 22, 9], SUN1 = [15, 15, 3];   // vị trí nắng so với người chơi: thường / 2.5D (thấp + xiên ngang → bóng dài đổ sang trái)
   let blend = 0, yaw = 0, here = false, fovSet = false, btn = null, veil = null;
-  const U = { on: { value: 0 } };   // shader nền: 0 = tắt, 1 = bật (đổi mượt)
+  const U = { on: { value: 0 }, time: { value: 0 } };   // shader nền: 0 = tắt, 1 = bật (đổi mượt); time: nước chảy
   let enabled = true;
   try { enabled = localStorage.getItem("ev_look25") !== "0"; } catch (e) {}
   try { const q = new URLSearchParams(location.search).get("look25"); if (q !== null) enabled = q !== "0"; } catch (e) {}
@@ -95,11 +95,17 @@ const LOOK25 = (function () {
   function patchGround(sh) {
     const t = textures();
     Object.assign(sh.uniforms, { l25On: U.on, l25G: t.g, l25D: t.d, l25M: t.m, l25GA: t.ga, l25DA: t.da });
-    sh.vertexShader = "varying vec3 vW25;\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\n  vW25 = (modelMatrix * vec4(transformed, 1.0)).xyz;");
-    sh.fragmentShader = "uniform float l25On; uniform sampler2D l25G, l25D, l25M; uniform vec3 l25GA, l25DA; varying vec3 vW25;\n" +
+    sh.vertexShader = "varying vec3 vW25;\n#ifdef RIB\nattribute float ea; varying float vEA;\n#endif\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\n  vW25 = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#ifdef RIB\n  vEA = ea;\n#endif");
+    sh.fragmentShader = "uniform float l25On; uniform sampler2D l25G, l25D, l25M; uniform vec3 l25GA, l25DA; varying vec3 vW25;\n#ifdef RIB\nvarying float vEA;\n#endif\n" +
       "float l25Mask(vec2 p) { float r = p.x / max(p.y, 1.0); return smoothstep(149.0, 157.0, p.y) * smoothstep(-1.0, -0.94, r) * (1.0 - smoothstep(0.52, 0.577, r)) * (1.0 - smoothstep(236.0, 241.0, max(abs(p.x), abs(p.y)))); }\n" +
       sh.fragmentShader.replace("#include <map_fragment>", "#include <map_fragment>\n  vec3 c25 = diffuseColor.rgb;")
         .replace("#include <color_fragment>", `#include <color_fragment>
+  #ifdef RIB
+  { // dải đường mòn / bờ suối: mép lởm chởm theo ngọn cỏ + nhiễu → cỏ bên dưới mọc lấn vào, không còn mép cắt thẳng
+    vec2 q = vec2(vW25.x, -vW25.z);
+    float hg = dot(texture2D(l25G, q / 4.2).rgb, vec3(0.3, 0.6, 0.1)) / dot(l25GA, vec3(0.3, 0.6, 0.1)), nz = texture2D(l25M, q / 7.0).r;
+    if (abs(vEA) > mix(1.01, 0.76 + (nz - 0.5) * 0.45 - (hg - 1.0) * 0.6, l25Mask(vW25.xz))) discard; }   // chỉ trong Blossom Valley (vùng khác: mép trơn như cũ)
+  #endif
   { float msk = l25On * l25Mask(vW25.xz);
     if (msk > 0.002) {
       vec3 c = c25;
@@ -113,12 +119,30 @@ const LOOK25 = (function () {
       vec3 G = mix(texture2D(l25G, w / 4.2).rgb, texture2D(l25G, w2).rgb, sel), D = mix(texture2D(l25D, w / 3.4).rgb, texture2D(l25D, w2 * 1.2).rgb, sel);
       float gm = clamp((c.g - max(c.r, c.b)) * 7.0, 0.0, 1.0); if (c.b > c.g + 0.04) gm = 0.0;
       float hG = dot(G, vec3(0.3, 0.6, 0.1)) / dot(l25GA, vec3(0.3, 0.6, 0.1));
-      float tg = clamp((gm - 0.5) * 3.0 + (hG - 1.0) * 2.2 + 0.5, 0.0, 1.0);   // mép đất – cỏ: ngọn cỏ sáng mọc lấn sang đất
-      vec3 hp = mix(D / l25DA, G / l25GA, tg) * c;
+      float tg = smoothstep(0.44, 0.56, gm + (hG - 1.0) * 0.45 + (mac2 - 0.5) * 0.4);   // mép đất – cỏ: sắc nhưng lượn theo khóm cỏ + nhiễu (không nhòe, không thẳng)
+      vec3 gRef = mix(vec3(0.44, 0.62, 0.29), c, smoothstep(0.6, 0.95, gm)), dRef = mix(vec3(0.55, 0.46, 0.31), c, smoothstep(0.4, 0.05, gm));   // vùng giáp: màu chuẩn (ảnh nền mờ trộn 2 màu → bẩn)
+      vec3 hp = mix(D / l25DA * dRef, G / l25GA * gRef, tg);
       hp *= 0.84 + mac * 0.3 + (mac2 - 0.5) * 0.12;
       hp = mix(vec3(dot(hp, vec3(0.3, 0.59, 0.11))), hp, 1.04) * vec3(1.05, 0.99, 0.9);   // ấm hơn, bớt xanh "neon"
       diffuseColor.rgb = mix(diffuseColor.rgb, hp, msk);
     } }`);
+  }
+
+  /* Suối mùa xuân: lạch nước cạn, trong – thấy sỏi đáy, giữa sâu hơn, gợn sáng trôi theo dòng, mép ướt lởm chởm (lội qua được) */
+  function patchWater(sh) {
+    const t = textures();
+    Object.assign(sh.uniforms, { l25D: t.d, l25M: t.m, l25DA: t.da, l25T: U.time });
+    sh.vertexShader = "attribute float ea; varying float vEA; varying vec3 vW25;\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\n  vEA = ea; vW25 = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+    sh.fragmentShader = "uniform sampler2D l25D, l25M; uniform vec3 l25DA; uniform float l25T; varying float vEA; varying vec3 vW25;\n" + sh.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
+  { vec2 w = vec2(vW25.x, -vW25.z); float a = abs(vEA), nz = texture2D(l25M, w / 5.0).r;
+    if (a > 0.93 + (nz - 0.5) * 0.25) discard;
+    vec3 bed = texture2D(l25D, w / 2.6).rgb / l25DA * vec3(0.5, 0.45, 0.36);   // sỏi đáy (ướt, sẫm)
+    float dp = clamp(1.0 - a * a * 1.15, 0.0, 1.0);
+    vec3 col = mix(bed, mix(vec3(0.42, 0.68, 0.66), vec3(0.12, 0.38, 0.48), dp), 0.3 + dp * 0.55);
+    float r1 = texture2D(l25M, w / 5.5 + vec2(0.02, l25T * 0.09)).r, r2 = texture2D(l25M, w / 3.1 + vec2(0.31, l25T * 0.16)).r;
+    col += smoothstep(0.66, 0.86, r1 * 0.55 + r2 * 0.55) * vec3(0.22, 0.26, 0.26);   // gợn sáng trôi xuôi dòng
+    col = mix(col, vec3(0.9, 0.95, 0.95), smoothstep(0.8, 0.92, a) * smoothstep(0.45, 0.7, r2) * 0.6);   // bọt nhỏ sát bờ
+    diffuseColor.rgb = col; }`);
   }
 
   /* ---------- trạng thái: đang ở Blossom Valley? ---------- */
@@ -150,7 +174,7 @@ const LOOK25 = (function () {
     btn.style.display = here ? "block" : "none";
     const want = here && enabled ? 1 : 0;
     blend += (want - blend) * Math.min(1, dt * 3); if (Math.abs(want - blend) < 0.002) blend = want;
-    U.on.value = enabled ? 1 : blend;   // mặt đất: theo nút (chỉ tô trong khung Blossom Valley)
+    U.on.value = enabled ? 1 : blend; U.time.value += dt;   // mặt đất: theo nút (chỉ tô trong khung Blossom Valley)
     veil.style.opacity = blend.toFixed(3);
     if (!here) yaw = 0;
     if (room || maze) { fovSet = false; return; }   // trong nhà / mê cung: index.html tự lo đèn + camera
@@ -165,7 +189,7 @@ const LOOK25 = (function () {
     }
   }
   return {
-    patchGround, tick,
+    patchGround, patchWater, tick,
     active: () => blend > 0.001,
     yaw: () => yaw * blend,   // lệch hướng camera (xoay nhẹ)
     pitch: (cur) => lerp(cur, PITCH, blend),   // góc nghiêng cố định
