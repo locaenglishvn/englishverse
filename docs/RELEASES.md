@@ -37,3 +37,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-26 | `968c2fe` | PR #78 – cây / đá vẽ tay (trước khi sửa đường mòn, suối, bản đồ lớn) | ✅ |
 | 2026-11-26 | `070d395` | PR #79 – sửa đường mòn / suối / bản đồ (trước khi trả lại mảng đất) | ✅ |
 | 2026-11-26 | `c3cf235` | PR #80 – Blossom Valley chốt (trước khi thử Maple Highlands) | ✅ |
+| 2026-11-26 | `8425d2a` | PR #81 – thử Maple Highlands (trước khi thêm lá rụng) | ✅ |
