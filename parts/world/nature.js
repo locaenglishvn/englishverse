@@ -34,34 +34,55 @@ const NATURE = (function () {
   function place(kind, x, z, s) { const [n, v] = KIND[kind](); Q.push([n, x, z, s, v, kind[0] === "c" ? "c" : "t"]); }
   function bush(x, z, s) { Q.push([pick(["Bush_1", "Bush_2", "BushBerries_1"]), x, z, s || 1, null, "g"]); }
   function clearArea(x, z, r) { for (let i = Q.length - 1; i >= 0; i--) if (Math.hypot(Q[i][1] - x, Q[i][2] - z) < r) Q.splice(i, 1); }   // bỏ chỗ cây đã xếp (dọn chỗ cho cổng vết rách – rifts.js)
-  /* ---------- KayKit Forest Nature Pack (CC0, assets/kaykit/) – bộ 2.5D cho Blossom Valley (26/11) ----------
-     Cả bộ dùng 1 ảnh màu 128 px = 8 cột màu (1 xanh lá · 2 xanh đậm · 3 xanh non · 4 xanh ngọc · 5 vàng · 6 cam · 7 đỏ · 8 hồng); hàng trên = lá, giữa = thân, dưới = đá.
-     Đổi màu = dời cột ảnh (u ± k/8) lúc gộp → 1 mẫu dáng dùng cho mọi mùa, không tải thêm file. Rất nhẹ: cây ~340 mặt, đá 50–400 mặt. Cây + đá đổ bóng thật. */
-  const KDIR = "assets/kaykit/";
-  const KF = { Tree_1_A: "Tree_1_A_Color1", Tree_1_B: "Tree_1_B_Color3", Tree_1_C: "Tree_1_C_Color1", Tree_3_A: "Tree_3_A_Color1", Tree_3_B: "Tree_3_B_Color1", Tree_3_C: "Tree_3_C_Color1",
-    Rock_1_E: "Rock_1_E_Color1", Rock_2_C: "Rock_2_C_Color1", Rock_2_F: "Rock_2_F_Color1", Rock_3_B: "Rock_3_B_Color1", Rock_3_C: "Rock_3_C_Color1",
-    Bush_1_A: "Bush_1_A_Color1", Bush_2_A: "Bush_2_A_Color1", Bush_4_A: "Bush_4_A_Color1" };
-  const KH = { Tree_1_A: 4.6, Tree_1_B: 4.2, Tree_1_C: 3.8, Tree_3_A: 4.4, Tree_3_B: 4.0, Tree_3_C: 3.6,   // chiều cao chuẩn (m)
-    Rock_1_E: 1.3, Rock_2_C: 1.5, Rock_2_F: 1.2, Rock_3_B: 1.6, Rock_3_C: 1.9, Bush_1_A: 0.9, Bush_2_A: 0.8, Bush_4_A: 1.0 };
-  const KSET = { tree: ["Tree_1_A", "Tree_1_B", "Tree_1_C", "Tree_3_A", "Tree_3_B", "Tree_3_C"], rock: ["Rock_1_E", "Rock_2_C", "Rock_2_F", "Rock_3_B", "Rock_3_C"], bush: ["Bush_1_A", "Bush_2_A", "Bush_4_A"] };
-  function kk(kind, x, z, s, col) {   // kind: tree | rock | bush; col: cột màu 1–8 (bỏ trống = theo loại); cây/đá lớp "k" (xa 100 m, đổ bóng), bụi lớp "g"
-    const n = pick(KSET[kind]); if (!col) col = kind === "tree" ? (rnd() < 0.2 ? 8 : rnd() < 0.3 ? 3 : 1) : kind === "rock" ? 3 : (rnd() < 0.4 ? 3 : 1);
-    Q.push(["kk:" + n, x, z, s || 1, col - 1, kind === "bush" ? "g" : "k"]);
+  /* ---------- CÂY VẼ TAY DẠNG ẢNH (billboard) – bản 2.5D Blossom Valley (26/11, chủ dự án chọn) ----------
+     Ảnh: assets/painted/trees.webp (2048 × 1024, 26 hình) gộp từ "Tree Collection v2.6" – Bleed (CC-BY) + "Hand Painted Trees" – Robert Ramsay (CC-BY) + "Large rocks" – davidbv (CC-BY); xem assets/CREDITS.md.
+     Đã xoá bóng vẽ sẵn trong ảnh, lật ngang (ánh sáng vẽ từ phải, khớp nắng trong game). Mỗi cây = 1 tấm ảnh nghiêng ra sau 20° (camera cố định nhìn hướng Bắc),
+     kéo cao bù góc nhìn; + 1 tấm "đổ bóng" quay về phía nắng, không hiện ra màn hình, chỉ để đổ bóng thật theo dáng cây. Gộp theo ô 40 m. */
+  const SPR = {"t01a":[0,0,301,320,0.504],"t01b":[303,0,322,320,0.495],"t08a":[627,0,186,320,0.43],"t08b":[815,0,193,320,0.565],"t09a":[1010,0,231,320,0.465],"t09b":[1243,0,240,320,0.533],"t12a":[1485,0,411,320,0.539],"t12b":[0,322,385,320,0.778],"t13a":[387,322,149,320,0.497],"t13b":[538,322,150,320,0.491],"t05a":[690,322,353,320,0.521],"b11a":[1045,322,395,320,0.197],"b11b":[1442,322,414,320,0.514],"cherry":[0,644,308,320,0.623],"r200":[310,644,94,160,0.464],"r201":[406,644,94,160,0.583],"r202":[502,644,97,160,0.522],"r210":[601,644,100,160,0.517],"r211":[703,644,111,160,0.593],"r212":[816,644,122,160,0.55],"r300":[940,644,94,160,0.464],"r301":[1036,644,94,160,0.583],"r302":[1132,644,97,160,0.522],"r310":[1231,644,100,160,0.517],"r311":[1333,644,111,160,0.593],"r312":[1446,644,122,160,0.55]};   // tên: [x, y, rộng, cao (px trong ảnh gộp), vị trí gốc thân theo chiều ngang 0–1]
+  const SKIND = { tree: ["t01a", "t01b", "t08a", "t08b", "t09a", "t09b", "t12a", "t12b", "t13a", "t13b"], cherry: ["cherry"], willow: ["t05a"], bush: ["b11a", "b11b"], slim: ["t08a", "t08b", "t13a", "t13b"], rock: Object.keys(SPR).filter(k => k[0] === "r") };
+  const SH = { tree: 5.4, cherry: 4.8, willow: 5.2, bush: 1.7, slim: 5.0, rock: 1.8 }, SWX = { rock: 1.55 }, SW = 2048, SHT = 1024, TILT = 0.35, STRETCH = 1.15;
+  const SQ = [], UPS = { value: new THREE.Vector4(-1e4, -1e4, 1, 1e4) }, _pv = new THREE.Vector3(), _ds = new THREE.Vector2();
+  let psFrame = -1;
+  function setPS(r, sc, cam) {   // vị trí nhân vật trên màn hình (điểm ảnh thật) + bán kính lỗ + z chân nhân vật; tính 1 lần mỗi khung
+    try { const f = r.info.render.frame; if (f === psFrame) return; psFrame = f;
+      r.getDrawingBufferSize(_ds); _pv.copy(player.position); _pv.y += 0.8; _pv.project(cam);
+      UPS.value.set((_pv.x + 1) / 2 * _ds.x, (_pv.y + 1) / 2 * _ds.y, _ds.y * 0.13, player.position.z); } catch (e) {}
   }
-  let KMAT = null;
-  function kkMat(tree) {
-    if (!KMAT) { const t = TL.load(KDIR + "forest_texture.png"); t.flipY = false; t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false;   // ảnh bảng màu: không mipmap (khỏi lem sang cột bên)
-      KMAT = { t: new THREE.MeshLambertMaterial({ map: t }), g: new THREE.MeshLambertMaterial({ map: t }) }; seeThrough(KMAT.t); }
-    return tree ? KMAT.t : KMAT.g;
-  }
-  function prepKK(name, root) {
-    root.updateMatrixWorld(true);
-    const bb = new THREE.Box3().setFromObject(root), k = KH[name] / Math.max(0.01, bb.max.y - bb.min.y);
-    const M = new THREE.Matrix4().makeScale(k, k, k).multiply(new THREE.Matrix4().makeTranslation(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2)), parts = [];
-    root.traverse(o => { if (!o.isMesh) return; let g = o.geometry.clone(); if (g.index) g = g.toNonIndexed(); g.applyMatrix4(o.matrixWorld); g.applyMatrix4(M);
-      let mu = 1; const U = g.attributes.uv; for (let i = 0; i < U.count; i++) mu = Math.min(mu, U.getX(i));
-      parts.push({ kk: true, base: Math.floor(mu * 8 + 0.001), mesh: o, g }); });
-    TPL["kk:" + name] = parts;
+  function sprite(kind, x, z, s) { SQ.push([pick(SKIND[kind]), SH[kind] * (s || 1), x, z, SWX[kind] || 1]); }   // đá: kéo ngang cho thành tảng
+  function buildSprites() {
+    if (!SQ.length) return;
+    const tex = TL.load("assets/painted/trees.webp"); tex.anisotropy = 4;
+    const mt = new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.5, color: 0xf2f2ea });   // ảnh đã vẽ sẵn sáng tối → không cần đèn
+    mt.onBeforeCompile = sh => {   // cây / đá đứng TRƯỚC nhân vật (gốc gần camera hơn) mà che nhân vật: khoét 1 lỗ tròn mờ mép quanh nhân vật trên màn hình
+      sh.uniforms.uPS = UPS;
+      sh.vertexShader = "attribute float bz; varying float vBZ;\n" + sh.vertexShader.replace("#include <project_vertex>", "#include <project_vertex>\n  vBZ = bz;");
+      sh.fragmentShader = "uniform vec4 uPS; varying float vBZ;\n" + sh.fragmentShader.replace("void main() {", `void main() {
+  { float f = vBZ - uPS.w; if (f > 0.1 && f < 9.0) { float k = 1.0 - smoothstep(uPS.z * 0.55, uPS.z, length(gl_FragCoord.xy - uPS.xy));
+      float h = fract(sin(dot(floor(gl_FragCoord.xy), vec2(12.9898, 78.233))) * 43758.5453); if (h < k * 1.05) discard; } }`);
+    };
+    const cast = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });   // tấm đổ bóng: không vẽ ra màn hình
+    const cdm = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 });
+    const sd = new THREE.Vector3(15, 0, 3).normalize(), tx = -sd.z, tz = sd.x;   // hướng nắng (look25.js SUN1) → tấm bóng vuông góc
+    const up = [0, Math.cos(TILT), -Math.sin(TILT)], B = new Map();
+    SQ.forEach(([k, H, x, z, wx]) => {
+      const [px, py, pw, ph, bx] = SPR[k], w = H * pw / ph * wx, h = H * STRETCH, ck = Math.floor(x / CH) + "," + Math.floor(z / CH);
+      let C = B.get(ck); if (!C) B.set(ck, C = { v: [], u: [], c: [], cu: [], b: [] });
+      const u0 = (px + pw) / SW, u1 = px / SW, v0 = 1 - (py + ph) / SHT, v1 = 1 - py / SHT;   // lật ngang: u0 bên trái là mép phải ảnh
+      const l = x - w * (1 - bx), y0 = -0.15;
+      const P = [[l, y0, z], [l + w, y0, z], [l + w + up[0] * h, y0 + up[1] * h, z + up[2] * h], [l + up[0] * h, y0 + up[1] * h, z + up[2] * h]];
+      [0, 1, 2, 0, 2, 3].forEach(i => { C.v.push(...P[i]); C.b.push(z); });
+      [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]].forEach(q => C.u.push(...q));
+      const a = -w * (1 - bx), b = w * bx, Q = [[x + tx * a, y0, z + tz * a], [x + tx * b, y0, z + tz * b], [x + tx * b, H, z + tz * b], [x + tx * a, H, z + tz * a]];
+      [0, 1, 2, 0, 2, 3].forEach(i => C.c.push(...Q[i]));
+      [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]].forEach(q => C.cu.push(...q));
+    });
+    const mk = (pos, uv, m) => { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+      g.setAttribute("normal", new THREE.Float32BufferAttribute(pos.map((v, i) => i % 3 === 2 ? 1 : 0), 3)); g.computeBoundingSphere();
+      const o = new THREE.Mesh(g, m); o.userData.flat = true; o.userData.flag = true; o.visible = false; scene.add(o);
+      managed.push({ o, x: g.boundingSphere.center.x, z: g.boundingSphere.center.z, r: g.boundingSphere.radius, layer: "k" }); return o; };
+    B.forEach(C => { const o = mk(C.v, C.u, mt); o.geometry.setAttribute("bz", new THREE.Float32BufferAttribute(C.b, 1)); o.onBeforeRender = setPS;
+      const s = mk(C.c, C.cu, cast); s.castShadow = true; s.customDepthMaterial = cdm; });
+    SQ.length = 0;
   }
   function ground(x, z, kind) { Q.push([pick(GROUND[kind] || GROUND.flower), x, z, 0.8 + rnd() * 0.45, null, "g"]); }
 
@@ -121,20 +142,20 @@ const NATURE = (function () {
       if (layer === "c" && /Tree/.test(name)) DEC.push([x + 0.6, z + 0.5, 2.3 * s]);
       const ck = Math.floor(x / CH) + "," + Math.floor(z / CH) + "," + layer; let C = B.get(ck); if (!C) B.set(ck, C = { layer, mats: new Map() });
       _E.set(0, rnd() * 6.283, 0); _Q.setFromEuler(_E); _M.compose(_P.set(x, 0, z), _Q, _S.set(s, s * (0.9 + rnd() * 0.2), s)); _N.getNormalMatrix(_M);
-      T.forEach(P => { const mt = P.kk ? kkMat(/^kk:Tree/.test(name)) : material(P.key, P.mesh, variant); let L = C.mats.get(mt); if (!L) C.mats.set(mt, L = []); L.push([P.g, _M.clone(), _N.clone(), P.kk ? (variant - P.base) / 8 : 0]); });
+      T.forEach(P => { const mt = material(P.key, P.mesh, variant); let L = C.mats.get(mt); if (!L) C.mats.set(mt, L = []); L.push([P.g, _M.clone(), _N.clone()]); });
     });
     const v = new THREE.Vector3();
     B.forEach(C => C.mats.forEach((list, mt) => {
       let nv = 0; list.forEach(([g]) => nv += g.attributes.position.count);
       const Pp = new Float32Array(nv * 3), Nn = new Float32Array(nv * 3), Uu = new Float32Array(nv * 2); let o = 0;
-      list.forEach(([g, M, Nm, du]) => { const a = g.attributes;
+      list.forEach(([g, M, Nm]) => { const a = g.attributes;
         for (let i = 0; i < a.position.count; i++, o++) {
           v.fromBufferAttribute(a.position, i).applyMatrix4(M); Pp[o * 3] = v.x; Pp[o * 3 + 1] = v.y; Pp[o * 3 + 2] = v.z;
           v.fromBufferAttribute(a.normal, i).applyMatrix3(Nm).normalize(); Nn[o * 3] = v.x; Nn[o * 3 + 1] = v.y; Nn[o * 3 + 2] = v.z;
-          Uu[o * 2] = a.uv.getX(i) + du; Uu[o * 2 + 1] = a.uv.getY(i);
+          Uu[o * 2] = a.uv.getX(i); Uu[o * 2 + 1] = a.uv.getY(i);
         } });
       const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(Pp, 3)); g.setAttribute("normal", new THREE.BufferAttribute(Nn, 3)); g.setAttribute("uv", new THREE.BufferAttribute(Uu, 2)); g.computeBoundingSphere();
-      const m = new THREE.Mesh(g, mt); m.userData.flat = true; m.userData.flag = true; m.castShadow = m.receiveShadow = C.layer === "k"; m.visible = false; m.onBeforeRender = setP; scene.add(m);
+      const m = new THREE.Mesh(g, mt); m.userData.flat = true; m.userData.flag = true; m.castShadow = m.receiveShadow = false; m.visible = false; m.onBeforeRender = setP; scene.add(m);
       managed.push({ o: m, x: g.boundingSphere.center.x, z: g.boundingSphere.center.z, r: g.boundingSphere.radius, layer: C.layer });
     }));
     if (DEC.length) {   // bóng râm dưới cây thành phố (thành phố có bóng thật, cây gộp thì không đổ bóng → thêm vệt bóng mềm)
@@ -159,11 +180,10 @@ const NATURE = (function () {
   function build() {   // gọi sau khi wilds.js ghi xong chỗ đặt
     if (started || typeof THREE.GLTFLoader === "undefined") return; started = true;
     try { scene.updateMatrixWorld(true); const v = new THREE.Vector3(); scene.traverse(o => { if (o.userData.npalm) { o.getWorldPosition(v); place("cpalm", v.x, v.z, o.userData.npalm * 1.05); } }); } catch (e) {}   // chỗ cây quanh toà nhà
-    if (!Q.length) return;
+    if (!Q.length) { buildSprites(); updateVis(); setInterval(updateVis, 250); return; }
     const names = [...new Set(Q.map(q => q[0]))], L = new THREE.GLTFLoader();
-    Promise.all(names.map(n => new Promise(ok => { const K = n.slice(0, 3) === "kk:", b = K ? n.slice(3) : n;
-      L.load(K ? KDIR + KF[b] + ".gltf" : DIR + n + ".glb", g => { try { K ? prepKK(b, g.scene) : prep(n, g.scene); } catch (e) {} ok(); }, undefined, () => ok()); })))
-      .then(() => { buildChunks(); updateVis(); setInterval(updateVis, 250); });
+    Promise.all(names.map(n => new Promise(ok => L.load(DIR + n + ".glb", g => { try { prep(n, g.scene); } catch (e) {} ok(); }, undefined, () => ok()))))
+      .then(() => { buildChunks(); buildSprites(); updateVis(); setInterval(updateVis, 250); });
   }
-  return { tree, place, bush, ground, kk, build, clearArea, _managed: () => managed };
+  return { tree, place, bush, ground, sprite, build, clearArea, _managed: () => managed };
 })();
