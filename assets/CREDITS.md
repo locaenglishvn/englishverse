@@ -39,3 +39,6 @@ Nguồn: https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0 (dùng 
 |---|---|---|---|
 | `ground-grass.webp` | Hand Painted Grass | PamNawi | https://opengameart.org/content/hand-painted-grass |
 | `ground-dirt.webp` | 4 hand-painted ground textures | Drummyfish | https://opengameart.org/content/4-hand-painted-ground-textures |
+| `ground-sand.webp` | 4 hand-painted ground textures (cát) | Drummyfish | như trên |
+
+`extra.webp` (thông, dừa 1 thân, dừa 2 thân) – **Tree Collection v2.6 – Bleed** (CC-BY), xử lý như trên.

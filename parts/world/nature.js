@@ -39,27 +39,31 @@ const NATURE = (function () {
      Đã xoá bóng vẽ sẵn trong ảnh, lật ngang (ánh sáng vẽ từ phải, khớp nắng trong game). Mỗi cây = 1 tấm ảnh nghiêng ra sau 20° (camera cố định nhìn hướng Bắc),
      kéo cao bù góc nhìn; + 1 tấm "đổ bóng" quay về phía nắng, không hiện ra màn hình, chỉ để đổ bóng thật theo dáng cây. Gộp theo ô 40 m. */
   const SPR = {"t01a":[0,0,301,320,0.504],"t01b":[303,0,322,320,0.495],"t08a":[627,0,186,320,0.43],"t08b":[815,0,193,320,0.565],"t09a":[1010,0,231,320,0.465],"t09b":[1243,0,240,320,0.533],"t12a":[1485,0,411,320,0.539],"t12b":[0,322,385,320,0.778],"t13a":[387,322,149,320,0.497],"t13b":[538,322,150,320,0.491],"t05a":[690,322,353,320,0.521],"b11a":[1045,322,395,320,0.197],"b11b":[1442,322,414,320,0.514],"cherry":[0,644,308,320,0.623],"r200":[310,644,94,160,0.464],"r201":[406,644,94,160,0.583],"r202":[502,644,97,160,0.522],"r210":[601,644,100,160,0.517],"r211":[703,644,111,160,0.593],"r212":[816,644,122,160,0.55],"r300":[940,644,94,160,0.464],"r301":[1036,644,94,160,0.583],"r302":[1132,644,97,160,0.522],"r310":[1231,644,100,160,0.517],"r311":[1333,644,111,160,0.593],"r312":[1446,644,122,160,0.55]};   // tên: [x, y, rộng, cao (px trong ảnh gộp), vị trí gốc thân theo chiều ngang 0–1]
-  const SKIND = { tree: ["t01a", "t01b", "t08a", "t08b", "t09a", "t09b", "t12a", "t12b", "t13a", "t13b"], cherry: ["cherry"], willow: ["t05a"], bush: ["b11a", "b11b"], slim: ["t08a", "t08b", "t13a", "t13b"], maple: ["m14a", "m14b", "m14a", "m14b", "m06a", "m06b", "m07a", "m07b"], bare: ["m10a"], rock: Object.keys(SPR).filter(k => k[0] === "r") };
-  const SH = { tree: 5.4, cherry: 4.8, willow: 5.2, bush: 1.7, slim: 5.0, rock: 1.8, maple: 5.6, bare: 5.0 }, SWX = { rock: 1.55 }, TILT = 0.35, STRETCH = 1.15;
+  const SKIND = { tree: ["t01a", "t01b", "t08a", "t08b", "t09a", "t09b", "t12a", "t12b", "t13a", "t13b"], cherry: ["cherry"], willow: ["t05a"], bush: ["b11a", "b11b"], slim: ["t08a", "t08b", "t13a", "t13b"], maple: ["m14a", "m14b", "m14a", "m14b", "m06a", "m06b", "m07a", "m07b"], bare: ["m10a"], fir: ["x02a", "x02b"], palm: ["x03a", "x03b", "x04a", "x04b"], rock: Object.keys(SPR).filter(k => k[0] === "r") };
+  const SH = { tree: 5.4, cherry: 4.8, willow: 5.2, bush: 1.7, slim: 5.0, rock: 1.8, maple: 5.6, bare: 5.0, fir: 5.8, palm: 6.6 }, SWX = { rock: 1.55 }, TILT = 0.35, STRETCH = 1.15;
   const SQ = [], CNT = {};   // CNT: đếm số hình đã đặt theo loại (kiểm tra)
   const SPR2 = {"m14a":[0,0,220,320,0.492],"m14b":[222,0,206,320,0.505],"m06a":[430,0,240,320,0.612],"m06b":[672,0,234,320,0.379],"m07a":[908,0,146,320,0.502],"m07b":[1056,0,151,320,0.493],"m10a":[1209,0,193,320,0.461]};   // ảnh gộp 2: assets/painted/autumn.webp (2048 × 512) – cây thu của Bleed: phong đỏ (m14), liễu vàng (m06), thông cam (m07), cây trụi (m10)
-  const ATL = [{ src: "assets/painted/trees.webp", W: 2048, H: 1024, S: SPR }, { src: "assets/painted/autumn.webp", W: 2048, H: 512, S: SPR2 }];
-  function sprite(kind, x, z, s) { CNT[kind] = (CNT[kind] || 0) + 1; const k = pick(SKIND[kind]); SQ.push([k, SH[kind] * (s || 1), x, z, SWX[kind] || 1, SPR[k] ? 0 : 1]); }   // đá: kéo ngang cho thành tảng
+  const SPR3 = {"x02a":[0,0,157,320,0.429],"x02b":[159,0,156,320,0.606],"x03a":[317,0,191,320,0.45],"x03b":[510,0,193,320,0.544],"x04a":[705,0,234,320,0.483],"x04b":[941,0,248,320,0.504]};   // ảnh gộp 3: assets/painted/extra.webp (2048 × 512) – Bleed: thông (x02), dừa 1 thân (x03), dừa 2 thân (x04)
+  const ATL = [{ src: "assets/painted/trees.webp", W: 2048, H: 1024, S: SPR }, { src: "assets/painted/autumn.webp", W: 2048, H: 512, S: SPR2 }, { src: "assets/painted/extra.webp", W: 2048, H: 512, S: SPR3 }];
+  function sprite(kind, x, z, s, tint) { CNT[kind] = (CNT[kind] || 0) + 1; const k = pick(SKIND[kind]); SQ.push([k, SH[kind] * (s || 1), x, z, SWX[kind] || 1, SPR[k] ? 0 : SPR2[k] ? 1 : 2, tint || null]); }   // tint: [r, g, b] nhuộm màu (đá theo vùng)   // đá: kéo ngang cho thành tảng
   function buildSprites() {
     if (!SQ.length) return;
     const used = new Set(SQ.map(q => q[5])), cast = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });   // tấm đổ bóng: không vẽ ra màn hình
     ATL.forEach((A, i) => { if (!used.has(i)) return; const tex = TL.load(A.src); tex.anisotropy = 4;   // chỉ tải ảnh gộp có dùng
-      A.mt = new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.5, color: 0xf2f2ea });   // ảnh đã vẽ sẵn sáng tối → không cần đèn
+      A.mt = new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.5, color: 0xf2f2ea, vertexColors: true });
+      A.mt.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace("#include <color_fragment>", `#ifdef USE_COLOR
+  if (vColor.r > 1.25) diffuseColor.rgb = vec3(dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11))) * (vColor - 1.0) * 2.2; else diffuseColor.rgb *= vColor;   // màu > 1,25: xám hoá rồi nhuộm (đá vùng tuyết)
+#endif`); };   // ảnh đã vẽ sẵn sáng tối → không cần đèn
       A.cdm = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 }); });
     const sd = new THREE.Vector3(15, 0, 3).normalize(), tx = -sd.z, tz = sd.x;   // hướng nắng (look25.js SUN1) → tấm bóng vuông góc
     const up = [0, Math.cos(TILT), -Math.sin(TILT)], B = new Map();
-    SQ.forEach(([k, H, x, z, wx, ai]) => {
+    SQ.forEach(([k, H, x, z, wx, ai, tint]) => {
       const A = ATL[ai], SW = A.W, SHT = A.H, [px, py, pw, ph, bx] = A.S[k], w = H * pw / ph * wx, h = H * STRETCH, ck = ai + ":" + Math.floor(x / CH) + "," + Math.floor(z / CH);
-      let C = B.get(ck); if (!C) B.set(ck, C = { A, v: [], u: [], c: [], cu: [], d: [], du: [] });
+      let C = B.get(ck); if (!C) B.set(ck, C = { A, v: [], u: [], col: [], c: [], cu: [], d: [], du: [] });
       const u0 = (px + pw) / SW, u1 = px / SW, v0 = 1 - (py + ph) / SHT, v1 = 1 - py / SHT;   // lật ngang: u0 bên trái là mép phải ảnh
       const l = x - w * (1 - bx), y0 = -0.15;
       const P = [[l, y0, z], [l + w, y0, z], [l + w + up[0] * h, y0 + up[1] * h, z + up[2] * h], [l + up[0] * h, y0 + up[1] * h, z + up[2] * h]];
-      [0, 1, 2, 0, 2, 3].forEach(i => C.v.push(...P[i]));
+      [0, 1, 2, 0, 2, 3].forEach(i => { C.v.push(...P[i]); C.col.push(...(tint || [1, 1, 1])); });
       [[u0, v0], [u1, v0], [u1, v1], [u0, v0], [u1, v1], [u0, v1]].forEach(q => C.u.push(...q));
       if (k[0] === "r" || k[0] === "b") {   // đá, bụi (thấp): bóng = vệt mềm nằm đất sát chân, lệch nhẹ theo nắng (tấm đổ bóng dựng đứng làm bóng đá bị lệch – 26/11)
         const cx = x - H * 0.22, cz = z - H * 0.08, rx = w * 0.5 + H * 0.25, rz = Math.max(0.5, w * 0.3);
@@ -81,7 +85,7 @@ const NATURE = (function () {
         blobM = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false }); }
       const bo = mk(C.d, C.du, blobM); bo.renderOrder = 1; }
       if (!C.v.length) return;
-      mk(C.v, C.u, C.A.mt);   // (đã bỏ khoét lỗ quanh nhân vật – chủ dự án 26/11: lá thưa, nhìn xuyên được)
+      mk(C.v, C.u, C.A.mt).geometry.setAttribute("color", new THREE.Float32BufferAttribute(C.col, 3));   // (đã bỏ khoét lỗ quanh nhân vật – chủ dự án 26/11: lá thưa, nhìn xuyên được)
       if (!C.c.length) return; const s = mk(C.c, C.cu, cast); s.castShadow = true; s.customDepthMaterial = C.A.cdm; });
     SQ.length = 0;
   }
