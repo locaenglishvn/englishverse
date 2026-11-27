@@ -46,7 +46,7 @@
 #skOver .gate{margin-top:6px;padding:6px 8px;font-size:12px;background:rgba(255,201,74,.12);border:1px solid rgba(255,201,74,.4);border-radius:6px}
 #skOver .lab{font:700 11px var(--ev-font);letter-spacing:.06em;color:var(--ev-mut);margin:10px 0 6px;text-transform:uppercase}
 #skOver .slots{display:flex;gap:12px;justify-content:center;padding:4px 0 2px}
-#skOver .slots .ev-round{width:50px;height:50px;font-size:24px}#skOver .slots .ev-round .skIc{border-radius:50%}#skOver .hex i .skIc{width:100%;height:100%}
+#skOver .slots .ev-round{width:64px;height:64px;font-size:26px;border-radius:16px;overflow:hidden}#skOver .slots .ev-round .skIc{border-radius:14px}#skOver .hex i .skIc{width:100%;height:100%;border-radius:15px}
 #skOver .slots .ev-round.empty{--c:#2c365f;color:var(--ev-mut);font-size:20px}
 #skOver .slots .tgt{animation:skBlink .9s infinite}
 #skOver .slots .up{transform:translateY(-5px) scale(1.12);box-shadow:0 0 0 3px #1b2340,0 0 0 6px #fff,0 0 14px 6px var(--ev-gold),0 5px 0 6px rgba(0,0,0,.35)}
@@ -56,10 +56,10 @@
 #skOver .tabs button.on{color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(0,0,0,.15)),var(--c)}
 #skOver .bd{font-size:12px;margin:6px 0 8px;color:var(--ev-fg)}
 #skOver .skr{display:flex;gap:10px;position:relative;padding-bottom:12px}
-#skOver .skr::before{content:"";position:absolute;left:25px;width:3px;top:0;bottom:0;background:#3a4677}
-#skOver .skr.first::before{top:26px}#skOver .skr.last::before{display:none}#skOver .skr.lit::before{background:var(--c)}
-#skOver .hex{position:relative;z-index:1;flex:none;width:52px;height:52px;background:var(--c);clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:grid;place-items:center}
-#skOver .hex i{width:46px;height:46px;clip-path:inherit;display:grid;place-items:center;font-style:normal;font-size:24px;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(0,0,0,.25)),var(--c)}
+#skOver .skr::before{content:"";position:absolute;left:33px;width:3px;top:0;bottom:0;background:#3a4677}
+#skOver .skr.first::before{top:34px}#skOver .skr.last::before{display:none}#skOver .skr.lit::before{background:var(--c)}
+#skOver .hex{position:relative;z-index:1;flex:none;width:68px;height:68px;border-radius:17px;background:var(--c);display:grid;place-items:center;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+#skOver .hex i{width:64px;height:64px;border-radius:15px;overflow:hidden;display:grid;place-items:center;font-style:normal;font-size:30px;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(0,0,0,.25)),var(--c)}
 #skOver .skr.nx .hex{background:var(--ev-gold)}#skOver .skr.nx .hex i{background:#1b2340}
 #skOver .skr.far .hex{background:#3a4677}#skOver .skr.far .hex i{background:#141a2e;filter:grayscale(1);opacity:.45}
 #skOver .skc{flex:1;min-width:0;font-size:12px;padding:2px 0}

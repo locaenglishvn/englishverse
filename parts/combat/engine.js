@@ -240,7 +240,7 @@ function buildCombatUi() {
 #cbBtns{position:fixed;right:10px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:210px;height:210px;display:none;z-index:6}
 #cbBtns button{position:absolute;font-size:22px;touch-action:none;-webkit-user-select:none;user-select:none}
 #cbAtk{right:10px;bottom:10px;width:84px;height:84px;--c:#f4efe0!important;color:#3a2a10!important;text-shadow:none!important;font-size:34px!important}
-.cbSk{width:54px;height:54px;overflow:hidden}.cbSk .skIc{position:absolute;inset:0;border-radius:50%}.skIc{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.cbSk .cd{position:absolute;inset:0;border-radius:50%;background:rgba(10,14,30,.7);font:700 13px system-ui;display:flex;align-items:center;justify-content:center}
+.cbSk{width:58px;height:58px;overflow:hidden;border-radius:14px!important}.cbSk .skIc{position:absolute;inset:0;border-radius:13px}.skIc{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.cbSk .cd{position:absolute;inset:0;border-radius:13px;background:rgba(10,14,30,.7);font:700 13px system-ui;display:flex;align-items:center;justify-content:center}
 .cbSk.rec{transform:scale(1.14);box-shadow:0 0 0 3px #1b2340,0 0 0 5px #35f0e8,0 0 18px 9px rgba(53,240,232,.85),inset 0 -4px 6px rgba(0,0,0,.35)}
 #cbCard{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(286px + env(safe-area-inset-bottom,0px));width:min(92vw,420px);display:none;z-index:7}
 #cbCard .t{display:flex;justify-content:space-between;align-items:center;gap:6px}#cbCard .t small{font:600 11px var(--ev-font);color:var(--ev-mut);margin-left:6px}
@@ -261,7 +261,7 @@ body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important
 <div id="cbKo"><div>🤐 You lost your voice…<div style="font:500 14px system-ui;margin-top:8px">Mất giọng! Về cổng vùng sau 2 giây</div></div></div>`;
   document.body.appendChild(d);
   const B = $("cbBtns");
-  [0, 1, 2, 3].forEach(i => { const a = i * Math.PI / 5.6, r = 116, e = document.createElement("button"); e.className = "cbSk ev-round"; e.id = "cbS" + i; e.style.right = Math.round(52 + r * Math.cos(a) - 27) + "px"; e.style.bottom = Math.round(52 + r * Math.sin(a) - 27) + "px"; B.appendChild(e); skillButton(e, i); });
+  [0, 1, 2, 3].forEach(i => { const a = i * Math.PI / 5.6, r = 116, e = document.createElement("button"); e.className = "cbSk ev-round"; e.id = "cbS" + i; e.style.right = Math.round(52 + r * Math.cos(a) - 29) + "px"; e.style.bottom = Math.round(52 + r * Math.sin(a) - 29) + "px"; B.appendChild(e); skillButton(e, i); });
   $("cbAtk").addEventListener("pointerdown", e => { e.preventDefault(); normalAttack(); });
   [0, 1, 2].forEach(i => $("cbF" + i).onclick = () => { const id = $("cbF" + i).dataset.id, kind = FOOD_KINDS[i].k; if (!id) { flash("Mua ở Shop 24h / Buy at Shop 24h"); return; }
     if (kind === "mana") { const it = ITEMS[id], M = typeof mpMax === "function" ? mpMax() : 100; if (CB.mp >= M) { flash("💧 Mana đầy / Mana is full"); return; } if (!save.items[id]) return; takeItem(save.items, id); CB.mp = Math.min(M, CB.mp + it.mana); saveNow(); popText("💧+" + it.mana, player.position, "#3fa3ff"); }

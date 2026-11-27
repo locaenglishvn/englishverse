@@ -144,6 +144,7 @@ document.getElementById("built").textContent = "Dữ liệu lấy từ code ngà
 
 const AREA = { vn:"🌾 Khu Việt", jp:"⛩️ Nhật", eg:"🏜️ Ai Cập", no:"❄️ Bắc Âu", ce:"🍁 Celt", my:"🏝️ Maya", gr:"🏛️ Hy Lạp", cn:"🖌️ Trung Hoa", me:"🗿 Lưỡng Hà", pa:"✨ Thần & The Mute" };
 const areaOf = m => m.area || "vn";
+window.NPC_PIC = { oracle: 1, commander: 1, huy: 1, collector: 1 };   // ảnh concept NPC cốt lõi (assets/concept/npcs)
 const skills = Object.entries(B.SKILLS).map(([id, s]) => Object.assign({ id }, s));
 const skIc = (s, sz) => s.type === "passive" ? s.icon : `<img src="icons/${s.id}.webp" alt="" width="${sz || 40}" height="${sz || 40}" style="border-radius:22%;vertical-align:middle" onerror="this.replaceWith(document.createTextNode('${s.icon}'))">`;
 const weapons = Object.entries(B.W_LINES).reduce((n, [k, v]) => n + v.names.length, 0);
@@ -240,7 +241,7 @@ const PAGES = [
    <p class="lede">NPC cốt lõi gắn với cốt truyện và một hệ thống trong game, mỗi người có mô hình riêng. NPC thường dùng thân gốc nam / nữ, máy tự phối đồ.</p>
    <h2>NPC cốt lõi <span class="pill new">đề xuất, chờ duyệt</span></h2>
    <div class="grid">${NPC.map(n => `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3>${n.emo} ${esc(n.name)}</h3><span class="pill ${n.status}">${n.status === "new" ? "mới" : "đã có"}</span></div>
-     <p class="small muted">📍 ${esc(n.where)} · mở ${esc(n.lv)}</p><p>${esc(n.story)}</p>
+     ${(window.NPC_PIC || {})[n.id] ? `<img src="npcs/${n.id}.webp" alt="${esc(n.name)}" loading="lazy" style="width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center 30%;border-radius:12px;margin:6px 0 8px;background:#d9d9dc">` : ""}<p class="small muted">📍 ${esc(n.where)} · mở ${esc(n.lv)}</p><p>${esc(n.story)}</p>
      <p class="small" style="margin-top:8px"><b>Chức năng</b></p><ul class="tight small">${n.jobs.map(j => `<li>${esc(j)}</li>`).join("")}</ul>
      <p class="small muted" style="margin-top:8px">👗 ${esc(n.look)}</p><p class="small muted">Đề xuất bởi: ${esc(n.who)}</p>${(window.NPC_ART || {})[n.id] ? artBlock([NPC_ART[n.id]], NPC_TAIL) : ""}</div>`).join("")}</div>
    <h2>Tất cả NPC trong thành phố · ${B.npcs.length}</h2>
