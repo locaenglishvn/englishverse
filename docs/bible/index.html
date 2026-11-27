@@ -154,7 +154,7 @@ const VFX = { on: false };
 function loadScript(src){ return new Promise((ok, no) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
 async function startVfx(){
   const stage = document.getElementById("vfxStage"); if (!stage) return;
-  try { if (!window.THREE) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"); if (!window.FX3D) await loadScript("fx3d.js"); }
+  try { if (!window.THREE) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"); if (!window.FX3D) await loadScript("fx3d.js"); FX3D.godPath = "gods/"; }
   catch (e) { stage.insertAdjacentHTML("beforeend", "<p style='color:#fff;padding:16px'>Không tải được thư viện 3D. Kiểm tra mạng rồi mở lại tab.</p>"); return; }
   if (!document.body.contains(stage)) return;
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); stage.prepend(renderer.domElement);
@@ -197,7 +197,7 @@ async function startVfx(){
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const loop = () => { if (!document.body.contains(renderer.domElement)) { FX3D.clear(); renderer.dispose(); removeEventListener("resize", resize); return; }   // rời tab: dừng
     requestAnimationFrame(loop); const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime; if (window.__vfxPause) return; FX3D.update(dt);
-    if (auto && (autoT += dt) > (cur === "dragon_roar" ? 3.6 : 3)) cast(ids[(ids.indexOf(cur) + 1) % ids.length]);
+    if (auto && (autoT += dt) > (SKI[cur] && SKI[cur].type === "ult" ? 3 + FX3D.form(rank) * 0.9 : 3)) cast(ids[(ids.indexOf(cur) + 1) % ids.length]);
     mon.position.y = Math.abs(Math.sin(t * 3)) * 0.12; const s = reduce ? 0 : FX3D.shake; resize(); camera.position.x += (Math.random() - 0.5) * s * 0.6; camera.position.y += (Math.random() - 0.5) * s * 0.6;
     camera.lookAt(look); renderer.render(scene, camera);
     fr++; acc += dt; if (acc > 1) { stat.textContent = Math.round(fr / acc) + " khung/giây · " + renderer.info.render.calls + " lần vẽ · " + Math.round(renderer.info.render.triangles / 1000) + "k tam giác"; fr = 0; acc = 0; } };

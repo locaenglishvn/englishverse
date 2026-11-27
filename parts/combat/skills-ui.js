@@ -269,7 +269,7 @@
     const run = (rank, delay) => at(() => {
       const lay = layout(S), P = A.me.position.set(0, 0, 0);
       A.dummies.forEach((d, i) => { d.visible = i < lay.length; if (lay[i]) d.position.set(lay[i][0], 0, lay[i][1]); });
-      const tgt = lay.length ? V(lay[0][0], lay[0][1]) : null, rk = S.type === "ult" ? 10 : rank;
+      const tgt = lay.length ? V(lay[0][0], lay[0][1]) : null, rk = rank;
       setCam(S.radius >= 8 ? 14 : 11);   // chiêu vùng rất rộng: lùi camera để thấy hết (ngoài trận camera cũng đổi theo cỡ vùng nhìn)
       if (tgt) A.me.rotation.y = Math.atan2(tgt.x - P.x, tgt.z - P.z); else A.me.rotation.y = Math.PI;
       $("skArNm").textContent = S.icon + " " + S.name + " · rank " + rk + (S.type === "passive" ? "" : " · " + formsOf(id)[skillForm(rk) - 1]);
