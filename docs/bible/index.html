@@ -132,6 +132,7 @@ a{color:var(--teal)}
 <script src="scholars.js"></script>
 <script src="outfits.js"></script>
 <script src="hairstyles.js"></script>
+<script src="skilltree.js"></script>
 <script>
 (function(){
 const B = window.BIBLE, NPC = window.CORE_NPCS || [];
@@ -325,6 +326,19 @@ const PAGES = [
    <div class="flow"><span>Perfect · 100%</span><span>Good · 70%</span><span>Weak · 30%</span><span>Miss · hoàn ½ mana</span><span>Đang nói: khiên −70% sát thương</span></div>
    ${Object.entries(B.BRANCH).map(([k, br]) => { const L = skills.filter(s => s.branch === k).sort((a, b) => a.lv - b.lv);
      return `<h2>${br.icon} ${esc(br.name)}</h2><div class="tbl branch" style="--c:${br.color}"><table><thead><tr><th>Chiêu</th><th>Loại</th><th>Mở</th><th>Mana</th><th>Hồi</th><th>Tác dụng</th></tr></thead><tbody>${L.map(s => `<tr><td>${s.icon} <b>${esc(s.name)}</b></td><td class="small">${s.type === "passive" ? "Nội tại" : s.type === "ult" ? "Tuyệt chiêu" : (K[s.kind] || s.kind)}</td><td class="num">Lv.${s.lv}</td><td class="num">${s.mana != null ? s.mana : ""}</td><td class="num">${s.cd ? s.cd + " s" : ""}</td><td class="small">${esc(s.desc)}</td></tr>`).join("")}</tbody></table></div>`; }).join("")}`; } },
+ { id:"chieu-danh-nhan", name:"Chiêu × Danh nhân", blurb:"Đề xuất: mở chiêu bằng nhiệm vụ danh nhân, điểm kỹ năng để nâng bậc", render(){
+   const T = window.SKILL_TREE || { rules: [], chapters: [], starter: [], ults: [] }, BR = k => (B.BRANCH[k] || {}), tag = k => `<span class="pill" style="color:${BR(k).color || "inherit"}">${BR(k).icon || ""} ${esc(BR(k).name || k)}</span>`;
+   const all = T.chapters.flatMap(c => c.list.flatMap(x => x.skills)), cnt = k => all.filter(s => s.b === k).length;
+   return `<h1 class="pg">Chiêu × Danh nhân</h1>
+   <p class="lede">Đề xuất: chiêu không mở bằng điểm kỹ năng nữa mà bằng <b>nhiệm vụ kiến thức</b> của danh nhân. Mỗi chiêu lấy 1 hạt giống khoa học thật rồi phóng đại thành phép hầm hố. Điểm kỹ năng khi lên cấp chỉ để nâng bậc. <span class="pill new">đề xuất, chờ duyệt</span></p>
+   <div class="stats"><div class="stat"><b>${all.length}</b><span>chiêu từ danh nhân</span></div>${Object.keys(B.BRANCH).map(k => `<div class="stat"><b>${cnt(k)}</b><span>${BR(k).icon} ${esc(BR(k).name)}</span></div>`).join("")}<div class="stat"><b>${T.ults.length}</b><span>tuyệt chiêu thần thoại</span></div></div>
+   <h2>Luật</h2><div class="grid">${T.rules.map(([h, p]) => `<div class="card"><h3>${esc(h)}</h3><p>${esc(p)}</p></div>`).join("")}</div>
+   <h2>Lv.1–9 · 4 chiêu khởi đầu của Vocara</h2><div class="grid">${T.starter.map(s => `<div class="card"><h3>${esc(s.name)}</h3><p>${tag(s.b)}</p><p class="small">${esc(s.fx)}</p></div>`).join("")}</div>
+   ${T.chapters.map(c => `<h2>Chương ${c.n} · ${esc(c.name)} <span class="muted small">${esc(c.lv)}</span></h2>
+    <div class="tbl"><table><thead><tr><th>Danh nhân</th><th>Chiêu</th><th>Nhánh</th><th>Mở bằng nhiệm vụ</th><th>Hình ảnh khi tung chiêu</th><th>Kiến thức thật</th></tr></thead><tbody>
+    ${c.list.map(x => x.skills.map((s, i) => `<tr>${i === 0 ? `<td rowspan="${x.skills.length}"><b>${esc(x.who)}</b><br><span class="small muted">Lv.${x.lv}</span></td>` : ""}<td><b>${esc(s.name)}</b></td><td>${tag(s.b)}</td><td class="small">${esc(s.q)}</td><td class="small">${esc(s.fx)}</td><td class="small muted">${esc(s.seed)}</td></tr>`).join("")).join("")}</tbody></table></div>`).join("")}
+   <h2>Tuyệt chiêu thần thoại · 8 khu văn hoá</h2><p class="small muted" style="margin-top:-6px">Danh nhân trao tri thức, thần trao phép: tuyệt chiêu nhận khi giải phóng khu văn hoá của vị thần đó.</p>
+   <div class="grid">${T.ults.map(u => `<div class="card"><h3>${esc(u.name)}</h3><p class="small muted">${esc(u.god)} · ${esc(u.area)}</p><p class="small">${esc(u.fx)}</p></div>`).join("")}</div>`; } },
  { id:"hieu-ung", name:"Hiệu ứng chiêu", blurb:"Bản mẫu chiêu 3D: phù văn của các vị thần, rồng, kiếm, sách", render(){
    return `<h1 class="pg">Hiệu ứng chiêu ✨</h1>
    <p class="lede">Bản mẫu chạy thật bằng chính mã hiệu ứng của game (parts/combat/fx3d.js). Bấm từng chiêu, đổi bậc 1 / 3 / 5 để thấy chiêu đẹp dần khi nâng bậc.</p>

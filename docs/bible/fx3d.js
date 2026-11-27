@@ -324,8 +324,11 @@ void main() {
         [bodyMat, hornMat, headMat].forEach(m => m.uniforms.uTime.value = t); fireMat.uniforms.uTime.value = t;
         const fade = 1 - Math.max(0, k - 0.9) / 0.1; [bodyMat, hornMat, headMat].forEach(m => m.uniforms.uAlpha.value = fade); fireMat.uniforms.uAlpha.value = fade;
         hist.unshift(path(Math.min(1, k * 1.06)).clone()); while (hist.length > 220) hist.pop();
-        const pts = [hist[0]]; let acc = 0, j = 1; const step = LEN / N;
-        for (let i = 1; i <= N; i++) { while (j < hist.length) { const d = hist[j].distanceTo(hist[j - 1]); if (acc + d >= step) { pts.push(hist[j - 1].clone().lerp(hist[j], (step - acc) / Math.max(d, 1e-4))); acc = acc + d - step; break; } acc += d; j++; } if (pts.length <= i) pts.push(pts[pts.length - 1].clone().add(new V3(0, -0.01, 0))); }
+        const pts = [hist[0]], step = LEN / N; let cum = 0, target = step;   // đốt thân cách đều nhau dọc theo đường đầu đã bay qua (đầu đi trước, thân theo sau)
+        for (let j = 1; j < hist.length && pts.length <= N; j++) { const d = hist[j].distanceTo(hist[j - 1]);
+          while (d > 1e-6 && cum + d >= target && pts.length <= N) { pts.push(hist[j - 1].clone().lerp(hist[j], (target - cum) / d)); target += step; }
+          cum += d; }
+        while (pts.length <= N) pts.push(pts[pts.length - 1].clone().add(new V3(0, -step, 0)));
         const frames = [];
         for (let i = 0; i <= N; i++) { tan.subVectors(pts[Math.max(0, i - 1)], pts[Math.min(N, i + 1)]); if (tan.lengthSq() < 1e-6) tan.set(0, 0, 1); tan.normalize();   // tan: hướng về phía đầu
           side.crossVectors(UP, tan); if (side.lengthSq() < 1e-4) side.set(1, 0, 0); side.normalize(); up.crossVectors(tan, side).normalize();
@@ -386,8 +389,9 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     for (let r = 0; r < 5; r++) for (let c = 0; c < 4; c++) { g.save(); g.translate(22 + c * 28, 20 + r * 22); glyph(g, script, r * 4 + c, 16); g.restore(); } }); }
   function coverTex() { return cvTex(128, (g, n) => { const gr = g.createLinearGradient(0, 0, n, n); gr.addColorStop(0, "#7a1f1f"); gr.addColorStop(1, "#4a0f14"); g.fillStyle = gr; g.fillRect(0, 0, n, n);
     g.strokeStyle = "#e8b84a"; g.lineWidth = 5; g.strokeRect(8, 8, n - 16, n - 16); g.lineWidth = 2; g.strokeRect(16, 16, n - 32, n - 32); g.fillStyle = "#e8b84a"; g.translate(n / 2, n / 2); g.beginPath(); g.arc(0, 0, 22, 0, 7); g.lineWidth = 3; g.stroke(); glyph(g, "cuneiform", 2, 30); }); }
-  function magicBook(T, script, glowC, dur, delay) {
-    T = T.clone();
+  function magicBook(F, T, script, glowC, nPages, dur, delay, onHit) {   // sách nhỏ lơ lửng trên đầu người chơi, mở ra, từng trang phóng vào quái → nổ
+    F = F.clone(); T = T.clone();
+    const tOpen = 0.35, gap = 0.16, fly = 0.32;
     task(delay || 0, dur, () => {
       const pt = pageTex(script), ct = coverTex(), coverM = new THREE.MeshBasicMaterial({ map: ct, transparent: true }), pageM = new THREE.MeshBasicMaterial({ map: pt, transparent: true, side: THREE.DoubleSide });
       const root = new THREE.Group(), L = new THREE.Group(), Rg = new THREE.Group(); root.add(L); root.add(Rg);
@@ -395,16 +399,28 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
       mkHalf(L, -1); mkHalf(Rg, 1);
       const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.5, 8).rotateX(PI / 2), coverM); root.add(spine);
       const glowS = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: glowC, blending: ADD, transparent: true, depthWrite: false })); glowS.position.y = 0.4; root.add(glowS);
-      const pages = []; for (let i = 0; i < 8; i++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 0.7), pageM); m.visible = false; root.add(m); pages.push({ m, a: i / 8 * PI * 2, d: R(0, 0.25), sp: R(0.8, 1.3) }); }
       root.traverse(x => { x.frustumCulled = false; x.renderOrder = 10; }); SC.add(root);
+      const yaw = Math.atan2(T.x - F.x, T.z - F.z), pages = [], A = new V3(), B = T.clone().setY(1.1), P = new V3();
+      for (let i = 0; i < nPages; i++) { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.95), pageM), gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: glowC, blending: ADD, transparent: true, depthWrite: false }));
+        gl.scale.setScalar(1.6); g.add(gl); g.add(m); g.visible = false; g.traverse(x => { x.frustumCulled = false; x.renderOrder = 11; }); SC.add(g);
+        pages.push({ g, m, t0: tOpen + i * gap, side: (i % 2 ? 1 : -1) * (0.6 + (i % 3) * 0.3), hit: false }); }
       return { upd: (k, t) => {
-        const op = Math.min(1, Math.max(0, (k - 0.12) / 0.2)), e = op * op * (3 - 2 * op), ang = PI / 2 * (1 - e) + 0.14 * e;   // gập (2 nửa dựng đứng) → mở phẳng hình chữ V
+        const op = Math.min(1, t / 0.25), e = op * op * (3 - 2 * op), ang = PI / 2 * (1 - e) + 0.14 * e;   // gập → mở hình chữ V
         L.rotation.z = -ang; Rg.rotation.z = ang;
-        root.position.set(T.x, 2.6 + Math.sin(t * 3) * 0.12, T.z + 0.3); root.rotation.set(0.75, Math.sin(t * 1.5) * 0.15, 0); root.scale.setScalar(Math.min(1, k / 0.1) * 1.25 * (1 - Math.max(0, k - 0.88) / 0.12));
-        glowS.scale.setScalar(1 + op * 2.5); glowS.material.opacity = op;
-        pages.forEach(P => { const e = (k - 0.35 - P.d) / 0.5; P.m.visible = e > 0 && e < 1; if (!P.m.visible) return; const a = P.a + e * 4 * P.sp, r = 0.3 + e * 2.2;
-          P.m.position.set(Math.cos(a) * r, 0.3 + e * 1.8, Math.sin(a) * r); P.m.rotation.set(e * 6, a, e * 4); P.m.scale.setScalar(1 - e * 0.5); });
-      }, end: () => { kill(root); pt.dispose(); ct.dispose(); } }; });
+        root.position.set(F.x, 2.9 + Math.sin(t * 4) * 0.08, F.z); root.rotation.set(0.6, yaw, 0, "YXZ");
+        root.scale.setScalar(0.62 * Math.min(1, t / 0.12) * (1 - Math.max(0, k - 0.9) / 0.1));
+        glowS.scale.setScalar(1 + e * 2); glowS.material.opacity = e * (0.7 + 0.3 * Math.sin(t * 18));
+        A.set(F.x, 3.1, F.z);
+        pages.forEach(pg => { const u = (t - pg.t0) / fly; pg.g.visible = u > 0 && u < 1; if (u <= 0) return;
+          if (u >= 1) { if (!pg.hit) { pg.hit = true; if (onHit) onHit(pages.indexOf(pg)); } return; }
+          const s2 = u * u; P.lerpVectors(A, B, s2); P.y += Math.sin(u * PI) * 1.2; P.x += Math.cos(yaw) * pg.side * Math.sin(u * PI); P.z -= Math.sin(yaw) * pg.side * Math.sin(u * PI);
+          pg.g.position.copy(P); pg.m.rotation.set(t * 9, t * 7, t * 5); });
+      }, end: () => { kill(root); pages.forEach(pg => kill(pg.g)); pt.dispose(); ct.dispose(); } }; });
+    // vệt sáng sau mỗi trang
+    for (let i = 0; i < nPages; i++) emitter(24, q => { const u = q / 24, side = (i % 2 ? 1 : -1) * (0.6 + (i % 3) * 0.3), yaw = Math.atan2(T.x - F.x, T.z - F.z), p = new V3(F.x, 3.1, F.z).lerp(T.clone().setY(1.1), u * u);
+      p.y += Math.sin(u * PI) * 1.2; p.x += Math.cos(yaw) * side * Math.sin(u * PI); p.z -= Math.sin(yaw) * side * Math.sin(u * PI);
+      return { p: p.add(rv(0.1)), v: rv(0.4), t0: (delay || 0) + tOpen + i * gap + u * fly, life: R(0.25, 0.45), size: R(0.2, 0.38), col: q % 2 ? glowC : 0xffffff }; }, { grav: 0, drag: 2 });
+    return (delay || 0) + tOpen + fly;   // lúc trang đầu chạm quái
   }
   /* ---------- CHIÊU (xếp theo cấp mở: càng về sau càng nhiều lớp, càng hoành tráng) ----------
      Mỗi chiêu nhận bậc rk 1–5: bậc 3 thêm vòng phù văn thứ 2 + hạt; bậc 5 đổi sắc vàng sáng, thêm cột sáng + sóng + rung mạnh (TIER). */
@@ -450,16 +466,20 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     glow(F.clone().setY(1.3), 0xbfffd8, 3.2, 0.6, 0.3, {});
     TIER(F, rk, c, 0.15, { script: "ogham", shape2: "circle", size: 3.6, spin: 1 });
   };
-  META.riddle_trap = { name: "Riddle Trap", lv: 6, who: "Nabu · chữ hình nêm · ấn vuông đứng im rồi toả ra", desc: "Quyển sách phép bay tới đầu quái, mở ra, trang sách bay tung; ấn phù văn vuông khoá chân quái." };
+  META.riddle_trap = { name: "Riddle Trap", lv: 6, who: "Nabu · chữ hình nêm · ấn vuông xoay rồi thu vào", desc: "Sách phép nhỏ mở trên đầu người chơi, từng trang sách phóng vào quái nổ liên tiếp (bậc càng cao càng nhiều trang), rồi ấn phù văn khoá chân quái." };
   SK.riddle_trap = (F, T, rk) => {
-    const c = GOLD(rk) ? 0xffd860 : 0x6fb8ff;
-    magicBook(T, "cuneiform", c, 1.6, 0);
-    shadowUnder(T, 5.5, 1.6, 0.3); rune(T, "seal", "cuneiform", c, 5, 1.4, 0.35, { mode: "static", inT: 0.12 });
-    rune(T, "seal", "cuneiform", 0xffffff, 5, 0.6, 0.95, { mode: "expand", expand: 0.6, hold: 0.1, grow: false, op: 0.7, lift: 0.01 });
-    pillar(T, c, 0xffffff, 1.2, 2.6, 0.9, 0.45, { speed: 1.5, widen: 0, top: 0.25, cut: 0.3 });   // ánh sáng chiếu từ sách xuống
-    sparks(T.clone().setY(1.2), [c, 0xffffff], 30 + rk * 6, 3, 0.25, 1.0, 0.5, { up: 2, grav: -1 });
-    TIER(T, rk, c, 0.5, { script: "cuneiform", shape2: "circle", size: 4.4 });
+    const c = GOLD(rk) ? 0xffd860 : 0x6fb8ff, B = T.clone().setY(1.1), n = 3 + Math.ceil(rk / 2);
+    rune(F, "seal", "cuneiform", c, 3, 0.5 + n * 0.16 + 0.4, 0, { mode: "spin", spin: 1.5, op: 0.8 });
+    const first = magicBook(F, T, "cuneiform", c, n, 0.75 + n * 0.16, 0, null);
+    for (let i = 0; i < n; i++) { const tt = first + i * 0.16, P = T.clone().add(new V3(R(-0.6, 0.6), 0, R(-0.6, 0.6)));   // mỗi trang: nổ bùm
+      glow(P.clone().setY(1.1), 0xffffff, 2.6, 0.2, tt, { flash: true }); glow(P.clone().setY(1.1), c, 3.6, 0.32, tt, { flash: true });
+      shock(P, c, 1.6, 0.35, tt); sparks(P.clone().setY(1.1), [0xffffff, c, 0xfff0c0], 22, 6, 0.24, 0.45, tt, { up: 1.2 }); task(tt, 0.01, () => shake(0.12)); }
+    const end = first + (n - 1) * 0.16 + 0.1;
+    shadowUnder(T, 5.5, 1.4, end - 0.1); rune(T, "seal", "cuneiform", c, 5, 1.3, end, { mode: "converge", inT: 0.25 });   // ấn khoá chân sau loạt nổ
+    pillar(T, c, 0xffffff, 1.2, 2.6, 0.8, end, { speed: 1.5, widen: 0, top: 0.25, cut: 0.3 });
+    TIER(T, rk, c, end, { script: "cuneiform", shape2: "circle", size: 4.4 });
   };
+
   META.thunder_clap = { name: "Thunder Clap", lv: 12, who: "Odin · chữ rune · ấn mặt trời đứng im, chớp sáng", desc: "Ấn sét đứng im dưới quái → 3 tia sét + cột điện → tia điện toả trên đất, vết nứt." };
   SK.thunder_clap = (F, T, rk) => {
     const B = T.clone().setY(1), c = GOLD(rk) ? 0xffe27a : 0x7cc8ff;
