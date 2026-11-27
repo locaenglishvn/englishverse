@@ -39,8 +39,8 @@ window.SKILL_TREE = {
         { name: "Press Slam", b: "power", q: "Máy in", fx: "Cỗ máy in gỗ khổng lồ dập xuống, đóng dấu chữ cái phát sáng lên quái và mặt đất.", seed: "Máy in ép giấy lên chữ có mực." },
         { name: "Typeset Rain", b: "rhythm", q: "Chữ rời bằng kim loại", fx: "Mưa chữ kim loại A–Z rơi xuống cả vùng, mỗi chữ cắm xuống nổ tia lửa.", seed: "Chữ rời ghép thành trang in." } ] },
       { who: "Leonardo da Vinci", lv: 17, skills: [
-        { name: "Aerial Screw", b: "rhythm", q: "Cánh quạt bay giống trực thăng", fx: "Cánh quạt xoắn bằng vải và gỗ khổng lồ quay quanh người như máy xay gió, hút quái vào giữa.", seed: "Bản vẽ máy bay cánh xoắn." },
-        { name: "Mirror Script", b: "control", q: "Viết chữ ngược", fx: "Tấm gương lớn dựng lên trước quái, chữ ngược bay ra quấn quanh đầu: quái rối loạn, đánh nhầm đồng loại.", seed: "Da Vinci viết chữ từ phải sang trái." } ] },
+        { name: "Ornithopter Dive", b: "rhythm", q: "Máy bay cánh chim (ornithopter)", fx: "Máy bay cánh chim bằng gỗ của Da Vinci vỗ cánh bay vút lên rồi lao bổ vào quái, nổ tung cả vùng.", seed: "Da Vinci vẽ máy bay vỗ cánh như chim." },
+        { name: "Vitruvian Seal", b: "control", q: "Người Vitruvius", fx: "Chưởng ra ấn Người Vitruvius của Da Vinci, ấn đóng xuống phong ấn quái: quái rối loạn, không đánh được.", seed: "Da Vinci vẽ cơ thể người cân đối trong hình tròn và hình vuông (và viết chữ ngược)." } ] },
       { who: "Alexander Graham Bell", lv: 18, skills: [
         { name: "Ring Shock", b: "control", q: "Chiếc điện thoại đầu tiên", fx: "Ống nghe đồng cổ khổng lồ đổ chuông, dây điện xoắn phóng ra quấn quái, tiếng chuông thành sóng âm choáng.", seed: "Giọng nói truyền qua dây điện." } ] },
       { who: "Nicéphore Niépce", lv: 19, skills: [
