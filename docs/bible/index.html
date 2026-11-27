@@ -145,6 +145,7 @@ document.getElementById("built").textContent = "Dữ liệu lấy từ code ngà
 const AREA = { vn:"🌾 Khu Việt", jp:"⛩️ Nhật", eg:"🏜️ Ai Cập", no:"❄️ Bắc Âu", ce:"🍁 Celt", my:"🏝️ Maya", gr:"🏛️ Hy Lạp", cn:"🖌️ Trung Hoa", me:"🗿 Lưỡng Hà", pa:"✨ Thần & The Mute" };
 const areaOf = m => m.area || "vn";
 const skills = Object.entries(B.SKILLS).map(([id, s]) => Object.assign({ id }, s));
+const skIc = (s, sz) => s.type === "passive" ? s.icon : `<img src="icons/${s.id}.webp" alt="" width="${sz || 40}" height="${sz || 40}" style="border-radius:22%;vertical-align:middle" onerror="this.replaceWith(document.createTextNode('${s.icon}'))">`;
 const weapons = Object.entries(B.W_LINES).reduce((n, [k, v]) => n + v.names.length, 0);
 
 /* ---------------- các trang ---------------- */
@@ -183,7 +184,7 @@ async function startVfx(){
     document.getElementById("vfxName").textContent = S.name + " · Lv." + S.lv + " · bậc " + rank + " · " + (M.forms || GEN)[FX3D.form(rank) - 1];
     document.getElementById("vfxDesc").textContent = (S.fx || S.desc) + " (" + ((S.src || {}).who || "") + (FX3D.has(id) ? "" : " · hiệu ứng chung, chờ làm riêng") + ")"; document.querySelectorAll("#vfxSk button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === id))); autoT = 0; };
   const fill = () => { ids = ALL.filter(s => chOf(s) === grp).map(s => s.id);
-    document.getElementById("vfxSk").innerHTML = ids.map(id => `<button data-v="${id}"><span class="vfx-lv">Lv.${SKI[id].lv}</span>${FX3D.has(id) ? "" : "⏳ "}${esc(SKI[id].name)}</button>`).join("");
+    document.getElementById("vfxSk").innerHTML = ids.map(id => `<button data-v="${id}">${skIc(SKI[id], 26)} <span class="vfx-lv">Lv.${SKI[id].lv}</span>${FX3D.has(id) ? "" : "⏳ "}${esc(SKI[id].name)}</button>`).join("");
     chips("vfxSk", v => { auto = false; document.getElementById("vfxAuto").setAttribute("aria-pressed", "false"); cast(v); }); };
   document.getElementById("vfxGrp").innerHTML = [["s", "Khởi đầu"]].concat(ST.chapters.map(c => [String(c.n), "Chương " + c.n])).concat([["u", "Tuyệt chiêu"]]).map(([v, n]) => `<button data-v="${v}" aria-pressed="${v === grp}">${n} · ${ALL.filter(s => chOf(s) === v).length}</button>`).join("");
   chips("vfxGrp", v => { grp = v; fill(); cast(ids[0]); });
@@ -334,7 +335,7 @@ const PAGES = [
    const act = skills.filter(s => s.type !== "passive"), sch = act.filter(s => !s.start && s.type !== "ult"), ults = act.filter(s => s.type === "ult"), pas = skills.filter(s => s.type === "passive");
    const done = sch.filter(s => DONE.has(s.id)).length;
    const chOf = lv => { const c = T.chapters.find(c => { const m = (c.lv || "").match(/(\d+)\D+(\d+)/); return m && lv >= +m[1] && lv <= +m[2]; }); return c || T.chapters[T.chapters.length - 1]; };
-   const row = s => `<tr><td>${s.icon || ""} <b>${esc(s.name)}</b><br><span class="small muted">${esc(s.en || "")}</span></td><td>${tag(s.branch)}<br><span class="small">${K[s.kind] || ""}</span></td><td class="small">📗 ${esc((s.src || {}).q || "")}<br><span class="muted">Lv.${s.lv} · ${s.mana} mana · hồi ${s.cd}s</span></td><td class="small">${esc(s.fx || s.desc)}</td><td class="small muted">${esc(s.seed || "")}</td><td>${fxs(s)}</td></tr>`;
+   const row = s => `<tr><td>${skIc(s, 44)} <b>${esc(s.name)}</b><br><span class="small muted">${esc(s.en || "")}</span></td><td>${tag(s.branch)}<br><span class="small">${K[s.kind] || ""}</span></td><td class="small">📗 ${esc((s.src || {}).q || "")}<br><span class="muted">Lv.${s.lv} · ${s.mana} mana · hồi ${s.cd}s</span></td><td class="small">${esc(s.fx || s.desc)}</td><td class="small muted">${esc(s.seed || "")}</td><td>${fxs(s)}</td></tr>`;
    return `<h1 class="pg">Chiêu thức (Skills)</h1>
    <p class="lede">Nói đúng câu thì chiêu mới nổ. <b>Chiêu mở bằng nhiệm vụ kiến thức</b> của danh nhân, <b>điểm kỹ năng</b> chỉ để nâng bậc. Mỗi chiêu lấy 1 hạt giống khoa học thật rồi phóng đại thành phép hầm hố, càng về sau càng đẹp.</p>
    <div class="stats"><div class="stat"><b>${act.filter(s => s.start).length}</b><span>chiêu khởi đầu</span></div><div class="stat"><b>${sch.length}</b><span>chiêu danh nhân</span></div><div class="stat"><b>${ults.length}</b><span>tuyệt chiêu thần</span></div><div class="stat"><b>${pas.length}</b><span>nội tại</span></div><div class="stat"><b>${done}/${sch.length}</b><span>có hiệu ứng riêng</span></div></div>
@@ -342,13 +343,13 @@ const PAGES = [
    <div class="grid">${T.rules.map(([h, p]) => `<div class="card"><h3>${esc(h)}</h3><p>${esc(p)}</p></div>`).join("")}</div>
    <div class="flow"><span>Perfect · 100%</span><span>Good · 70%</span><span>Weak · 30%</span><span>Miss · hoàn ½ mana</span><span>Đang nói: khiên −70% sát thương</span></div>
    <h2>2 · Lv.1–9 · 4 chiêu khởi đầu (quà của Vocara)</h2>
-   <div class="grid">${act.filter(s => s.start).map(s => `<div class="card"><h3>${s.icon} ${esc(s.name)}</h3><p>${tag(s.branch)} <span class="small">${K[s.kind] || ""} · ${s.mana} mana</span></p><p class="small">${esc(s.fx || s.desc)}</p></div>`).join("")}</div>
+   <div class="grid">${act.filter(s => s.start).map(s => `<div class="card"><h3>${skIc(s, 56)} ${esc(s.name)}</h3><p>${tag(s.branch)} <span class="small">${K[s.kind] || ""} · ${s.mana} mana</span></p><p class="small">${esc(s.fx || s.desc)}</p></div>`).join("")}</div>
    ${T.chapters.map(c => { const L = sch.filter(s => chOf(s.lv) === c).sort((a, b) => a.lv - b.lv), d = L.filter(s => DONE.has(s.id)).length;
      return `<h2>${c.n + 2} · Chương ${c.n}: ${esc(c.name)} <span class="muted small">${esc(c.lv)} · ${L.length} chiêu · ${d === L.length ? "✅ đủ hiệu ứng riêng" : d + " có hiệu ứng riêng"}</span></h2>
      <div class="tbl"><table><thead><tr><th>Chiêu</th><th>Nhánh · loại</th><th>Mở bằng nhiệm vụ</th><th>Hình ảnh khi tung chiêu</th><th>Kiến thức thật</th><th>Hiệu ứng</th></tr></thead><tbody>
      ${[...new Set(L.map(s => (s.src || {}).who))].map(w => `<tr><td colspan="6" class="small"><b>🎓 ${esc(w)}</b></td></tr>` + L.filter(s => (s.src || {}).who === w).map(row).join("")).join("")}</tbody></table></div>`; }).join("")}
    <h2>${T.chapters.length + 3} · Tuyệt chiêu thần thoại · 8 khu văn hoá</h2><p class="small muted" style="margin-top:-6px">Danh nhân trao tri thức, thần trao phép: tuyệt chiêu nhận khi giải phóng khu văn hoá của vị thần đó. Đi vào ô thứ 5 riêng.</p>
-   <div class="grid">${ults.sort((a, b) => a.lv - b.lv).map(s => { const u = T.ults.find(u => u.name === s.name) || {}; return `<div class="card"><h3>${s.icon} ${esc(s.name)} ${fxs(s)}</h3><p class="small muted">${esc(u.god || "")} · ${esc(u.area || "Lv." + s.lv)}</p><p class="small">${esc(u.fx || s.desc)}</p></div>`; }).join("")}</div>
+   <div class="grid">${ults.sort((a, b) => a.lv - b.lv).map(s => { const u = T.ults.find(u => u.name === s.name) || {}; return `<div class="card"><h3>${skIc(s, 56)} ${esc(s.name)} ${fxs(s)}</h3><p class="small muted">${esc(u.god || "")} · ${esc(u.area || "Lv." + s.lv)}</p><p class="small">${esc(u.fx || s.desc)}</p></div>`; }).join("")}</div>
    <h2>${T.chapters.length + 4} · Nội tại (tối đa bậc 5)</h2>
    <div class="tbl"><table><thead><tr><th>Nội tại</th><th>Nhánh</th><th>Mở</th><th>Tác dụng</th></tr></thead><tbody>${pas.sort((a, b) => a.lv - b.lv).map(s => `<tr><td>${s.icon} <b>${esc(s.name)}</b></td><td>${tag(s.branch)}</td><td class="num">Lv.${s.lv}</td><td class="small">${esc(s.desc)}</td></tr>`).join("")}</tbody></table></div>
    <p class="small muted">Xem tận mắt từng chiêu ở 4 hình dạng: tab <b>Hiệu ứng chiêu</b>.</p>`; } },

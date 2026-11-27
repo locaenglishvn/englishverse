@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Skill icon studio</title></head>
+<body style="margin:0;background:#000">
+<script src="../../lib/three.min.js"></script>
+<script>window.__iconMode = true;</script>
+<script src="../../parts/combat/fx3d.js"></script>
+<script>
+/* Xưởng icon chiêu: dựng hiệu ứng thật của từng chiêu trên nền tối, thử nhiều khoảnh khắc, giữ khung đẹp nhất, đóng khung phát sáng theo màu nhánh.
+   Chạy bằng: node tools/icons/build.js (xuất assets/icons/skills/<id>.webp) */
+const N = 384, renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.setSize(N, N); renderer.setPixelRatio(1); document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x070b18); const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 300);
+scene.add(new THREE.HemisphereLight(0xdfefff, 0x302040, 0.8));
+FX3D.setup(scene, camera, renderer);
+const F = new THREE.Vector3(0, 0, 0), T = new THREE.Vector3(0, 0, -5);
+const BR = { power: "#ff7a2a", control: "#5f8bff", harmony: "#3fe08a", rhythm: "#ff4a8a" };
+function score(cv) { const g = cv.getContext("2d", { willReadFrequently: true }), d = g.getImageData(0, 0, cv.width, cv.height).data; let s = 0, over = 0, cov = 0, n = 0;
+  for (let i = 0; i < d.length; i += 16) { const r = d[i] / 255, gg = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), lum = 0.3 * r + 0.59 * gg + 0.11 * b, sat = mx ? (mx - mn) / mx : 0;
+    s += sat * lum + 0.25 * lum; if (lum > 0.93) over++; if (lum > 0.18) cov++; n++; }
+  return s / n - 1.6 * over / n + 0.25 * Math.min(cov / n, 0.6); }
+window.renderIcon = (o) => {
+  FX3D.clear(); const H = o.hint || {}, rad = o.radius || 3, self = o.kind === "self" || o.kind === "aoe", look = (H.look !== undefined ? F.clone().lerp(T, H.look) : self ? F.clone() : F.clone().lerp(T, o.ult ? 0.7 : 0.8)).setY(H.y || (self ? 1.2 : 1.4)), dist = (H.dist || (self ? 7 + rad * 0.9 : 8.5 + rad * 0.5)) * (o.ult && !H.dist ? 1.2 : 1);
+  if (H.at) o.times = H.at;   /* gợi ý riêng cho chiêu khó chụp: khoảnh khắc, tâm nhìn, khoảng cách */
+  camera.position.set(look.x + 0.25 * dist, look.y + Math.sin(0.5) * dist, look.z + Math.cos(0.5) * dist);   /* camera thấp: thấy rõ vật thể, vòng đất bớt chiếm chỗ */ camera.lookAt(look); camera.updateProjectionMatrix();
+  const opt = { kind: o.kind, branch: o.branch, radius: o.radius }, rk = o.rank; let t = 0;
+  const step = dt => { const n = Math.round(dt / 0.016); for (let i = 0; i < n; i++) FX3D.update(0.016); t += dt; };
+  FX3D.cast(o.id, F, T, rk, opt); if (o.kind === "multi") for (let h = 1; h < (H.casts || Math.min(o.hits || 3, 4)); h++) { step(0.22); FX3D.cast(o.id, F, T, rk, opt); }
+  const tmp = document.createElement("canvas"); tmp.width = tmp.height = N; const tg = tmp.getContext("2d", { willReadFrequently: true }); let best = null, bs = -1e9;
+  const t0 = t; for (const at of o.times) { if (t0 + at > t) step(t0 + at - t);   /* mốc giờ tính từ đòn cuối */ renderer.render(scene, camera); tg.drawImage(renderer.domElement, 0, 0); const sc = score(tmp); if (sc > bs) { bs = sc; best = tg.getImageData(0, 0, N, N); } }
+  /* đóng khung: bo góc, viền màu nhánh phát sáng, tối 4 góc, vệt bóng sáng phía trên */
+  const S = o.size || 192, out = document.createElement("canvas"); out.width = out.height = S; const g = out.getContext("2d"), col = o.ult ? "#ffd040" : BR[o.branch] || "#9ad8ff", r = S * 0.16;
+  const rr = (x, y, w, h, q) => { g.beginPath(); g.moveTo(x + q, y); g.arcTo(x + w, y, x + w, y + h, q); g.arcTo(x + w, y + h, x, y + h, q); g.arcTo(x, y + h, x, y, q); g.arcTo(x, y, x + w, y, q); g.closePath(); };
+  tmp.getContext("2d").putImageData(best, 0, 0);
+  let sw = 0, sx = 0, sy = 0, sxx = 0, syy = 0; const D = best.data; for (let y = 0; y < N; y += 2) for (let x = 0; x < N; x += 2) { const i = (y * N + x) * 4, r = D[i] / 255, g2 = D[i + 1] / 255, b2 = D[i + 2] / 255, mx = Math.max(r, g2, b2), mn = Math.min(r, g2, b2), w = Math.pow(0.3 * r + 0.59 * g2 + 0.11 * b2, 2) * (0.4 + (mx ? (mx - mn) / mx : 0));
+    sw += w; sx += w * x; sy += w * y; sxx += w * x * x; syy += w * y * y; }
+  const cx = sx / sw, cy = sy / sw, sd = Math.sqrt(Math.max(sxx / sw - cx * cx, syy / sw - cy * cy)), half = H.nocrop ? N * 0.36 : Math.max(N * 0.24, Math.min(N / 2, sd * 1.7)), x0 = H.nocrop ? N / 2 - half : Math.max(0, Math.min(N - 2 * half, cx - half)), y0 = H.nocrop ? N / 2 - half : Math.max(0, Math.min(N - 2 * half, cy - half));   /* cắt vuông quanh trọng tâm vùng sáng */
+  g.save(); rr(0, 0, S, S, r); g.clip(); g.fillStyle = "#070b18"; g.fillRect(0, 0, S, S);
+  g.drawImage(tmp, x0, y0, 2 * half, 2 * half, 0, 0, S, S);
+  const v = g.createRadialGradient(S / 2, S / 2, S * 0.3, S / 2, S / 2, S * 0.75); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,.75)"); g.fillStyle = v; g.fillRect(0, 0, S, S);
+  const gl = g.createLinearGradient(0, 0, 0, S * 0.5); gl.addColorStop(0, "rgba(255,255,255,.22)"); gl.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = gl; rr(S * 0.06, S * 0.05, S * 0.88, S * 0.42, r * 0.8); g.fill();
+  g.restore();
+  g.lineWidth = S * 0.045; g.strokeStyle = col; g.shadowColor = col; g.shadowBlur = S * 0.08; rr(g.lineWidth / 2, g.lineWidth / 2, S - g.lineWidth, S - g.lineWidth, r); g.stroke();
+  g.shadowBlur = 0; g.lineWidth = S * 0.012; g.strokeStyle = "rgba(255,255,255,.75)"; rr(S * 0.045, S * 0.045, S * 0.91, S * 0.91, r * 0.75); g.stroke();
+  if (o.ult) { g.fillStyle = "#ffd040"; g.font = "bold " + Math.round(S * 0.13) + "px Georgia"; g.textAlign = "center"; g.shadowColor = "#000"; g.shadowBlur = 6; g.fillText("★", S / 2, S * 0.17); }
+  return { url: out.toDataURL("image/webp", 0.86), score: bs };
+};
+window.ready = true;
+</script></body></html>

@@ -46,7 +46,7 @@
 #skOver .gate{margin-top:6px;padding:6px 8px;font-size:12px;background:rgba(255,201,74,.12);border:1px solid rgba(255,201,74,.4);border-radius:6px}
 #skOver .lab{font:700 11px var(--ev-font);letter-spacing:.06em;color:var(--ev-mut);margin:10px 0 6px;text-transform:uppercase}
 #skOver .slots{display:flex;gap:12px;justify-content:center;padding:4px 0 2px}
-#skOver .slots .ev-round{width:50px;height:50px;font-size:24px}
+#skOver .slots .ev-round{width:50px;height:50px;font-size:24px}#skOver .slots .ev-round .skIc{border-radius:50%}#skOver .hex i .skIc{width:100%;height:100%}
 #skOver .slots .ev-round.empty{--c:#2c365f;color:var(--ev-mut);font-size:20px}
 #skOver .slots .tgt{animation:skBlink .9s infinite}
 #skOver .slots .up{transform:translateY(-5px) scale(1.12);box-shadow:0 0 0 3px #1b2340,0 0 0 6px #fff,0 0 14px 6px var(--ev-gold),0 5px 0 6px rgba(0,0,0,.35)}
@@ -154,7 +154,7 @@
     }
     const learned = state === "ln";
     return "<div class='skr " + state + (learned ? " lit" : "") + (first ? " first" : "") + (last ? " last" : "") + (pick === id ? " sel" : "") + "' data-id='" + id + "' style='--c:" + c + "'>" +
-      "<div class='hex'><i>" + S.icon + "</i></div><div class='skc'>" + card + "</div></div>";
+      "<div class='hex'><i>" + skillIcon(id) + "</i></div><div class='skc'>" + card + "</div></div>";
   }
   function pathHtml(list) {
     let nxt = true;
@@ -177,7 +177,7 @@
       "<div class='lab'>In use</div><div class='slots'>";
     for (let k = 0; k < 4; k++) {
       const id = sl[k], S = id && SKILLS[id];
-      top += "<button class='ev-round" + (S ? "" : " empty") + (pick ? " tgt" : "") + (sel === k ? " up" : "") + "' data-a='slot' data-id='" + k + "'" + (S ? " style='--c:" + COL[S.branch] + "'" : "") + ">" + (S ? S.icon : "＋") + "</button>";
+      top += "<button class='ev-round" + (S ? "" : " empty") + (pick ? " tgt" : "") + (sel === k ? " up" : "") + "' data-a='slot' data-id='" + k + "'" + (S ? " style='--c:" + COL[S.branch] + "'" : "") + ">" + (S ? skillIcon(id) : "＋") + "</button>";
     }
     top += "</div><div class='hint'>" + (pick ? "Tap a slot to put " + SKILLS[pick].icon + " " + SKILLS[pick].name + " there" : sel != null ? "Pick a skill below to put here" : "") + "</div>";
     $("skTop").innerHTML = top;
