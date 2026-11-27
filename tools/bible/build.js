@@ -48,6 +48,7 @@ Object.keys(sounds.focus).forEach(k => sounds.focus[k] = { n: sounds.focus[k].le
 
 const out = {
   built: new Date().toISOString().slice(0, 10),
+  FX_DONE: [...new Set([...fs.readFileSync(path.join(ROOT, "parts/combat/fx3d.js"), "utf8").matchAll(/\bSK\.([a-z_]+) = /g)].map(m => m[1]))],   // chiêu đã có hiệu ứng riêng
   story: rd("docs/STORY.md"),
   roadmap1: (rd("docs/ROADMAP.md").split("\n## 1.")[1] || "").split("\n## 2.")[0],
   roadmap3: (rd("docs/ROADMAP.md").split("\n## 3.")[1] || "").split("\n## 4.")[0],
