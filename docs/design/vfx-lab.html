@@ -1,0 +1,133 @@
+<title>Skill VFX Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Chakra+Petch:wght@600;700&display=swap">
+<style>
+/* Bố cục: sân thử 3D chiếm phần trên (như màn hình game), dải nút chiêu bên dưới; giao diện tối kiểu bảng điều khiển game */
+:root {
+  --bg: #0d0f1a; --panel: #171a2b; --line: #2a2f4a; --fg: #eef1fb; --dim: #9aa3c7; --gold: #ffc94a; --accent: #ff8a3a;
+  --f-display: "Chakra Petch", "Be Vietnam Pro", system-ui, sans-serif; --f-body: "Be Vietnam Pro", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); margin: 0; }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px 24px; display: flex; flex-direction: column; gap: 12px; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--f-display); font-size: 1.35rem; letter-spacing: 0.04em; margin: 0; text-wrap: balance; }
+h1 small { color: var(--gold); font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; display: block; }
+.stage { position: relative; width: 100%; height: min(62vh, 620px); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #000; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.cap { position: absolute; left: 12px; right: 12px; bottom: 10px; pointer-events: none; display: flex; flex-direction: column; gap: 2px; text-shadow: 0 1px 3px #000, 0 0 10px #000; }
+.cap b { font-family: var(--f-display); font-size: 1.15rem; color: var(--gold); letter-spacing: 0.03em; }
+.cap span { font-size: 0.82rem; color: #fff; max-width: 62ch; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+.lbl { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); width: 100%; }
+button { font: 600 0.9rem var(--f-body); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+button[aria-pressed="true"] { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); color: var(--gold); }
+button.skill { background: linear-gradient(180deg, #2a3157, #171a2b); }
+.note { font-size: 0.85rem; color: var(--dim); line-height: 1.55; max-width: 65ch; margin: 0; }
+.stats { font: 600 0.75rem var(--f-body); color: var(--dim); font-variant-numeric: tabular-nums; }
+</style>
+<div class="wrap">
+  <header>
+    <h1><small>EnglishVerse · bản mẫu</small>Skill VFX Lab</h1>
+    <div class="stats" id="stats">— fps</div>
+  </header>
+  <div class="stage" id="stage"><div class="cap"><b id="capName">Echo Blast</b><span id="capDesc"></span></div></div>
+  <div class="row" id="skills"><div class="lbl">Bấm để xem chiêu</div></div>
+  <div class="row" id="grounds"><div class="lbl">Nền thử</div></div>
+  <div class="row"><div class="lbl">Chế độ</div><button id="auto" aria-pressed="true">Tự phát lần lượt</button><button id="again">Phát lại</button></div>
+  <p class="note">Mỗi chiêu ghép 3 lớp: lớp đất (vòng phù văn, vết cháy, vệt tối để hiệu ứng nổi trên nền sáng), thân chiêu (quả cầu năng lượng, vệt kiếm, cột lửa, lốc xoáy, tia sét, rồng) và lớp va chạm (chớp sáng, hạt bắn, sóng chấn động, rung màn hình). Hạt sáng được card đồ hoạ tính, khối hình dùng ảnh nhiễu trôi, mọi ảnh vẽ bằng code nên không phải tải thêm file.</p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../parts/combat/fx3d.js"></script>
+<script>
+(function () {
+  const DESC = {
+    echo_blast: "⚡ Power · tụ lực ở tay → quả cầu năng lượng bay → nổ: chớp, cột lửa, 2 vòng sóng, tia lửa, vết nứt cháy.",
+    thunder_clap: "⚡ Power · phù văn xanh dưới quái → 3 tia sét giáng + cột điện → tia điện toả ra đất, vết nứt.",
+    freeze_note: "🌀 Control · quả cầu băng → phù văn băng → gai băng trồi lên quanh quái, bụi tuyết, hơi lạnh.",
+    harmony_heal: "💚 Harmony · 2 vòng phù văn xoay ngược nhau, hào quang, 6 cột sáng, lá và sao bay lên.",
+    fire_spin: "🔥 Rhythm · 3 vệt kiếm lửa quét quanh người → lốc xoáy lửa, vết cháy, tàn lửa bay.",
+    dragon_roar: "🐉 Tuyệt chiêu · phù văn lớn → rồng vàng đỏ xoắn ốc bay lên rồi lao xuống quái → nổ lớn, rung mạnh.",
+    basic_slash: "Đòn đánh thường · vệt kiếm khí trắng vàng + tia lửa nhỏ."
+  };
+  const stage = document.getElementById("stage");
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  stage.prepend(renderer.domElement);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 300);
+  scene.add(new THREE.HemisphereLight(0xdfefff, 0x6a8a4a, 0.7));
+  const sun = new THREE.DirectionalLight(0xffe2b0, 0.9); sun.position.set(14, 16, 4); scene.add(sun);
+
+  /* nền thử: ảnh vẽ bằng canvas, giống tông 2.5D trong game */
+  function groundTex(kind) {
+    const n = 512, c = document.createElement("canvas"); c.width = c.height = n; const g = c.getContext("2d");
+    const base = { grass: "#6a9c45", snow: "#e8eef6", night: "#1d2a2a" }[kind]; g.fillStyle = base; g.fillRect(0, 0, n, n);
+    let s = 3; const r = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+    const pal = { grass: ["#5a8c38", "#7aae4b", "#88bb55", "#4e7f33"], snow: ["#dfe7f1", "#f6f9fd", "#cfdbe9"], night: ["#16211f", "#243534", "#1a2a2c"] }[kind];
+    for (let i = 0; i < 160; i++) { const x = r() * n, y = r() * n, rr = 20 + r() * 60; const gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, pal[i % pal.length]); gr.addColorStop(1, "rgba(0,0,0,0)"); g.globalAlpha = 0.35; g.fillStyle = gr; g.fillRect(x - rr, y - rr, rr * 2, rr * 2); }
+    g.globalAlpha = 1;
+    if (kind !== "snow") for (let i = 0; i < 2500; i++) { const x = r() * n, y = r() * n; g.strokeStyle = kind === "grass" ? (r() < 0.5 ? "rgba(52,96,36,.45)" : "rgba(170,210,110,.45)") : "rgba(80,110,100,.35)"; g.lineWidth = 1.4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - 0.5) * 3, y - 4 - r() * 6); g.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(10, 10); t.anisotropy = 4; return t;
+  }
+  const GROUND = { grass: { tex: groundTex("grass"), sky: 0xbfdcf0, label: "Cỏ sáng (như game)" }, snow: { tex: groundTex("snow"), sky: 0xdfe9f4, label: "Tuyết" }, night: { tex: groundTex("night"), sky: 0x0b1020, label: "Đêm" } };
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ map: GROUND.grass.tex }));
+  scene.add(ground);
+
+  /* nhân vật đứng tạm + quái */
+  function hero() {
+    const g = new THREE.Group(), m = (c) => new THREE.MeshLambertMaterial({ color: c });
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.4, 1.0, 12), m(0x1f8a8a)); body.position.y = 0.85; g.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 12), m(0xf2c9a6)); head.position.y = 1.65; g.add(head);
+    const hair = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), m(0x2b2b3a)); hair.position.y = 1.72; g.add(hair);
+    [-0.16, 0.16].forEach(x => { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.5, 8), m(0x2b2b3a)); l.position.set(x, 0.25, 0); g.add(l); });
+    return g;
+  }
+  function monster() {
+    const g = new THREE.Group(), b = new THREE.Mesh(new THREE.SphereGeometry(0.9, 18, 14), new THREE.MeshLambertMaterial({ color: 0x9b4dca })); b.scale.y = 0.85; b.position.y = 0.8; g.add(b);
+    [-0.3, 0.3].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff })); e.position.set(x, 1.05, 0.72); g.add(e); const p = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), new THREE.MeshBasicMaterial({ color: 0x111111 })); p.position.set(x, 1.05, 0.86); g.add(p); });
+    return g;
+  }
+  const P = new THREE.Vector3(-1.2, 0, 3), T = new THREE.Vector3(1.6, 0, -4.2);
+  const h = hero(); h.position.copy(P); h.rotation.y = Math.atan2(T.x - P.x, T.z - P.z); scene.add(h);
+  const mon = monster(); mon.position.copy(T); mon.rotation.y = Math.atan2(P.x - T.x, P.z - T.z); scene.add(mon);
+  [[-5, -6], [5, 2], [-6, 4], [6, -8]].forEach(([x, z]) => { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.6), new THREE.MeshLambertMaterial({ color: 0x8a7a68 })); r.position.set(x, 0.3, z); scene.add(r); });
+
+  FX3D.setup(scene, camera, renderer);
+
+  /* camera 2.5D như game: nghiêng 53°, FOV 30° */
+  const look = new THREE.Vector3().addVectors(P, T).multiplyScalar(0.5).setY(1);
+  function resize() { const w = stage.clientWidth, hh = stage.clientHeight; renderer.setSize(w, hh, false); camera.aspect = w / hh; const D = camera.aspect < 0.8 ? 21 : 17; camera.position.set(look.x, look.y + Math.sin(0.93) * D, look.z + Math.cos(0.93) * D); camera.updateProjectionMatrix(); }
+  window.addEventListener("resize", resize); resize();
+
+  /* giao diện */
+  let cur = "echo_blast", auto = true, autoT = 0;
+  const skills = document.getElementById("skills"), grounds = document.getElementById("grounds");
+  function cast(id) { cur = id; FX3D.cast(id, P, T); document.getElementById("capName").textContent = FX3D.names[id]; document.getElementById("capDesc").textContent = DESC[id];
+    skills.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === id ? "true" : "false")); autoT = 0; }
+  FX3D.ids.forEach(id => { const b = document.createElement("button"); b.className = "skill"; b.dataset.id = id; b.textContent = FX3D.names[id]; b.onclick = () => { auto = false; document.getElementById("auto").setAttribute("aria-pressed", "false"); cast(id); }; skills.appendChild(b); });
+  Object.keys(GROUND).forEach(k => { const b = document.createElement("button"); b.textContent = GROUND[k].label; b.dataset.k = k; b.setAttribute("aria-pressed", k === "grass" ? "true" : "false");
+    b.onclick = () => { ground.material.map = GROUND[k].tex; ground.material.needsUpdate = true; scene.background = new THREE.Color(GROUND[k].sky); grounds.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); }; grounds.appendChild(b); });
+  scene.background = new THREE.Color(GROUND.grass.sky);
+  document.getElementById("auto").onclick = (e) => { auto = !auto; e.currentTarget.setAttribute("aria-pressed", auto ? "true" : "false"); autoT = 0; };
+  document.getElementById("again").onclick = () => cast(cur);
+
+  const clock = new THREE.Clock(), stats = document.getElementById("stats"); let fr = 0, acc = 0;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function loop() {
+    requestAnimationFrame(loop); const dt = Math.min(clock.getDelta(), 0.05); const t = clock.elapsedTime; if (window.__labPause) return;
+    FX3D.update(dt);
+    if (auto && (autoT += dt) > (cur === "dragon_roar" ? 3.4 : 2.4)) { const i = FX3D.ids.indexOf(cur); cast(FX3D.ids[(i + 1) % FX3D.ids.length]); }
+    mon.position.y = Math.abs(Math.sin(t * 3)) * 0.12; h.position.y = Math.abs(Math.sin(t * 2)) * 0.03;
+    const s = reduce ? 0 : FX3D.shake; camera.position.x += (Math.random() - 0.5) * s * 0.6; camera.position.y += (Math.random() - 0.5) * s * 0.6;
+    camera.lookAt(look); renderer.render(scene, camera);
+    if (s) { resize(); }
+    fr++; acc += dt; if (acc > 1) { stats.textContent = Math.round(fr / acc) + " fps · " + renderer.info.render.calls + " lần vẽ · " + Math.round(renderer.info.render.triangles / 1000) + "k tam giác"; fr = 0; acc = 0; }
+  }
+  window.__lab = { renderer, scene, camera, look, P, T };   // móc kiểm tra (tua từng khung)
+  cast(cur); loop();
+})();
+</script>
