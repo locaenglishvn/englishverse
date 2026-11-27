@@ -2130,7 +2130,7 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
   };
   const STATIC_POSE = (g, w, r, t) => { g.rotation.x += -0.2 * w + 0.4 * r; g.position.y += 0.6 * w - 0.4 * r; g.rotation.z = Math.sin(t * 3) * 0.05 + 0.12 * r; };   /* thần không gắn xương được: cả thân ngả ra sau lấy đà rồi lao tới */
   function godAppear(slug, name, F, T, col, at, dur) {   /* hồn thần trồi lên cạnh trận, thủ thế (0,15–0,5 s), ra chiêu (0,55–0,7 s), giữ, tan */
-    const d = SDIR(F, T), G = T.clone().addScaledVector(d, 3).addScaledVector(new V3(-d.z, 0, d.x), -4.5),   /* đứng xa chỗ đánh: thấy rõ thần ra chiêu */   /* đứng sau quái, chéo 1 bên: cả người nằm trong khung */ face = Math.atan2(T.x - G.x, T.z - G.z), tint = new THREE.Color(col).lerp(new THREE.Color(0xffffff), 0.7);
+    const d = SDIR(F, T), G = T.clone().addScaledVector(d, 0.5 * 9.5).addScaledVector(new V3(-d.z, 0, d.x), -0.866 * 9.5),   /* hướng 10 giờ của quái (nhìn từ người chơi), cách 9,5 m: ngoài vòng tuyệt chiêu */   /* đứng xa chỗ đánh: thấy rõ thần ra chiêu */   /* đứng sau quái, chéo 1 bên: cả người nằm trong khung */ face = Math.atan2(T.x - G.x, T.z - G.z), tint = new THREE.Color(col).lerp(new THREE.Color(0xffffff), 0.7);
     godModel(slug); godTex(slug);
     rune(G, "sun", "latin", col, 6.5, dur, at, { mode: "spin", spin: 0.8, op: 0.9 }); pillar(G, col, 0xffffff, 1.4, 11, 0.8, at, { speed: 3, widen: 0.6 });
     glow(G.clone().setY(3), 0xffffff, 7, 0.35, at, { flash: true }); shock(G, col, 5, 0.6, at);
@@ -2164,7 +2164,7 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     center: (F, T, i) => [[F, T, F.clone().lerp(T, 0.5)][i], T],
     same: (F, T) => [F, T],
   };
-  const GOD_CAST = {}, GOD_WAIT = 2.2;   /* đòn riêng của thần: (F, T, G, at) → giây tới lúc trúng (tính từ at) */
+  const GOD_CAST = {}, GOD_WAIT = 1.2;   /* đòn riêng của thần: (F, T, G, at) → giây tới lúc trúng (tính từ at) */
   function ultTiered(id, slug, godName, col, gap, hit, vary) {
     const base = SK[id];
     META[id].forms = ["1 đòn tuyệt chiêu", "2 đòn luân phiên", "3 đòn liên hoàn", "+ hồn " + godName + " hiện ra tung đòn riêng, CHÍ MẠNG"];

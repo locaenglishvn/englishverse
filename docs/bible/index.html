@@ -174,7 +174,7 @@ async function startVfx(){
   [-0.3, 0.3].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff })); e.position.set(x, 1.05, 0.72); mon.add(e); }); mon.position.copy(T); mon.rotation.y = Math.atan2(P.x - T.x, P.z - T.z); scene.add(mon);
   FX3D.setup(scene, camera, renderer);
   const look = new THREE.Vector3().addVectors(P, T).multiplyScalar(0.5).setY(1.8);
-  const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; const D = (camera.aspect < 0.8 ? 25 : 20) * (window.__vfxFar ? 1.45 : 1);   /* tuyệt chiêu bậc 10: lùi xa để thấy thần */ camera.position.set(look.x, look.y + Math.sin(0.93) * D, look.z + Math.cos(0.93) * D); camera.updateProjectionMatrix(); };
+  const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; const D = (camera.aspect < 0.8 ? 25 : 20) * (window.__vfxFar ? 1.7 : 1);   /* tuyệt chiêu bậc 10: lùi xa để thấy thần */ camera.position.set(look.x, look.y + Math.sin(0.93) * D, look.z + Math.cos(0.93) * D); camera.updateProjectionMatrix(); };
   addEventListener("resize", resize); resize();
   const GEN = ["Cơ bản", "Thêm ấn phù văn toả ra", "Cột sáng + vòm nổ", "Sắc vàng + sóng lớn"], ST = window.SKILL_TREE || { chapters: [] };
   const chOf = s => s.start ? "s" : s.type === "ult" ? "u" : String((ST.chapters.find(c => { const m = (c.lv || "").match(/(\d+)\D+(\d+)/); return m && s.lv >= +m[1] && s.lv <= +m[2]; }) || ST.chapters[ST.chapters.length - 1] || { n: 1 }).n);

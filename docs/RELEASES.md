@@ -50,3 +50,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-27 | `1935989` | PR #91 – 8 tuyệt chiêu + icon (trước tuyệt chiêu theo bậc + thần hiện ra) | ✅ |
 | 2026-11-27 | `12d82d9` | PR #92 – tuyệt chiêu theo bậc (trước hồn thần 3D + đòn riêng) | ✅ |
 | 2026-11-27 | `0ba05f0` | PR #93–94 – hồn thần 3D (trước chỉnh khoảng cách thần + font thư pháp) | ✅ |
+| 2026-11-27 | `16ec7f4` | PR #95 – chữ thư pháp, khoảng chờ thần 2,2 s (trước dời thần ra hướng 10 giờ) | ✅ |
