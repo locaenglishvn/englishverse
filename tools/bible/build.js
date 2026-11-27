@@ -61,3 +61,7 @@ const file = path.join(ROOT, "docs", "bible", "data.js");
 fs.mkdirSync(path.dirname(file), { recursive: true });
 fs.writeFileSync(file, "/* Tự sinh bởi tools/bible/build.js – đừng sửa tay */\nwindow.BIBLE = " + JSON.stringify(out) + ";\n");
 console.log("OK", file, (fs.statSync(file).size / 1024).toFixed(0) + " KB", { monsters: mons.length, items: items.length, npcs: npcs.length, vocab: vocabN });
+
+// Tab "Hiệu ứng chiêu": chép mã hiệu ứng của game cạnh trang sổ tay
+fs.copyFileSync(path.join(ROOT, "parts/combat/fx3d.js"), path.join(ROOT, "docs/bible/fx3d.js"));
+console.log("đã chép fx3d.js");
