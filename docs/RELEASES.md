@@ -40,3 +40,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-26 | `8425d2a` | PR #81 – thử Maple Highlands (trước khi thêm lá rụng) | ✅ |
 | 2026-11-26 | `f845afc` | PR #82 – Maple Highlands lá rụng (trước khi làm 3 vùng còn lại) | ✅ |
 | 2026-11-26 | `46280dc` | PR #83 – 2.5D 3 vùng (trước vật trang trí AI + hiệu ứng chuỗi ảnh) | ✅ |
+| 2026-11-27 | `91f0b1b` | Trước hệ thống chiêu mới (Chiêu × Danh nhân) | ✅ |
