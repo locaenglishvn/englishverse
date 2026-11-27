@@ -686,7 +686,7 @@ function castSkill(c, acc) {   // hiệu ứng chiêu theo kind + fx (stun, root
   const S = c.S, P = player.position, rank = skillRank(c.id); charAct(player, "Spellcast_Shoot");
   const alive = c.target && !c.target.dead ? c.target : nearestMon(11), ccMul = 1 + 0.1 * pr("sharp_ears");
   if (alive) player.rotation.y = Math.atan2(alive.g.position.x - P.x, alive.g.position.z - P.z);
-  const look = (to, radius) => { playSkillFx(c.id, S.type === "ult" ? Math.max(rank, 10) : rank, P.clone(), to ? to.clone() : null, radius); };
+  const look = (to, radius) => { playSkillFx(c.id, Math.max(1, rank), P.clone(), to ? to.clone() : null, radius); };
   const cc = M => { if (M.remote) { M.pendFx = { st: S.stun ? S.stun * ccMul : 0, ro: S.root ? S.root * ccMul : 0, si: S.silence ? S.silence * ccMul : 0, sl: S.slow || 0, slT: S.slow ? S.slowT * ccMul : 0 }; } let n = 0; if (S.stun) { M.stun = Math.max(M.stun, S.stun * ccMul); n++; } if (S.root) { M.root = S.root * ccMul; n++; } if (S.silence) { M.silence = S.silence * ccMul; n++; } if (S.slow) { M.slow = S.slow; M.slowT = S.slowT * ccMul; n++; }
     if (n && pr("calm_mind")) CB.mp = Math.min(100, CB.mp + 3 * pr("calm_mind")); return n; };
   const hit = M => { if (M.dead) return; dealDamage(M, skillDamage(c, acc, M), true); if (cc(M) && S.stun && pr("echo_chain") && S.branch === "control") {
@@ -711,6 +711,12 @@ function castSkill(c, acc) {   // hiệu ứng chiêu theo kind + fx (stun, root
     if (S.haste) CB.buff.hasteUntil = now + S.hasteT * 1000;
     if (S.manaGain) CB.mp = Math.min(100, CB.mp + S.manaGain * k);
     if (S.cleanse) save.poisonUntil = 0; }
+  if (S.type === "ult") {   // tuyệt chiêu theo bậc: bậc 4 thêm 1 đòn, bậc 7 thêm 2 đòn, bậc 10 thần hiện ra đánh CHÍ MẠNG (×2)
+    const fm = skillForm(rank), again = crit => { const list = S.kind === "aoe" ? inR(player.position, S.radius) : alive && !alive.dead ? (S.kind === "zone" ? inR(alive.g.position, S.radius) : [alive]) : [];
+      list.forEach(M => { if (M.dead) return; if (crit) dealDamage(M, Math.round(skillDamage(c, acc, M) * 2), true); else hit(M); }); if (crit && list.length) popText("CRITICAL!", list[0].g.position, "#ffd43b"); };
+    if (S.kind !== "multi") for (let h = 1; h < Math.min(fm, 3); h++) setTimeout(() => again(false), h * 800);
+    if (fm >= 4) setTimeout(() => again(true), S.kind === "multi" ? 3600 : 4200);
+  }
   if (c.crit) popText("CRIT!", P, "#e5484d");
 }
 const VFX = [];
