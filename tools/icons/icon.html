@@ -10,7 +10,7 @@
 const N = 384, renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); renderer.setSize(N, N); renderer.setPixelRatio(1); document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x070b18); const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 300);
 scene.add(new THREE.HemisphereLight(0xdfefff, 0x302040, 0.8));
-FX3D.setup(scene, camera, renderer); FX3D.godPath = "../../assets/gods/";
+FX3D.setup(scene, camera, renderer); FX3D.godPath = "../../assets/gods/"; FX3D.fontPath = "../../assets/fonts/";
 const F = new THREE.Vector3(0, 0, 0), T = new THREE.Vector3(0, 0, -5);
 const BR = { power: "#ff7a2a", control: "#5f8bff", harmony: "#3fe08a", rhythm: "#ff4a8a" };
 function score(cv) { const g = cv.getContext("2d", { willReadFrequently: true }), d = g.getImageData(0, 0, cv.width, cv.height).data; let s = 0, over = 0, cov = 0, n = 0;

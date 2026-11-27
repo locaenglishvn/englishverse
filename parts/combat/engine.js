@@ -715,7 +715,7 @@ function castSkill(c, acc) {   // hiệu ứng chiêu theo kind + fx (stun, root
     const fm = skillForm(rank), again = crit => { const list = S.kind === "aoe" ? inR(player.position, S.radius) : alive && !alive.dead ? (S.kind === "zone" ? inR(alive.g.position, S.radius) : [alive]) : [];
       list.forEach(M => { if (M.dead) return; if (crit) dealDamage(M, Math.round(skillDamage(c, acc, M) * 2), true); else hit(M); }); if (crit && list.length) popText("CRITICAL!", list[0].g.position, "#ffd43b"); };
     if (S.kind !== "multi") for (let h = 1; h < Math.min(fm, 3); h++) setTimeout(() => again(false), h * 800);
-    if (fm >= 4) setTimeout(() => again(true), S.kind === "multi" ? 3600 : 4200);
+    if (fm >= 4) setTimeout(() => again(true), S.kind === "multi" ? 6400 : 6000);   // thần ra đòn sau đòn thứ 3 ≥ 2 giây
   }
   if (c.crit) popText("CRIT!", P, "#e5484d");
 }
