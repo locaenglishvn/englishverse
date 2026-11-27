@@ -68,3 +68,4 @@ fs.copyFileSync(path.join(ROOT, "parts/combat/fx3d.js"), path.join(ROOT, "docs/b
 console.log("đã chép fx3d.js");
 const ICD = path.join(ROOT, "assets/icons/skills"), ICO = path.join(ROOT, "docs/bible/icons"); if (fs.existsSync(ICD)) { fs.mkdirSync(ICO, { recursive: true }); fs.readdirSync(ICD).filter(f => f.endsWith(".webp")).forEach(f => fs.copyFileSync(path.join(ICD, f), path.join(ICO, f))); console.log("đã chép icon chiêu"); }
 const GD = path.join(ROOT, "assets/gods"), GO = path.join(ROOT, "docs/bible/gods"); if (fs.existsSync(GD)) { fs.mkdirSync(GO, { recursive: true }); fs.readdirSync(GD).forEach(f => fs.copyFileSync(path.join(GD, f), path.join(GO, f))); }
+fs.copyFileSync(path.join(ROOT, "lib/GLTFLoader.js"), path.join(ROOT, "docs/bible/GLTFLoader.js"));
