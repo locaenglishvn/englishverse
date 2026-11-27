@@ -154,7 +154,7 @@ const VFX = { on: false };
 function loadScript(src){ return new Promise((ok, no) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
 async function startVfx(){
   const stage = document.getElementById("vfxStage"); if (!stage) return;
-  try { if (!window.THREE) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"); if (!THREE.GLTFLoader) await loadScript("GLTFLoader.js"); if (!window.FX3D) await loadScript("fx3d.js"); FX3D.godPath = "gods/"; FX3D.godFetch = (slug, cb) => loadScript("gods/" + slug + ".glb.js").then(() => { const b = atob(GODB[slug]), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); cb(u.buffer); }).catch(() => cb(null)); }
+  try { if (!window.THREE) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"); if (!THREE.GLTFLoader) await loadScript("GLTFLoader.js"); if (!window.FX3D) await loadScript("fx3d.js"); FX3D.godPath = "gods/"; FX3D.fontPath = "fonts/"; FX3D.godFetch = (slug, cb) => loadScript("gods/" + slug + ".glb.js").then(() => { const b = atob(GODB[slug]), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); cb(u.buffer); }).catch(() => cb(null)); }
   catch (e) { stage.insertAdjacentHTML("beforeend", "<p style='color:#fff;padding:16px'>Không tải được thư viện 3D. Kiểm tra mạng rồi mở lại tab.</p>"); return; }
   if (!document.body.contains(stage)) return;
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); stage.prepend(renderer.domElement);
@@ -174,13 +174,13 @@ async function startVfx(){
   [-0.3, 0.3].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff })); e.position.set(x, 1.05, 0.72); mon.add(e); }); mon.position.copy(T); mon.rotation.y = Math.atan2(P.x - T.x, P.z - T.z); scene.add(mon);
   FX3D.setup(scene, camera, renderer);
   const look = new THREE.Vector3().addVectors(P, T).multiplyScalar(0.5).setY(1.8);
-  const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; const D = camera.aspect < 0.8 ? 25 : 20; camera.position.set(look.x, look.y + Math.sin(0.93) * D, look.z + Math.cos(0.93) * D); camera.updateProjectionMatrix(); };
+  const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; const D = (camera.aspect < 0.8 ? 25 : 20) * (window.__vfxFar ? 1.45 : 1);   /* tuyệt chiêu bậc 10: lùi xa để thấy thần */ camera.position.set(look.x, look.y + Math.sin(0.93) * D, look.z + Math.cos(0.93) * D); camera.updateProjectionMatrix(); };
   addEventListener("resize", resize); resize();
   const GEN = ["Cơ bản", "Thêm ấn phù văn toả ra", "Cột sáng + vòm nổ", "Sắc vàng + sóng lớn"], ST = window.SKILL_TREE || { chapters: [] };
   const chOf = s => s.start ? "s" : s.type === "ult" ? "u" : String((ST.chapters.find(c => { const m = (c.lv || "").match(/(\d+)\D+(\d+)/); return m && s.lv >= +m[1] && s.lv <= +m[2]; }) || ST.chapters[ST.chapters.length - 1] || { n: 1 }).n);
   const ALL = skills.filter(s => s.type !== "passive").sort((a, b) => a.lv - b.lv), SKI = {}; ALL.forEach(s => SKI[s.id] = s);
   let grp = "1", ids = [], cur = null, rank = 1, auto = true, autoT = 0;
-  const cast = id => { cur = id; const S = SKI[id], M = FX3D.meta[id] || {}; const o = { kind: S.kind, branch: S.branch, radius: S.radius }; FX3D.cast(id, P, T, rank, o); if (S.kind === "multi") [260, 520].forEach(ms => setTimeout(() => { if (cur === id) FX3D.cast(id, P, T, rank, o); }, ms));   // chiêu nhiều đòn: 3 đòn
+  const cast = id => { cur = id; const S = SKI[id], M = FX3D.meta[id] || {}; window.__vfxFar = S.type === "ult" && rank >= 10; const o = { kind: S.kind, branch: S.branch, radius: S.radius }; FX3D.cast(id, P, T, rank, o); if (S.kind === "multi") [260, 520].forEach(ms => setTimeout(() => { if (cur === id) FX3D.cast(id, P, T, rank, o); }, ms));   // chiêu nhiều đòn: 3 đòn
     document.getElementById("vfxName").textContent = S.name + " · Lv." + S.lv + " · bậc " + rank + " · " + (M.forms || GEN)[FX3D.form(rank) - 1];
     document.getElementById("vfxDesc").textContent = (S.fx || S.desc) + " (" + ((S.src || {}).who || "") + (FX3D.has(id) ? "" : " · hiệu ứng chung, chờ làm riêng") + ")"; document.querySelectorAll("#vfxSk button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === id))); autoT = 0; };
   const fill = () => { ids = ALL.filter(s => chOf(s) === grp).map(s => s.id);
