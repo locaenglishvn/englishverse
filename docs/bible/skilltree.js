@@ -67,7 +67,7 @@ window.SKILL_TREE = {
         { name: "Surgeon's Cut", b: "power", q: "Phương pháp mổ gan", fx: "Một đường dao sáng mảnh như sợi chỉ, chậm lại 0,3 giây rồi xé toạc: luôn chí mạng.", seed: "Mổ nhanh, chính xác." } ] },
       { who: "Marie Curie", lv: 34, skills: [
         { name: "Radium Nova", b: "power", q: "Tìm ra polonium, radium", fx: "Hạt radium phát sáng xanh lục trong bóng tối, phình to thành mặt trời nhỏ rồi nổ tung, để lại vùng ánh xanh.", seed: "Radium tự phát sáng." },
-        { name: "X-Ray Ambulance", b: "harmony", q: "Xe X-quang ra chiến trường", fx: "Chiếc xe cứu thương ánh sáng chạy vòng quanh đội, đi qua ai thì hồi máu người đó.", seed: "Xe X-quang cứu người bị thương." } ] },
+        { name: "X-Ray Aura", b: "harmony", q: "Xe X-quang ra chiến trường", fx: "Chùm sáng X-quang xanh lục rọi xuống người, vòng quét sáng chạy lên xuống: hồi máu.", seed: "Xe X-quang cứu người bị thương." } ] },
       { who: "Dmitri Mendeleev", lv: 36, skills: [
         { name: "Periodic Barrage", b: "rhythm", q: "Xếp nguyên tố thành bảng", fx: "Bảng tuần hoàn khổng lồ dựng sau lưng, từng ô bật sáng và bắn ra nguyên tố của nó: H nổ, O bùng lửa, Fe thành mũi sắt, Ne neon tím.", seed: "Bảng tuần hoàn các nguyên tố." },
         { name: "Water Split", b: "power", q: "Nước = hydro + ô-xy", fx: "Quả cầu nước bay tới, tách thành 2 bóng H và 1 bóng O, nhập lại nổ một tiếng \"bùm\" hơi nước trắng.", seed: "H₂O: nước gồm hydro và ô-xy." } ] }
