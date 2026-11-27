@@ -109,20 +109,24 @@ void main() { float a = texture2D(uTex, gl_PointCoord).a * vA; gl_FragColor = ve
   const rv = (s) => new V3(R(-1, 1), R(-1, 1), R(-1, 1)).normalize().multiplyScalar(s);
 
   /* ---------- quản lý theo thời gian ---------- */
-  function task(delay, dur, setup) { TASKS.push({ t: -delay, dur, setup, h: null }); }
+  function task(delay, dur, setup) { TASKS.push({ t: -delay, dur, setup, h: null, sc: SC, cam: CAM }); }   // nhớ scene + camera lúc tạo (sân tập trong bảng kỹ năng dùng scene riêng)
   function kill(o) { if (!o) return; if (o.parent) o.parent.remove(o); o.traverse && o.traverse(x => { if (x.geometry) x.geometry.dispose(); if (x.material && !x.material.userData.keep) x.material.dispose(); }); }
   function update(dt) {
     if (!ready) return; dt = Math.min(dt, 0.05);
     if (REN && CAM && CAM.projectionMatrix) { const s = new THREE.Vector2(); REN.getDrawingBufferSize(s); scale = s.y * CAM.projectionMatrix.elements[5] * 0.5; }
+    const sc0 = SC, cam0 = CAM;
     for (let i = TASKS.length - 1; i >= 0; i--) {
       const T = TASKS[i]; T.t += dt; if (T.t < 0) continue;
-      if (!T.h) T.h = T.setup() || {};
-      const k = Math.min(1, T.t / T.dur); if (T.h.upd) T.h.upd(k, T.t, dt);
-      if (k >= 1) { if (T.h.end) T.h.end(); TASKS.splice(i, 1); }
+      SC = T.sc; CAM = T.cam;
+      try { if (!T.h) T.h = T.setup() || {};
+        const k = Math.min(1, T.t / T.dur); if (T.h.upd) T.h.upd(k, T.t, dt);
+        if (k >= 1) { if (T.h.end) T.h.end(); TASKS.splice(i, 1); } } catch (e) { TASKS.splice(i, 1); }   // lỗi 1 hiệu ứng không làm hỏng game
     }
+    SC = sc0; CAM = cam0;
     api.shake = Math.max(0, api.shake - dt);
   }
-  const shake = s => { api.shake = Math.max(api.shake, s); };
+  const shake = s => { if (SC !== MAIN_SC || performance.now() < (api.quietUntil || 0)) return; api.shake = Math.max(api.shake, s); if (api.onShake) api.onShake(s); };   // chỉ rung khi ở thế giới thật (sân tập không rung)
+  let MAIN_SC = null;
 
   /* ---------- khối dựng sẵn ---------- */
   function mesh(geo, mat, ro) { const m = new THREE.Mesh(geo, mat); m.frustumCulled = false; m.renderOrder = ro || 7; return m; }
@@ -205,7 +209,7 @@ void main() { float a = texture2D(uTex, gl_PointCoord).a * vA; gl_FragColor = ve
     task(delay || 0, dur, () => { const grp = new THREE.Group(), mt = flowMat({ c1: color, c2: o.c2 || 0xffffff, rep: [1, 1], spd: [0, -0.3], fres: 1.4, cut: -0.2, gain: 1.3, fade: [0, 0, 0, 0.05] }); mt.blending = THREE.NormalBlending; mt.depthWrite = true; mt.transparent = true;
       const list = []; for (let i = 0; i < n; i++) { const a = i / n * PI * 2 + R(-0.2, 0.2), r = rad * R(0.55, 1.1), hh = h * R(0.6, 1.2), g = new THREE.ConeGeometry(0.28 * hh / h + 0.15, hh, 5); g.translate(0, hh / 2, 0);
         const m = mesh(g, mt, 6); m.position.set(P.x + Math.cos(a) * r, 0, P.z + Math.sin(a) * r); m.rotation.set(R(-0.35, 0.35), R(0, 6), R(-0.35, 0.35)); grp.add(m); list.push({ m, d: R(0, 0.12) }); }
-      const center = new THREE.ConeGeometry(0.6, h * 1.6, 6); center.translate(0, h * 0.8, 0); const cm = mesh(center, mt, 6); cm.position.set(P.x, 0, P.z); grp.add(cm); list.push({ m: cm, d: 0.05 });
+      if (!o.ring) { const center = new THREE.ConeGeometry(0.6, h * 1.6, 6); center.translate(0, h * 0.8, 0); const cm = mesh(center, mt, 6); cm.position.set(P.x, 0, P.z); grp.add(cm); list.push({ m: cm, d: 0.05 }); }   // ring: chỉ vòng gai quanh (người chơi đứng giữa)
       SC.add(grp); mt.userData.keep = false;
       return { upd: (k, t) => { mt.uniforms.uTime.value = t; list.forEach(q => { const e = Math.min(1, Math.max(0, (t - q.d) / 0.18)), s = (1 - Math.pow(1 - e, 3)) * (k > 0.75 ? 1 - (k - 0.75) / 0.25 : 1); q.m.scale.set(s, s, s); }); mt.uniforms.uAlpha.value = 0.92; }, end: () => kill(grp) }; });
   }
@@ -422,6 +426,68 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
       return { p: p.add(rv(0.1)), v: rv(0.4), t0: (delay || 0) + tOpen + i * gap + u * fly, life: R(0.25, 0.45), size: R(0.2, 0.38), col: q % 2 ? glowC : 0xffffff }; }, { grav: 0, drag: 2 });
     return (delay || 0) + tOpen + fly;   // lúc trang đầu chạm quái
   }
+  /* ---------- thành phần hình thêm (27/11): vòm năng lượng, mũi tên pha lê, dấu ? 3D, hoa sen, cây ánh sáng, trống ---------- */
+  function dome(P, c1, c2, r, dur, delay) {   // vòm năng lượng phồng ra rồi tan (vụ nổ lớn)
+    P = P.clone();
+    task(delay || 0, dur, () => { const mt = flowMat({ c1, c2, rep: [3, 2], spd: [0.4, -1.5], fres: 1.6, cut: 0.1, fade: [0, 0, 0, 0] }), m = mesh(new THREE.SphereGeometry(1, 28, 16, 0, PI * 2, 0, PI / 2), mt, 8); m.position.set(P.x, 0, P.z); SC.add(m);
+      return { upd: (k, t) => { mt.uniforms.uTime.value = t; const e = 1 - Math.pow(1 - k, 3); m.scale.set(r * e, r * e * 0.8, r * e); mt.uniforms.uAlpha.value = 1 - k; }, end: () => kill(m) }; });
+  }
+  function crystalArrow(A, B, c1, c2, dur, delay, o) {   // mũi tên pha lê bay (đầu nhọn 4 cạnh + thân + lông đuôi), đuôi hạt sáng
+    o = o || {}; A = A.clone(); B = B.clone(); const sc = o.size || 1;
+    task(delay || 0, dur, () => { const g = new THREE.Group(), cm = solidMat(c1, c2, 0xffffff), gm = flowMat({ c1, c2, rep: [1, 2], spd: [0, -3], fres: 1, cut: -0.2, fade: [0, 0, 0, 0] });
+      const head = new THREE.Mesh(new THREE.OctahedronGeometry(0.28, 0), cm); head.scale.set(0.7, 0.7, 1.8); head.position.z = 0.55; g.add(head);
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.3, 6).rotateX(PI / 2), gm); g.add(shaft);
+      for (let i = 0; i < 3; i++) { const f = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.45, 3).rotateX(-PI / 2), gm); f.position.z = -0.55; f.rotation.z = i * PI * 2 / 3; f.position.x = Math.cos(i * 2.09) * 0.08; f.position.y = Math.sin(i * 2.09) * 0.08; g.add(f); }
+      const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c2, blending: ADD, transparent: true, depthWrite: false })); gl.scale.setScalar(1.4); g.add(gl);
+      g.scale.setScalar(sc); g.traverse(x => { x.frustumCulled = false; x.renderOrder = 10; }); SC.add(g); const p = new V3(), d = new V3().subVectors(B, A).normalize();
+      return { upd: (k, t) => { cm.uniforms.uTime.value = t; gm.uniforms.uTime.value = t; p.lerpVectors(A, B, k); if (o.arc) p.y += Math.sin(k * PI) * o.arc; g.position.copy(p); g.quaternion.copy(basisQ(d)); g.rotateZ(t * 12); }, end: () => kill(g) }; });
+    emitter(30, i => ({ p: A.clone().lerp(B, i / 30).add(rv(0.08)), v: rv(0.3), t0: (delay || 0) + i / 30 * dur, life: R(0.2, 0.4), size: R(0.18, 0.32) * sc, col: i % 2 ? c1 : c2 }), { grav: 0, drag: 2 });
+  }
+  function qmark(P, c1, c2, size, dur, delay, o) {   // dấu "?" 3D (ống cong + chấm) lơ lửng / rơi xuống
+    o = o || {}; P = P.clone();
+    task(delay || 0, dur, () => { const curve = new THREE.CatmullRomCurve3([new V3(-0.45, 0.95, 0), new V3(-0.3, 1.3, 0), new V3(0.15, 1.4, 0), new V3(0.45, 1.1, 0), new V3(0.3, 0.75, 0), new V3(0.02, 0.55, 0), new V3(0, 0.3, 0)]);
+      const mt = solidMat(c1, c2, 0xffffff), g = new THREE.Group(); g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 30, 0.11, 8), mt)); const dot = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 8), mt); dot.position.y = 0.02; g.add(dot);
+      const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c2, blending: ADD, transparent: true, depthWrite: false })); gl.position.y = 0.8; gl.scale.setScalar(2.4); g.add(gl);
+      g.traverse(x => { x.frustumCulled = false; x.renderOrder = 10; }); SC.add(g);
+      return { upd: (k, t) => { mt.uniforms.uTime.value = t; const fall = o.drop ? Math.min(1, k / 0.25) : 1, y = o.drop ? P.y + (1 - fall * fall) * 6 : P.y + Math.sin(t * 4) * 0.12;
+        g.position.set(P.x, y, P.z); g.rotation.y = t * (o.spin === undefined ? 2.5 : o.spin); g.scale.setScalar(size * Math.min(1, k / 0.08) * (1 - Math.max(0, k - 0.85) / 0.15)); mt.uniforms.uAlpha.value = 1; }, end: () => kill(g) }; });
+  }
+  function lotus(P, c1, c2, r, dur, delay) {   // hoa sen ánh sáng 2 tầng cánh nở dưới chân
+    P = P.clone();
+    task(delay || 0, dur, () => { const g = new THREE.Group(), mt = flowMat({ c1, c2, rep: [1, 1], spd: [0, -0.8], fres: 1.2, cut: -0.3, gain: 1.4, fade: [0, 0, 0, 0.15] }), pet = [];
+      const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.bezierCurveTo(0.55, 0.35, 0.45, 1.1, 0, 1.5); sh.bezierCurveTo(-0.45, 1.1, -0.55, 0.35, 0, 0);
+      const pg = new THREE.ShapeGeometry(sh, 10); const uv = pg.attributes.uv, pp = pg.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, pp.getX(i) + 0.5, pp.getY(i) / 1.5);
+      [[8, 1, 0], [8, 0.7, PI / 8]].forEach(([n, s, off], L) => { for (let i = 0; i < n; i++) { const piv = new THREE.Group(), m = new THREE.Mesh(pg, mt); piv.add(m); piv.rotation.y = off + i / n * PI * 2; m.scale.setScalar(s); g.add(piv); pet.push({ m, L }); } });
+      g.position.set(P.x, 0.05, P.z); g.scale.setScalar(r); g.traverse(x => { x.frustumCulled = false; x.renderOrder = 8; }); SC.add(g);
+      return { upd: (k, t) => { mt.uniforms.uTime.value = t; const e = Math.min(1, k / 0.35), op = e * e * (3 - 2 * e); pet.forEach(q => { q.m.rotation.x = -(PI / 2) * (1 - op) - (q.L ? 0.35 : 0.9) * op; }); g.rotation.y = t * 0.4; mt.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.75) / 0.25; }, end: () => kill(g) }; });
+  }
+  function lightTree(P, c1, c2, h, dur, delay) {   // cây ánh sáng mọc lên: thân xoắn + tán cầu năng lượng + lá vàng rơi
+    P = P.clone();
+    task(delay || 0, dur, () => { const g = new THREE.Group(), tm = solidMat(0x7a5a2a, 0xffe9a0, 0xfff6d0), cm = flowMat({ c1, c2, rep: [2, 2], spd: [0.3, -0.6], fres: 1.1, cut: 0.05, gain: 1.5, fade: [0, 0, 0, 0] });
+      const tc = new THREE.CatmullRomCurve3([new V3(0, 0, 0), new V3(0.15, h * 0.3, 0.1), new V3(-0.1, h * 0.6, -0.1), new V3(0, h * 0.85, 0)]);
+      const trunk = new THREE.Mesh(new THREE.TubeGeometry(tc, 20, 0.28, 8), tm); g.add(trunk);
+      [[-1, 0.55], [1, 0.62], [0.4, 0.75]].forEach(([sx, y]) => { const bc = new THREE.CatmullRomCurve3([new V3(0, h * y, 0), new V3(sx * 0.8, h * (y + 0.12), 0.2), new V3(sx * 1.4, h * (y + 0.18), 0.1)]); g.add(new THREE.Mesh(new THREE.TubeGeometry(bc, 10, 0.1, 6), tm)); });
+      const crowns = []; [[0, 1.0, 0, 1.6], [-1.2, 0.85, 0.2, 1.1], [1.3, 0.9, 0, 1.15], [0.3, 1.15, -0.5, 1.0]].forEach(([x, y, z, r]) => { const c = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 2), cm); c.position.set(x, h * y, z); g.add(c); crowns.push(c); });
+      g.position.set(P.x, 0, P.z); g.traverse(x => { x.frustumCulled = false; x.renderOrder = 9; }); SC.add(g);
+      return { upd: (k, t) => { tm.uniforms.uTime.value = t; cm.uniforms.uTime.value = t; const gr = Math.min(1, k / 0.3), e = 1 - Math.pow(1 - gr, 3); g.scale.set(e, e, e);
+        crowns.forEach((c, i) => c.scale.setScalar(1 + Math.sin(t * 3 + i) * 0.05)); const a = 1 - Math.max(0, k - 0.8) / 0.2; tm.uniforms.uAlpha.value = a; cm.uniforms.uAlpha.value = a; }, end: () => kill(g) }; });
+    emitter(120, i => ({ p: P.clone().add(new V3(R(-2.2, 2.2), h * R(0.8, 1.15), R(-1.5, 1.5))), v: new V3(R(-0.6, 0.6), R(-1.2, -0.4), R(-0.6, 0.6)), t0: (delay || 0) + 0.4 + R(0, dur - 0.9), life: R(0.9, 1.5), size: R(0.25, 0.45), col: [c2, 0xfff3a0, 0xffffff][i % 3] }), { grav: -0.5, drag: 0.4 });
+  }
+  function drumHit(P, c1, c2, size, dur, delay, o) {   // trống taiko hiện trên không, dùi lửa đập xuống, mặt trống rung
+    o = o || {}; P = P.clone();
+    task(delay || 0, dur, () => { const g = new THREE.Group(), wood = solidMat(0x6a1a0a, 0xc0501a, 0xffb060), skinT = cvTex(128, (gx, n) => { gx.fillStyle = "#f3e2c0"; gx.fillRect(0, 0, n, n); gx.fillStyle = "#c0301a"; gx.translate(n / 2, n / 2);
+        for (let i = 0; i < 3; i++) { gx.save(); gx.rotate(i * PI * 2 / 3); gx.beginPath(); gx.arc(0, -16, 20, 0, PI * 2); gx.arc(0, -4, 10, 0, PI * 2, true); gx.fill(); gx.restore(); } });
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.9, 20, 1, true), wood); body.scale.set(1, 1, 1); g.add(body);
+      const bulge = new THREE.Mesh(new THREE.SphereGeometry(0.85, 20, 10), wood); bulge.scale.set(1, 0.55, 1); g.add(bulge);
+      const skin = new THREE.Mesh(new THREE.CircleGeometry(0.78, 24).rotateX(-PI / 2), new THREE.MeshBasicMaterial({ map: skinT })); skin.position.y = 0.46; g.add(skin);
+      for (let i = 0; i < 10; i++) { const st = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 4), solidMat(0xffd27a, 0xffffff, 0xffffff)); const a = i / 10 * PI * 2; st.position.set(Math.cos(a) * 0.78, 0.42, Math.sin(a) * 0.78); g.add(st); }
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 1.4, 6), flowMat({ c1, c2, rep: [1, 2], spd: [0, -3], fres: 0.5, cut: -0.3, fade: [0, 0, 0, 0] })); stick.geometry.translate(0, 0.7, 0); g.add(stick);
+      g.position.set(P.x, P.y, P.z); g.rotation.x = 0.5; g.traverse(x => { x.frustumCulled = false; x.renderOrder = 10; }); SC.add(g);
+      return { upd: (k, t) => { wood.uniforms.uTime.value = t; stick.material.uniforms.uTime.value = t;
+        const hitK = Math.min(1, k / 0.35), sw = hitK < 1 ? -1.2 + hitK * 1.9 : 0.7 - Math.min(1, (k - 0.35) / 0.2) * 1.2;
+        stick.position.set(0.55, 0.5, 0); stick.rotation.z = sw; const pop = k > 0.33 && k < 0.5 ? 1.12 : 1;
+        g.scale.setScalar(size * Math.min(1, k / 0.12) * pop * (1 - Math.max(0, k - 0.85) / 0.15)); }, end: () => { kill(g); skinT.dispose(); } }; });
+  }
   /* ---------- CHIÊU (xếp theo cấp mở: càng về sau càng nhiều lớp, càng hoành tráng) ----------
      Mỗi chiêu nhận bậc rk 1–5: bậc 3 thêm vòng phù văn thứ 2 + hạt; bậc 5 đổi sắc vàng sáng, thêm cột sáng + sóng + rung mạnh (TIER). */
   const SK = {}, META = {};
@@ -435,6 +501,80 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
       task(delay, 0.01, () => shake(0.15)); }
   }
   const GOLD = rk => rk >= 5;   // bậc 5: chuyển màu vàng sáng (đẹp hơn rõ khi lên bậc)
+  /* ---------- 4 CHIÊU KHỞI ĐẦU: mỗi chiêu 4 HÌNH DẠNG (bậc 1 / 4 / 7 / 10) – Lv.1–10 người chơi chỉ có 4 chiêu này nên đổi hình rõ rệt để có cái mà mong ---------- */
+  const FORM = rk => rk >= 10 ? 4 : rk >= 7 ? 3 : rk >= 4 ? 2 : 1;
+  META.echo_blast = { name: "Echo Blast", lv: 1, who: "Vocara · chữ rune", forms: ["Quả cầu âm thanh", "Cầu kéo vòng sóng + ấn mặt trời", "3 quả cầu xoắn + vòm nổ", "Sao chổi âm thanh từ trời"], desc: "Tụ lực ở tay → cầu âm thanh → nổ. Bậc 4: vòng sóng theo sau, nổ có ấn mặt trời. Bậc 7: 3 quả cầu xoắn vào nhau, vòm nổ. Bậc 10: sao chổi âm thanh khổng lồ lao từ trời xuống." };
+  SK.echo_blast = (F, T, rk) => {
+    const f = FORM(rk), d = DIR(F, T), A = F.clone().addScaledVector(d, 0.8).setY(1.3), B = T.clone().setY(1.1), c1 = f >= 4 ? 0xffb020 : 0xff6a1a, c2 = f >= 4 ? 0xfff6c0 : 0xffe6a8;
+    shadowUnder(F, 3, 0.7, 0); rune(F, f >= 3 ? "sun" : "circle", "runic", f >= 4 ? 0xffd860 : 0xff9a3a, 3 + f * 0.3, 0.8, 0, { mode: "spin", spin: 3 + f });
+    emitter(24 + f * 10, i => { const a = rv(1.6); return { p: A.clone().add(a), v: a.clone().multiplyScalar(-3.2), t0: R(0, 0.15), life: 0.28, size: R(0.25, 0.45), col: i % 2 ? 0xffd27a : c1 }; }, { grav: 0, drag: 0 });
+    glow(A, 0xffb04a, 1.6 + f * 0.3, 0.25, 0.1, { flash: true });
+    let hit;
+    if (f < 3) { const fly = 0.38; orbFly(A, B, c1, c2, 1.0 + f * 0.15, fly, 0.18, { arc: 0.4 }); hit = 0.18 + fly;
+      if (f >= 2) for (let i = 0; i < 4; i++) task(0.22 + i * 0.07, 0.4, () => { const P = A.clone().lerp(B, (i + 1) / 5); P.y += Math.sin((i + 1) / 5 * PI) * 0.4; const m = mesh(new THREE.RingGeometry(0.5, 0.62, 32), basic(TEX.glow, c2, true, 1), 9); m.position.copy(P); m.quaternion.copy(basisQ(new V3().subVectors(B, A))); SC.add(m);   // vòng sóng âm theo sau quả cầu
+        return { upd: k => { m.scale.setScalar(1 + k * 1.4); m.material.opacity = 1 - k; }, end: () => kill(m) }; }); }
+    else if (f === 3) { const fly = 0.45; [0, 1, 2].forEach(i => { const off = new V3(Math.cos(i * 2.09) * 1.2, Math.sin(i * 2.09) * 0.6, 0); orbFly(A.clone().add(off), B, c1, c2, 0.9, fly, 0.18 + i * 0.03, { arc: 0.8 + i * 0.3 }); }); hit = 0.18 + fly + 0.06; }
+    else { const fly = 0.6, top = F.clone().addScaledVector(d, -4).add(new V3(0, 10, 0)); orbFly(top, B, 0xff8a1a, 0xffffff, 2.4, fly, 0.25, { arc: 0 }); hit = 0.25 + fly;   // sao chổi
+      emitter(140, i => { const u = i / 140, p = top.clone().lerp(B, u); return { p: p.add(rv(0.5)), v: rv(1.5).add(new V3(0, 1, 0)), t0: 0.25 + u * fly, life: R(0.4, 0.8), size: R(0.5, 0.9), col: [0xffffff, 0xffd27a, 0xff6a1a][i % 3] }; }, { grav: -1, drag: 1.5 }); }
+    shadowUnder(T, 4 + f, 1.0, hit - 0.05); decal(T, TEX.crack, 0xffffff, 3 + f * 0.8, 1.3, hit, { add: false, op: 0.8, ro: 3 });
+    glow(B, 0xffffff, 3.5 + f, 0.25, hit, { flash: true }); glow(B, c1, 5 + f * 1.2, 0.4, hit, { flash: true }); shock(T, 0xffb050, 2.8 + f * 0.7, 0.5, hit);
+    pillar(T, c1, c2, 0.8 + f * 0.15, 2.6 + f * 0.8, 0.5, hit, { speed: 3, widen: 0.8, top: 1.4 });
+    sparks(B, [0xffe0a0, 0xff9a3a, c1], 30 + f * 25, 7 + f, 0.3, 0.6, hit, { up: 1.2 });
+    if (f >= 2) { rune(T, "sun", "runic", 0xffb040, 3.6 + f * 0.4, 0.7, hit, { mode: "expand", expand: 0.8, hold: 0.2, grow: false, op: 0.85 }); shock(T, 0xff5a1a, 2 + f * 0.5, 0.45, hit + 0.06); }
+    if (f >= 3) { dome(T, 0xff4a10, 0xffe0a0, 2.4 + (f - 3) * 1.4, 0.55, hit); decal(T, TEX.crack, 0xff6a1a, 4 + f, 1.2, hit + 0.05, { op: 0.8, hold: 0.4, ro: 3 }); }   // vết nứt rực lửa
+    if (f >= 4) { shock(T, 0xffffff, 6.5, 0.7, hit + 0.12); pillar(T, 0xffb020, 0xffffff, 1.6, 9, 0.8, hit, { speed: 4, widen: 1, top: 1.5 }); sparks(B, [0xffffff, 0xffd860], 80, 12, 0.4, 0.9, hit, { up: 1.6 }); }
+    task(hit, 0.01, () => shake(0.12 + f * 0.08));
+  };
+  META.question_arrow = { name: "Question Arrow", lv: 1, who: "Vocara · chữ Latin", forms: ["1 mũi tên pha lê", "3 mũi tên toả", "Mưa tên + dấu ? rơi", "Lồng dấu ? vàng + sét tím"], desc: "Mũi tên pha lê choáng quái. Bậc 4: 3 mũi tên. Bậc 7: mưa tên từ trời, dấu ? 3D rơi đè. Bậc 10: dấu ? vàng khổng lồ thành lồng, sét tím trói quái." };
+  SK.question_arrow = (F, T, rk) => {
+    const f = FORM(rk), d = DIR(F, T), A = F.clone().addScaledVector(d, 0.8).setY(1.3), B = T.clone().setY(1.1), side = new V3(-d.z, 0, d.x), cA = 0x7a5cff, cB = f >= 4 ? 0xfff0a0 : 0xd8ccff;
+    const fly = 0.32; let hit = fly + 0.05;
+    const n = f >= 2 ? 3 : 1; for (let i = 0; i < n; i++) crystalArrow(A.clone().addScaledVector(side, (i - (n - 1) / 2) * 0.9), B, cA, cB, fly, i * 0.05, { size: 1 + f * 0.1, arc: 0.3 });
+    if (f >= 3) { for (let i = 0; i < 6 + (f - 3) * 6; i++) { const a = i / (6 + (f - 3) * 6) * PI * 2, P = T.clone().add(new V3(Math.cos(a) * R(0.4, 2.2), 0.2, Math.sin(a) * R(0.4, 2.2))); crystalArrow(P.clone().add(new V3(R(-1, 1), 9, R(-1, 1))), P, cA, cB, 0.35, 0.15 + i * 0.03, { size: 0.9 });
+        sparks(P.clone().setY(0.3), [cB, cA], 6, 3, 0.2, 0.3, 0.5 + i * 0.03, { up: 1.5 }); } hit = 0.5; }
+    shadowUnder(T, 4 + f * 0.5, 1.2, hit - 0.05);
+    glow(B, 0xffffff, 3, 0.25, hit, { flash: true }); glow(B, cA, 4.5 + f * 0.6, 0.4, hit, { flash: true }); shock(T, 0xb39cff, 2.4 + f * 0.5, 0.45, hit);
+    sparks(B, [0xffffff, 0xc77dff, cA], 24 + f * 10, 5, 0.22, 0.5, hit, { up: 1.2 });
+    rune(T, f >= 4 ? "hex" : "tri", "latin", f >= 4 ? 0xffd860 : 0xb39cff, 3 + f * 0.6, 1.4, hit, { mode: f >= 3 ? "converge" : "static", inT: 0.25, op: 0.9 });
+    if (f <= 2) qmark(T.clone().setY(2.6), cA, cB, 0.9 + f * 0.15, 1.2, hit, { spin: 3 });
+    if (f === 3) qmark(T.clone().setY(1.0), cA, cB, 1.8, 1.4, 0.3, { drop: true, spin: 0.5 });
+    if (f >= 4) { qmark(T.clone().setY(0.6), 0xd89a10, 0xfff6c0, 3.0, 1.6, 0.3, { drop: true, spin: 0.6 });   // dấu ? khổng lồ đè xuống như lồng
+      for (let i = 0; i < 5; i++) { const a = i / 5 * PI * 2; bolt(T.clone().add(new V3(Math.cos(a) * 0.4, 3.2, Math.sin(a) * 0.4)), T.clone().add(new V3(Math.cos(a) * 2.2, 0.05, Math.sin(a) * 2.2)), 0xd8a0ff, 0.22, 0.9, 0.55 + i * 0.04, { jag: 0.5 }); }
+      shock(T, 0xffe9a8, 5, 0.6, 0.55); }
+    for (let i = 0; i < 2 + f; i++) orbitStar(T, cB, 1.0 + f * 0.1, 2.4 + f * 0.25, 1.4, hit + 0.1, i / (2 + f));
+    task(hit, 0.01, () => shake(0.1 + f * 0.05));
+  };
+  function orbitStar(P, color, r, y, dur, delay, ph) {   // sao choáng quay quanh đầu quái
+    P = P.clone(); task(delay, dur, () => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color, blending: ADD, transparent: true, depthWrite: false })); s.renderOrder = 11; SC.add(s);
+      return { upd: (k, t) => { const a = ph * PI * 2 + t * 5; s.position.set(P.x + Math.cos(a) * r, y + Math.sin(t * 7 + ph * 6) * 0.1, P.z + Math.sin(a) * r * 0.6); s.scale.setScalar(0.5 + 0.15 * Math.sin(t * 20)); s.material.opacity = 1 - Math.max(0, k - 0.75) / 0.25; }, end: () => kill(s) }; });
+  }
+  META.harmony_heal = { name: "Harmony Heal", lv: 1, who: "Vocara · chữ Ogham", forms: ["Ấn lục giác thở", "+ 6 cột sáng", "Hoa sen ánh sáng nở", "Cây ánh sáng + lá vàng rơi"], desc: "Hồi máu. Bậc 4: 6 cột sáng. Bậc 7: hoa sen ánh sáng nở dưới chân. Bậc 10: cây ánh sáng mọc lên, lá vàng rơi." };
+  SK.harmony_heal = (F, T, rk) => {
+    const f = FORM(rk), c = f >= 4 ? 0xffe27a : 0x3fe08a, c2 = f >= 4 ? 0xffffff : 0xe8ffd0;
+    shadowUnder(F, 4 + f * 0.6, 1.4 + f * 0.2, 0); rune(F, "hex", "ogham", c, 3.8 + f * 0.4, 1.4 + f * 0.2, 0, { mode: "pulse", rate: 7, amp: 0.12 });
+    aura(F, c, c2, 0.85, 2.6 + f * 0.3, 1.2, 0.1);
+    if (f >= 2) for (let i = 0; i < 6; i++) { const a = i / 6 * PI * 2; pillar(F.clone().add(new V3(Math.cos(a) * 1.9, 0, Math.sin(a) * 1.9)), c, 0xfff6c0, 0.14, 2.6 + R(0, 1), 0.9, 0.15 + i * 0.05, { speed: 3.5, top: 0.3, widen: 0 }); }
+    if (f >= 3) { lotus(F, f >= 4 ? 0xffc040 : 0xff8ac8, f >= 4 ? 0xfff6c0 : 0xffe0f0, 1.7, 1.8, 0.05); rune(F, "circle", "ogham", 0xff9ad0, 5.6, 1.6, 0.1, { mode: "spin", spin: -0.8, op: 0.6, lift: 0.01 }); }
+    if (f >= 4) { lightTree(F.clone().add(new V3(0, 0, -1.2)), 0xffd860, 0xfffbe0, 4.6, 2.4, 0.1); shock(F, 0xfff3a0, 6, 0.8, 0.3); }
+    emitter(40 + f * 25, i => { const a = R(0, PI * 2), r = R(0.3, 2.1); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 0.4), Math.sin(a) * r)), v: new V3(Math.cos(a + 1.6) * 0.6, R(1.5, 3.2), Math.sin(a + 1.6) * 0.6), t0: R(0.1, 0.9), life: R(0.7, 1.2), size: R(0.25, 0.5), col: [0x8dffb5, 0xfff3a0, 0xffffff][i % 3] }; }, { grav: 0.4, drag: 0.6 });
+    glow(F.clone().setY(1.3), 0xbfffd8, 3 + f * 0.5, 0.6, 0.3, {});
+  };
+  const LAST = {};   // lần gọi trước của mỗi chiêu (chiêu nhiều đòn gọi hiệu ứng cho từng đòn)
+  META.drum_roll = { name: "Drum Roll", lv: 1, who: "Vocara · chữ Latin", forms: ["Vệt chém lửa mỗi nhịp", "Trống taiko trên đầu quái", "Trống lớn + chém chữ X + cột lửa", "Vòng trống lửa quanh người + trống vàng"], desc: "Mỗi nhịp 1 đòn. Bậc 4: trống taiko hiện trên quái, dùi lửa đập xuống. Bậc 7: chém chữ X, cột lửa. Bậc 10: 6 trống lửa quanh người đánh theo nhịp, trống vàng khổng lồ." };
+  SK.drum_roll = (F, T, rk) => {
+    const f = FORM(rk), now = performance.now(), first = !LAST.drum_roll || now - LAST.drum_roll > 700; LAST.drum_roll = now;
+    const B = T.clone().setY(1.0), c1 = f >= 4 ? 0xffb020 : 0xff3a0a, c2 = 0xffd27a;
+    if (first && f >= 4) { for (let i = 0; i < 6; i++) { const a = i / 6 * PI * 2; drumHit(F.clone().add(new V3(Math.cos(a) * 2.6, 0.9, Math.sin(a) * 2.6)), c1, c2, 0.8, 1.4, i * 0.1); }
+      rune(F, "sun", "latin", 0xffb020, 6.5, 1.4, 0, { mode: "spin", spin: 2 }); tornado(F, 0xff6a0a, 0xffe0a0, 1.2, 3, 1.2, 0.2); }
+    const yaw = R(0, 6);
+    slash(B.clone().setY(0), c1, c2, 1.9 + f * 0.25, 1.3, -PI * 0.85, PI * 0.25, 0.55, yaw, 0.42, 0, 1.1);
+    if (f >= 3) slash(B.clone().setY(0), c1, 0xffffff, 2.1, 1.2, -PI * 0.85, PI * 0.25, -0.55, yaw + 1.6, 0.42, 0.05, 1.2);   // chém chữ X
+    if (f >= 2) drumHit(T.clone().setY(2.6), c1, c2, f >= 4 ? 1.6 : 0.9 + f * 0.15, 0.55, 0);
+    glow(B, 0xffe0a0, 2 + f * 0.6, 0.2, 0.18, { flash: true }); shock(T, 0xffa040, 1.4 + f * 0.4, 0.35, 0.2);
+    sparks(B, [0xffe0a0, 0xff8a2a, c1], 14 + f * 8, 6 + f, 0.2, 0.45, 0.2, { up: 1.2 });
+    if (f >= 3) pillar(T, c1, c2, 0.6 + f * 0.1, 3 + f * 0.5, 0.4, 0.2, { speed: 4, widen: 0.6, top: 1.2 });
+    task(0.2, 0.01, () => shake(0.06 + f * 0.04));
+  };
 
   META.basic_slash = { name: "Basic Slash", lv: 0, who: "Vocara · chữ Latin", desc: "Đòn đánh thường: vệt kiếm khí + tia lửa." };
   SK.basic_slash = (F, T, rk) => {
@@ -444,30 +584,8 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     sparks(T.clone().setY(1), [0xffffff, 0xffd27a, c], 18 + rk * 4, 7, 0.28, 0.45, 0.14, { up: 1 });
     glow(T.clone().setY(1), 0xfff0c0, 2.4, 0.22, 0.14, { flash: true }); if (rk >= 5) shock(T, 0xffd27a, 1.8, 0.35, 0.14);
   };
-  META.echo_blast = { name: "Echo Blast", lv: 1, who: "Odin · chữ rune · vòng tròn xoay", desc: "Tụ lực ở tay (phù văn xoay nhanh) → quả cầu năng lượng bay → nổ: cột lửa, sóng, tia lửa, vết nứt." };
-  SK.echo_blast = (F, T, rk) => {
-    const d = DIR(F, T), A = F.clone().addScaledVector(d, 0.8).setY(1.3), B = T.clone().setY(1.1), fly = 0.38, c1 = GOLD(rk) ? 0xffc040 : 0xff6a1a, c2 = 0xffe6a8;
-    shadowUnder(F, 3, 0.7, 0); rune(F, "circle", "runic", 0xff9a3a, 3.2, 0.7, 0, { mode: "spin", spin: 4 });
-    emitter(30 + rk * 6, i => { const a = rv(1.6); return { p: A.clone().add(a), v: a.clone().multiplyScalar(-3.2), t0: R(0, 0.15), life: 0.28, size: R(0.25, 0.45), col: i % 2 ? 0xffd27a : c1 }; }, { grav: 0, drag: 0 });
-    glow(A, 0xffb04a, 1.6, 0.25, 0.1, { flash: true }); orbFly(A, B, c1, c2, 1.0 + rk * 0.06, fly, 0.18, { arc: 0.4 });
-    const hit = 0.18 + fly;
-    shadowUnder(T, 5, 1.0, hit - 0.05); decal(T, TEX.crack, 0xffffff, 3.6, 1.3, hit, { add: false, op: 0.8, ro: 3 });
-    glow(B, 0xffffff, 4, 0.25, hit, { flash: true }); glow(B, c1, 5.5, 0.4, hit, { flash: true }); shock(T, 0xffb050, 3.2, 0.5, hit);
-    pillar(T, c1, c2, 0.9, 3, 0.5, hit, { speed: 3, widen: 0.8, top: 1.4 }); sparks(B, [0xffe0a0, 0xff9a3a, c1], 40 + rk * 8, 8, 0.32, 0.6, hit, { up: 1.2 });
-    TIER(T, rk, GOLD(rk) ? 0xffd860 : 0xff8a3a, hit, { script: "runic", shape2: "sun", size: 3.6 }); task(hit, 0.01, () => shake(0.15 + rk * 0.03));
-  };
-  META.harmony_heal = { name: "Harmony Heal", lv: 1, who: "Ogma · chữ Ogham · lục giác thở (toả ra hút vào)", desc: "Phù văn lục giác phập phồng dưới chân, hào quang xanh, lá và sao bay lên. Bậc cao: thêm cột sáng và vòng ngược." };
-  SK.harmony_heal = (F, T, rk) => {
-    const c = GOLD(rk) ? 0xffe27a : 0x3fe08a;
-    shadowUnder(F, 4.5, 1.4, 0); rune(F, "hex", "ogham", c, 4.2, 1.4, 0, { mode: "pulse", rate: 7, amp: 0.12 });
-    aura(F, c, 0xe8ffd0, 0.85, 2.8, 1.2, 0.1);
-    if (rk >= 2) for (let i = 0; i < 4 + rk; i++) { const a = i / (4 + rk) * PI * 2; pillar(F.clone().add(new V3(Math.cos(a) * 1.9, 0, Math.sin(a) * 1.9)), c, 0xfff6c0, 0.14, 2.6 + R(0, 1), 0.9, 0.15 + i * 0.05, { speed: 3.5, top: 0.3, widen: 0 }); }
-    emitter(50 + rk * 15, i => { const a = R(0, PI * 2), r = R(0.3, 2.1); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 0.4), Math.sin(a) * r)), v: new V3(Math.cos(a + 1.6) * 0.6, R(1.5, 3.2), Math.sin(a + 1.6) * 0.6), t0: R(0.1, 0.9), life: R(0.7, 1.2), size: R(0.25, 0.5), col: [0x8dffb5, 0xfff3a0, 0xffffff][i % 3] }; }, { grav: 0.4, drag: 0.6 });
-    glow(F.clone().setY(1.3), 0xbfffd8, 3.2, 0.6, 0.3, {});
-    TIER(F, rk, c, 0.15, { script: "ogham", shape2: "circle", size: 3.6, spin: 1 });
-  };
-  META.riddle_trap = { name: "Riddle Trap", lv: 6, who: "Nabu · chữ hình nêm · ấn vuông xoay rồi thu vào", desc: "Sách phép nhỏ mở trên đầu người chơi, từng trang sách phóng vào quái nổ liên tiếp (bậc càng cao càng nhiều trang), rồi ấn phù văn khoá chân quái." };
-  SK.riddle_trap = (F, T, rk) => {
+  META.typeset_rain = { name: "Typeset Rain", lv: 16, who: "Gutenberg · chữ hình nêm", desc: "Sách phép nhỏ mở trên đầu người chơi, từng trang sách phóng vào quái nổ liên tiếp (bậc càng cao càng nhiều trang), rồi ấn phù văn khoá chân quái." };
+  SK.typeset_rain = (F, T, rk) => {
     const c = GOLD(rk) ? 0xffd860 : 0x6fb8ff, B = T.clone().setY(1.1), n = 3 + Math.ceil(rk / 2);
     rune(F, "seal", "cuneiform", c, 3, 0.5 + n * 0.16 + 0.4, 0, { mode: "spin", spin: 1.5, op: 0.8 });
     const first = magicBook(F, T, "cuneiform", c, n, 0.75 + n * 0.16, 0, null);
@@ -480,8 +598,8 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     TIER(T, rk, c, end, { script: "cuneiform", shape2: "circle", size: 4.4 });
   };
 
-  META.thunder_clap = { name: "Thunder Clap", lv: 12, who: "Odin · chữ rune · ấn mặt trời đứng im, chớp sáng", desc: "Ấn sét đứng im dưới quái → 3 tia sét + cột điện → tia điện toả trên đất, vết nứt." };
-  SK.thunder_clap = (F, T, rk) => {
+  META.ac_storm = { name: "AC Storm", lv: 40, who: "Nikola Tesla · chữ rune", desc: "Ấn sét đứng im dưới quái → 3 tia sét + cột điện → tia điện toả trên đất, vết nứt." };
+  SK.ac_storm = (F, T, rk) => {
     const B = T.clone().setY(1), c = GOLD(rk) ? 0xffe27a : 0x7cc8ff;
     shadowUnder(T, 5, 1.2, 0); rune(T, "sun", "runic", c, 4.6, 1.2, 0, { mode: "static", inT: 0.25, flicker: true });
     glow(F.clone().setY(1.6), 0x9ad8ff, 1.5, 0.3, 0, { flash: true });
@@ -496,30 +614,18 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     sparks(B, [0xffffff, 0x9ad8ff, c], 50 + rk * 10, 10, 0.3, 0.6, hit, { up: 1.4, drag: 3 });
     TIER(T, rk, c, hit, { script: "runic", shape2: "star", size: 4.4 }); task(hit, 0.01, () => shake(0.3));
   };
-  META.freeze_note = { name: "Freeze Note", lv: 12, who: "Thoth · chữ tượng hình · tam giác thu vào", desc: "Quả cầu băng → ấn tam giác thu nhỏ khoá quái → gai băng trồi lên, bụi tuyết, hơi lạnh." };
-  SK.freeze_note = (F, T, rk) => {
-    const d = DIR(F, T), A = F.clone().addScaledVector(d, 0.8).setY(1.2), B = T.clone().setY(1), c = GOLD(rk) ? 0xfff0a0 : 0x9fe4ff;
-    orbFly(A, B, 0x3aa8ff, 0xe8fbff, 0.8, 0.32, 0, { arc: 0.2 });
-    const hit = 0.32;
-    shadowUnder(T, 5.5, 1.6, hit - 0.05); rune(T, "tri", "hiero", c, 4.8, 1.6, hit - 0.15, { mode: "converge", inT: 0.3, spin: 0.3 });
-    shards(T, 0x5fc8ff, 6 + rk * 2, 1.7, 2.2 + rk * 0.1, 1.5, hit, { c2: 0xf4feff });
-    glow(B, 0xe8fbff, 5, 0.35, hit, { flash: true }); shock(T, 0xbff0ff, 3.6, 0.6, hit);
-    sparks(B, [0xffffff, 0xcff4ff, 0x8fd6ff], 40 + rk * 8, 5, 0.3, 1.1, hit, { grav: -1.5, up: 1.6 });
-    emitter(30 + rk * 6, i => ({ p: T.clone().add(new V3(R(-2.5, 2.5), R(0.1, 0.5), R(-2.5, 2.5))), v: new V3(R(-0.3, 0.3), R(0.3, 0.9), R(-0.3, 0.3)), t0: hit + R(0, 0.8), life: R(0.8, 1.4), size: R(0.6, 1.1), col: 0x9fd8ff }), { grav: 0, drag: 0.5 });
-    TIER(T, rk, c, hit, { script: "hiero", shape2: "hex", size: 4.4 }); task(hit, 0.01, () => shake(0.15));
+  META.bristle_cyclone = { name: "Bristle Cyclone", lv: 11, who: "William Addis · chữ Hy Lạp", desc: "(màu bọt trắng xanh) Ấn sao gai xoay tít → 3 vệt kiếm lửa quét quanh người → lốc xoáy lửa, vết cháy, tàn lửa bay." };
+  SK.bristle_cyclone = (F, T, rk) => {
+    const c1 = GOLD(rk) ? 0x9ae8ff : 0x2fb8e8;
+    shadowUnder(F, 7, 1.4, 0); rune(F, "star", "greek", 0x7ad8ff, 5.5, 1.3, 0, { mode: "spin", spin: 6 });
+    [0, 0.12, 0.24].forEach((dl, i) => slash(F, c1, 0xffffff, 2.6 + i * 0.5, 1.1, 0, PI * 1.6, R(-0.25, 0.25), i * 2.1, 0.35, dl, 1.0 + i * 0.15));
+    tornado(F, c1, 0xe8fbff, 1.6, 4.2, 1.1, 0.2); pillar(F, 0x5fd0ff, 0xcff4ff, 2.4, 1.6, 0.8, 0.25, { speed: 2.5, widen: 0.6, top: 1.3, cut: 0.25 });
+    shock(F, 0xbff0ff, 5, 0.6, 0.3);
+    emitter(80 + rk * 20, i => { const a = R(0, PI * 2), r = R(0.5, 3); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 1), Math.sin(a) * r)), v: new V3(-Math.sin(a) * 3, R(2, 5), Math.cos(a) * 3), t0: R(0.15, 0.9), life: R(0.5, 0.9), size: R(0.2, 0.45), col: [0xe8fbff, 0x8fe0ff, c1][i % 3] }; }, { grav: 1, drag: 1.5 });
+    TIER(F, rk, 0x8fe0ff, 0.25, { script: "greek", shape2: "sun", size: 5, spin: 3 }); task(0.3, 0.01, () => shake(0.25));
   };
-  META.spin_beat = { name: "Spin Beat", lv: 28, who: "Hermes · chữ Hy Lạp · sao gai xoay rất nhanh", desc: "Ấn sao gai xoay tít → 3 vệt kiếm lửa quét quanh người → lốc xoáy lửa, vết cháy, tàn lửa bay." };
-  SK.spin_beat = (F, T, rk) => {
-    const c1 = GOLD(rk) ? 0xffa020 : 0xff3a0a;
-    shadowUnder(F, 7, 1.4, 0); rune(F, "star", "greek", 0xff6a1a, 5.5, 1.3, 0, { mode: "spin", spin: 6 });
-    [0, 0.12, 0.24].forEach((dl, i) => slash(F, c1, 0xffd27a, 2.6 + i * 0.5, 1.1, 0, PI * 1.6, R(-0.25, 0.25), i * 2.1, 0.35, dl, 1.0 + i * 0.15));
-    tornado(F, c1, 0xffe0a0, 1.6, 4.2, 1.1, 0.2); pillar(F, 0xff5010, 0xffc060, 2.4, 1.6, 0.8, 0.25, { speed: 2.5, widen: 0.6, top: 1.3, cut: 0.25 });
-    decal(F, TEX.crack, 0xffffff, 6, 1.5, 0.3, { add: false, op: 0.8, ro: 3 }); shock(F, 0xffa040, 5, 0.6, 0.3);
-    emitter(80 + rk * 20, i => { const a = R(0, PI * 2), r = R(0.5, 3); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 1), Math.sin(a) * r)), v: new V3(-Math.sin(a) * 3, R(2, 5), Math.cos(a) * 3), t0: R(0.15, 0.9), life: R(0.5, 0.9), size: R(0.2, 0.45), col: [0xffe0a0, 0xff8a2a, c1][i % 3] }; }, { grav: 1, drag: 1.5 });
-    TIER(F, rk, 0xff8a2a, 0.25, { script: "greek", shape2: "sun", size: 5, spin: 3 }); task(0.3, 0.01, () => shake(0.25));
-  };
-  META.last_word = { name: "Last Word", lv: 36, who: "Odin · chữ rune · ấn mặt trời toả ra", desc: "Thanh kiếm khổng lồ khắc rune hiện trên trời, rơi cắm xuống quái → ấn toả ra, nứt đất, cột sáng, tia lửa." };
-  SK.last_word = (F, T, rk) => {
+  META.rune_sword = { name: "Rune Sword", lv: 70, who: "Odin · chữ rune (tuyệt chiêu)", desc: "Thanh kiếm khổng lồ khắc rune hiện trên trời, rơi cắm xuống quái → ấn toả ra, nứt đất, cột sáng, tia lửa." };
+  SK.rune_sword = (F, T, rk) => {
     const c1 = GOLD(rk) ? 0xffc040 : 0x5fa8ff, c2 = GOLD(rk) ? 0xfff6d0 : 0xe0f4ff, B = T.clone().setY(1);
     shadowUnder(T, 6, 1.9, 0); rune(T, "sun", "runic", c1, 5.5, 1.0, 0, { mode: "spin", spin: 2, op: 0.85 });
     giantSword(T, c1, c2, 1.9, 0.05, null);
@@ -532,7 +638,7 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     sparks(B, [0xffffff, c2, c1], 90 + rk * 15, 12, 0.35, 0.8, hit, { up: 1.5, drag: 2 });
     TIER(T, rk, c1, hit, { script: "runic", shape2: "seal", size: 5 }); task(hit, 0.01, () => shake(0.45));
   };
-  META.dragon_roar = { name: "Dragon Roar", lv: 40, who: "Thương Hiệt · chữ Hán · 2 vòng xoay ngược + ấn sao toả ra", desc: "TUYỆT CHIÊU: rồng vàng (đầu, sừng, râu, bờm lửa, 4 chân có vuốt) bay xoắn ốc rồi lao xuống quái → nổ lớn." };
+  META.dragon_roar = { name: "Dragon Roar", lv: 80, who: "Thương Hiệt · chữ Hán · 2 vòng xoay ngược + ấn sao toả ra", desc: "TUYỆT CHIÊU: rồng vàng (đầu, sừng, râu, bờm lửa, 4 chân có vuốt) bay xoắn ốc rồi lao xuống quái → nổ lớn." };
   SK.dragon_roar = (F, T, rk) => {
     const fire = GOLD(rk) ? [0xff6a0a, 0xfff0a0] : [0xff3a0a, 0xffd27a];
     shadowUnder(F, 7, 2.6, 0); rune(F, "circle", "hanzi", 0xffb040, 7, 2.4, 0, { mode: "spin", spin: 1, inT: 0.35 });
@@ -548,12 +654,77 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     sparks(T.clone().setY(1), [0xffffff, 0xffd27a, 0xff6a1a, 0xff2a10], 160, 13, 0.45, 1.0, hit, { up: 1.5, drag: 1.8 });
     TIER(T, Math.max(rk, 3), 0xffc060, hit, { script: "hanzi", shape2: "sun", size: 6 }); task(hit, 0.01, () => shake(0.6));
   };
-  api.ids = Object.keys(SK);
+  /* ---------- HIỆU ỨNG CHUNG cho chiêu danh nhân chưa có hiệu ứng riêng: theo nhánh + loại chiêu, cũng 4 hình dạng theo bậc ---------- */
+  const PALS = { power: [0xff6a1a, 0xffe0a0], control: [0x5f7bff, 0xd8e4ff], harmony: [0x3fe08a, 0xe8ffd0], rhythm: [0xff3a0a, 0xffd27a] };
+  const SHAPES = ["circle", "star", "hex", "seal", "sun", "tri"], SCRIPTS = ["latin", "greek", "runic", "ogham", "hanzi", "cuneiform", "hiero"];
+  const hash = s => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
+  function generic(id, F, T, rk, o) {
+    const f = FORM(rk), br = o.branch || "power", kind = o.kind || "single", rad = o.radius || 3, h = hash(id), shp = SHAPES[h % 6], scr = SCRIPTS[(h >> 3) % 7];
+    const gold = f >= 4, c1 = gold ? 0xffb020 : PALS[br][0], c2 = gold ? 0xfff6c0 : PALS[br][1], B = T.clone().setY(1.1), d = DIR(F, T), A = F.clone().addScaledVector(d, 0.8).setY(1.3);
+    const now = performance.now(), first = !LAST[id] || now - LAST[id] > 700; LAST[id] = now;
+    if (kind === "self") {
+      shadowUnder(F, 4 + f * 0.5, 1.4, 0); rune(F, shp, scr, c1, 3.6 + f * 0.5, 1.4, 0, { mode: "pulse", rate: 6, amp: 0.1 }); aura(F, c1, c2, 0.85, 2.6 + f * 0.3, 1.2, 0.1);
+      if (f >= 2) for (let i = 0; i < 6; i++) { const a = i / 6 * PI * 2; pillar(F.clone().add(new V3(Math.cos(a) * 1.9, 0, Math.sin(a) * 1.9)), c1, 0xffffff, 0.14, 2.4 + R(0, 1), 0.9, 0.15 + i * 0.05, { speed: 3.5, top: 0.3, widen: 0 }); }
+      if (f >= 3) { lotus(F, c1, c2, 1.5, 1.6, 0.05); rune(F, SHAPES[(h + 2) % 6], scr, c2, 5.4, 1.5, 0.1, { mode: "spin", spin: -0.8, op: 0.6, lift: 0.01 }); }
+      if (f >= 4) { dome(F, c1, c2, 3.2, 1.0, 0.2); shock(F, 0xfff3a0, 6, 0.8, 0.3); }
+      emitter(40 + f * 25, i => { const a = R(0, PI * 2), r = R(0.3, 2.1); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 0.4), Math.sin(a) * r)), v: new V3(0, R(1.5, 3.2), 0), t0: R(0.1, 0.9), life: R(0.7, 1.2), size: R(0.25, 0.5), col: [c1, c2, 0xffffff][i % 3] }; }, { grav: 0.4, drag: 0.6 });
+      return;
+    }
+    if (kind === "aoe") {
+      shadowUnder(F, rad * 2, 1.2, 0); rune(F, shp, scr, c1, rad * 1.6, 1.2, 0, { mode: (h & 1) ? "expand" : "spin", spin: 2, expand: 0.3, op: 0.9 });
+      for (let i = 0; i < 1 + f; i++) shock(F, i % 2 ? c2 : c1, rad * (0.7 + i * 0.25), 0.55, 0.15 + i * 0.1);
+      if (br === "control" && f >= 2) shards(F, c1, 8 + f * 3, rad * 0.9, 1.6 + f * 0.3, 1.3, 0.2, { c2, ring: true });
+      if (br !== "control" && f >= 3) tornado(F, c1, c2, 1.3 + f * 0.2, 3 + f * 0.4, 1.0, 0.15);
+      if (f >= 2) for (let i = 0; i < 4 + f; i++) { const a = i / (4 + f) * PI * 2; pillar(F.clone().add(new V3(Math.cos(a) * rad * 0.8, 0, Math.sin(a) * rad * 0.8)), c1, c2, 0.25, 2 + f * 0.6, 0.6, 0.2 + i * 0.03, { speed: 3, top: 0.6, widen: 0.2 }); }
+      sparks(F.clone().setY(0.8), [c1, c2, 0xffffff], 40 + f * 25, 8 + f, 0.3, 0.7, 0.2, { up: 1 });
+      if (f >= 4) dome(F, c1, c2, rad * 1.2, 0.7, 0.25);
+      task(0.2, 0.01, () => shake(0.1 + f * 0.06)); return;
+    }
+    if (kind === "dash") {
+      emitter(80, i => ({ p: F.clone().lerp(T, i / 80).setY(R(0.3, 1.6)).add(rv(0.3)), v: rv(1).setY(R(0.5, 2)), t0: i / 80 * 0.25, life: R(0.3, 0.6), size: R(0.3, 0.6), col: [c1, c2][i % 2] }), { grav: -2, drag: 2 });
+      decal(F.clone().lerp(T, 0.5), TEX.crack, 0xffffff, 2.5, 1, 0.15, { add: false, op: 0.6, ro: 3 });
+      slash(T, c1, c2, 1.8 + f * 0.2, 1.1, -PI * 0.8, PI * 0.2, 0.4, -Math.atan2(d.x, d.z), 0.3, 0.2, 1.1);
+    }
+    if (kind === "single") {
+      if (br === "control") crystalArrow(A, B, c1, c2, 0.32, 0, { size: 1 + f * 0.1, arc: 0.3 }); else orbFly(A, B, c1, c2, 1 + f * 0.15, 0.35, 0, { arc: 0.4 });
+      if (f >= 4) bolt(T.clone().add(new V3(0, 12, 0)), T.clone().setY(0.1), 0xffffff, 0.6, 0.4, 0.3, { jag: 0.8 });
+    }
+    if (kind === "multi") {
+      if (br === "rhythm" || br === "power") slash(T, c1, c2, 1.3 + f * 0.2, 0.9, -PI * 0.8, PI * 0.2, R(-0.5, 0.5), R(0, 6), 0.28, 0, 1.1);
+      else bolt(A, B, c2, 0.25 + f * 0.05, 0.25, 0, { jag: 0.4 });
+      if (first && f >= 3) rune(F, shp, scr, c1, 4, 1.2, 0, { mode: "spin", spin: 3, op: 0.8 });
+    }
+    const hit = kind === "multi" ? 0.15 : kind === "dash" ? 0.25 : kind === "zone" ? 0.2 : 0.36, zr = kind === "zone" ? rad : 1.3;
+    if (kind === "zone") { rune(T, shp, scr, c1, zr * 1.8, 1.2, 0, { mode: (h & 2) ? "converge" : "static", inT: 0.2 }); if (br === "control" && f >= 2) shards(T, c1, 6 + f * 2, zr * 0.8, 1.6 + f * 0.3, 1.3, 0.2, { c2 }); }
+    shadowUnder(T, zr * 2 + f * 0.5, 1.0, hit - 0.05);
+    glow(B, 0xffffff, 2.5 + f * 0.7, 0.22, hit, { flash: true }); glow(B, c1, 3.5 + f, 0.4, hit, { flash: true }); shock(T, c2, zr * (0.8 + f * 0.2), 0.45, hit);
+    sparks(B, [c1, c2, 0xffffff], 20 + f * 15, 6 + f, 0.25, 0.55, hit, { up: 1.2 });
+    if (f >= 2) rune(T, SHAPES[(h + 1) % 6], scr, c2, zr * 1.4 + 1, 0.7, hit, { mode: "expand", expand: 0.7, hold: 0.2, grow: false, op: 0.8, lift: 0.01 });
+    if (f >= 3) { pillar(T, c1, c2, 0.6 + zr * 0.2, 3 + f, 0.5, hit, { speed: 3.5, widen: 0.7, top: 1.3 }); dome(T, c1, c2, zr * 0.9, 0.5, hit); }
+    if (f >= 4) { shock(T, 0xffffff, zr * 2.2, 0.6, hit + 0.1); sparks(B, [0xffffff, 0xffd860], 60, 11, 0.35, 0.8, hit, { up: 1.5 }); }
+    task(hit, 0.01, () => shake(0.08 + f * 0.06));
+  }
+  // vài chiêu danh nhân dùng hiệu ứng chung (để xem trong sổ tay)
+  [["ladys_lamp", "Lady's Lamp", 12, "Florence Nightingale", { kind: "self", branch: "harmony" }], ["camera_obscura", "Camera Obscura", 19, "Nicéphore Niépce", { kind: "zone", branch: "control", radius: 4 }],
+   ["gravity_crush", "Gravity Crush", 14, "Isaac Newton", { kind: "zone", branch: "power", radius: 3 }], ["prism_ray", "Prism Ray", 14, "Isaac Newton", { kind: "aoe", branch: "rhythm", radius: 6 }],
+   ["tesla_coil", "Tesla Coil", 40, "Nikola Tesla", { kind: "multi", branch: "rhythm" }], ["absolute_chill", "Absolute Chill", 42, "Willis Carrier", { kind: "aoe", branch: "control", radius: 6 }]]
+   .forEach(([id, name, lv, who, g]) => META[id] = { name, lv, who: who + " · hiệu ứng chung (chờ làm riêng)", g, desc: "Hiệu ứng chung theo nhánh + loại chiêu, cũng đổi hình ở bậc 4 / 7 / 10." });
+  const LEGACY = { typeset_rain: 1, ac_storm: 1, bristle_cyclone: 1, rune_sword: 1, dragon_roar: 1, basic_slash: 1 };   // hiệu ứng viết theo thang 5 bậc cũ
+  api.ids = Object.keys(META);
   api.meta = META;
   api.names = {}; api.ids.forEach(id => api.names[id] = META[id].name);
-  api.setup = (scene, camera, renderer) => { SC = scene; CAM = camera; REN = renderer; if (!ready) { makeTextures(); ready = true; } };
+  api.form = FORM;
+  api.setup = (scene, camera, renderer) => { SC = MAIN_SC = scene; CAM = camera; REN = renderer; if (!ready) { makeTextures(); ready = true; } };
+  api.ready = () => ready;
   api.update = update;
-  api.cast = (id, from, to, rank) => { if (!ready || !SK[id]) return; SK[id](from.clone().setY(0), (to || from.clone().add(new V3(0, 0, -6))).clone().setY(0), Math.max(1, Math.min(5, rank || 1))); };
+  /* cast(id, từ, tới, bậc 1–10, { kind, branch, radius, scene, camera }) – chiêu chưa có hiệu ứng riêng dùng hiệu ứng chung theo nhánh + loại */
+  api.cast = (id, from, to, rank, o) => {
+    if (!ready) return; o = o || {}; const sc0 = SC, cam0 = CAM; if (o.scene) { SC = o.scene; CAM = o.camera || CAM; }
+    try { const g = Object.assign({}, (META[id] || {}).g, o), F = from.clone().setY(0), r = Math.max(1, Math.min(10, rank || 1));
+      const Tt = to ? to.clone().setY(0) : (g.kind === "aoe" || g.kind === "self" ? F.clone() : F.clone().add(new V3(0, 0, -6)));
+      if (SK[id]) SK[id](F, Tt, LEGACY[id] ? [0, 1, 3, 4, 5][FORM(r)] : r); else generic(id, F, Tt, r, g); }
+    catch (e) {} finally { SC = sc0; CAM = cam0; }
+  };
   api.clear = () => { TASKS.forEach(T => { if (T.h && T.h.end) T.h.end(); }); TASKS.length = 0; };
   api._tasks = () => TASKS.length;
   return api;

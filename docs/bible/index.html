@@ -177,7 +177,7 @@ async function startVfx(){
   addEventListener("resize", resize); resize();
   const ids = FX3D.ids.slice().sort((a, b) => FX3D.meta[a].lv - FX3D.meta[b].lv);
   let cur = ids[0], rank = 1, auto = true, autoT = 0;
-  const cast = id => { cur = id; FX3D.cast(id, P, T, rank); const M = FX3D.meta[id]; document.getElementById("vfxName").textContent = M.name + (M.lv ? " · Lv." + M.lv : "") + " · bậc " + rank;
+  const cast = id => { cur = id; FX3D.cast(id, P, T, rank); const M = FX3D.meta[id]; document.getElementById("vfxName").textContent = M.name + (M.lv ? " · Lv." + M.lv : "") + " · bậc " + rank + (M.forms ? " · " + M.forms[FX3D.form(rank) - 1] : "");
     document.getElementById("vfxDesc").textContent = M.desc + " (" + M.who + ")"; document.querySelectorAll("#vfxSk button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === id))); autoT = 0; };
   document.getElementById("vfxSk").innerHTML = ids.map(id => `<button data-v="${id}"><span class="vfx-lv">${FX3D.meta[id].lv ? "Lv." + FX3D.meta[id].lv : "Thường"}</span>${esc(FX3D.meta[id].name)}</button>`).join("");
   chips("vfxSk", v => { auto = false; document.getElementById("vfxAuto").setAttribute("aria-pressed", "false"); cast(v); });
@@ -341,12 +341,12 @@ const PAGES = [
    <div class="grid">${T.ults.map(u => `<div class="card"><h3>${esc(u.name)}</h3><p class="small muted">${esc(u.god)} · ${esc(u.area)}</p><p class="small">${esc(u.fx)}</p></div>`).join("")}</div>`; } },
  { id:"hieu-ung", name:"Hiệu ứng chiêu", blurb:"Bản mẫu chiêu 3D: phù văn của các vị thần, rồng, kiếm, sách", render(){
    return `<h1 class="pg">Hiệu ứng chiêu ✨</h1>
-   <p class="lede">Bản mẫu chạy thật bằng chính mã hiệu ứng của game (parts/combat/fx3d.js). Bấm từng chiêu, đổi bậc 1 / 3 / 5 để thấy chiêu đẹp dần khi nâng bậc.</p>
+   <p class="lede">Bản mẫu chạy thật bằng chính mã hiệu ứng của game (parts/combat/fx3d.js). Bấm từng chiêu, đổi bậc 1 / 4 / 7 / 10: mỗi mốc chiêu đổi sang hình dạng mới. 4 chiêu khởi đầu đã có 4 hình riêng; chiêu ghi "hiệu ứng chung" đang dùng bộ chung theo nhánh, sẽ làm riêng dần.</p>
    <div class="vfx-stage" id="vfxStage"><div class="vfx-cap"><b id="vfxName"></b><span id="vfxDesc"></span></div></div>
    <p class="vfx-stat" id="vfxStat">Đang tải sân thử…</p>
    <h3>Chiêu (theo cấp mở)</h3><div class="chips" id="vfxSk"></div>
    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
-    <div><h3>Bậc chiêu</h3><div class="chips" id="vfxRk"><button data-v="1" aria-pressed="true">Bậc 1</button><button data-v="3">Bậc 3</button><button data-v="5">Bậc 5</button></div></div>
+    <div><h3>Bậc chiêu</h3><div class="chips" id="vfxRk"><button data-v="1" aria-pressed="true">Bậc 1</button><button data-v="4">Bậc 4</button><button data-v="7">Bậc 7</button><button data-v="10">Bậc 10</button></div></div>
     <div><h3>Nền thử</h3><div class="chips" id="vfxGr"><button data-v="grass" aria-pressed="true">Cỏ sáng</button><button data-v="snow">Tuyết</button><button data-v="night">Đêm</button></div></div>
     <div><h3>Chế độ</h3><div class="chips"><button id="vfxAuto" aria-pressed="true">Tự phát lần lượt</button><button id="vfxAgain">Phát lại</button></div></div>
    </div>

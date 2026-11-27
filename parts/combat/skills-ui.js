@@ -23,7 +23,9 @@
     quick_tongue: "Skills recharge 4% faster per rank.", encore: "3% chance per rank: a Rhythm skill is cast again for free.", groove: "Each monster hit by Rhythm: +1 mana per rank.",
     festival_frenzy: "ULTIMATE: fireworks! 4 blasts over a wide area."
   };
-  const descOf = id => SKILL_DESC_EN[id] || SKILLS[id].desc;
+  const descOf = id => SKILLS[id].en || SKILL_DESC_EN[id] || SKILLS[id].desc;
+  const formsOf = id => (typeof FX3D !== "undefined" && FX3D.meta[id] && FX3D.meta[id].forms) || ["Cơ bản", "Thêm ấn phù văn toả ra", "Cột sáng + vòm nổ", "Sắc vàng + sóng lớn"];   // chiêu dùng hiệu ứng chung (parts/combat/fx3d.js generic)
+  const nextForm = r => (typeof FORM_AT !== "undefined" ? FORM_AT : [1, 4, 7, 10]).find(x => x > r);
   const TITLE = { power: "Thunder Voice", control: "Sharp Ears", harmony: "Kind Heart", rhythm: "Beat Master" };
   const ICON = { power: "⚡", control: "🌀", harmony: "💚", rhythm: "🔥" };
   let tab = "power", pick = null, sel = null, built = false, arena = null, timers = [];
@@ -107,8 +109,9 @@
     e.stopPropagation();
     const S = SKILLS[id], sl = save.combat.slots;
     if (a === "up" || a === "learn") {
-      if (spLeft() <= 0 || (save.level || 1) < S.lv || skillRank(id) >= 5) return;
-      save.combat.skills[id] = skillRank(id) + 1;
+      if (spLeft() <= 0 || (save.level || 1) < S.lv || skillRank(id) >= maxRank(id) || (S.type !== "passive" && !isLearned(id))) return;
+      const r0 = skillRank(id); save.combat.skills[id] = r0 + 1;
+      if (S.type !== "passive" && skillForm(r0 + 1) > skillForm(r0)) setTimeout(() => preview(id), 80);   // đổi hình dạng: tự mở sân tập cho xem ngay
       if (isActive(id) && sl.indexOf(id) < 0) { const k = sl.indexOf(null); if (k >= 0) sl[k] = id; }
       saveNow(); drawCombatHud(); render(); refreshBtn();
     } else if (a === "pv") preview(id);
@@ -127,21 +130,25 @@
   }
 
   function nodeHtml(id, state, first, last) {
-    const S = SKILLS[id], r = skillRank(id), pas = S.type === "passive", L = save.level || 1, c = COL[S.branch];
+    const S = SKILLS[id], r = skillRank(id), pas = S.type === "passive", L = save.level || 1, c = COL[S.branch], mx = maxRank(id);
     const can = L >= S.lv && spLeft() > 0;
     let card = "";
     const sl = save.combat.slots, meta = pas ? "" : "💧" + S.mana + " · ⏱" + S.cd + "s";
-    if (state === "far") {
-      card = (S.type === "ult" ? "<b class='ult'>ULTIMATE</b>" : "<b>? ? ? ? ?</b>") + "<div class='m'>🔒 Unlocks at Lv." + S.lv + "</div>";
-    } else if (state === "nx") {
-      card = "<b>" + S.name + "</b>" + (S.type === "ult" ? " <span class='ult'>★ ULTIMATE</span>" : "") + (pas ? " <span class='ev-tag' style='--c:#3a4677'>passive</span>" : "") +
-        "<div>" + descOf(id) + "</div><div class='m'>" + meta + "</div><div class='acts'>" +
-        (L >= S.lv ? (spLeft() > 0 ? "<button class='ev-btn ok' data-a='learn' data-id='" + id + "'>Learn</button>" : "<span class='m'>Needs 1 skill point</span>") : "<span class='m'>🔒 Unlocks at Lv." + S.lv + "</span>") +
-        (pas ? "" : "<button class='ev-btn alt' data-a='pv' data-id='" + id + "'>👁️ Preview</button>") + "</div>";
+    if (state === "far") {   // chưa học: vẫn cho thấy tên + học từ đâu để người chơi mong
+      const src = S.src || {};
+      card = "<b>" + S.name + "</b>" + (S.type === "ult" ? " <span class='ult'>★ ULTIMATE</span>" : "") + "<div>" + descOf(id) + "</div>" +
+        "<div class='m'>" + (pas ? "🔒 Unlocks at Lv." + S.lv : S.rift ? "🗺️ " + src.who + " · " + src.q : "📗 " + src.who + " · quest: " + src.q + " (Lv." + S.lv + ")") + "</div>" +
+        (pas ? "" : "<div class='acts'><button class='ev-btn alt' data-a='pv' data-id='" + id + "'>👁️ Preview</button></div>");
+    } else if (state === "nx") {   // nội tại chưa học
+      card = "<b>" + S.name + "</b> <span class='ev-tag' style='--c:#3a4677'>passive</span><div>" + descOf(id) + "</div><div class='acts'>" +
+        (L >= S.lv ? (spLeft() > 0 ? "<button class='ev-btn ok' data-a='learn' data-id='" + id + "'>Learn</button>" : "<span class='m'>Needs 1 skill point</span>") : "<span class='m'>🔒 Unlocks at Lv." + S.lv + "</span>") + "</div>";
     } else {
+      const nf = pas ? null : nextForm(r), F = formsOf(id), fi = (typeof skillForm === "function" ? skillForm(r) : 1) - 1;
       card = "<b>" + S.name + "</b>" + (S.type === "ult" ? " <span class='ult'>★</span>" : "") + (pas ? " <span class='ev-tag' style='--c:#3a4677'>passive</span>" : "") +
-        "<span class='dots'>" + "◆".repeat(r) + "◇".repeat(5 - r) + "</span><div>" + descOf(id) + "</div>" + (meta ? "<div class='m'>" + meta + "</div>" : "") + "<div class='acts'>" +
-        (r < 5 && can ? "<button class='ev-btn' data-a='up' data-id='" + id + "'>＋ Upgrade</button>" : "") +
+        "<span class='dots'>" + r + "/" + mx + "</span><div>" + descOf(id) + "</div>" +
+        (pas ? "" : "<div class='m'>✨ " + F[fi] + (nf ? " · rank " + nf + " → <b style='color:var(--ev-gold)'>" + F[fi + 1] + "</b>" : " · MAX FORM") + "</div>") +
+        (meta ? "<div class='m'>" + meta + "</div>" : "") + "<div class='acts'>" +
+        (r < mx && can ? "<button class='ev-btn' data-a='up' data-id='" + id + "'>＋ Upgrade</button>" : "") +
         (pas ? "" : (sl.indexOf(id) >= 0 ? "<button class='ev-btn ok' data-a='use' data-id='" + id + "'>In slot ✓</button>" : "<button class='ev-btn ok' data-a='use' data-id='" + id + "'>Use ▸</button>")) +
         (pas ? "" : "<button class='ev-btn alt' data-a='pv' data-id='" + id + "'>👁️ Preview</button>") + "</div>";
     }
@@ -152,8 +159,9 @@
   function pathHtml(list) {
     let nxt = true;
     return list.map((id, i) => {
-      let state;
-      if (skillRank(id) > 0) state = "ln"; else if (nxt) { state = "nx"; nxt = false; } else state = "far";
+      let state; const S = SKILLS[id];
+      if (S.type === "passive") { if (skillRank(id) > 0) state = "ln"; else if (nxt) { state = "nx"; nxt = false; } else state = "far"; }
+      else state = isLearned(id) && skillRank(id) > 0 ? "ln" : "far";
       return nodeHtml(id, state, i === 0, i === list.length - 1);
     }).join("");
   }
@@ -163,7 +171,7 @@
     const L = save.level || 1, sl = save.combat.slots;
     let gate = ""; try { if (typeof levelGateText === "function") gate = levelGateText() || ""; } catch (e) {}
     let top = "<div class='hd'><span class='ev-title'>🌟 Skills</span><button class='ev-btn alt' style='padding:4px 12px' id='skX'>✕</button></div>" +
-      "<div class='sub'><b style='color:var(--ev-gold)'>" + spLeft() + "</b> points left · +1 point per level (+1 more every 10 levels)</div>" +
+      "<div class='sub'><b style='color:var(--ev-gold)'>" + spLeft() + "</b> points left · +2 points per level (+3 more every 10 levels) · you can never max every skill, so choose!</div>" +
       (typeof openChallenges === "function" ? "<button class='ev-btn alt' id='skCh' style='font-size:12px;padding:4px 12px;margin:6px 0 2px'>📚 Challenges · " + CHALLENGES.filter(c => challengeOpen(c.t)).length + "/" + CHALLENGES.filter(c => !c.soon).length + " open</button>" : "") +
       (gate ? "<div class='gate' " + (typeof openLevelPanel === "function" ? "id='skGate' style='cursor:pointer'" : "") + ">" + gate + "</div>" : "") +
       "<div class='lab'>In use</div><div class='slots'>";
@@ -184,7 +192,7 @@
     let h = "<div class='tabs'>" + ORDER.map(br => "<button data-tab='" + br + "' class='" + (br === tab ? "on" : "") + "' style='--c:" + COL[br] + "'>" + ICON[br] + " " + BRANCH[br].name + "<small>" + pts[br] + " pts</small></button>").join("") + "</div>" +
       "<div class='bd' style='color:" + COL[tab] + "'><b>" + DESC[tab] + "</b>" + (pts[tab] >= 10 ? " · 🏅 " + TITLE[tab] : "") + "</div>" +
       pathHtml(act_) + (pas.length ? "<div class='lab'>Passive</div>" + pathHtml(pas) : "") +
-      "<div class='note'>Higher rank = stronger skill. The look changes at rank 3 and 5. You must say longer sentences (rank 1 is about 3-4 words ... rank 5 is about 11-12 words).</div>";
+      "<div class='note'>New skills come from the scholars' knowledge quests 📗. Skill points only upgrade skills (rank 1 → 10). The look changes at rank 4, 7 and 10. Higher rank = longer sentences to say.</div>";
     const body = $("skBody"), sc = $("skOver").querySelector(".ev-in").scrollTop;
     body.innerHTML = h;
     body.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { tab = b.dataset.tab; try { localStorage.setItem("ev_skTab", tab); } catch (e) {} render(); });
@@ -253,7 +261,7 @@
     return [];   // self: không cần quái
   }
   function preview(id) {
-    const S = SKILLS[id]; if (!S || typeof SKILL_VFX === "undefined") return;
+    const S = SKILLS[id]; if (!S || (typeof FX3D === "undefined" && typeof SKILL_VFX === "undefined")) return;
     timers.forEach(clearTimeout); timers = [];
     const A = openArena(); if (!A) return;
     $("skArena").scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -261,11 +269,12 @@
     const run = (rank, delay) => at(() => {
       const lay = layout(S), P = A.me.position.set(0, 0, 0);
       A.dummies.forEach((d, i) => { d.visible = i < lay.length; if (lay[i]) d.position.set(lay[i][0], 0, lay[i][1]); });
-      const tgt = lay.length ? V(lay[0][0], lay[0][1]) : null, rk = S.type === "ult" ? 5 : rank;
+      const tgt = lay.length ? V(lay[0][0], lay[0][1]) : null, rk = S.type === "ult" ? 10 : rank;
       setCam(S.radius >= 8 ? 14 : 11);   // chiêu vùng rất rộng: lùi camera để thấy hết (ngoài trận camera cũng đổi theo cỡ vùng nhìn)
       if (tgt) A.me.rotation.y = Math.atan2(tgt.x - P.x, tgt.z - P.z); else A.me.rotation.y = Math.PI;
-      $("skArNm").textContent = S.icon + " " + S.name + " · rank " + rk;
-      const look = (to, radius) => SKILL_VFX.play(id, { rank: rk, from: P.clone(), to: to ? to.clone() : null, radius, perfect: true, scene: A.sc });
+      $("skArNm").textContent = S.icon + " " + S.name + " · rank " + rk + (S.type === "passive" ? "" : " · " + formsOf(id)[skillForm(rk) - 1]);
+      const look = (to, radius) => { if (typeof FX3D !== "undefined" && fxReady()) FX3D.cast(id, P.clone(), to ? to.clone() : null, rk, { kind: S.kind, branch: S.branch, radius: radius || S.radius, scene: A.sc, camera: A.cam });
+        else SKILL_VFX.play(id, { rank: Math.min(5, Math.ceil(rk / 2)), from: P.clone(), to: to ? to.clone() : null, radius, perfect: true, scene: A.sc }); };
       if (S.kind === "single" && tgt) look(tgt);
       else if (S.kind === "multi" && tgt) lay.forEach((p, h) => { if (h < (S.hits || 1)) at(() => look(V(p[0], p[1]), 0.8), h * 220); });
       else if (S.kind === "aoe") look(null, S.radius);
@@ -273,8 +282,8 @@
       else if (S.kind === "dash" && tgt) { const d = Math.hypot(tgt.x, tgt.z), step = Math.max(0, d - 1.2); P.set(tgt.x / d * step, 0, tgt.z / d * step); look(tgt, S.radius); }
       else if (S.kind === "self") look(null, 2);
     }, delay);
-    const r = Math.max(1, skillRank(id));
-    run(r, 150); if (r < 5 && S.type !== "ult") run(5, 2400);
+    const r = Math.max(1, skillRank(id)), nf = nextForm(r);
+    run(r, 150); if (nf && S.type !== "ult") run(nf, 2600);   // xem bậc hiện tại rồi hình dạng kế tiếp (để có cái mà mong)
   }
 
   function init() { build(); }
