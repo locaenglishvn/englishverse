@@ -2114,12 +2114,13 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     let E = GOD_GLB[slug]; if (E && (E.scene || E.fail)) return cb && cb(E); if (E) { if (cb) E.wait.push(cb); return; }
     E = GOD_GLB[slug] = { wait: cb ? [cb] : [] }; const done = () => { const w = E.wait; E.wait = []; w.forEach(f => f(E)); };
     if (!THREE.GLTFLoader) { E.fail = true; return done(); }
-    new THREE.GLTFLoader().load((api.godPath || "assets/gods/") + slug + ".glb", g => { const sc = g.scene; sc.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(sc), sz = box.getSize(new V3()), k = 4.8 / (sz.y || 1);
+    const onG = g => { const sc = g.scene; sc.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(sc), sz = box.getSize(new V3()), k = 4.8 / (sz.y || 1);
         const wrap = new THREE.Group(); sc.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2); wrap.add(sc); wrap.scale.setScalar(k);
         E.mats = []; sc.traverse(o => { if (!o.isMesh) return; o.frustumCulled = false; o.renderOrder = 12; const m = new THREE.MeshBasicMaterial({ map: o.material.map || null, color: 0xffffff, transparent: true, opacity: 0.7, depthWrite: true, side: THREE.FrontSide });
           if (o.isSkinnedMesh) m.skinning = true; m.userData.keep = true; o.material = m; E.mats.push(m); });
-        E.bones = {}; E.bind = {}; sc.traverse(o => { if (o.isBone) { E.bones[o.name] = o; E.bind[o.name] = o.quaternion.clone(); } }); E.rigged = !!E.bones.R_Upperarm; E.scene = wrap; done(); },
-      undefined, () => { E.fail = true; done(); });
+        E.bones = {}; E.bind = {}; sc.traverse(o => { if (o.isBone) { E.bones[o.name] = o; E.bind[o.name] = o.quaternion.clone(); } }); E.rigged = !!E.bones.R_Upperarm; E.scene = wrap; done(); }, onErr = () => { E.fail = true; done(); };
+    if (api.godFetch) api.godFetch(slug, buf => buf ? new THREE.GLTFLoader().parse(buf, "", onG, onErr) : onErr());   /* sổ tay: mô hình đóng gói trong .js */
+    else new THREE.GLTFLoader().load((api.godPath || "assets/gods/") + slug + ".glb", onG, undefined, onErr);
   }
   const _gq = new THREE.Quaternion(), _gax = { x: new V3(1, 0, 0), y: new V3(0, 1, 0), z: new V3(0, 0, 1) };
   const GOD_POSE = {   /* w: thủ thế (0→1) · r: ra chiêu (0→1). Trục khớp mô hình thần Tripo (đo 27/11): Upperarm x+ = đưa tay ra trước rồi lên · tay phải z- (tay trái z+) = giơ ngang lên cao · Spine02 y = xoay người · Forearm x+ = gập khuỷu */
