@@ -51,6 +51,13 @@ h3{font-size:16px;margin:0 0 4px}
 .pill.new{background:var(--gold-soft);color:var(--gold)}
 .pill.have{background:var(--teal-soft);color:var(--teal)}
 .rar{font-weight:700}
+.vfx-stage{position:relative;width:100%;height:min(64vh,620px);border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0b1020}
+.vfx-stage canvas{display:block;width:100%;height:100%}
+.vfx-cap{position:absolute;left:12px;right:12px;bottom:10px;pointer-events:none;display:flex;flex-direction:column;gap:2px;color:#fff;text-shadow:0 1px 3px #000,0 0 10px #000}
+.vfx-cap b{font-family:var(--display);font-size:20px;color:#ffd860}
+.vfx-cap span{font-size:13px;max-width:62ch}
+.vfx-stat{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.vfx-lv{display:inline-block;min-width:3.2em;font-size:11px;font-weight:700;color:var(--gold)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
 .chips button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:99px;padding:5px 11px;cursor:pointer}
 .chips button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
@@ -125,6 +132,7 @@ a{color:var(--teal)}
 <script src="scholars.js"></script>
 <script src="outfits.js"></script>
 <script src="hairstyles.js"></script>
+<script src="skilltree.js"></script>
 <script>
 (function(){
 const B = window.BIBLE, NPC = window.CORE_NPCS || [];
@@ -140,6 +148,54 @@ const skills = Object.entries(B.SKILLS).map(([id, s]) => Object.assign({ id }, s
 const weapons = Object.entries(B.W_LINES).reduce((n, [k, v]) => n + v.names.length, 0);
 
 /* ---------------- các trang ---------------- */
+/* ---------- Tab "Hiệu ứng chiêu": sân thử 3D dùng chính parts/combat/fx3d.js của game (bản sao fx3d.js cạnh trang, chép bởi tools/bible/build.js) ---------- */
+const VFX = { on: false };
+function loadScript(src){ return new Promise((ok, no) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
+async function startVfx(){
+  const stage = document.getElementById("vfxStage"); if (!stage) return;
+  try { if (!window.THREE) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"); if (!window.FX3D) await loadScript("fx3d.js"); }
+  catch (e) { stage.insertAdjacentHTML("beforeend", "<p style='color:#fff;padding:16px'>Không tải được thư viện 3D. Kiểm tra mạng rồi mở lại tab.</p>"); return; }
+  if (!document.body.contains(stage)) return;
+  const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); stage.prepend(renderer.domElement);
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(30, 1, 0.1, 300);
+  scene.add(new THREE.HemisphereLight(0xdfefff, 0x6a8a4a, 0.7)); const sun = new THREE.DirectionalLight(0xffe2b0, 0.9); sun.position.set(14, 16, 4); scene.add(sun);
+  const groundTex = (kind) => { const n = 512, c = document.createElement("canvas"); c.width = c.height = n; const g = c.getContext("2d"); g.fillStyle = { grass: "#6a9c45", snow: "#e8eef6", night: "#1d2a2a" }[kind]; g.fillRect(0, 0, n, n);
+    let sd = 3; const r = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; }; const pal = { grass: ["#5a8c38", "#7aae4b", "#88bb55"], snow: ["#dfe7f1", "#f6f9fd", "#cfdbe9"], night: ["#16211f", "#243534", "#1a2a2c"] }[kind];
+    for (let i = 0; i < 160; i++) { const x = r() * n, y = r() * n, rr = 20 + r() * 60, gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, pal[i % 3]); gr.addColorStop(1, "rgba(0,0,0,0)"); g.globalAlpha = 0.35; g.fillStyle = gr; g.fillRect(x - rr, y - rr, rr * 2, rr * 2); }
+    g.globalAlpha = 1; if (kind !== "snow") for (let i = 0; i < 2500; i++) { const x = r() * n, y = r() * n; g.strokeStyle = kind === "grass" ? (r() < 0.5 ? "rgba(52,96,36,.45)" : "rgba(170,210,110,.45)") : "rgba(80,110,100,.35)"; g.lineWidth = 1.4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - 0.5) * 3, y - 4 - r() * 6); g.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(10, 10); return t; };
+  const GR = { grass: [groundTex("grass"), 0xbfdcf0], snow: [groundTex("snow"), 0xdfe9f4], night: [groundTex("night"), 0x0b1020] };
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ map: GR.grass[0] })); scene.add(ground); scene.background = new THREE.Color(GR.grass[1]);
+  const lam = c => new THREE.MeshLambertMaterial({ color: c }), P = new THREE.Vector3(-1.2, 0, 3), T = new THREE.Vector3(1.6, 0, -4.2);
+  const hero = new THREE.Group(); [[new THREE.CylinderGeometry(0.32, 0.4, 1, 12), 0x1f8a8a, 0.85], [new THREE.SphereGeometry(0.42, 16, 12), 0xf2c9a6, 1.65]].forEach(([g, c, y]) => { const m = new THREE.Mesh(g, lam(c)); m.position.y = y; hero.add(m); });
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), lam(0x2b2b3a)); hair.position.y = 1.72; hero.add(hair); hero.position.copy(P); scene.add(hero);
+  const mon = new THREE.Group(), mb = new THREE.Mesh(new THREE.SphereGeometry(0.9, 18, 14), lam(0x9b4dca)); mb.scale.y = 0.85; mb.position.y = 0.8; mon.add(mb);
+  [-0.3, 0.3].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff })); e.position.set(x, 1.05, 0.72); mon.add(e); }); mon.position.copy(T); mon.rotation.y = Math.atan2(P.x - T.x, P.z - T.z); scene.add(mon);
+  FX3D.setup(scene, camera, renderer);
+  const look = new THREE.Vector3().addVectors(P, T).multiplyScalar(0.5).setY(1);
+  const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; const D = camera.aspect < 0.8 ? 21 : 17; camera.position.set(look.x, look.y + Math.sin(0.93) * D, look.z + Math.cos(0.93) * D); camera.updateProjectionMatrix(); };
+  addEventListener("resize", resize); resize();
+  const ids = FX3D.ids.slice().sort((a, b) => FX3D.meta[a].lv - FX3D.meta[b].lv);
+  let cur = ids[0], rank = 1, auto = true, autoT = 0;
+  const cast = id => { cur = id; FX3D.cast(id, P, T, rank); const M = FX3D.meta[id]; document.getElementById("vfxName").textContent = M.name + (M.lv ? " · Lv." + M.lv : "") + " · bậc " + rank + (M.forms ? " · " + M.forms[FX3D.form(rank) - 1] : "");
+    document.getElementById("vfxDesc").textContent = M.desc + " (" + M.who + ")"; document.querySelectorAll("#vfxSk button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === id))); autoT = 0; };
+  document.getElementById("vfxSk").innerHTML = ids.map(id => `<button data-v="${id}"><span class="vfx-lv">${FX3D.meta[id].lv ? "Lv." + FX3D.meta[id].lv : "Thường"}</span>${esc(FX3D.meta[id].name)}</button>`).join("");
+  chips("vfxSk", v => { auto = false; document.getElementById("vfxAuto").setAttribute("aria-pressed", "false"); cast(v); });
+  chips("vfxRk", v => { rank = +v; cast(cur); });
+  chips("vfxGr", v => { ground.material.map = GR[v][0]; ground.material.needsUpdate = true; scene.background = new THREE.Color(GR[v][1]); });
+  document.getElementById("vfxAuto").onclick = e => { auto = !auto; e.currentTarget.setAttribute("aria-pressed", String(auto)); autoT = 0; };
+  document.getElementById("vfxAgain").onclick = () => cast(cur);
+  const clock = new THREE.Clock(), stat = document.getElementById("vfxStat"); let fr = 0, acc = 0;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const loop = () => { if (!document.body.contains(renderer.domElement)) { FX3D.clear(); renderer.dispose(); removeEventListener("resize", resize); return; }   // rời tab: dừng
+    requestAnimationFrame(loop); const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime; if (window.__vfxPause) return; FX3D.update(dt);
+    if (auto && (autoT += dt) > (cur === "dragon_roar" ? 3.6 : cur === "last_word" ? 3 : 2.6)) cast(ids[(ids.indexOf(cur) + 1) % ids.length]);
+    mon.position.y = Math.abs(Math.sin(t * 3)) * 0.12; const s = reduce ? 0 : FX3D.shake; resize(); camera.position.x += (Math.random() - 0.5) * s * 0.6; camera.position.y += (Math.random() - 0.5) * s * 0.6;
+    camera.lookAt(look); renderer.render(scene, camera);
+    fr++; acc += dt; if (acc > 1) { stat.textContent = Math.round(fr / acc) + " khung/giây · " + renderer.info.render.calls + " lần vẽ · " + Math.round(renderer.info.render.triangles / 1000) + "k tam giác"; fr = 0; acc = 0; } };
+  window.__vfx = { renderer, scene, camera, look, P, T };
+  cast(cur); loop();
+}
 const PAGES = [
  { id:"tong-quan", name:"Tổng quan", render(){
    const deckN = Object.values(B.deck).reduce((a, d) => a + d.n, 0) + B.sounds.n + B.starterDeck.length;
@@ -270,6 +326,39 @@ const PAGES = [
    <div class="flow"><span>Perfect · 100%</span><span>Good · 70%</span><span>Weak · 30%</span><span>Miss · hoàn ½ mana</span><span>Đang nói: khiên −70% sát thương</span></div>
    ${Object.entries(B.BRANCH).map(([k, br]) => { const L = skills.filter(s => s.branch === k).sort((a, b) => a.lv - b.lv);
      return `<h2>${br.icon} ${esc(br.name)}</h2><div class="tbl branch" style="--c:${br.color}"><table><thead><tr><th>Chiêu</th><th>Loại</th><th>Mở</th><th>Mana</th><th>Hồi</th><th>Tác dụng</th></tr></thead><tbody>${L.map(s => `<tr><td>${s.icon} <b>${esc(s.name)}</b></td><td class="small">${s.type === "passive" ? "Nội tại" : s.type === "ult" ? "Tuyệt chiêu" : (K[s.kind] || s.kind)}</td><td class="num">Lv.${s.lv}</td><td class="num">${s.mana != null ? s.mana : ""}</td><td class="num">${s.cd ? s.cd + " s" : ""}</td><td class="small">${esc(s.desc)}</td></tr>`).join("")}</tbody></table></div>`; }).join("")}`; } },
+ { id:"chieu-danh-nhan", name:"Chiêu × Danh nhân", blurb:"Đề xuất: mở chiêu bằng nhiệm vụ danh nhân, điểm kỹ năng để nâng bậc", render(){
+   const T = window.SKILL_TREE || { rules: [], chapters: [], starter: [], ults: [] }, BR = k => (B.BRANCH[k] || {}), tag = k => `<span class="pill" style="color:${BR(k).color || "inherit"}">${BR(k).icon || ""} ${esc(BR(k).name || k)}</span>`;
+   const all = T.chapters.flatMap(c => c.list.flatMap(x => x.skills)), cnt = k => all.filter(s => s.b === k).length;
+   return `<h1 class="pg">Chiêu × Danh nhân</h1>
+   <p class="lede">Đề xuất: chiêu không mở bằng điểm kỹ năng nữa mà bằng <b>nhiệm vụ kiến thức</b> của danh nhân. Mỗi chiêu lấy 1 hạt giống khoa học thật rồi phóng đại thành phép hầm hố. Điểm kỹ năng khi lên cấp chỉ để nâng bậc. <span class="pill new">đề xuất, chờ duyệt</span></p>
+   <div class="stats"><div class="stat"><b>${all.length}</b><span>chiêu từ danh nhân</span></div>${Object.keys(B.BRANCH).map(k => `<div class="stat"><b>${cnt(k)}</b><span>${BR(k).icon} ${esc(BR(k).name)}</span></div>`).join("")}<div class="stat"><b>${T.ults.length}</b><span>tuyệt chiêu thần thoại</span></div></div>
+   <h2>Luật</h2><div class="grid">${T.rules.map(([h, p]) => `<div class="card"><h3>${esc(h)}</h3><p>${esc(p)}</p></div>`).join("")}</div>
+   <h2>Lv.1–9 · 4 chiêu khởi đầu của Vocara</h2><div class="grid">${T.starter.map(s => `<div class="card"><h3>${esc(s.name)}</h3><p>${tag(s.b)}</p><p class="small">${esc(s.fx)}</p></div>`).join("")}</div>
+   ${T.chapters.map(c => `<h2>Chương ${c.n} · ${esc(c.name)} <span class="muted small">${esc(c.lv)}</span></h2>
+    <div class="tbl"><table><thead><tr><th>Danh nhân</th><th>Chiêu</th><th>Nhánh</th><th>Mở bằng nhiệm vụ</th><th>Hình ảnh khi tung chiêu</th><th>Kiến thức thật</th></tr></thead><tbody>
+    ${c.list.map(x => x.skills.map((s, i) => `<tr>${i === 0 ? `<td rowspan="${x.skills.length}"><b>${esc(x.who)}</b><br><span class="small muted">Lv.${x.lv}</span></td>` : ""}<td><b>${esc(s.name)}</b></td><td>${tag(s.b)}</td><td class="small">${esc(s.q)}</td><td class="small">${esc(s.fx)}</td><td class="small muted">${esc(s.seed)}</td></tr>`).join("")).join("")}</tbody></table></div>`).join("")}
+   <h2>Tuyệt chiêu thần thoại · 8 khu văn hoá</h2><p class="small muted" style="margin-top:-6px">Danh nhân trao tri thức, thần trao phép: tuyệt chiêu nhận khi giải phóng khu văn hoá của vị thần đó.</p>
+   <div class="grid">${T.ults.map(u => `<div class="card"><h3>${esc(u.name)}</h3><p class="small muted">${esc(u.god)} · ${esc(u.area)}</p><p class="small">${esc(u.fx)}</p></div>`).join("")}</div>`; } },
+ { id:"hieu-ung", name:"Hiệu ứng chiêu", blurb:"Bản mẫu chiêu 3D: phù văn của các vị thần, rồng, kiếm, sách", render(){
+   return `<h1 class="pg">Hiệu ứng chiêu ✨</h1>
+   <p class="lede">Bản mẫu chạy thật bằng chính mã hiệu ứng của game (parts/combat/fx3d.js). Bấm từng chiêu, đổi bậc 1 / 4 / 7 / 10: mỗi mốc chiêu đổi sang hình dạng mới. 4 chiêu khởi đầu đã có 4 hình riêng; chiêu ghi "hiệu ứng chung" đang dùng bộ chung theo nhánh, sẽ làm riêng dần.</p>
+   <div class="vfx-stage" id="vfxStage"><div class="vfx-cap"><b id="vfxName"></b><span id="vfxDesc"></span></div></div>
+   <p class="vfx-stat" id="vfxStat">Đang tải sân thử…</p>
+   <h3>Chiêu (theo cấp mở)</h3><div class="chips" id="vfxSk"></div>
+   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+    <div><h3>Bậc chiêu</h3><div class="chips" id="vfxRk"><button data-v="1" aria-pressed="true">Bậc 1</button><button data-v="4">Bậc 4</button><button data-v="7">Bậc 7</button><button data-v="10">Bậc 10</button></div></div>
+    <div><h3>Nền thử</h3><div class="chips" id="vfxGr"><button data-v="grass" aria-pressed="true">Cỏ sáng</button><button data-v="snow">Tuyết</button><button data-v="night">Đêm</button></div></div>
+    <div><h3>Chế độ</h3><div class="chips"><button id="vfxAuto" aria-pressed="true">Tự phát lần lượt</button><button id="vfxAgain">Phát lại</button></div></div>
+   </div>
+   <h2>Nguyên tắc</h2>
+   <div class="grid">
+    <div class="card"><h3>Càng về sau càng đẹp</h3><p>Chiêu mở ở cấp cao có nhiều lớp hơn (Lv.1: 1 vòng phù văn + 1 vụ nổ · Lv.12: sét, băng · Lv.28–36: lốc lửa, kiếm khổng lồ · Lv.40: rồng). Mỗi chiêu lại có 5 bậc: bậc 3 thêm vòng phù văn thứ 2 và hạt sáng, bậc 5 đổi sắc vàng sáng, thêm cột sáng, sóng và rung mạnh.</p></div>
+    <div class="card"><h3>3 lớp mỗi chiêu</h3><p>Lớp đất (vòng phù văn, vết nứt, vệt tối để nổi trên nền sáng) · thân chiêu (quả cầu, vệt kiếm, cột lửa, lốc, sét, rồng, kiếm, sách) · va chạm (chớp, hạt bắn, sóng, rung màn hình).</p></div>
+    <div class="card"><h3>Phù văn của các vị thần</h3><p>Chữ trên vòng là chữ của thần ngôn ngữ trong cốt truyện: rune (Odin), Ogham (Ogma), Hy Lạp (Hermes), chữ Hán (Thương Hiệt), hình nêm (Nabu), tượng hình (Thoth), chữ Latin + nốt nhạc (Vocara).</p></div>
+    <div class="card"><h3>Hình dạng & chuyển động vòng</h3><p>6 hình: tròn, sao gai, lục giác, ấn vuông, mặt trời tia gai, tam giác. 5 kiểu: xoay, đứng im, toả dần, thở (toả ra – hút vào), thu vào.</p></div>
+    <div class="card"><h3>Hình nhìn ra được</h3><p>Chiêu tạo vật phải nhận ra ngay: rồng có đầu, hàm mở, sừng, râu, bờm lửa, 4 chân có vuốt; kiếm có lưỡi, chuôi, đốc; sách có bìa da, trang chữ bay ra.</p></div>
+    <div class="card"><h3>Nhẹ cho điện thoại</h3><p>Hạt sáng tính trên card đồ hoạ, khối hình dùng ảnh nhiễu trôi, mọi ảnh vẽ bằng code (không tải file). Số khung / giây hiện dưới sân thử.</p></div>
+   </div>`; }, after(){ startVfx(); } },
  { id:"the-bai", name:"Sổ thẻ", blurb:"3 loại thẻ, hạn mức, sao luyện tập", render(){
    return `<h1 class="pg">Sổ thẻ 🎴</h1>
    <p class="lede">Thẻ là thứ người chơi sưu tầm khi nói chuyện được với NPC hoặc hỏi tên đồ vật. Quái lấy đề từ chính thẻ của người chơi, thẻ ít sao ra nhiều hơn.</p>
