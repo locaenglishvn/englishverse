@@ -9,7 +9,7 @@ const HINT = { hybrid_shot: { at: [0.15, 0.25, 0.35] }, four_moons: { casts: 1, 
   microbe_swarm: { at: [0.6, 0.8, 1.0], look: 0.95, dist: 7 }, dragon_roar: { at: [0.7, 0.9, 1.1, 1.3], look: 0.35, dist: 11 }, winged_courier: { casts: 7, at: [0.35, 0.5, 0.65], look: 1, dist: 6, y: 2.4, nocrop: true }, photon_lance: { at: [0.29, 0.31], look: 0.6, dist: 8 },
   ibis_judgment: { at: [0.9, 1.1, 1.3], look: 0.15 }, echo_blast: { at: [0.25, 0.35, 0.45], look: 0.6 }, water_split: { at: [0.5, 0.65, 0.8], look: 1, dist: 6 } };   /* gợi ý chụp riêng: { at: [giây], look: 0 (người chơi) … 1 (quái), dist, y } */
 const only = (process.argv[2] || "").split(",").filter(Boolean), ids = Object.keys(SK).filter(id => !only.length || only.includes(id));
-const MIME = { ".html": "text/html; charset=utf-8", ".js": "application/javascript" };
+const MIME = { ".html": "text/html; charset=utf-8", ".js": "application/javascript", ".glb": "model/gltf-binary", ".webp": "image/webp" };
 const server = http.createServer((q, r) => { const f = path.join(ROOT, decodeURIComponent(q.url.split("?")[0])); if (!fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": MIME[path.extname(f)] || "application/octet-stream" }); fs.createReadStream(f).pipe(r); });
 server.listen(0, async () => {
   const b = await chromium.launch({ args: ["--use-gl=swiftshader", "--enable-unsafe-swiftshader"] }), p = await b.newPage(); const errs = []; p.on("pageerror", e => errs.push(e.message));

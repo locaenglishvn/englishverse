@@ -292,7 +292,7 @@ void main() {
     o = o || {}; F = F.clone(); Tg = Tg.clone(); const C = F.clone().lerp(Tg, 0.3);
     const gold = o.c1 || 0xa8300c, gold2 = o.c2 || 0xffe27a, fire = o.fire || [0xff3a0a, 0xffd27a];
     task(delay || 0, dur, () => {
-      const N = 40, M = 8, LEN = 10.5, hist = [];
+      const N = 40, M = 8, SZ = o.size || 1, LEN = 10.5 * SZ, hist = [];
       const bodyMat = solidMat(gold, gold2, 0xffd890, TEX.scale, [30, 3]); bodyMat.uniforms.uBelly.value = 1; const headMat = solidMat(gold, gold2, 0xffd890, TEX.noise, [2, 2]), _hm = 0, hornMat = solidMat(0xcfa860, 0xfff8e0, 0xffffff), fireMat = flowMat({ c1: fire[0], c2: fire[1], rep: [1, 1], spd: [0, -2.5], fres: 0.6, cut: 0.05, fade: [0, 0, 0.05, 0.5] });
       // thân: ống (N+1) vòng × (M+1) đỉnh, dựng lại mỗi khung theo đường bay
       const bg = new THREE.BufferGeometry(), bp = new Float32Array((N + 1) * (M + 1) * 3), bn = new Float32Array(bp.length), buv = new Float32Array((N + 1) * (M + 1) * 2), bi = [];
@@ -325,12 +325,12 @@ void main() {
       if (o.feathers) for (let q = 0; q < 11; q++) { const a = (q / 10 - 0.5) * PI * 1.2, fm = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 1.7).translate(0, 0.85, 0), new THREE.MeshBasicMaterial({ map: featherTex(), color: o.feathers[q % o.feathers.length], transparent: true, side: THREE.DoubleSide, depthWrite: false })); fm.position.set(0, 0.35, -0.25); fm.rotation.set(-0.9, 0, a); head.add(fm); }   /* mào lông quetzal */
       head.scale.setScalar(1.5); SC.add(head); head.traverse(x => { x.frustumCulled = false; x.renderOrder = 11; });
       const pos = new V3(), tmp = new V3(), tan = new V3(), side = new V3(), up = new V3(), nv = new V3(), dum = new THREE.Object3D();
-      const path = (u) => {   // 0 → 0.55: bay xoắn ốc lên; 0.55 → 1: lao xuống mục tiêu
+      const path = o.path ? (u => o.path(u, pos)) : (u) => {   // 0 → 0.55: bay xoắn ốc lên; 0.55 → 1: lao xuống mục tiêu
         if (u < 0.55) { const s = u / 0.55, a = s * PI * 3.0, r = 1.8 + s * 1.4; return pos.set(C.x + Math.cos(a) * r, 0.9 + s * 3.0 + Math.sin(s * PI * 6) * 0.25, C.z + Math.sin(a) * r); }
         const s = (u - 0.55) / 0.45, a = 3.0 * PI, S = tmp.set(C.x + Math.cos(a) * 3.2, 3.9, C.z + Math.sin(a) * 3.2), e = s * s * (3 - 2 * s);
         return pos.set(S.x + (Tg.x - S.x) * e, S.y + (1.1 - S.y) * e + Math.sin(s * PI) * 1.2, S.z + (Tg.z - S.z) * e);
       };
-      const radius = u => u < 0.04 ? 0.38 : u < 0.2 ? 0.38 + (u - 0.04) / 0.16 * 0.17 : u < 0.5 ? 0.55 - (u - 0.2) / 0.3 * 0.12 : Math.max(0.05, 0.43 * (1 - (u - 0.5) / 0.5));
+      const radius = u => SZ * (u < 0.04 ? 0.38 : u < 0.2 ? 0.38 + (u - 0.04) / 0.16 * 0.17 : u < 0.5 ? 0.55 - (u - 0.2) / 0.3 * 0.12 : Math.max(0.05, 0.43 * (1 - (u - 0.5) / 0.5)));
       for (let i = 0; i < 120; i++) hist.push(path(0).clone().add(new V3(0, -1.2 - i * 0.1, 0)));   // thân chưa duỗi: nằm dưới đất (bị mặt đất che), rồng "trồi lên" từ vòng phù văn
       return { upd: (k, t) => {
         [bodyMat, hornMat, headMat].forEach(m => m.uniforms.uTime.value = t); fireMat.uniforms.uTime.value = t;
@@ -363,10 +363,11 @@ void main() {
         const tf = frames[N - 1], tailOn = tf.p.distanceTo(frames[0].p) > LEN * 0.45 ? fade : 0;   // đuôi lửa chỉ hiện khi thân đã duỗi ra (lúc đầu thân còn cuộn)
         for (let c = 0; c < 3; c++) { dum.position.copy(tf.p); dum.quaternion.copy(basisQ(tmp.copy(tf.t).multiplyScalar(-1).addScaledVector(tf.u, (c - 1) * 0.7), tf.s)); dum.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new V3(1, 0, 0), PI / 2)); dum.scale.setScalar(tailOn); dum.updateMatrix(); tailF.setMatrixAt(c, dum.matrix); }
         tailF.instanceMatrix.needsUpdate = true;
-        const f0 = frames[0]; head.position.copy(f0.p).addScaledVector(f0.t, 0.35); head.quaternion.copy(basisQ(f0.t, f0.u)); head.scale.setScalar(1.5 * fade);
+        const f0 = frames[0]; head.position.copy(f0.p).addScaledVector(f0.t, 0.35); head.quaternion.copy(basisQ(f0.t, f0.u)); head.scale.setScalar(1.5 * SZ * fade); if (o.alpha) [bodyMat, hornMat, headMat].forEach(m => m.uniforms.uAlpha.value = fade * o.alpha);
         jaw.rotation.x = 0.25 + Math.abs(Math.sin(t * 5)) * 0.35; mouth.material.opacity = 0.6 + Math.sin(t * 20) * 0.3;
       }, end: () => { [body, spikes, legs, claws, tailF, head].forEach(kill); if (feathers) kill(feathers); } };
     });
+    if (o.path) { const pp = new V3(); emitter(220, i => { const u = i / 220; return { p: o.path(u, pp).clone().add(rv(0.6 * (o.size || 1))), v: rv(1.0), t0: u * dur * 0.95 + (delay || 0), life: R(0.5, 0.9), size: R(0.3, 0.6) * (o.size || 1), col: [gold2, 0xffffff, fire[0]][i % 3] }; }, { grav: -1.5, drag: 2 }); return; }
     emitter(220, i => { const u = i / 220, s = Math.min(1, u / 0.55), a = s * PI * 3.0, r = 1.8 + s * 1.4; const p = u < 0.55 ? new V3(C.x + Math.cos(a) * r, 0.9 + s * 3.0, C.z + Math.sin(a) * r) : new V3(C.x + Math.cos(3 * PI) * 3.2, 3.9, C.z).lerp(Tg, (u - 0.55) / 0.45);
       return { p: p.add(rv(0.5)), v: rv(1.0), t0: u * dur * 0.95 + (delay || 0), life: R(0.5, 0.9), size: R(0.3, 0.6), col: [gold2, 0xffffff, fire[0]][i % 3] }; }, { grav: -1.5, drag: 2 });
   }
@@ -376,8 +377,8 @@ void main() {
 void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(uTex, vec2(vUv.x * 2.0, vUv.y * 3.0 - uTime * 1.5)).r;
   float core = smoothstep(0.35, 0.0, abs(vUv.x - 0.5)); vec3 col = mix(uC1, uC2, core * 0.8 + n * 0.3) + vec3(1.0) * fr * 0.7 + uC2 * smoothstep(0.6, 0.9, n) * 0.6;
   gl_FragColor = vec4(col, uAlpha); }`;
-  function giantSword(T, c1, c2, dur, delay, cb) {
-    T = T.clone();
+  function giantSword(T, c1, c2, dur, delay, cb, o) {
+    T = T.clone(); o = o || {}; const TD = new V3(Math.sin(o.tilt || 0) * Math.cos(o.yaw || 0), Math.cos(o.tilt || 0), Math.sin(o.tilt || 0) * Math.sin(o.yaw || 0));   /* o.tilt: kiếm đâm xiên (trục nghiêng), o.yaw: hướng nghiêng */
     task(delay || 0, dur, () => {
       const sh = new THREE.Shape(); sh.moveTo(-0.34, 0); sh.lineTo(0.34, 0); sh.lineTo(0.28, 4.3); sh.lineTo(0, 5.2); sh.lineTo(-0.28, 4.3); sh.closePath();
       const bladeG = new THREE.ExtrudeGeometry(sh, { depth: 0.08, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.06, bevelSegments: 1 }); bladeG.translate(0, 0, -0.04);
@@ -393,8 +394,8 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
       const aura = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false, opacity: 0.6 })); aura.position.set(0, 2.4, 0); aura.scale.set(2.2, 7, 1); g.add(aura);
       g.rotation.z = PI; g.traverse(x => { x.frustumCulled = false; x.renderOrder = 10; }); SC.add(g); let hit = false;
       return { upd: (k, t) => { bm.uniforms.uTime.value = t; hilt.uniforms.uTime.value = t;
-        const fall = Math.min(1, Math.max(0, (k - 0.18) / 0.14)), y = 11 - (11 + 1.6) * fall * fall;   // treo trên trời rồi rơi nhanh, cắm sâu 1,6 m
-        g.position.set(T.x, Math.max(-1.6, y) + 5.2, T.z); g.rotation.y = (1 - fall) * t * 2;
+        const fall = Math.min(1, Math.max(0, (t - 0.4) / 0.31)), y = 11 - (11 + 1.6) * fall * fall;   // treo trên trời rồi rơi nhanh, cắm sâu 1,6 m
+        if (o.tilt) { g.position.copy(T).addScaledVector(TD, Math.max(-1.6, y) + 5.2); g.quaternion.setFromUnitVectors(UP, TD.clone().negate()); } else { g.position.set(T.x, Math.max(-1.6, y) + 5.2, T.z); g.rotation.y = (1 - fall) * t * 2; }
         const a = Math.min(1, k / 0.1) * (1 - Math.max(0, k - 0.8) / 0.2); bm.uniforms.uAlpha.value = a; hilt.uniforms.uAlpha.value = a; aura.material.opacity = 0.6 * a; gem.material.opacity = a;
         if (!hit && fall >= 1) { hit = true; if (cb) cb(); } }, end: () => kill(g) }; });
   }
@@ -2012,17 +2013,6 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     const ws = new THREE.Shape(); ws.moveTo(0, 0); ws.quadraticCurveTo(0.8, 0.5, 1.6, 0.1); ws.lineTo(1.3, -0.15); ws.lineTo(1.0, -0.05); ws.lineTo(0.7, -0.25); ws.lineTo(0.3, -0.1); ws.lineTo(0, -0.3);
     const wings = [-1, 1].map(s => { const w = new THREE.Mesh(new THREE.ShapeGeometry(ws).rotateX(-PI / 2), m); w.scale.x = s; g.add(w); return w; }); const eye = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0x5fa8ff, blending: ADD, transparent: true, depthWrite: false })); eye.position.z = 0.35; eye.scale.setScalar(0.35); g.add(eye); return { g, wings }; }
   META.rune_sword = { name: "Rune Sword", lv: 70, who: "Odin · tuyệt chiêu Bắc Âu", forms: ["Tuyệt chiêu", "Tuyệt chiêu", "Tuyệt chiêu", "Tuyệt chiêu"] };
-  SK.rune_sword = (F, T, rk) => {
-    const c1 = 0x5fa8ff, c2 = 0xe0f4ff, B = T.clone().setY(1), hit = 0.05 + 2.2 * 0.32;
-    ultFrame(T, c1, c2, "runic", 2.6, "Rune Sword", 5);
-    giantSword(T, c1, c2, 2.2, 0.05, null);
-    for (let r = 0; r < 2; r++) prop(0, 2.4, () => { const o = raven(); return { g: o.g, upd: (k, t) => { const a = r * PI + t * 2.2; o.g.position.set(T.x + Math.cos(a) * 4, 6 + Math.sin(t * 3 + r) * 0.4, T.z + Math.sin(a) * 4); o.g.rotation.y = -a; o.wings.forEach((w, i) => w.rotation.z = (i ? -1 : 1) * Math.sin(t * 12) * 0.5); o.g.scale.setScalar(1.4); } }; });   /* Huginn & Muninn */
-    for (let i = 0; i < 4; i++) bolt(T.clone().add(new V3(R(-3, 3), 14, R(-3, 3))), T.clone().add(new V3(R(-2.5, 2.5), 0.1, R(-2.5, 2.5))), 0xbfe0ff, 0.25, 0.25, 0.15 + i * 0.12, { jag: 0.9 });
-    pillar(T, c1, c2, 1.3, 8, 0.8, hit, { speed: 4, widen: 0.8, top: 0.7 }); ULT_BIG(T, c1, c2, hit, 5);
-    for (let i = 0; i < 8; i++) { const a = i / 8 * PI * 2, P = T.clone().add(new V3(Math.cos(a) * 4.2, 0, Math.sin(a) * 4.2));   /* đá rune trồi vòng quanh */
-      prop(hit + 0.05 + i * 0.03, 1.4, () => { const g = new THREE.Group(), st = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2, 0.4), solidMat(0x3a4250, 0x8a9ab0, c1)), gl = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 1.6), basic(glyphTex("runic", i, "#9ad0ff"), 0xffffff, true, 1)); gl.position.z = 0.21; g.add(st); g.add(gl); g.position.copy(P); g.lookAt(T.x, 0, T.z);
-        return { g, upd: (k, t) => { st.material.uniforms.uTime.value = t; g.position.y = -1 + Math.min(1, t / 0.2) * 2; gl.material.opacity = (0.6 + 0.4 * Math.sin(t * 8)) * (1 - Math.max(0, k - 0.75) / 0.25); g.scale.setScalar(1 - Math.max(0, k - 0.85) / 0.15); } }; }); }
-  };
 
   /* --- Thoth (Ai Cập): Ibis Judgment – cổng tượng hình mở, cò quăm ánh sáng sải cánh quét, cân phán xét trên đầu quái --- */
   function ibisBird(c1) {
@@ -2117,61 +2107,82 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     g.fillStyle = g.strokeStyle = "#ffd070"; g.shadowColor = "#ffb030"; g.shadowBlur = 10; for (let r = 0; r < 8; r++) { g.fillRect(10, 18 + r * 30, n - 20, 2); for (let c = 0; c < 6; c++) { g.save(); g.translate(28 + c * 40, 34 + r * 30); glyph(g, "cuneiform", r * 6 + c, 22); g.restore(); } } })); }
   function chainLink(m) { const t = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.06, 6, 14), m); t.scale.y = 1.5; return t; }
   META.tablet_of_destiny = { name: "Tablet of Destiny", lv: 90, who: "Nabu · tuyệt chiêu Lưỡng Hà", forms: ["Tuyệt chiêu", "Tuyệt chiêu", "Tuyệt chiêu", "Tuyệt chiêu"] };
-  SK.tablet_of_destiny = (F, T, rk) => {
-    const c1 = 0xffb030, c2 = 0xfff0c0, dur = 3.0, fall = 0.9, R0 = 6, d = SDIR(F, T), yaw = Math.atan2(d.x, d.z);
-    ultFrame(T, c1, c2, "cuneiform", dur, "Tablet of Destiny", R0);
-    shadowUnder(T, 8, fall + 0.3, 0.2);
-    prop(0.1, dur - 0.1, () => { const g = new THREE.Group(), cm = solidMat(0x8a5a30, 0xd8a870, c1), slab = new THREE.Mesh(new THREE.BoxGeometry(5.2, 7, 0.9), cm); g.add(slab);
-      const face = new THREE.Mesh(new THREE.PlaneGeometry(4.8, 6.6), new THREE.MeshBasicMaterial({ map: cuneiTex(), transparent: true })); face.position.z = 0.46; g.add(face);
-      const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); halo.scale.set(9, 11, 1); halo.position.z = -0.6; g.add(halo);
-      return { g, upd: (k, t) => { cm.uniforms.uTime.value = t; const tt = t; let y, tilt; if (tt < fall * 0.55) { y = 12 - tt * 2; tilt = 0; } else if (tt < fall) { const e = (tt - fall * 0.55) / (fall * 0.45); y = 10.9 - e * e * 10.4; tilt = e * e * (PI / 2); } else { y = 0.5; tilt = PI / 2; }   /* lơ lửng trên trời rồi đổ ụp mặt chữ xuống */
-        g.position.set(T.x, y, T.z); g.rotation.set(-tilt, yaw + PI, 0, "YXZ"); const a = 1 - Math.max(0, k - 0.85) / 0.15; cm.uniforms.uAlpha.value = a; face.material.opacity = a; halo.material.opacity = 0.6 * a * (tt < fall ? 1 : 0.4); } }; });
-    const hit = 0.1 + fall; ULT_BIG(T, c1, c2, hit, R0); emitter(80, i => { const a = R(0, PI * 2); return { p: T.clone().add(new V3(Math.cos(a) * 2.5, 0.3, Math.sin(a) * 2.5)), v: new V3(Math.cos(a) * R(3, 6), R(0.3, 1.2), Math.sin(a) * R(3, 6)), t0: hit, life: R(0.9, 1.3), size: R(0.7, 1.2), col: [0xb8865a, 0xd8a870][i % 2] }; }, { grav: -0.5, drag: 1.5 });   /* bụi đất sét */
-    for (let r = 0; r < 3; r++) prop(hit + 0.25 + r * 0.15, dur - hit - 0.3 - r * 0.15, () => { const g = new THREE.Group(), lm = solidMat(0x8a6020, 0xffe080, c1), links = [], n = 18;   /* chữ bay ra hoá xích khoá quanh quái */
-      for (let i = 0; i < n; i++) { const L = chainLink(lm); g.add(L); links.push(L); } const y = 0.7 + r * 0.8, rr = 1.3 - r * 0.15;
-      return { g, upd: (k, t) => { lm.uniforms.uTime.value = t; const close = Math.min(1, t / 0.4); links.forEach((L, i) => { const a = i / n * PI * 2 * close + r + t * 0.3; L.position.set(T.x + Math.cos(a) * rr * (2 - close), y, T.z + Math.sin(a) * rr * (2 - close)); L.rotation.set(i % 2 ? PI / 2 : 0, -a, 0); }); lm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.85) / 0.15; } }; });
-    for (let i = 0; i < 12; i++) textPop(T.clone().add(new V3(R(-2.5, 2.5), R(0.5, 2.5), R(-2.5, 2.5))), "𒀭", "#ffd070", 1, 0.5, hit + 0.1 + i * 0.03, { rise: 0.8 });
-    textPop(T.clone().setY(3.4), "🔒", "#ffffff", 1.8, 1.2, hit + 0.7);
-    for (let i = 0; i < 3; i++) orbitStar(T, c2, 1.1, 2.8, 1.6, hit + 0.3, i / 3);
-  };
-  /* ---------- TUYỆT CHIÊU THEO BẬC (góp ý 27/11): bậc 1 = 1 đòn · bậc 4 = 2 đòn luân phiên · bậc 7 = 3 đòn liên hoàn · bậc 10 = vị thần của vùng hiện ra tung thêm đòn CHÍ MẠNG ---------- */
-  const GOD_TEX = {};
+  /* ---------- TUYỆT CHIÊU THEO BẬC (góp ý 27/11): bậc 1 = 1 đòn · bậc 4 = 2 đòn · bậc 7 = 3 đòn · bậc 10 = hồn vị thần (mô hình 3D Tripo, trong mờ) thủ thế rồi tung đòn RIÊNG của thần + CHÍ MẠNG ---------- */
+  const GOD_TEX = {}, GOD_GLB = {};
   function godTex(slug) { return GOD_TEX[slug] || (GOD_TEX[slug] = new THREE.TextureLoader().load((api.godPath || "assets/gods/") + slug + ".webp")); }
-  function godAppear(slug, name, F, T, col, at, dur) {   /* thần hiện lên cạnh người chơi: cột sáng, vòng phù văn, tranh thần phát sáng trồi lên rồi tan */
-    const d = SDIR(F, T), G = F.clone().lerp(T, 0.6).addScaledVector(new V3(-d.z, 0, d.x), -2.8);   /* đứng phía sau quái, đối diện người chơi: luôn nằm trong khung hình */
-    godTex(slug); rune(G, "sun", "latin", col, 6.5, dur, at, { mode: "spin", spin: 0.8, op: 0.95 }); pillar(G, col, 0xffffff, 1.7, 13, 0.9, at, { speed: 3, widen: 0.7 });
-    glow(G.clone().setY(3), 0xffffff, 9, 0.35, at, { flash: true }); shock(G, col, 5, 0.6, at);
-    prop(at, dur, () => { const tx = godTex(slug), g = new THREE.Group(), halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: col, blending: ADD, transparent: true, depthWrite: false })), sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, transparent: true, depthWrite: false }));
-      halo.renderOrder = 11; sp.renderOrder = 12; g.add(halo); g.add(sp); g.position.copy(G);
-      return { g, upd: (k, t) => { const im = tx.image, asp = im && im.width ? im.width / im.height : 0.6, H = 6.5, e = Math.min(1, t / 0.45), a = e * (1 - Math.max(0, k - 0.82) / 0.18);
-        sp.scale.set(H * asp, H, 1); sp.position.y = H / 2 - 2 * (1 - e) + Math.sin(t * 2) * 0.1; sp.material.opacity = a; halo.position.y = H * 0.5; halo.scale.setScalar(H * 1.5 * (1 + Math.sin(t * 6) * 0.05)); halo.material.opacity = 0.55 * a; } }; });
-    textPop(G.clone().setY(8.6), name, "#" + new THREE.Color(col).getHexString(), 2, 1.4, at + 0.3, { rise: 0.3 });
+  function godModel(slug, cb) {   /* tải 1 lần mô hình thần (assets/gods/<slug>.glb), đổi vật liệu thành dạng hồn: cộng sáng, trong mờ */
+    let E = GOD_GLB[slug]; if (E && (E.scene || E.fail)) return cb && cb(E); if (E) { if (cb) E.wait.push(cb); return; }
+    E = GOD_GLB[slug] = { wait: cb ? [cb] : [] }; const done = () => { const w = E.wait; E.wait = []; w.forEach(f => f(E)); };
+    if (!THREE.GLTFLoader) { E.fail = true; return done(); }
+    new THREE.GLTFLoader().load((api.godPath || "assets/gods/") + slug + ".glb", g => { const sc = g.scene; sc.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(sc), sz = box.getSize(new V3()), k = 4.8 / (sz.y || 1);
+        const wrap = new THREE.Group(); sc.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2); wrap.add(sc); wrap.scale.setScalar(k);
+        E.mats = []; sc.traverse(o => { if (!o.isMesh) return; o.frustumCulled = false; o.renderOrder = 12; const m = new THREE.MeshBasicMaterial({ map: o.material.map || null, color: 0xffffff, transparent: true, opacity: 0.7, depthWrite: true, side: THREE.FrontSide });
+          if (o.isSkinnedMesh) m.skinning = true; m.userData.keep = true; o.material = m; E.mats.push(m); });
+        E.bones = {}; E.bind = {}; sc.traverse(o => { if (o.isBone) { E.bones[o.name] = o; E.bind[o.name] = o.quaternion.clone(); } }); E.rigged = !!E.bones.R_Upperarm; E.scene = wrap; done(); },
+      undefined, () => { E.fail = true; done(); });
+  }
+  const _gq = new THREE.Quaternion(), _gax = { x: new V3(1, 0, 0), y: new V3(0, 1, 0), z: new V3(0, 0, 1) };
+  const GOD_POSE = {   /* w: thủ thế (0→1) · r: ra chiêu (0→1). Trục khớp mô hình thần Tripo (đo 27/11): Upperarm x+ = đưa tay ra trước rồi lên · tay phải z- (tay trái z+) = giơ ngang lên cao · Spine02 y = xoay người · Forearm x+ = gập khuỷu */
+    odin: (b, w, r) => { b("R_Upperarm", "x", 2.7 * w - 1.35 * r); b("R_Forearm", "x", 0.8 * w - 0.8 * r); b("Spine02", "y", -0.45 * w + 0.8 * r); b("L_Upperarm", "x", 0.4 * w + 0.9 * r); b("L_Upperarm", "z", 0.5 * w); b("Head", "y", 0.2 * w - 0.3 * r); },   /* giơ giáo qua vai → phóng tới */
+    thoth: (b, w, r) => { b("R_Upperarm", "z", -2.4 * w + 2.4 * r); b("R_Upperarm", "x", 1.6 * r); b("R_Forearm", "x", 0.3 * w); b("L_Upperarm", "x", 1.0 * w); b("L_Forearm", "x", 0.9 * w); b("Spine02", "y", 0.4 * r); },   /* giơ bút sậy lên trời → chỉ thẳng tới */
+    hermes: (b, w, r) => { b("L_Upperarm", "z", 2.5 * w); b("L_Forearm", "x", -0.2 * w); b("R_Upperarm", "x", 0.4 * w + 1.2 * r); b("R_Forearm", "x", 0.9 * w - 0.9 * r); b("Spine02", "y", -0.3 * w + 0.5 * r); },   /* giơ cao Caduceus, tay kia chỉ tới */
+  };
+  const STATIC_POSE = (g, w, r, t) => { g.rotation.x += -0.2 * w + 0.4 * r; g.position.y += 0.6 * w - 0.4 * r; g.rotation.z = Math.sin(t * 3) * 0.05 + 0.12 * r; };   /* thần không gắn xương được: cả thân ngả ra sau lấy đà rồi lao tới */
+  function godAppear(slug, name, F, T, col, at, dur) {   /* hồn thần trồi lên cạnh trận, thủ thế (0,15–0,5 s), ra chiêu (0,55–0,7 s), giữ, tan */
+    const d = SDIR(F, T), G = T.clone().addScaledVector(d, 1.2).addScaledVector(new V3(-d.z, 0, d.x), -2.6),   /* đứng sau quái, chéo 1 bên: cả người nằm trong khung */ face = Math.atan2(T.x - G.x, T.z - G.z), tint = new THREE.Color(col).lerp(new THREE.Color(0xffffff), 0.7);
+    godModel(slug); godTex(slug);
+    rune(G, "sun", "latin", col, 6.5, dur, at, { mode: "spin", spin: 0.8, op: 0.9 }); pillar(G, col, 0xffffff, 1.4, 11, 0.8, at, { speed: 3, widen: 0.6 });
+    glow(G.clone().setY(3), 0xffffff, 7, 0.35, at, { flash: true }); shock(G, col, 5, 0.6, at);
+    emitter(90, i => { const a = R(0, PI * 2), r = R(0.3, 1.6); return { p: G.clone().add(new V3(Math.cos(a) * r, R(0, 5), Math.sin(a) * r)), v: new V3(0, R(1, 2.5), 0), t0: at + R(0, dur - 0.5), life: R(0.6, 1), size: R(0.2, 0.4), col: i % 2 ? col : 0xffffff }; }, { grav: 0, drag: 0.3 });   /* hồn toả khói sáng */
+    task(at, dur, () => { const E = GOD_GLB[slug], g = new THREE.Group(), halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: col, blending: ADD, transparent: true, depthWrite: false })); halo.renderOrder = 11; g.add(halo); g.position.copy(G); SC.add(g);
+      let sp = null, model = E && E.scene ? E.scene : null; if (model) { g.add(model); E.mats.forEach(m => m.color.copy(tint).multiplyScalar(1.9)); }   /* sáng hơn ảnh gốc: dạng hồn */
+      else { sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: godTex(slug), color: tint, blending: ADD, transparent: true, depthWrite: false })); sp.renderOrder = 12; g.add(sp); }
+      const sm = x => x * x * (3 - 2 * x);
+      return { upd: (k, t) => { const e = Math.min(1, t / 0.45), a = e * (1 - Math.max(0, k - 0.82) / 0.18), flick = 0.85 + 0.15 * Math.sin(t * 23) * Math.sin(t * 7), w = sm(Math.min(1, Math.max(0, (t - 0.15) / 0.35))), r = sm(Math.min(1, Math.max(0, (t - 0.55) / 0.15)));
+          halo.position.y = 2.6; halo.scale.set(6, 7.5, 1); halo.material.opacity = 0.7 * a;
+          if (model) { const cy = Math.atan2(CAM.position.x - G.x, CAM.position.z - G.z), dy = Math.atan2(Math.sin(face - cy), Math.cos(face - cy)); model.position.set(0, -2.2 * (1 - e), 0); model.rotation.set(0, cy + dy * 0.45 - PI / 2, 0.25, "YXZ");   /* mô hình Tripo nhìn theo +x: xoay -90°; ngả ra sau quanh trục z (trục ngang của mô hình) */   /* quay về camera (nghiêng 45% về quái), ngả ra sau cho camera trên cao thấy rõ dáng */ E.mats.forEach(m => m.opacity = 0.72 * a * flick);
+            if (E.rigged) { const P = GOD_POSE[slug]; Object.keys(E.bind).forEach(n => E.bones[n].quaternion.copy(E.bind[n])); if (P) P((n, ax, v) => { const bn = E.bones[n]; if (bn && v) bn.quaternion.multiply(_gq.setFromAxisAngle(_gax[ax], v)); }, w, r); }
+            else STATIC_POSE(model, w, r, t); }
+          else { const im = sp.material.map.image, asp = im && im.width ? im.width / im.height : 0.6; sp.scale.set(6.5 * asp, 6.5, 1); sp.position.y = 3.25 - 2 * (1 - e) + 0.4 * w - 0.3 * r; sp.material.opacity = 0.75 * a * flick; } },
+        end: () => { if (model) g.remove(model); kill(g); } }; });
+    textPop(G.clone().setY(6.4), name, "#" + new THREE.Color(col).getHexString(), 2, 1.4, at + 0.3, { rise: 0.3 });
     return G;
   }
   function critBurst(T, col, at) {   /* đòn chí mạng của thần */
     const B = T.clone().setY(1.4); glow(B, 0xffffff, 12, 0.4, at, { flash: true }); glow(B, col, 15, 0.7, at, { flash: true }); dome(T, col, 0xffffff, 5, 0.8, at + 0.03);
-    for (let i = 0; i < 4; i++) shock(T, i % 2 ? col : 0xffffff, 4 + i * 1.6, 0.8, at + i * 0.07); pillar(T, col, 0xffffff, 2.2, 14, 0.9, at, { speed: 5, widen: 1.2 });
+    for (let i = 0; i < 4; i++) shock(T, i % 2 ? col : 0xffffff, 4 + i * 1.6, 0.8, at + i * 0.07);
     sparks(B, [0xffffff, col, 0xffd860], 200, 15, 0.45, 1.1, at, { up: 1.5, drag: 1.6 }); textPop(B.clone().add(new V3(0, 2.2, 0)), "CRITICAL!", "#ffd040", 3, 1.2, at, { rise: 0.6 });
     task(at, 0.01, () => shake(0.8));
   }
-  let ULT_REP = false, ULT_EXTRA = 0;
-  const _ultFrame = ultFrame; ultFrame = function (P, c1, c2, script, dur, name, R0) { if (ULT_REP) return; _ultFrame(P, c1, c2, script, dur + ULT_EXTRA, name, R0); };   /* khung tuyệt chiêu chỉ 1 lần, kéo dài theo số đòn */
+  let ULT_REP = false, ULT_EXTRA = 0, ULT_I = 0, ULT_N = 1, ULT_GAP = 0.8, ULT_CRIT = -1;   /* đòn thứ mấy, tổng số đòn, khoảng cách, lúc chí mạng (giây, -1 = không có) */
+  const _ultFrame = ultFrame; ultFrame = function (P, c1, c2, script, dur, name, R0) { if (ULT_REP) return; _ultFrame(P, c1, c2, script, dur + ULT_EXTRA, name, R0); };
   const VARY = {
-    Frot: (F, T, i) => [F.clone().sub(T).applyAxisAngle(UP, [0, 0.9, -0.9][i]).add(T), T],   /* bay tới từ hướng khác */
+    Frot: (F, T, i) => [F.clone().sub(T).applyAxisAngle(UP, [0, 0.9, -0.9][i]).add(T), T],
     Trot: (F, T, i) => [F, T.clone().sub(F).applyAxisAngle(UP, [0, 0.9, -0.9][i]).add(F)],
     Tshift: (F, T, i) => { const d = SDIR(F, T); return [F, T.clone().add(new V3(-d.z, 0, d.x).multiplyScalar([0, 1.8, -1.8][i]))]; },
     center: (F, T, i) => [[F, T, F.clone().lerp(T, 0.5)][i], T],
+    same: (F, T) => [F, T],
   };
+  const GOD_CAST = {};   /* đòn riêng của thần: (F, T, G, at) → giây tới lúc trúng (tính từ at) */
   function ultTiered(id, slug, godName, col, gap, hit, vary) {
     const base = SK[id];
-    META[id].forms = ["1 đòn tuyệt chiêu", "2 đòn luân phiên", "3 đòn liên hoàn", "+ " + godName + " hiện ra, đòn CHÍ MẠNG"];
-    SK[id] = (F, T, rk) => { const f = FORM(rk), n = Math.min(f, 3), tg = (n - 1) * gap + 0.9;
-      ULT_EXTRA = (n - 1) * gap + (f >= 4 ? hit + 1.8 : 0); try { base(F, T, rk); } finally { ULT_EXTRA = 0; }
-      for (let i = 1; i < n; i++) task(i * gap, 0.01, () => { ULT_REP = true; try { const [F2, T2] = VARY[vary](F, T, i); base(F2, T2, rk); } finally { ULT_REP = false; } });
-      if (f >= 4) { const G = godAppear(slug, godName, F, T, col, tg, hit + 2.2);
-        task(tg + 0.6, 0.01, () => { ULT_REP = true; try { base(G.clone(), T, rk); } finally { ULT_REP = false; } }); critBurst(T, col, tg + 0.6 + hit); }
+    META[id].forms = ["1 đòn tuyệt chiêu", "2 đòn luân phiên", "3 đòn liên hoàn", "+ hồn " + godName + " hiện ra tung đòn riêng, CHÍ MẠNG"];
+    SK[id] = (F, T, rk) => { const f = FORM(rk), n = Math.min(f, 3), tg = (n - 1) * gap + 0.9, cast = GOD_CAST[id];
+      if (f >= 4) godModel(slug);   /* tải trước mô hình thần */
+      const hc = f >= 4 ? tg + 0.6 + (cast ? cast.hit : hit) : -1;
+      const run = (i, a, b) => { ULT_I = i; ULT_N = n; ULT_GAP = gap; ULT_CRIT = hc >= 0 ? hc - i * gap : -1; try { base(a, b, rk); } finally { ULT_I = 0; ULT_N = 1; ULT_CRIT = -1; } };
+      ULT_EXTRA = (n - 1) * gap + (f >= 4 ? hit + 2.2 : 0); try { run(0, F, T); } finally { ULT_EXTRA = 0; }
+      for (let i = 1; i < n; i++) task(i * gap, 0.01, () => { ULT_REP = true; try { const [F2, T2] = VARY[vary](F, T, i); run(i, F2, T2); } finally { ULT_REP = false; } });
+      if (f >= 4) { const G = godAppear(slug, godName, F, T, col, tg, (cast ? cast.hit : hit) + 2.4);
+        if (cast) cast.fn(F, T, G, tg + 0.6); else task(tg + 0.6, 0.01, () => { ULT_REP = true; try { base(G.clone(), T, rk); } finally { ULT_REP = false; } });
+        critBurst(T, col, hc); }
     };
   }
+  function calliTex(ch, fill, stroke) { const key = "cal" + ch + fill; return TEX[key] || (TEX[key] = cvTex(512, (g, n) => { g.textAlign = "center"; g.textBaseline = "middle"; g.font = "bold 400px 'Noto Serif CJK SC','Noto Serif SC','Songti SC','STSong','Hiragino Mincho ProN','Yu Mincho','Noto Sans CJK SC','PingFang SC','Microsoft YaHei','WenQuanYi Zen Hei','IPAGothic',serif";
+    const kw = Math.min(1, (n - 50) / g.measureText(ch).width); g.translate(n / 2, n / 2 + 10); g.scale(kw, kw); g.translate(-n / 2, -n / 2 - 10);   /* chữ dài thì co cho vừa */
+    g.shadowColor = stroke; g.shadowBlur = 40; g.lineWidth = 26; g.strokeStyle = stroke; g.strokeText(ch, n / 2, n / 2 + 10); g.shadowBlur = 0; const gr = g.createLinearGradient(0, 60, 0, n - 60); gr.addColorStop(0, "#ffffff"); gr.addColorStop(0.35, fill); gr.addColorStop(1, fill); g.fillStyle = gr; g.fillText(ch, n / 2, n / 2 + 10); })); }   /* chữ thư pháp lớn, viền phát sáng */
+  function bigGlyph(P, tex, size, at, dur, o) { o = o || {}; P = P.clone(); prop(at, dur, () => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false })); sp.renderOrder = 14; const g = new THREE.Group(); g.add(sp);
+      return { g, upd: (k, t) => { const e = Math.min(1, t / 0.18), pu = e < 1 ? 1.6 - 0.6 * e : 1; sp.position.copy(P); if (o.move) o.move(sp.position, t, k); sp.scale.setScalar(size * pu * (o.grow ? 1 + k * o.grow : 1)); sp.material.opacity = e * (1 - Math.max(0, k - (o.hold || 0.75)) / (1 - (o.hold || 0.75))); } }; }); }
 
   /* --- Itzamna (Maya): Feathered Serpent – vẽ lại kiểu rồng: thân vảy dài uốn lượn, 2 hàng lông vũ nhiều màu, mào lông quetzal, không chân --- */
   SK.feathered_serpent = (F, T, rk) => {
@@ -2189,47 +2200,167 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
   };
 
   /* --- Hermes (Hy Lạp): Winged Courier – bão sấm kéo dài: mây giông, sét giáng liên tục, điện xẹt quanh người, 7 lần lướt tia chớp; bậc 10 Hermes hiện ra --- */
-  SK.winged_courier = (F, T, rk) => {
-    const f = FORM(rk), c1 = 0xffd040, c2 = 0xffffff, ce = 0x9ad8ff, now = CLOCK_MS(), first = !LAST.hermes || now - LAST.hermes > 900; if (first) { LAST.hermesI = 0; LAST.hermesP = F.clone(); } else LAST.hermesI++; LAST.hermes = now; const i = LAST.hermesI;
-    if (first) { const SD = 2.8 + f * 0.8, R0 = 5.5 + f * 0.5, C = F.clone().lerp(T, 0.5);
-      ULT_EXTRA = SD - 2.4 + (f >= 4 ? 2.2 : 0); ultFrame(F, c1, c2, "greek", 2.4, "Winged Courier", 6); ULT_EXTRA = 0;
-      [-1, 1].forEach(s => prop(0, SD, () => { const g = new THREE.Group(), ws = new THREE.Shape(); ws.moveTo(0, 0); ws.quadraticCurveTo(0.5, 0.5, 1.1, 0.6); ws.lineTo(0.9, 0.35); ws.lineTo(1.0, 0.25); ws.lineTo(0.75, 0.12); ws.lineTo(0.8, 0.0); ws.lineTo(0, -0.1);
-        const w = new THREE.Mesh(nuv(new THREE.ShapeGeometry(ws)), ghostMat(c1, 0xffffff, { fres: 0.6, cut: -0.5 })); w.scale.x = s; g.add(w);
-        return { g, upd: (k, t) => { w.material.uniforms.uTime.value = t; w.material.uniforms.uAlpha.value = pop(k, 0.05, 0.9); g.position.copy(F).add(new V3(s * 0.35, 0.25, 0)); g.quaternion.copy(CAM.quaternion); w.rotation.z = Math.sin(t * 14) * 0.25 * s; g.scale.setScalar(1.2); } }; }));
-      prop(0, SD, () => { const g = new THREE.Group(), cm = flowMat({ c1: 0x2a3050, c2: 0x8a9ac8, rep: [2, 2], spd: [0.15, 0.05], fres: 0, cut: 0.1, gain: 0.9, fade: [0.2, 0.2, 0.2, 0.2] }); cm.blending = THREE.NormalBlending; const m = new THREE.Mesh(new THREE.CircleGeometry(R0 * 1.5, 40).rotateX(PI / 2), cm); g.add(m); g.position.copy(C).setY(9);
-        const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xd8f0ff, blending: ADD, transparent: true, depthWrite: false })); fl.scale.setScalar(R0 * 3); fl.position.y = -0.5; g.add(fl);
-        return { g, upd: (k, t) => { cm.uniforms.uTime.value = t; cm.uniforms.uAlpha.value = 0.85 * pop(k, 0.1, 0.88); fl.material.opacity = Math.random() < 0.12 ? 0.9 : 0.05; } }; });   /* mây giông chớp nháy */
-      emitter(160 + f * 40, q => ({ p: C.clone().add(new V3(R(-7, 7), R(5, 8), R(-7, 7))), v: new V3(R(-0.6, 0.6), -R(1, 2), R(-0.6, 0.6)), t0: R(0, SD), life: R(1.5, 2.4), size: R(0.3, 0.55), col: [c1, 0xfff0b0, 0xffffff][q % 3] }), { grav: 0, drag: 0.3 });   /* lông vũ vàng rơi đầy trời */
-      const nB = 12 + f * 9; for (let b = 0; b < nB; b++) { const at = 0.15 + b * (SD - 0.4) / nB, a = R(0, PI * 2), r = Math.sqrt(Math.random()) * R0, P = C.clone().add(new V3(Math.cos(a) * r, 0.05, Math.sin(a) * r)), big = b % 4 === 0;   /* sét giáng liên tục */
-        bolt(P.clone().add(new V3(R(-1.5, 1.5), 9, R(-1.5, 1.5))), P, big ? 0xffffff : ce, big ? 0.45 + f * 0.06 : 0.2, big ? 0.28 : 0.18, at, { jag: 1 });
-        glow(P.clone().setY(0.6), big ? 0xffffff : ce, big ? 3.5 : 2, 0.2, at, { flash: true }); if (big) { shock(P, ce, 2, 0.35, at); decal(P, TEX.crack, 0xffffff, 1.8, 1, at, { add: false, op: 0.7, ro: 3 }); task(at, 0.01, () => shake(0.1)); }
-        sparks(P.clone().setY(0.3), [ce, 0xffffff], big ? 18 : 8, 6, 0.2, 0.35, at, { up: 1.5 }); }
-      for (let a = 0; a < 10 + f * 6; a++) { const at = R(0.1, SD - 0.2), a1 = R(0, PI * 2), a2 = a1 + R(0.8, 2); bolt(F.clone().add(new V3(Math.cos(a1) * 0.8, R(0.3, 2), Math.sin(a1) * 0.8)), F.clone().add(new V3(Math.cos(a2) * 1.3, R(0.1, 2.2), Math.sin(a2) * 1.3)), ce, 0.07, 0.14, at, { jag: 0.5 }); }   /* điện xẹt quanh người */
-      aura(F, ce, 0xffffff, 1.0, 3, SD, 0);
-      if (f >= 3) for (let r = 0; r < 3; r++) decal(C, TEX.ring, ce, R0 * 2.4, 0.6, 0.5 + r * (SD / 3), { mode: "expand", expand: 0.6, op: 0.9 });
-      if (f >= 4) { const tg = SD - 0.5, G = godAppear("hermes", "HERMES", F, T, c1, tg, 2.8);
-        for (let q = 0; q < 6; q++) bolt(G.clone().setY(5), T.clone().add(new V3(R(-0.8, 0.8), 1.2, R(-0.8, 0.8))), q % 2 ? c1 : 0xffffff, 0.5, 0.3, tg + 0.8 + q * 0.07, { jag: 0.8 });   /* Hermes phóng sét vào quái */
-        critBurst(T, c1, tg + 1.15); } }
-    const HUE = [0xffd040, 0xffffff, 0x9ad8ff], B = T.clone().setY(1.1); let A = (LAST.hermesP || F).clone().setY(1.1); if (A.distanceTo(B) < 1.5) { const a = i * 2.4; A = B.clone().add(new V3(Math.cos(a) * 3.5, 0, Math.sin(a) * 3.5)); } LAST.hermesP = T.clone();
-    bolt(A, B, c2, 0.6 + f * 0.08, 0.35, 0, { jag: 0.3 }); bolt(A, B, c1, 1.1 + f * 0.1, 0.35, 0, { jag: 0.15 }); bolt(A, B, ce, 0.3, 0.35, 0.03, { jag: 0.9 });   /* lướt như tia chớp, đuôi điện dài hơn */
-    for (let g2 = 0; g2 < 3; g2++) glow(A.clone().lerp(B, g2 / 3), HUE[g2], 2.4, 0.4, g2 * 0.02);
-    for (let q = 0; q < 2; q++) bolt(B, B.clone().add(new V3(R(-3, 3), R(-1, 1), R(-3, 3))), ce, 0.15, 0.25, 0.05, { jag: 0.7 });   /* điện nhánh toả ra */
-    glow(B, 0xffffff, 3.5, 0.25, 0.04, { flash: true }); sparks(B, [c1, 0xffffff, ce], 30, 8, 0.3, 0.55, 0.04, { up: 1 }); shock(T, c1, 2.4, 0.4, 0.04); task(0.04, 0.01, () => shake(0.14));
-    if (i === 6) { const at = 0.25; prop(at - 0.2, 1.2, () => { const g = new THREE.Group(), sm = solidMat(0xc8901a, 0xfff0a0, 0xffffff), staff = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4, 8), sm); g.add(staff);
-        for (let s = 0; s < 2; s++) { const sn = new THREE.Mesh(new THREE.TubeGeometry(helix(0.35, 3, 2.2, 60), 80, 0.07, 6), sm); sn.position.y = -1.5; sn.rotation.y = s * PI; g.add(sn); }
-        [-1, 1].forEach(s => { const w = new THREE.Mesh(new THREE.ConeGeometry(0.25, 1.2, 4).rotateZ(s * 1.2), sm); w.position.set(s * 0.6, 1.9, 0); g.add(w); }); const orb = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 8), sm); orb.position.y = 2.1; g.add(orb);
-        return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; const e = Math.min(1, t / 0.2); g.position.copy(T).setY(10 - e * e * 8); g.rotation.y = t * 2; sm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.75) / 0.25; } }; });
-      ULT_BIG(T, c1, c2, at, 6); }
+  /* --- Odin: kiếm 1 đâm thẳng giữa, kiếm 2–3 đâm xiên chéo vào cùng tâm; vòng đá rune cao thêm mỗi nhát kiếm; quạ bay quanh --- */
+  SK.rune_sword = (F, T, rk) => {
+    const c1 = 0x5fa8ff, c2 = 0xe0f4ff, B = T.clone().setY(1), i = ULT_I, n = ULT_N, gap = ULT_GAP, hit = 0.71, life = ULT_CRIT >= 0 ? ULT_CRIT + 0.05 : 2.2 + (n - 1 - i) * gap, d = SDIR(F, T);
+    if (i === 0) { const tot = ULT_CRIT >= 0 ? ULT_CRIT : 2.4 + (n - 1) * gap, hits = Array.from({ length: n }, (_, q) => q * gap + hit);
+      ultFrame(T, c1, c2, "runic", 2.6, "Rune Sword", 5);
+      for (let r = 0; r < 2; r++) prop(0, tot + 0.8, () => { const o = raven(); return { g: o.g, upd: (k, t) => { const a = r * PI + t * 2.2; o.g.position.set(T.x + Math.cos(a) * 4.6, 6 + Math.sin(t * 3 + r) * 0.4, T.z + Math.sin(a) * 4.6); o.g.rotation.y = -a; o.wings.forEach((w, j) => w.rotation.z = (j ? -1 : 1) * Math.sin(t * 12) * 0.5); o.g.scale.setScalar(1.4); } }; });   /* Huginn & Muninn */
+      for (let s = 0; s < 8; s++) { const a = s / 8 * PI * 2, P = T.clone().add(new V3(Math.cos(a) * 4.2, 0, Math.sin(a) * 4.2));   /* 1 vòng đá rune: mỗi nhát kiếm trồi cao thêm 1 nấc */
+        prop(hit - 0.05, tot - hit + 0.1, () => { const g = new THREE.Group(), sm = solidMat(0x3a4250, 0x8a9ab0, c1), st = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1, 0.45).translate(0, 0.5, 0), sm), gl = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.85).translate(0, 0.5, 0), basic(glyphTex("runic", s, "#9ad0ff"), 0xffffff, true, 1)); gl.position.z = 0.24; g.add(st); g.add(gl); g.position.copy(P); g.lookAt(T.x, 0, T.z); let h = 0;
+          return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; const lv = hits.filter(x => t + hit - 0.05 >= x).length, tgt = 0.9 + lv * 1.0; h += (tgt - h) * 0.25; g.scale.set(1, h, 1); gl.material.opacity = 0.6 + 0.4 * Math.sin(t * 8 + s); } }; }); } }
+    const tilt = i === 0 ? 0 : 0.55, yaw = Math.atan2(d.z, d.x) + (i === 1 ? PI / 2 : -PI / 2);   /* kiếm 2, 3 đâm xiên từ 2 bên */
+    giantSword(T, c1, c2, life, 0.05, null, { tilt, yaw });
+    pillar(T, c1, c2, 1.3, 8, 0.8, hit, { speed: 4, widen: 0.8, top: 0.7 }); ULT_BIG(T, c1, c2, hit, 5);
+    for (let q = 0; q < 2; q++) bolt(T.clone().add(new V3(R(-3, 3), 14, R(-3, 3))), T.clone().add(new V3(R(-2.5, 2.5), 0.1, R(-2.5, 2.5))), 0xbfe0ff, 0.25, 0.25, hit - 0.2 + q * 0.12, { jag: 0.9 });
   };
-  META.winged_courier.forms = ["Bão sấm + 7 lần lướt chớp", "Bão dài hơn, sét dày", "+ sóng điện lan, sét to", "+ HERMES hiện ra, sét CHÍ MẠNG"];
+  GOD_CAST.rune_sword = { hit: 0.38, fn: (F, T, G, at) => {   /* Odin phóng giáo Gungnir vào giữa → nổ sập, gãy hết đá và kiếm */
+    const H = G.clone().setY(5), B = T.clone().setY(0.3), c1 = 0x9ad0ff, h = at + 0.38;
+    prop(at, 0.4, () => { const g = new THREE.Group(), sm = solidMat(0x8a6a2a, 0xffe8a0, 0xffffff), sh = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 5.5, 8), sm), tip = new THREE.Mesh(new THREE.ConeGeometry(0.22, 1.1, 4), solidMat(0x7a8aa0, 0xffffff, c1)); tip.position.y = 3.3; g.add(sh); g.add(tip);
+      const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); gl.position.y = 3.3; gl.scale.setScalar(2.5); g.add(gl); const P = new V3();
+      return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; P.lerpVectors(H, B, k * k); g.position.copy(P); g.quaternion.setFromUnitVectors(UP, B.clone().sub(H).normalize()); } }; });
+    emitter(60, q => { const u = q / 60; return { p: H.clone().lerp(B, u * u).add(rv(0.2)), v: rv(0.5), t0: at + u * 0.38, life: 0.4, size: R(0.3, 0.6), col: q % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 2 });
+    for (let s = 0; s < 8; s++) { const a = s / 8 * PI * 2, P = T.clone().add(new V3(Math.cos(a) * 4.2, 1.5, Math.sin(a) * 4.2)); sparks(P, [0x5a6270, 0x8a9ab0, 0x3a4250], 25, 8, 0.45, 1.0, h + 0.05, { up: 1.6 }); }   /* đá rune vỡ vụn */
+    sparks(T.clone().setY(3), [0xe0f4ff, 0x9ad0ff, 0xffffff], 70, 12, 0.4, 0.9, h, { up: 1.2 });   /* kiếm gãy thành mảnh */
+    decal(T, TEX.crack, 0xffffff, 13, 2.2, h, { add: false, op: 1, ro: 3 }); decal(T, TEX.dark, 0xffffff, 10, 2, h, { add: false, op: 0.9 });
+    emitter(120, q => { const a = R(0, PI * 2); return { p: T.clone().add(new V3(Math.cos(a) * 1.5, 0.3, Math.sin(a) * 1.5)), v: new V3(Math.cos(a) * R(4, 9), R(0.5, 2), Math.sin(a) * R(4, 9)), t0: h, life: R(1, 1.6), size: R(0.8, 1.5), col: [0x9a9aa8, 0x7a7a88][q % 2] }; }, { grav: -0.5, drag: 1.4 });   /* bụi sập */
+    pillar(T, c1, 0xffffff, 2.4, 16, 1.0, h, { speed: 5, widen: 1.4 }); textPop(T.clone().setY(3.6), "GUNGNIR!", "#bfe0ff", 2.6, 1.2, h, { rise: 0.5 }); } };
+
+  /* --- Nabu: 3 bia đất sét to nhỏ khác nhau đổ ụp chồng lên nhau, lệch nhẹ --- */
+  SK.tablet_of_destiny = (F, T, rk) => {
+    const c1 = 0xffb030, c2 = 0xfff0c0, i = ULT_I, n = ULT_N, fall = 0.9, R0 = 6, d = SDIR(F, T), sc = [1, 0.8, 0.62][i], th = 0.9, life = ULT_CRIT >= 0 ? ULT_CRIT + 0.05 : 3.0 + (n - 1 - i) * ULT_GAP;
+    const off = new V3(-d.z, 0, d.x).multiplyScalar([0, 0.45, -0.35][i]).addScaledVector(d, [0, -0.3, 0.25][i]), P = T.clone().add(off), yaw = Math.atan2(d.x, d.z) + [0, 0.22, -0.3][i], land = th * (sc * 0.5 + (i > 0 ? 1 : 0) + (i > 1 ? 0.8 : 0)) + 0.05;
+    ultFrame(T, c1, c2, "cuneiform", 3.0, "Tablet of Destiny", R0); if (i === 0) shadowUnder(T, 8, fall + 0.3, 0.2);
+    prop(0.1, life - 0.1, () => { const g = new THREE.Group(), cm = solidMat(0x8a5a30, 0xd8a870, c1), slab = new THREE.Mesh(new THREE.BoxGeometry(5.2, 7, th), cm); g.add(slab);
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(4.8, 6.6), new THREE.MeshBasicMaterial({ map: cuneiTex(), transparent: true })); face.position.z = th / 2 + 0.01; g.add(face);
+      const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); halo.scale.set(9, 11, 1); halo.position.z = -0.6; g.add(halo); g.scale.setScalar(sc);
+      return { g, upd: (k, t) => { cm.uniforms.uTime.value = t; let y, tilt; if (t < fall * 0.55) { y = 12 - t * 2; tilt = 0; } else if (t < fall) { const e = (t - fall * 0.55) / (fall * 0.45); y = 10.9 - e * e * (10.9 - land); tilt = e * e * (PI / 2); } else { y = land; tilt = PI / 2; }
+        g.position.set(P.x, y, P.z); g.rotation.set(-tilt, yaw + PI, 0, "YXZ"); const a = 1 - Math.max(0, k - 0.9) / 0.1; cm.uniforms.uAlpha.value = a; face.material.opacity = a; halo.material.opacity = 0.6 * a * (t < fall ? 1 : 0.35); } }; });
+    const hit = 0.1 + fall; ULT_BIG(T, c1, c2, hit, R0 * sc);
+    emitter(60, q => { const a = R(0, PI * 2); return { p: T.clone().add(new V3(Math.cos(a) * 2.5, 0.3 + land, Math.sin(a) * 2.5)), v: new V3(Math.cos(a) * R(3, 6), R(0.3, 1.2), Math.sin(a) * R(3, 6)), t0: hit, life: R(0.9, 1.3), size: R(0.7, 1.2), col: [0xb8865a, 0xd8a870][q % 2] }; }, { grav: -0.5, drag: 1.5 });
+    if (i === n - 1) { const dur = life - hit - 0.3; for (let r = 0; r < 3; r++) prop(hit + 0.25 + r * 0.15, dur - r * 0.15, () => { const g = new THREE.Group(), lm = solidMat(0x8a6020, 0xffe080, c1), links = [], m = 18;
+        for (let q = 0; q < m; q++) { const L = chainLink(lm); g.add(L); links.push(L); } const y = 0.7 + r * 0.8 + land, rr = 1.6 - r * 0.15;
+        return { g, upd: (k, t) => { lm.uniforms.uTime.value = t; const close = Math.min(1, t / 0.4); links.forEach((L, q) => { const a = q / m * PI * 2 * close + r + t * 0.3; L.position.set(T.x + Math.cos(a) * rr * (2 - close), y, T.z + Math.sin(a) * rr * (2 - close)); L.rotation.set(q % 2 ? PI / 2 : 0, -a, 0); }); lm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.85) / 0.15; } }; });
+      for (let q = 0; q < 12; q++) textPop(T.clone().add(new V3(R(-2.5, 2.5), R(0.5, 2.5) + land, R(-2.5, 2.5))), "𒀭", "#ffd070", 1, 0.5, hit + 0.1 + q * 0.03, { rise: 0.8 });
+      textPop(T.clone().setY(3.4 + land), "🔒", "#ffffff", 1.8, 1.2, hit + 0.7); for (let q = 0; q < 3; q++) orbitStar(T, c2, 1.1, 2.8 + land, 1.6, hit + 0.3, q / 3); }
+  };
+  GOD_CAST.tablet_of_destiny = { hit: 0.42, fn: (F, T, G, at) => {   /* Nabu ném bút trâm sậy khổng lồ cắm xuống → nổ long trời lở đất, bia vỡ tung */
+    const c1 = 0xffb030, h = at + 0.42;
+    prop(at, 1.6, () => { const g = new THREE.Group(), sm = solidMat(0x6a4a20, 0xe8c070, c1), sh = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.06, 10, 3).translate(0, 5, 0), sm); g.add(sh); const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); gl.scale.setScalar(4); g.add(gl);
+      return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; const e = Math.min(1, t / 0.42); g.position.set(T.x, 22 * (1 - e * e) - 1.5 * e, T.z); g.rotation.set(0.12, t * (e < 1 ? 8 : 0), 0); sm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.7) / 0.3; } }; });
+    for (let q = 0; q < 14; q++) { const a = R(0, PI * 2), sp = R(3, 8), up = R(6, 12), s = R(0.4, 1.1);   /* tảng đất đá văng tung */
+      prop(h, 1.6, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0), solidMat(0x6a4a30, 0xb8865a, c1)); g.add(m);
+        return { g, upd: (k, t) => { m.material.uniforms.uTime.value = t; g.position.set(T.x + Math.cos(a) * sp * t, Math.max(s * 0.5, 0.5 + up * t - 9 * t * t), T.z + Math.sin(a) * sp * t); m.rotation.set(t * 5, t * 3, 0); m.material.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.75) / 0.25; } }; }); }
+    sparks(T.clone().setY(1.5), [0xb8865a, 0xd8a870, 0x8a5a30, 0xffd070], 160, 13, 0.45, 1.1, h, { up: 1.8 });   /* bia vỡ tung */
+    decal(T, TEX.crack, 0xffffff, 16, 2.4, h, { add: false, op: 1, ro: 3 }); decal(T, TEX.dark, 0xffffff, 12, 2.2, h, { add: false, op: 0.9 });
+    for (let q = 0; q < 3; q++) shock(T, q % 2 ? c1 : 0xffffff, 6 + q * 3, 0.9, h + q * 0.12); dome(T, 0xff8a20, 0xfff0c0, 6.5, 0.9, h); pillar(T, c1, 0xffffff, 2.6, 18, 1.1, h, { speed: 5, widen: 1.5 });
+    emitter(140, q => { const a = R(0, PI * 2); return { p: T.clone().add(new V3(Math.cos(a) * 2, 0.4, Math.sin(a) * 2)), v: new V3(Math.cos(a) * R(5, 11), R(1, 3), Math.sin(a) * R(5, 11)), t0: h, life: R(1.2, 1.8), size: R(1, 1.8), col: [0xa88060, 0x8a6a50][q % 2] }; }, { grav: -0.4, drag: 1.3 });
+    task(h + 0.25, 0.01, () => shake(1)); } };
+
+  /* --- Thương Hiệt: hồn rồng khổng lồ trồi từ lòng đất, cắn xuyên quái bay vút lên + chữ 龍 thư pháp --- */
+  GOD_CAST.dragon_roar = { hit: 0.75, fn: (F, T, G, at) => {
+    const d = SDIR(F, T), side = new V3(-d.z, 0, d.x), path = (u, out) => out.set(T.x + side.x * Math.sin(u * PI * 1.3) * 2.2, -10 + u * 27, T.z + side.z * Math.sin(u * PI * 1.3) * 2.2 + d.z * (u - 0.4) * 2);
+    decal(T, TEX.crack, 0xffffff, 9, 2.2, at, { add: false, op: 1, ro: 3 }); glow(T.clone().setY(0.3), 0xffa020, 6, 0.6, at); sparks(T.clone().setY(0.3), [0x8a6a4a, 0xb89070, 0xffa040], 80, 9, 0.45, 1, at + 0.2, { up: 2 });
+    dragon(F, T, 1.9, at, { path, size: 2, c1: 0xb8780a, c2: 0xfff4c0, fire: [0xffa020, 0xfff0a0], alpha: 0.85 });
+    bigGlyph(T.clone().setY(4.2), calliTex("龍", "#ffd040", "#c01010"), 5.5, at + 0.75, 2.0, { grow: 0.15, hold: 0.7 });
+    for (let q = 0; q < 8; q++) { const a = q / 8 * PI * 2; pillar(T.clone().add(new V3(Math.cos(a) * 4, 0, Math.sin(a) * 4)), 0xff5a10, 0xffe08a, 0.7, 7, 0.7, at + 0.8 + q * 0.04, { speed: 5 }); } } };
+
+  /* --- Thoth: Mắt Horus khổng lồ mở trên trời, bắn tia vàng phán xét + vòng chữ tượng hình thu lại --- */
+  function horusTex() { return TEX.horus || (TEX.horus = cvTex(512, (g, n) => { g.translate(n / 2, n / 2); g.strokeStyle = g.fillStyle = "#ffd860"; g.lineCap = g.lineJoin = "round"; g.shadowColor = "#ffb020"; g.shadowBlur = 30; g.lineWidth = 22;
+    g.beginPath(); g.moveTo(-200, -10); g.quadraticCurveTo(0, -150, 200, -10); g.quadraticCurveTo(0, 90, -200, -10); g.stroke(); g.beginPath(); g.arc(0, -20, 56, 0, PI * 2); g.fill();
+    g.beginPath(); g.moveTo(-190, -95); g.quadraticCurveTo(0, -190, 200, -110); g.stroke(); g.beginPath(); g.moveTo(-40, 40); g.lineTo(-60, 190); g.stroke();
+    g.beginPath(); g.moveTo(40, 40); g.quadraticCurveTo(90, 120, 150, 120); g.quadraticCurveTo(200, 120, 190, 80); g.quadraticCurveTo(170, 60, 150, 85); g.stroke(); })); }
+  GOD_CAST.ibis_judgment = { hit: 0.7, fn: (F, T, G, at) => {
+    const E = T.clone().setY(5.2), c1 = 0xffc040;
+    prop(at, 2.2, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), basic(horusTex(), 0xffffff, true, 1)); g.add(m); const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); halo.scale.setScalar(12); g.add(halo); g.position.copy(E);
+      return { g, upd: (k, t) => { g.quaternion.copy(CAM.quaternion); const o = Math.min(1, t / 0.35); m.scale.set(6, 6 * (o < 1 ? o * o : 1 - 0.06 * Math.abs(Math.sin(t * 9))), 1); m.material.opacity = 1 - Math.max(0, k - 0.75) / 0.25; halo.material.opacity = 0.5 * m.material.opacity; } }; });   /* mắt mở ra */
+    for (let q = 0; q < 3; q++) bolt(E, T.clone().setY(0.6), q ? c1 : 0xffffff, q ? 0.7 : 1.1, 0.7, at + 0.6 + q * 0.04, { jag: 0.08 });
+    pillar(T, c1, 0xffffff, 2, 12, 1.0, at + 0.65, { speed: 5, widen: 0.8 }); rune(T, "circle", "hiero", c1, 12, 1.4, at + 0.4, { mode: "converge", op: 1 }); rune(T, "seal", "hiero", 0x5ad8ff, 8, 1.3, at + 0.5, { mode: "converge", op: 0.9, lift: 0.01 });
+    textPop(T.clone().setY(4.5), "☥", "#ffd860", 3, 1.2, at + 0.7, { rise: 0.4 }); } };
+
+  /* --- Kotodama: viết 2 chữ thư pháp 言 霊 khổng lồ, mực văng, rồi 2 chữ giáng xuống quái nổ lửa + bão hoa anh đào --- */
+  GOD_CAST.word_spirit_torii = { hit: 1.0, fn: (F, T, G, at) => {
+    const d = SDIR(F, T), side = new V3(-d.z, 0, d.x), A = T.clone().addScaledVector(side, -1.6).setY(4.2), B = T.clone().addScaledVector(side, 1.6).setY(4.2);
+    [[A, "言", 0], [B, "霊", 0.3]].forEach(([P, ch, dl]) => { bigGlyph(P, calliTex(ch, "#1a0a08", "#ff3a20"), 4, at + dl, 1.05 - dl, { hold: 0.97, move: (pos, t) => { const e = Math.max(0, (t - (0.7 - dl)) / 0.3); pos.lerp(T.clone().setY(1.5), Math.min(1, e * e)); } });
+      sparks(P, [0x100808, 0x3a0a08, 0xff3a20], 50, 7, 0.35, 0.7, at + dl, { up: 0.6, grav: -5 }); });   /* mực văng */
+    const h = at + 1.0; glow(T.clone().setY(1.5), 0xffffff, 10, 0.35, h, { flash: true }); pillar(T, 0xff3a10, 0xffd27a, 2, 12, 0.9, h, { speed: 5, widen: 1 });
+    bigGlyph(T.clone().setY(3.6), calliTex("言霊", "#ff4a20", "#ffffff"), 6.5, h, 1.6, { grow: 0.12 });
+    emitter(220, q => { const a = R(0, PI * 2); return { p: T.clone().add(new V3(Math.cos(a) * 1, R(0.5, 3), Math.sin(a) * 1)), v: new V3(Math.cos(a) * R(3, 8), R(1, 4), Math.sin(a) * R(3, 8)), t0: h + R(0, 0.3), life: R(1.4, 2.2), size: R(0.25, 0.45), col: [0xffb0d0, 0xffd8e8, 0xff80b0][q % 3] }; }, { grav: -1.2, drag: 1 }); } };   /* bão hoa anh đào */
+
+  /* --- Ogma: xích vàng của tài hùng biện trói quái + cây sồi ánh sáng khổng lồ trồi lên --- */
+  GOD_CAST.ogham_grove = { hit: 0.55, fn: (F, T, G, at) => {
+    const c1 = 0x5aff8a, H = G.clone().setY(5.4), B = T.clone().setY(1.4), n = 22;
+    prop(at, 2.0, () => { const g = new THREE.Group(), lm = solidMat(0x8a6020, 0xffe080, 0xfff0b0), L = []; for (let q = 0; q < n; q++) { const l = chainLink(lm); g.add(l); L.push(l); } const dir = B.clone().sub(H);
+      return { g, upd: (k, t) => { lm.uniforms.uTime.value = t; const reach = Math.min(1, t / 0.3); L.forEach((l, q) => { const u = q / n; l.visible = u <= reach; l.position.copy(H).addScaledVector(dir, u).add(new V3(0, -Math.sin(u * PI) * 0.6, 0)); l.quaternion.setFromUnitVectors(UP, dir.clone().normalize()); l.rotateY(q % 2 ? PI / 2 : 0); }); lm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.8) / 0.2; } }; });   /* xích từ miệng thần */
+    const h = at + 0.55; decal(T, TEX.crack, 0xffffff, 10, 2, h - 0.1, { add: false, op: 1, ro: 3 });
+    prop(h - 0.15, 2.0, () => { const g = new THREE.Group(), wm = flowMat({ c1: 0x8a6a30, c2: c1, rep: [2, 3], spd: [0, -0.8], fres: 1, cut: -0.4, gain: 1.3, fade: [0, 0, 0, 0] }), tr = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 1.2, 7, 12, 1, true).translate(0, 3.5, 0), wm); g.add(tr);
+      for (let q = 0; q < 7; q++) { const a = q / 7 * PI * 2, bc = new THREE.QuadraticBezierCurve3(new V3(0, 4 + q * 0.35, 0), new V3(Math.cos(a) * 2, 6 + q * 0.2, Math.sin(a) * 2), new V3(Math.cos(a) * 4, 7.5 + (q % 2), Math.sin(a) * 4)); g.add(new THREE.Mesh(new THREE.TubeGeometry(bc, 12, 0.22, 5), wm)); }
+      const leaves = []; for (let q = 0; q < 34; q++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: [0x5aff8a, 0xd8ffb0, 0xffe060][q % 3], blending: ADD, transparent: true, depthWrite: false })); const a = R(0, PI * 2), r = R(1, 4.5); s.position.set(Math.cos(a) * r, R(6.5, 9.5), Math.sin(a) * r); s.scale.setScalar(R(1.2, 2.4)); g.add(s); leaves.push(s); }
+      g.position.copy(T);
+      return { g, upd: (k, t) => { wm.uniforms.uTime.value = t; const e = Math.min(1, t / 0.35); g.scale.set(0.4 + 0.6 * e, e, 0.4 + 0.6 * e); wm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.8) / 0.2; leaves.forEach((s, q) => s.material.opacity = (t > 0.3 ? 0.8 : 0) * (1 - Math.max(0, k - 0.75) / 0.25)); } }; });   /* cây sồi ánh sáng */
+    emitter(120, q => ({ p: T.clone().add(new V3(R(-4, 4), R(6, 9), R(-4, 4))), v: new V3(R(-0.5, 0.5), -R(0.8, 1.6), R(-0.5, 0.5)), t0: h + R(0, 1.4), life: R(1.2, 1.8), size: R(0.25, 0.45), col: [0x5aff8a, 0xffe060][q % 2] }), { grav: 0, drag: 0.2 }); } };
+
+  /* --- Itzamna: đá lịch Maya khổng lồ xoay trên trời rồi giáng phẳng xuống quái, tia mặt trời toả ra --- */
+  function mayaTex() { return TEX.maya || (TEX.maya = cvTex(512, (g, n) => { g.translate(n / 2, n / 2); g.strokeStyle = g.fillStyle = "#ffe08a"; g.shadowColor = "#ffb020"; g.shadowBlur = 14; g.lineWidth = 10;
+    [240, 200, 150, 90].forEach(r => { g.beginPath(); g.arc(0, 0, r, 0, PI * 2); g.stroke(); });
+    for (let i = 0; i < 20; i++) { const a = i / 20 * PI * 2; g.save(); g.rotate(a); g.lineWidth = 4; g.strokeRect(-14, -232, 28, 26); for (let q = 0; q < (i % 4) + 1; q++) { g.beginPath(); g.arc(-8 + q * 6, -219, 2.5, 0, PI * 2); g.fill(); } g.restore(); }   /* 20 ô ngày */
+    for (let i = 0; i < 16; i++) { const a = i / 16 * PI * 2; g.beginPath(); g.moveTo(Math.cos(a) * 95, Math.sin(a) * 95); g.lineTo(Math.cos(a + 0.12) * 148, Math.sin(a + 0.12) * 148); g.lineTo(Math.cos(a - 0.12) * 148, Math.sin(a - 0.12) * 148); g.closePath(); g.fill(); }   /* tia mặt trời */
+    g.beginPath(); g.arc(-28, -18, 12, 0, PI * 2); g.arc(28, -18, 12, 0, PI * 2); g.fill(); g.lineWidth = 8; g.beginPath(); g.arc(0, 20, 30, 0.2, PI - 0.2); g.stroke(); })); }   /* mặt thần mặt trời ở tâm */
+  GOD_CAST.feathered_serpent = { hit: 0.8, fn: (F, T, G, at) => {
+    const c1 = 0xffd040, S = T.clone().setY(5.5);
+    prop(at, 2.2, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.CircleGeometry(4, 48), basic(mayaTex(), 0xffffff, true, 1)); g.add(m); const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); halo.scale.setScalar(14); g.add(halo);
+      const qf = new THREE.Quaternion().setFromEuler(new THREE.Euler(-PI / 2, 0, 0));
+      return { g, upd: (k, t) => { const e = Math.min(1, Math.max(0, (t - 0.5) / 0.3)); g.position.copy(S).lerp(T.clone().setY(0.15), e * e); g.quaternion.copy(CAM.quaternion).slerp(qf, e); m.rotation.z = -t * (3 - e * 2.5); g.scale.setScalar(Math.min(1, t / 0.25) * (1 + e * 0.6)); m.material.opacity = 1 - Math.max(0, k - 0.8) / 0.2; halo.material.opacity = 0.6 * (1 - e) * m.material.opacity; } }; });   /* xoay trên trời → giáng phẳng xuống */
+    const h = at + 0.8; for (let q = 0; q < 12; q++) { const a = q / 12 * PI * 2; pillar(T.clone().add(new V3(Math.cos(a) * 5, 0, Math.sin(a) * 5)), c1, 0xffffff, 0.5, 8, 0.8, h + q * 0.03, { speed: 5 }); }
+    pillar(T, 0x2affb0, c1, 2.2, 14, 1, h, { speed: 5, widen: 1.2 }); decal(T, mayaTex(), 0xffe08a, 10, 1.6, h, { op: 0.9, mode: "static" }); } };
 
   ultTiered("dragon_roar", "thuong-hiet", "THƯƠNG HIỆT", 0xffc040, 0.8, 1.9, "Frot");
-  ultTiered("rune_sword", "odin", "ODIN", 0x5fa8ff, 0.7, 0.75, "Tshift");
+  ultTiered("rune_sword", "odin", "ODIN", 0x5fa8ff, 0.7, 0.71, "same");
   ultTiered("ibis_judgment", "thoth", "THOTH", 0xffc040, 0.9, 1.75, "Trot");
   ultTiered("word_spirit_torii", "kotodama", "KOTODAMA", 0xff6a3a, 0.9, 2.45, "Frot");
   ultTiered("ogham_grove", "ogma", "OGMA", 0x5aff8a, 0.8, 1.4, "center");
   ultTiered("feathered_serpent", "itzamna", "ITZAMNA", 0x2affb0, 0.9, 2.3, "Frot");
-  ultTiered("tablet_of_destiny", "nabu", "NABU", 0xffb030, 0.7, 1.0, "Tshift");
+  ultTiered("tablet_of_destiny", "nabu", "NABU", 0xffb030, 0.7, 1.0, "same");
+  /* --- Hermes: Winged Courier theo bậc – bậc 1 lướt chớp + lông vũ · bậc 4 + mây giông, sét giáng, điện xẹt · bậc 7 + trường điện dưới đất, cột sét mỗi lần lướt, sét tím · bậc 10 hồn Hermes ném Caduceus khổng lồ --- */
+  function caduceus(sc) { const g = new THREE.Group(), sm = solidMat(0xc8901a, 0xfff0a0, 0xffffff), staff = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4, 8), sm); g.add(staff);
+    for (let s = 0; s < 2; s++) { const sn = new THREE.Mesh(new THREE.TubeGeometry(helix(0.35, 3, 2.2, 60), 80, 0.07, 6), sm); sn.position.y = -1.5; sn.rotation.y = s * PI; g.add(sn); }
+    [-1, 1].forEach(s => { const w = new THREE.Mesh(new THREE.ConeGeometry(0.25, 1.2, 4).rotateZ(s * 1.2), sm); w.position.set(s * 0.6, 1.9, 0); g.add(w); }); const orb = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 8), sm); orb.position.y = 2.1; g.add(orb); g.scale.setScalar(sc || 1); return { g, sm }; }
+  SK.winged_courier = (F, T, rk) => {
+    const f = FORM(rk), c1 = 0xffd040, c2 = 0xffffff, ce = f >= 3 ? 0xc89aff : 0x9ad8ff, now = CLOCK_MS(), first = !LAST.hermes || now - LAST.hermes > 900; if (first) { LAST.hermesI = 0; LAST.hermesP = F.clone(); } else LAST.hermesI++; LAST.hermes = now; const i = LAST.hermesI;
+    if (first) { const SD = [2.2, 3.4, 4.4, 4.8][f - 1], R0 = 5.5 + f * 0.5, C = F.clone().lerp(T, 0.5);
+      if (f >= 4) godModel("hermes");
+      ULT_EXTRA = SD - 2.4 + (f >= 4 ? 3 : 0); ultFrame(F, c1, c2, "greek", 2.4, "Winged Courier", 6); ULT_EXTRA = 0;
+      [-1, 1].forEach(s => prop(0, SD, () => { const g = new THREE.Group(), ws = new THREE.Shape(); ws.moveTo(0, 0); ws.quadraticCurveTo(0.5, 0.5, 1.1, 0.6); ws.lineTo(0.9, 0.35); ws.lineTo(1.0, 0.25); ws.lineTo(0.75, 0.12); ws.lineTo(0.8, 0.0); ws.lineTo(0, -0.1);
+        const w = new THREE.Mesh(nuv(new THREE.ShapeGeometry(ws)), ghostMat(c1, 0xffffff, { fres: 0.6, cut: -0.5 })); w.scale.x = s; g.add(w);
+        return { g, upd: (k, t) => { w.material.uniforms.uTime.value = t; w.material.uniforms.uAlpha.value = pop(k, 0.05, 0.9); g.position.copy(F).add(new V3(s * 0.35, 0.25, 0)); g.quaternion.copy(CAM.quaternion); w.rotation.z = Math.sin(t * 14) * 0.25 * s; g.scale.setScalar(1.2 + f * 0.15); } }; }));   /* cánh ở giày */
+      emitter(100 + f * 50, q => ({ p: C.clone().add(new V3(R(-7, 7), R(5, 8), R(-7, 7))), v: new V3(R(-0.6, 0.6), -R(1, 2), R(-0.6, 0.6)), t0: R(0, SD), life: R(1.5, 2.4), size: R(0.3, 0.55), col: [c1, 0xfff0b0, 0xffffff][q % 3] }), { grav: 0, drag: 0.3 });   /* lông vũ vàng rơi */
+      const nB = [5, 18, 30, 34][f - 1]; for (let b = 0; b < nB; b++) { const at = 0.15 + b * (SD - 0.4) / nB, a = R(0, PI * 2), r = Math.sqrt(Math.random()) * R0, P = C.clone().add(new V3(Math.cos(a) * r, 0.05, Math.sin(a) * r)), big = b % 4 === 0;   /* sét giáng */
+        bolt(P.clone().add(new V3(R(-1.5, 1.5), 9, R(-1.5, 1.5))), P, big ? 0xffffff : ce, big ? 0.4 + f * 0.1 : 0.18 + f * 0.04, big ? 0.28 : 0.18, at, { jag: 1 });
+        glow(P.clone().setY(0.6), big ? 0xffffff : ce, big ? 3.5 : 2, 0.2, at, { flash: true }); if (big) { shock(P, ce, 2, 0.35, at); decal(P, TEX.crack, 0xffffff, 1.8, 1, at, { add: false, op: 0.7, ro: 3 }); task(at, 0.01, () => shake(0.08 + f * 0.02)); }
+        sparks(P.clone().setY(0.3), [ce, 0xffffff], big ? 18 : 8, 6, 0.2, 0.35, at, { up: 1.5 }); }
+      if (f >= 2) { prop(0, SD, () => { const g = new THREE.Group(), cm = flowMat({ c1: 0x2a3050, c2: 0x8a9ac8, rep: [2, 2], spd: [0.15, 0.05], fres: 0, cut: 0.1, gain: 0.9, fade: [0.2, 0.2, 0.2, 0.2] }); cm.blending = THREE.NormalBlending; const m = new THREE.Mesh(new THREE.CircleGeometry(R0 * 1.5, 40).rotateX(PI / 2), cm); g.add(m); g.position.copy(C).setY(9);
+          const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xd8f0ff, blending: ADD, transparent: true, depthWrite: false })); fl.scale.setScalar(R0 * 3); fl.position.y = -0.5; g.add(fl);
+          return { g, upd: (k, t) => { cm.uniforms.uTime.value = t; cm.uniforms.uAlpha.value = 0.85 * pop(k, 0.1, 0.88); fl.material.opacity = Math.random() < 0.12 ? 0.9 : 0.05; } }; });   /* mây giông */
+        decal(C, TEX.dark, 0xffffff, R0 * 3, SD, 0, { add: false, op: 0.6, inT: 0.3, hold: 0.85 });
+        for (let a = 0; a < 8 + f * 6; a++) { const at = R(0.1, SD - 0.2), a1 = R(0, PI * 2), a2 = a1 + R(0.8, 2); bolt(F.clone().add(new V3(Math.cos(a1) * 0.8, R(0.3, 2), Math.sin(a1) * 0.8)), F.clone().add(new V3(Math.cos(a2) * 1.3, R(0.1, 2.2), Math.sin(a2) * 1.3)), ce, 0.07, 0.14, at, { jag: 0.5 }); }   /* điện xẹt quanh người */
+        aura(F, ce, 0xffffff, 1.0, 3, SD, 0); }
+      if (f >= 3) { rune(C, "star", "greek", ce, R0 * 2.2, SD, 0.1, { mode: "pulse", rate: 9, amp: 0.06, op: 0.9 }); decal(C, swirlTex(), ce, R0 * 2, SD, 0.1, { spin: 2, op: 0.5 });   /* trường điện dưới đất */
+        for (let q = 0; q < 10; q++) { const at = 0.3 + q * (SD - 0.6) / 10, a = R(0, PI * 2), a2 = a + R(1, 2.5); bolt(C.clone().add(new V3(Math.cos(a) * R0 * 0.8, 0.2, Math.sin(a) * R0 * 0.8)), C.clone().add(new V3(Math.cos(a2) * R0 * 0.8, 0.2, Math.sin(a2) * R0 * 0.8)), ce, 0.2, 0.2, at, { jag: 0.6 }); } }   /* sét bò ngang mặt đất */
+      if (f >= 4) { const tg = SD - 0.6, G = godAppear("hermes", "HERMES", F, T, c1, tg, 3.2), h = tg + 1.15;
+        prop(tg + 0.6, 2.2, () => { const o = caduceus(2.6), H = G.clone().setY(5.5); return { g: o.g, upd: (k, t) => { o.sm.uniforms.uTime.value = t; const e = Math.min(1, t / 0.55); o.g.position.copy(H).lerp(T.clone().setY(5), e).setY(5 + Math.sin(e * PI) * 2 - (e >= 1 ? Math.min(3.2, (t - 0.55) * 8) : 0)); o.g.rotation.set(0, t * (e < 1 ? 14 : 4), e < 1 ? t * 6 : 0); o.sm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.8) / 0.2; } }; });   /* ném Caduceus khổng lồ */
+        for (let s = 0; s < 2; s++) prop(h - 0.1, 1.6, () => { const geo = new THREE.TubeGeometry(helix(1.4, 5, 2.5, 80), 140, 0.18, 6), mt = flowMat({ c1: s ? 0x9ad8ff : c1, c2: 0xffffff, rep: [6, 1], spd: [-3, 0], fres: 0.6, cut: -0.3, gain: 1.6, fade: [0, 0, 0, 0] }), m = new THREE.Mesh(geo, mt), g = new THREE.Group(); g.add(m); g.position.copy(T); g.rotation.y = s * PI; const N = geo.index.count;
+          return { g, upd: (k, t) => { mt.uniforms.uTime.value = t; geo.setDrawRange(0, Math.floor(N * Math.min(1, t / 0.4))); g.rotation.y = s * PI + t * 3; mt.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.8) / 0.2; } }; });   /* 2 rắn ánh sáng quấn quanh quái */
+        tornado(T, c1, 0xffffff, 1.6, 5, 1.4, h); for (let q = 0; q < 6; q++) bolt(T.clone().add(new V3(R(-2, 2), 12, R(-2, 2))), T.clone().setY(0.3), q % 2 ? c1 : 0xffffff, 0.5, 0.3, h + q * 0.07, { jag: 0.8 });
+        critBurst(T, c1, h); } }
+    const HUE = [0xffd040, 0xffffff, 0x9ad8ff], B = T.clone().setY(1.1); let A = (LAST.hermesP || F).clone().setY(1.1); if (A.distanceTo(B) < 1.5) { const a = i * 2.4; A = B.clone().add(new V3(Math.cos(a) * 3.5, 0, Math.sin(a) * 3.5)); } LAST.hermesP = T.clone();
+    bolt(A, B, c1, 0.7 + f * 0.15, 0.35, 0, { jag: 0.15 }); if (f >= 2) { bolt(A, B, c2, 0.5 + f * 0.08, 0.35, 0, { jag: 0.3 }); bolt(A, B, ce, 0.3, 0.35, 0.03, { jag: 0.9 }); }   /* lướt như tia chớp */
+    for (let g2 = 0; g2 < 3; g2++) glow(A.clone().lerp(B, g2 / 3), HUE[g2], 2.4, 0.4, g2 * 0.02);
+    if (f >= 2) for (let q = 0; q < 2; q++) bolt(B, B.clone().add(new V3(R(-3, 3), R(-1, 1), R(-3, 3))), ce, 0.15, 0.25, 0.05, { jag: 0.7 });
+    if (f >= 3) { bolt(B.clone().setY(12), T.clone().setY(0.2), 0xffffff, 0.6, 0.25, 0.06, { jag: 0.5 }); pillar(T, ce, 0xffffff, 0.8, 7, 0.4, 0.06, { speed: 6 }); }   /* cột sét mỗi lần lướt */
+    glow(B, 0xffffff, 3.5, 0.25, 0.04, { flash: true }); sparks(B, [c1, 0xffffff, ce], 20 + f * 8, 8, 0.3, 0.55, 0.04, { up: 1 }); shock(T, c1, 2 + f * 0.3, 0.4, 0.04); task(0.04, 0.01, () => shake(0.1 + f * 0.03));
+    if (i === 6) { const at = 0.25; prop(at - 0.2, 1.2, () => { const o = caduceus(1); return { g: o.g, upd: (k, t) => { o.sm.uniforms.uTime.value = t; const e = Math.min(1, t / 0.2); o.g.position.copy(T).setY(10 - e * e * 8); o.g.rotation.y = t * 2; o.sm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.75) / 0.25; } }; }); ULT_BIG(T, c1, c2, at, 6); }
+  };
+  META.winged_courier.forms = ["Lướt chớp 7 lần + lông vũ", "+ mây giông, sét giáng, điện xẹt", "+ trường điện, cột sét mỗi lần lướt, sét tím", "+ hồn HERMES ném Caduceus, CHÍ MẠNG"];
 
   /* --- Drum Roll (góp ý: đổi kiểu): dùi trống khổng lồ nện xuống quái như nện trống, mỗi nhịp 1 vòng sóng âm đứng + "DON!" --- */
   function drumstick(gold) { const g = new THREE.Group(), wm = solidMat(gold ? 0xc8901a : 0x9a2a10, gold ? 0xfff0a0 : 0xff9a5a, 0xffe0b0), st = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.28, 3.2, 10).translate(0, 1.6, 0), wm); g.add(st);
@@ -2265,7 +2396,9 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
   api.meta = META;
   api.names = {}; api.ids.forEach(id => api.names[id] = META[id].name);
   api.form = FORM;
-  api.has = id => !!SK[id];   // chiêu đã có hiệu ứng riêng
+  api.has = id => !!SK[id];
+  api._godPose = (slug, w, r, cb) => godModel(slug, E => { if (E.scene) { if (E.rigged) { const P = GOD_POSE[slug]; Object.keys(E.bind).forEach(n => E.bones[n].quaternion.copy(E.bind[n])); const ap = (n, ax, v) => { const bn = E.bones[n]; if (bn && v) bn.quaternion.multiply(_gq.setFromAxisAngle(_gax[ax], v)); }; if (Array.isArray(w)) w.forEach(q => ap(...q)); else if (P) P(ap, w, r); } E.mats.forEach(m => { m.opacity = 1; m.color.set(0xffffff); }); } cb(E); });
+  api._god = (slug, F, T, at, dur) => godAppear(slug, slug.toUpperCase(), F, T, 0xffc040, at, dur);   // để thử dáng thần   // chiêu đã có hiệu ứng riêng
   api.setup = (scene, camera, renderer) => { SC = MAIN_SC = scene; CAM = camera; REN = renderer; if (!ready) { makeTextures(); ready = true; } };
   api.ready = () => ready;
   api.update = update;
