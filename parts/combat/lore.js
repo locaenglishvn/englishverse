@@ -17,7 +17,7 @@ const LORE = (function () {
 #loreOver .pic img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
 #loreOver .sk{margin:10px 0;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,rgba(255,201,74,.18),rgba(255,201,74,.04));border:1px solid rgba(255,201,74,.5)}
 #loreOver .sk b{font:800 18px var(--ev-font);color:var(--ev-gold)}
-#loreOver .sk .ic{font-size:30px;margin-right:8px;vertical-align:middle}
+#loreOver .sk .ic{font-size:30px;margin-right:8px;vertical-align:middle;display:inline-block;width:52px;height:52px;line-height:52px;text-align:center}#loreOver .sk .ic .skIc{border-radius:12px;box-shadow:0 0 14px rgba(255,210,120,.5)}
 #loreOver p{margin:6px 0;font-size:14px;line-height:1.5}
 #loreOver .m{color:var(--ev-mut);font-size:12.5px}
 #loreOver .en{font-size:15px;line-height:1.55}
@@ -61,7 +61,7 @@ const LORE = (function () {
       show(`<div class="kick">${god ? "✨ Thần ban phép" : "📗 Nhiệm vụ kiến thức hoàn thành"}</div>
         <div class="row"><div class="pic glow">${img ? `<img src="${img}" alt="${esc(src.who)}" onerror="this.replaceWith(document.createTextNode('🧑‍🔬'))">` : S.icon}</div>
         <div><h2>${esc(src.who)}</h2><p>Bạn đã hoàn thành nhiệm vụ <b>${esc(src.q)}</b>.</p><p class="m">You finished the quest. Now you know a new skill!</p></div></div>
-        <div class="sk"><span class="ic">${S.icon}</span><b>${esc(S.name)}</b> <span class="m">· ${BR.icon || ""} ${esc(BR.name || "")} · Lv.${S.lv}</span>
+        <div class="sk"><span class="ic">${typeof skillIcon === "function" ? skillIcon(id) : S.icon}</span><b>${esc(S.name)}</b> <span class="m">· ${BR.icon || ""} ${esc(BR.name || "")} · Lv.${S.lv}</span>
         <p class="en">${esc(S.en || "")}</p></div>
         ${S.seed ? `<p><b>Chiêu này từ đâu ra?</b> ${esc(S.seed)} Linh hồn ${esc(src.who)} gửi lại tri thức ấy, giọng nói tiếng Anh của bạn biến nó thành phép.</p>` : ""}
         <p class="m">✨ ${esc(S.fx || "")}</p>

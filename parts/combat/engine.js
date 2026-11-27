@@ -158,6 +158,10 @@ const SKILLS = {
   groove:       { branch: "rhythm", type: "passive", name: "Groove", icon: "🕺", lv: 24, desc: "Mỗi quái trúng chiêu Rhythm: +1 mana mỗi bậc." },
 };
 const BRANCH = { power: { name: "Power", color: "#e5484d", icon: "⚡" }, control: { name: "Control", color: "#3b82f6", icon: "🌀" }, harmony: { name: "Harmony", color: "#2f9e44", icon: "💚" }, rhythm: { name: "Rhythm", color: "#e8590c", icon: "🔥" } };
+function skillIcon(id) {   // icon chiêu vẽ từ hiệu ứng 3D thật (tools/icons/build.js); nội tại hoặc thiếu ảnh thì dùng emoji
+  const S = SKILLS[id]; if (!S) return ""; if (S.type === "passive") return S.icon;
+  return "<img class='skIc' src='assets/icons/skills/" + id + ".webp' alt='' loading='lazy' onerror=\"this.replaceWith(document.createTextNode('" + S.icon + "'))\">";
+}
 function skillRank(id) { return (save.combat.skills[id] || 0); }
 const pr = id => skillRank(id);   // bậc của nội tại
 function isActive(id) { const S = SKILLS[id]; return S && S.type !== "passive"; }
@@ -236,7 +240,7 @@ function buildCombatUi() {
 #cbBtns{position:fixed;right:10px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:210px;height:210px;display:none;z-index:6}
 #cbBtns button{position:absolute;font-size:22px;touch-action:none;-webkit-user-select:none;user-select:none}
 #cbAtk{right:10px;bottom:10px;width:84px;height:84px;--c:#f4efe0!important;color:#3a2a10!important;text-shadow:none!important;font-size:34px!important}
-.cbSk{width:54px;height:54px}.cbSk .cd{position:absolute;inset:0;border-radius:50%;background:rgba(10,14,30,.7);font:700 13px system-ui;display:flex;align-items:center;justify-content:center}
+.cbSk{width:54px;height:54px;overflow:hidden}.cbSk .skIc{position:absolute;inset:0;border-radius:50%}.skIc{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.cbSk .cd{position:absolute;inset:0;border-radius:50%;background:rgba(10,14,30,.7);font:700 13px system-ui;display:flex;align-items:center;justify-content:center}
 .cbSk.rec{transform:scale(1.14);box-shadow:0 0 0 3px #1b2340,0 0 0 5px #35f0e8,0 0 18px 9px rgba(53,240,232,.85),inset 0 -4px 6px rgba(0,0,0,.35)}
 #cbCard{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(286px + env(safe-area-inset-bottom,0px));width:min(92vw,420px);display:none;z-index:7}
 #cbCard .t{display:flex;justify-content:space-between;align-items:center;gap:6px}#cbCard .t small{font:600 11px var(--ev-font);color:var(--ev-mut);margin-left:6px}
@@ -268,7 +272,7 @@ body.cbOn #sayBtn{bottom:calc(270px + env(safe-area-inset-bottom,0px))!important
 }
 function drawCombatHud() {
   if (!$("cbHud")) return;
-  for (let i = 0; i < 4; i++) { const id = save.combat.slots[i], S = SKILLS[id], b = $("cbS" + i); b.style.display = S ? "block" : "none"; if (S) { b.style.setProperty("--c", BRANCH[S.branch].color); b.innerHTML = S.icon + "<div class='cd' style='display:none'></div>"; } }
+  for (let i = 0; i < 4; i++) { const id = save.combat.slots[i], S = SKILLS[id], b = $("cbS" + i); b.style.display = S ? "block" : "none"; if (S) { b.style.setProperty("--c", BRANCH[S.branch].color); b.innerHTML = skillIcon(id) + "<div class='cd' style='display:none'></div>"; } }
   showWeaponInHand();
   drawFoodSlots(true);
 }

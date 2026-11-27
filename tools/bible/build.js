@@ -66,3 +66,4 @@ console.log("OK", file, (fs.statSync(file).size / 1024).toFixed(0) + " KB", { mo
 // Tab "Hiệu ứng chiêu": chép mã hiệu ứng của game cạnh trang sổ tay
 fs.copyFileSync(path.join(ROOT, "parts/combat/fx3d.js"), path.join(ROOT, "docs/bible/fx3d.js"));
 console.log("đã chép fx3d.js");
+const ICD = path.join(ROOT, "assets/icons/skills"), ICO = path.join(ROOT, "docs/bible/icons"); if (fs.existsSync(ICD)) { fs.mkdirSync(ICO, { recursive: true }); fs.readdirSync(ICD).filter(f => f.endsWith(".webp")).forEach(f => fs.copyFileSync(path.join(ICD, f), path.join(ICO, f))); console.log("đã chép icon chiêu"); }
