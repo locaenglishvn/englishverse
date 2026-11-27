@@ -120,7 +120,7 @@ void main() { float a = texture2D(uTex, gl_PointCoord).a * vA; gl_FragColor = ve
       SC = T.sc; CAM = T.cam;
       try { if (!T.h) T.h = T.setup() || {};
         const k = Math.min(1, T.t / T.dur); if (T.h.upd) T.h.upd(k, T.t, dt);
-        if (k >= 1) { if (T.h.end) T.h.end(); TASKS.splice(i, 1); } } catch (e) { TASKS.splice(i, 1); }   // lỗi 1 hiệu ứng không làm hỏng game
+        if (k >= 1) { if (T.h.end) T.h.end(); TASKS.splice(i, 1); } } catch (e) { if (window.__fxdebug) console.error("FX3D task", e); TASKS.splice(i, 1); }   // lỗi 1 hiệu ứng không làm hỏng game
     }
     SC = sc0; CAM = cam0;
     api.shake = Math.max(0, api.shake - dt);
@@ -584,19 +584,6 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     sparks(T.clone().setY(1), [0xffffff, 0xffd27a, c], 18 + rk * 4, 7, 0.28, 0.45, 0.14, { up: 1 });
     glow(T.clone().setY(1), 0xfff0c0, 2.4, 0.22, 0.14, { flash: true }); if (rk >= 5) shock(T, 0xffd27a, 1.8, 0.35, 0.14);
   };
-  META.typeset_rain = { name: "Typeset Rain", lv: 16, who: "Gutenberg · chữ hình nêm", desc: "Sách phép nhỏ mở trên đầu người chơi, từng trang sách phóng vào quái nổ liên tiếp (bậc càng cao càng nhiều trang), rồi ấn phù văn khoá chân quái." };
-  SK.typeset_rain = (F, T, rk) => {
-    const c = GOLD(rk) ? 0xffd860 : 0x6fb8ff, B = T.clone().setY(1.1), n = 3 + Math.ceil(rk / 2);
-    rune(F, "seal", "cuneiform", c, 3, 0.5 + n * 0.16 + 0.4, 0, { mode: "spin", spin: 1.5, op: 0.8 });
-    const first = magicBook(F, T, "cuneiform", c, n, 0.75 + n * 0.16, 0, null);
-    for (let i = 0; i < n; i++) { const tt = first + i * 0.16, P = T.clone().add(new V3(R(-0.6, 0.6), 0, R(-0.6, 0.6)));   // mỗi trang: nổ bùm
-      glow(P.clone().setY(1.1), 0xffffff, 2.6, 0.2, tt, { flash: true }); glow(P.clone().setY(1.1), c, 3.6, 0.32, tt, { flash: true });
-      shock(P, c, 1.6, 0.35, tt); sparks(P.clone().setY(1.1), [0xffffff, c, 0xfff0c0], 22, 6, 0.24, 0.45, tt, { up: 1.2 }); task(tt, 0.01, () => shake(0.12)); }
-    const end = first + (n - 1) * 0.16 + 0.1;
-    shadowUnder(T, 5.5, 1.4, end - 0.1); rune(T, "seal", "cuneiform", c, 5, 1.3, end, { mode: "converge", inT: 0.25 });   // ấn khoá chân sau loạt nổ
-    pillar(T, c, 0xffffff, 1.2, 2.6, 0.8, end, { speed: 1.5, widen: 0, top: 0.25, cut: 0.3 });
-    TIER(T, rk, c, end, { script: "cuneiform", shape2: "circle", size: 4.4 });
-  };
 
   META.ac_storm = { name: "AC Storm", lv: 40, who: "Nikola Tesla · chữ rune", desc: "Ấn sét đứng im dưới quái → 3 tia sét + cột điện → tia điện toả trên đất, vết nứt." };
   SK.ac_storm = (F, T, rk) => {
@@ -613,16 +600,6 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     for (let i = 0; i < 3 + rk; i++) { const a = i / (3 + rk) * PI * 2 + R(0, 1), e = T.clone().add(new V3(Math.cos(a) * 2.4, 0.1, Math.sin(a) * 2.4)); bolt(B, e, 0xbfe6ff, 0.18, 0.3, hit + 0.05 + i * 0.03, { jag: 0.5 }); }
     sparks(B, [0xffffff, 0x9ad8ff, c], 50 + rk * 10, 10, 0.3, 0.6, hit, { up: 1.4, drag: 3 });
     TIER(T, rk, c, hit, { script: "runic", shape2: "star", size: 4.4 }); task(hit, 0.01, () => shake(0.3));
-  };
-  META.bristle_cyclone = { name: "Bristle Cyclone", lv: 11, who: "William Addis · chữ Hy Lạp", desc: "(màu bọt trắng xanh) Ấn sao gai xoay tít → 3 vệt kiếm lửa quét quanh người → lốc xoáy lửa, vết cháy, tàn lửa bay." };
-  SK.bristle_cyclone = (F, T, rk) => {
-    const c1 = GOLD(rk) ? 0x9ae8ff : 0x2fb8e8;
-    shadowUnder(F, 7, 1.4, 0); rune(F, "star", "greek", 0x7ad8ff, 5.5, 1.3, 0, { mode: "spin", spin: 6 });
-    [0, 0.12, 0.24].forEach((dl, i) => slash(F, c1, 0xffffff, 2.6 + i * 0.5, 1.1, 0, PI * 1.6, R(-0.25, 0.25), i * 2.1, 0.35, dl, 1.0 + i * 0.15));
-    tornado(F, c1, 0xe8fbff, 1.6, 4.2, 1.1, 0.2); pillar(F, 0x5fd0ff, 0xcff4ff, 2.4, 1.6, 0.8, 0.25, { speed: 2.5, widen: 0.6, top: 1.3, cut: 0.25 });
-    shock(F, 0xbff0ff, 5, 0.6, 0.3);
-    emitter(80 + rk * 20, i => { const a = R(0, PI * 2), r = R(0.5, 3); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 1), Math.sin(a) * r)), v: new V3(-Math.sin(a) * 3, R(2, 5), Math.cos(a) * 3), t0: R(0.15, 0.9), life: R(0.5, 0.9), size: R(0.2, 0.45), col: [0xe8fbff, 0x8fe0ff, c1][i % 3] }; }, { grav: 1, drag: 1.5 });
-    TIER(F, rk, 0x8fe0ff, 0.25, { script: "greek", shape2: "sun", size: 5, spin: 3 }); task(0.3, 0.01, () => shake(0.25));
   };
   META.rune_sword = { name: "Rune Sword", lv: 70, who: "Odin · chữ rune (tuyệt chiêu)", desc: "Thanh kiếm khổng lồ khắc rune hiện trên trời, rơi cắm xuống quái → ấn toả ra, nứt đất, cột sáng, tia lửa." };
   SK.rune_sword = (F, T, rk) => {
@@ -704,16 +681,455 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     if (f >= 4) { shock(T, 0xffffff, zr * 2.2, 0.6, hit + 0.1); sparks(B, [0xffffff, 0xffd860], 60, 11, 0.35, 0.8, hit, { up: 1.5 }); }
     task(hit, 0.01, () => shake(0.08 + f * 0.06));
   }
+  /* ---------- CHƯƠNG 1 (Lv.10–20): hiệu ứng riêng đúng mô tả trong sổ tay, mỗi chiêu 4 hình dạng ---------- */
+  /* ================= CHƯƠNG 1 (Lv.10–20): hiệu ứng riêng đúng mô tả trong sổ tay, mỗi chiêu 4 hình (bậc 1/4/7/10) ================= */
+  const pop = (k, a, b) => Math.min(1, k / (a || 0.1)) * (1 - Math.max(0, k - (b || 0.85)) / (1 - (b || 0.85)));   // hiện ra → giữ → tan
+  function prop(delay, dur, build) {   // vật thể có vòng đời: build() → { g, upd(k, t, dt), end() }
+    task(delay || 0, dur, () => { const r = build(); r.g.traverse(x => { x.frustumCulled = false; if (!x.renderOrder) x.renderOrder = 9; }); SC.add(r.g);
+      return { upd: (k, t, dt) => { if (r.upd) r.upd(k, t, dt); }, end: () => { kill(r.g); if (r.end) r.end(); } }; });
+  }
+  const TXT = {};
+  function txtTex(s, color, font) {   // chữ / số nổi (sprite), có viền tối
+    const key = s + color + (font || ""); if (TXT[key]) return TXT[key];
+    return TXT[key] = cvTex(128, (g, n) => { g.font = font || "bold 92px Georgia, serif"; g.textAlign = "center"; g.textBaseline = "middle"; const k = Math.min(1, (n - 16) / g.measureText(s).width); g.translate(n / 2, n / 2 + 6); g.scale(k, k); /* chữ dài thì thu nhỏ cho vừa */
+      g.lineWidth = 10; g.strokeStyle = "rgba(40,20,0,.85)"; g.strokeText(s, 0, 0); g.fillStyle = color; g.fillText(s, 0, 0); });
+  }
+  function textPop(P, s, color, size, dur, delay, o) {   // chữ bật lên rồi bay lên tan
+    o = o || {}; P = P.clone();
+    prop(delay, dur, () => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex(s, color), transparent: true, depthWrite: false, depthTest: false })); sp.renderOrder = 12; const g = new THREE.Group(); g.add(sp);
+      return { g, upd: k => { sp.position.set(P.x, P.y + k * (o.rise === undefined ? 1.2 : o.rise), P.z); sp.scale.setScalar(size * (k < 0.15 ? 0.4 + k / 0.15 * 0.9 : 1.3 - Math.min(0.3, (k - 0.15)))); sp.material.opacity = 1 - Math.max(0, k - 0.6) / 0.4; } }; });
+  }
+  const BONE = 0xe9dcc0, BONE2 = 0xfff6e0;
+  const boneMat = (gold) => solidMat(gold ? 0xc89a20 : 0xb8a888, gold ? 0xfff0a0 : BONE2, gold ? 0xffe080 : 0xffffff);
+  const woodMat = (gold) => solidMat(gold ? 0x9a6a10 : 0x5a3418, gold ? 0xffd860 : 0xb07840, 0xffd8a0);
+  const helix = (r, h, turns, n) => new THREE.CatmullRomCurve3(Array.from({ length: n || 60 }, (_, i) => { const u = i / ((n || 60) - 1), a = u * turns * PI * 2; return new V3(Math.cos(a) * r, u * h, Math.sin(a) * r); }));
+  function upg(P, f, col, delay, size) {   // lớp thưởng chung theo hình dạng: hình 2 ấn toả · hình 3 cột sáng + hạt · hình 4 sóng vàng lớn
+    size = size || 3;
+    if (f >= 2) rune(P, "sun", "latin", col, size * 1.6, 0.8, delay, { mode: "expand", expand: 0.7, hold: 0.2, grow: false, op: 0.8, lift: 0.01 });
+    if (f >= 3) { pillar(P, col, 0xffffff, size * 0.25, 5, 0.6, delay, { speed: 3.5, widen: 0.5, top: 0.8 }); sparks(P.clone().setY(1), [col, 0xffffff], 40, 8, 0.3, 0.7, delay, { up: 1.4 }); }
+    if (f >= 4) { shock(P, 0xffe9a8, size * 2, 0.7, delay + 0.05); shock(P, 0xffd860, size * 1.4, 0.6, delay + 0.12); task(delay, 0.01, () => shake(0.25)); }
+  }
+  /* --- Lương Thế Vinh --- */
+  META.elephant_scale = { name: "Elephant Scale", lv: 10, who: "Lương Thế Vinh", forms: ["Thuyền ma nổi trên hồ", "+ sóng đôi, vạch nước đỏ", "Thuyền lớn + bóng voi", "Thuyền vàng + cột nước"] };
+  SK.elephant_scale = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 3.2 + f * 0.4;
+    shadowUnder(T, R0 * 2, 1.8, 0);
+    prop(0, 1.9, () => { const g = new THREE.Group(), mt = flowMat({ c1: 0x1a7ab8, c2: 0x9ae6ff, rep: [3, 3], spd: [0.2, 0.3], fres: 0, cut: -0.2, gain: 1.1, fade: [0, 0, 0, 0] }), w = new THREE.Mesh(new THREE.CircleGeometry(1, 40).rotateX(-PI / 2), mt); g.add(w); g.position.set(T.x, 0.05, T.z);   // mặt hồ
+      return { g, upd: (k, t) => { mt.uniforms.uTime.value = t; const s = R0 * pop(k, 0.15, 0.8); g.scale.set(s, 1, s); mt.uniforms.uAlpha.value = 0.75; } }; });
+    const boat = (P, sc, delay) => prop(delay, 1.7, () => {   // thuyền ma: thân cong (khuôn ép) + mái chèo, trong suốt xanh
+      const sh = new THREE.Shape(); sh.moveTo(-2.2, 0.9); sh.quadraticCurveTo(-1.8, 0, 0, 0); sh.quadraticCurveTo(1.8, 0, 2.2, 0.9); sh.lineTo(1.7, 0.75); sh.quadraticCurveTo(0, 0.55, -1.7, 0.75); sh.closePath();
+      const geo = new THREE.ExtrudeGeometry(sh, { depth: 1.3, bevelEnabled: false }); geo.translate(0, 0, -0.65);
+      const mt = gold ? solidMat(0x9a6a10, 0xffe080, 0xffffff) : flowMat({ c1: 0x2fb0e0, c2: 0xdff8ff, rep: [2, 1], spd: [0.5, 0], fres: 1.3, cut: -0.4, gain: 1.3, fade: [0, 0, 0, 0] });
+      const g = new THREE.Group(), hull = new THREE.Mesh(geo, mt); g.add(hull);
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2, 6), mt); mast.position.y = 1.4; g.add(mast);
+      const line = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.035, 6, 40).rotateX(PI / 2), basic(null, 0xff3a3a, false, 0.9)); line.scale.set(2.2, 1, 0.7); line.position.y = 0.55; g.add(line);   // vạch mực nước đỏ
+      g.position.set(P.x, 0, P.z); g.rotation.y = R(0, 6);
+      return { g, upd: (k, t) => { if (mt.uniforms) mt.uniforms.uTime.value = t; const rise = Math.min(1, k / 0.25), sink = k > 0.55 ? (k - 0.55) / 0.45 : 0;
+        g.position.y = -1.2 + rise * 1.6 - sink * 0.9 + Math.sin(t * 6) * 0.08; g.rotation.z = Math.sin(t * 4) * 0.08; g.scale.setScalar(sc * pop(k, 0.12, 0.85)); line.visible = f >= 2 && k > 0.3; if (mt.uniforms) mt.uniforms.uAlpha.value = gold ? 1 : 0.85; } }; });
+    boat(T, 1 + (f - 1) * 0.25, 0.1);
+    for (let i = 0; i < 1 + (f >= 2 ? 1 : 0); i++) shock(T, 0x9ae6ff, R0 * (1 + i * 0.4), 0.6, 0.2 + i * 0.15, 0.05);   // sóng nâng
+    sparks(T.clone().setY(0.4), [0xdff8ff, 0x7ad8ff, 0xffffff], 40 + f * 20, 6, 0.3, 0.8, 0.25, { up: 2.2, grav: -9 });   // nước bắn
+    if (f >= 3) prop(0.3, 1.3, () => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex("🐘", "#ffffff", "100px sans-serif"), transparent: true, depthWrite: false, opacity: 0.8 })); const g = new THREE.Group(); g.add(sp);
+      return { g, upd: k => { sp.position.set(T.x, 2.6 + k * 0.5, T.z); sp.scale.setScalar(2.4 * pop(k, 0.15, 0.7)); sp.material.opacity = 0.75 * pop(k, 0.15, 0.7); } }; });
+    if (f >= 4) pillar(T, 0x2fb0e0, 0xdff8ff, 1.6, 6, 0.7, 0.3, { speed: 4, widen: 0.8, top: 1.2 });
+    textPop(T.clone().setY(2.2), f >= 2 ? "5 tấn" : "⚖", "#ffe27a", 1.2, 1.1, 0.5);
+    upg(T, f, 0x5fd0ff, 0.35, 3); task(0.3, 0.01, () => shake(0.1 + f * 0.05));
+  };
+  META.abacus_barrage = { name: "Abacus Barrage", lv: 10, who: "Lương Thế Vinh", forms: ["Bàn tính gỗ bắn hạt", "Hạt kéo vệt vàng, số to", "Bàn tính lớn, 2 hạt mỗi đòn", "Bàn tính vàng, số nổ"] };
+  SK.abacus_barrage = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, d = DIR(F, T), side = new V3(-d.z, 0, d.x), now = performance.now(), first = !LAST.abacus || now - LAST.abacus > 1200; LAST.abacus = now;
+    const AB = F.clone().addScaledVector(d, -1.4).add(new V3(0, 2.4 + f * 0.2, 0));
+    if (first) prop(0, 1.9, () => {   // bàn tính sau lưng: khung + 7 thanh + hạt
+      const g = new THREE.Group(), wm = woodMat(gold), bm = solidMat(gold ? 0xc8901a : 0x8a2a14, gold ? 0xfff0a0 : 0xe8803a, 0xffffff), W = 2.6, H = 1.6;
+      [[0, H / 2, W, 0.14], [0, -H / 2, W, 0.14], [0, 0.18, W, 0.08]].forEach(([x, y, w, h]) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w + 0.2, h, 0.16), wm); b.position.set(x, y, 0); g.add(b); });
+      [-1, 1].forEach(s => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.14, H + 0.14, 0.16), wm); b.position.x = s * (W / 2 + 0.05); g.add(b); });
+      for (let i = 0; i < 7; i++) { const x = -W / 2 + 0.25 + i * (W - 0.5) / 6, rod = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, H, 5), wm); rod.position.x = x; g.add(rod);
+        for (let j = 0; j < 5; j++) { const bead = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 6), bm); bead.scale.y = 0.65; bead.position.set(x, j === 0 ? 0.48 : -0.12 - j * 0.15, 0); g.add(bead); } }
+      g.position.copy(AB); g.quaternion.copy(basisQ(d)); const sc = 1 + (f >= 3 ? 0.35 : 0) + (gold ? 0.2 : 0);
+      return { g, upd: (k, t) => { [wm, bm].forEach(m => m.uniforms.uTime.value = t); g.scale.setScalar(sc * pop(k, 0.1, 0.85)); g.position.y = AB.y + Math.sin(t * 3) * 0.08; } }; });
+    const nb = f >= 3 ? 2 : 1, B = T.clone().setY(1);
+    for (let i = 0; i < nb; i++) { const A = AB.clone().addScaledVector(side, (i - (nb - 1) / 2) * 0.8), dl = i * 0.06;
+      orbFly(A, B, gold ? 0xffb020 : 0xc8501a, gold ? 0xfff6c0 : 0xffd090, 0.55, 0.22, dl, { arc: 0.3 });
+      if (f >= 2) emitter(20, q => ({ p: A.clone().lerp(B, q / 20), v: rv(0.2), t0: dl + q / 20 * 0.22, life: 0.35, size: 0.3, col: 0xffd860 }), { grav: 0, drag: 2 }); }
+    const num = String(1 + Math.floor(Math.random() * 9));
+    textPop(B.clone().add(new V3(R(-0.4, 0.4), 0.8, 0)), num, gold ? "#fff0a0" : "#ffd23a", 1 + f * 0.2, 0.8, 0.24);
+    glow(B, 0xffe0a0, 1.8 + f * 0.4, 0.2, 0.22, { flash: true }); sparks(B, [0xffd27a, 0xffffff, 0xc8501a], 12 + f * 6, 5, 0.22, 0.4, 0.22, { up: 1.2 });
+    if (gold) shock(T, 0xffd860, 1.6, 0.35, 0.24);
+    task(0.22, 0.01, () => shake(0.05 + f * 0.02));
+  };
+  /* --- William Addis --- */
+  META.bristle_cyclone = { name: "Bristle Cyclone", lv: 11, who: "William Addis", forms: ["1 bàn chải xoay quanh", "2 bàn chải + bọt", "+ lốc bọt trắng", "4 bàn chải cán vàng + vòm bọt"] };
+  SK.bristle_cyclone = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nB = f >= 4 ? 4 : f >= 2 ? 2 : 1, rad = 2.4 + f * 0.2;
+    shadowUnder(F, rad * 2.4, 1.6, 0); rune(F, "circle", "greek", 0x7ad8ff, rad * 2.2, 1.5, 0, { mode: "spin", spin: 4, op: 0.7 });
+    prop(0, 1.6, () => { const g = new THREE.Group(), hm = gold ? solidMat(0xc8901a, 0xfff0a0, 0xffffff) : solidMat(0x2a8ac8, 0x8fe0ff, 0xffffff), br = solidMat(0xd8f4ff, 0xffffff, 0xffffff);
+      for (let i = 0; i < nB; i++) { const b = new THREE.Group(), handle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 2.4, 8).rotateZ(PI / 2), hm); handle.position.x = rad - 0.2; b.add(handle);
+        const head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.18, 0.4), hm); head.position.set(rad + 1.3, 0, 0); b.add(head);
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 7; c++) { const tuft = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.035, 0.55, 5), br); tuft.position.set(rad + 0.95 + c * 0.11, -0.35, -0.13 + r * 0.13); b.add(tuft); }   // lông bàn chải
+        b.rotation.y = i / nB * PI * 2; g.add(b); }
+      g.position.set(F.x, 0.9, F.z);
+      return { g, upd: (k, t) => { [hm, br].forEach(m => m.uniforms.uTime.value = t); g.rotation.y = t * (9 + f); g.scale.setScalar(pop(k, 0.1, 0.85)); g.position.y = 0.9 + Math.sin(t * 8) * 0.12; } }; });
+    emitter(60 + f * 30, i => { const a = R(0, PI * 2), r = R(1, rad + 1.5); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0.3, 1.4), Math.sin(a) * r)), v: new V3(-Math.sin(a) * 2, R(0.5, 2), Math.cos(a) * 2), t0: R(0, 1.2), life: R(0.5, 1), size: R(0.4, 0.9), col: [0xffffff, 0xdff8ff, 0xaee8ff][i % 3] }; }, { grav: 0.3, drag: 1.2 });   // bọt
+    for (let i = 0; i < 3; i++) { shock(F, 0xbff0ff, rad + 1.5, 0.4, 0.2 + i * 0.4); sparks(F.clone().setY(0.8), [0xffffff, 0xdff8ff], 16, 5, 0.3, 0.5, 0.25 + i * 0.4, { up: 1 }); }   // bọt vỡ lốp bốp mỗi vòng
+    if (f >= 3) tornado(F, 0x9ae8ff, 0xffffff, 1.6, 3.8, 1.3, 0.15);
+    if (gold) dome(F, 0xdff8ff, 0xffffff, rad + 1.6, 0.8, 0.9);
+    upg(F, f, 0x7ad8ff, 0.3, rad); task(0.2, 0.01, () => shake(0.08 + f * 0.04));
+  };
+  /* --- Florence Nightingale --- */
+  META.ladys_lamp = { name: "Lady's Lamp", lv: 12, who: "Florence Nightingale", forms: ["Đèn dầu + 1 chùm sáng quét", "+ hào quang ấm", "2 chùm sáng như hải đăng", "Đèn vàng, 4 chùm + cột sáng"] };
+  SK.ladys_lamp = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nBeam = f >= 4 ? 4 : f >= 3 ? 2 : 1, H = 3.6;
+    shadowUnder(F, 5, 2.2, 0); rune(F, "circle", "latin", 0xffd27a, 4.5, 2.1, 0, { mode: "pulse", rate: 4, amp: 0.08, op: 0.8 });
+    prop(0, 2.2, () => { const g = new THREE.Group(), brass = solidMat(gold ? 0xc8901a : 0x8a5a1a, gold ? 0xfff0a0 : 0xe8b850, 0xfff0c0);
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.4, 0.25, 16), brass); g.add(base);
+      const glass = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 12), flowMat({ c1: 0xffb040, c2: 0xfff6c0, rep: [1, 1], spd: [0, -1], fres: 1, cut: -0.4, gain: 1.6, fade: [0, 0, 0, 0] })); glass.scale.y = 1.25; glass.position.y = 0.48; g.add(glass);
+      const cap = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.25, 12), brass); cap.position.y = 0.95; g.add(cap);
+      const handle = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.035, 6, 20, PI), brass); handle.position.y = 1.05; g.add(handle);
+      const flame = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xffd060, blending: ADD, transparent: true, depthWrite: false })); flame.position.y = 0.48; flame.scale.setScalar(1.6); g.add(flame);
+      const beams = []; for (let i = 0; i < nBeam; i++) { const bm = flowMat({ c1: 0xffb040, c2: 0xfff6d0, rep: [1, 2], spd: [0, -1.5], fres: 0, cut: -0.5, gain: 0.9, fade: [0.2, 0.2, 0.0, 0.25] }), cone = new THREE.Mesh(new THREE.ConeGeometry(1.3, H + 0.5, 20, 1, true), bm); cone.geometry.translate(0, -(H + 0.5) / 2, 0); const piv = new THREE.Group(); piv.add(cone); piv.position.y = 0.48; g.add(piv); beams.push({ piv, bm, a: i / nBeam * PI * 2 }); }
+      g.position.set(F.x, 0, F.z);
+      return { g, upd: (k, t) => { brass.uniforms.uTime.value = t; glass.material.uniforms.uTime.value = t; const up = Math.min(1, k / 0.2); g.position.y = up * H + Math.sin(t * 3) * 0.1; g.scale.setScalar(pop(k, 0.1, 0.88));
+        flame.scale.setScalar(1.4 + Math.sin(t * 20) * 0.15); beams.forEach(b => { b.bm.uniforms.uTime.value = t; b.piv.rotation.set(0.55, b.a + t * 2.4, 0, "YXZ"); b.bm.uniforms.uAlpha.value = up * 0.8; }); } }; });
+    aura(F, 0xffc860, 0xfff6d0, 0.8, 2.6, 2.0, 0.2);
+    emitter(50 + f * 20, i => { const a = R(0, PI * 2), r = R(0.2, 2); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 0.5), Math.sin(a) * r)), v: new V3(0, R(1, 2.5), 0), t0: R(0.3, 1.8), life: R(0.6, 1), size: R(0.25, 0.45), col: [0xfff0a0, 0xffd27a, 0xffffff][i % 3] }; }, { grav: 0.3, drag: 0.6 });
+    if (f >= 2) glow(F.clone().setY(1.2), 0xffc070, 4, 1.6, 0.2, {});
+    if (gold) pillar(F, 0xffc040, 0xffffff, 0.7, 6, 1.6, 0.3, { speed: 2, widen: 0.1, top: 1, cut: 0.3 });
+  };
+  META.fresh_wind = { name: "Fresh Wind", lv: 12, who: "Florence Nightingale", forms: ["Cửa sổ ánh sáng mở, gió sạch", "+ dải gió xoáy quanh người", "2 cửa sổ, gió mạnh", "Cửa sổ vàng + lá bay"] };
+  SK.fresh_wind = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nW = f >= 3 ? 2 : 1;
+    shadowUnder(F, 4.5, 1.6, 0); rune(F, "hex", "latin", 0x9af0d0, 4, 1.5, 0, { mode: "expand", expand: 0.3, op: 0.7 });
+    for (let w = 0; w < nW; w++) { const ang = (w ? -1 : 1) * 1.1, WP = F.clone().add(new V3(Math.sin(ang) * 2.6, 0, Math.cos(ang) * 2.6 - 0.8));
+      prop(w * 0.1, 1.7, () => { const g = new THREE.Group(), fm = gold ? solidMat(0xc8901a, 0xfff0a0, 0xffffff) : woodMat(false), glassM = flowMat({ c1: 0x9af0ff, c2: 0xffffff, rep: [1, 1], spd: [0, -0.5], fres: 0, cut: -0.4, gain: 1.4, fade: [0.05, 0.05, 0.05, 0.05] });
+        [[0, 1.05, 1.5, 0.12], [0, -1.05, 1.5, 0.12]].forEach(([x, y, w2, h]) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w2, h, 0.12), fm); b.position.set(x, y, 0); g.add(b); });
+        [-0.75, 0.75].forEach(x => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.2, 0.12), fm); b.position.x = x; g.add(b); });
+        const light = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2), glassM); g.add(light);
+        const doors = [-1, 1].map(s => { const piv = new THREE.Group(), pane = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 2), basic(null, 0xcff6ff, false, 0.55)); pane.position.x = -s * 0.35; piv.add(pane); piv.position.x = s * 0.7; g.add(piv); return { piv, s }; });
+        g.position.set(WP.x, 1.6, WP.z); g.lookAt(F.x, 1.6, F.z);
+        return { g, upd: (k, t) => { fm.uniforms.uTime.value = t; glassM.uniforms.uTime.value = t; const o = Math.min(1, k / 0.25); doors.forEach(d => d.piv.rotation.y = d.s * o * 1.8); g.scale.setScalar(pop(k, 0.1, 0.85)); glassM.uniforms.uAlpha.value = o; } }; });
+      emitter(70 + f * 20, i => { const s = R(0, 1), p = WP.clone().add(new V3(R(-0.6, 0.6), R(0.6, 2.6), R(-0.3, 0.3))), dir = new V3().subVectors(F, WP).setY(0).normalize(); return { p, v: dir.multiplyScalar(R(5, 8)).add(new V3(0, R(-0.3, 0.3), 0)), t0: w * 0.1 + 0.25 + s * 1.0, life: R(0.5, 0.9), size: R(0.2, 0.4), col: [0xffffff, 0xbff8e8, 0x9af0d0][i % 3] }; }, { grav: 0, drag: 0.3 }); }
+    if (f >= 2) tornado(F, 0x7ae8c8, 0xffffff, 1.0, 2.6, 1.2, 0.35);
+    if (gold) emitter(50, i => ({ p: F.clone().add(new V3(R(-2, 2), R(0.5, 2.5), R(-2, 2))), v: new V3(R(-2, 2), R(0.5, 2), R(-2, 2)), t0: R(0.4, 1.3), life: R(0.8, 1.3), size: R(0.3, 0.5), col: [0x9ae060, 0xffe070][i % 2] }), { grav: -1, drag: 0.8 });
+    sparks(F.clone().setY(1.2), [0x6a3a8a, 0x3a2050], 25, 4, 0.3, 0.7, 0.5, { up: 1, grav: 1 });   // độc câm (tím đen) bị thổi bay
+    glow(F.clone().setY(1.2), 0xdffff0, 3, 0.6, 0.4, {});
+  };
+  /* --- Earle Dickson --- */
+  META.bandage_bind = { name: "Bandage Bind", lv: 13, who: "Earle Dickson", forms: ["Cuộn băng bay quấn quái", "+ dấu thập đỏ, băng hồi máu", "Quấn 2 lớp + ấn phù văn", "Băng vàng phát sáng"] };
+  SK.bandage_bind = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, d = DIR(F, T), A = F.clone().addScaledVector(d, 0.8).setY(1.3), fly = 0.35, BT = T.clone().setY(0);
+    prop(0, fly, () => { const g = new THREE.Group(), m = solidMat(0xd8d0c0, 0xffffff, 0xffffff); const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.45, 18), m); roll.rotation.x = PI / 2; g.add(roll); const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.47, 12), basic(null, 0x8a7a6a, false)); hole.rotation.x = PI / 2; g.add(hole);
+      return { g, upd: (k, t) => { m.uniforms.uTime.value = t; g.position.lerpVectors(A, T.clone().setY(1.2), k); g.position.y += Math.sin(k * PI) * 0.6; g.rotation.set(t * 14, 0, 0); g.lookAt(T.x, 1.2, T.z); g.rotateX(t * 14); } }; });
+    const layers = f >= 3 ? 2 : 1, dur = 2.2 + f * 0.2;
+    for (let L = 0; L < layers; L++) prop(fly + L * 0.15, dur, () => {   // dải băng quấn xoắn quanh quái, lộ dần từ chân lên
+      const tex = cvTex(64, (g2, n) => { g2.fillStyle = gold ? "#ffe9a0" : "#f4efe6"; g2.fillRect(0, 0, n, n); g2.fillStyle = gold ? "rgba(200,140,20,.6)" : "rgba(170,160,140,.6)"; for (let i = 0; i < n; i += 8) g2.fillRect(i, 0, 2, n); }, true);
+      const curve = helix(0.95 + L * 0.12, 2.0, 4 + L, 90), geo = new THREE.TubeGeometry(curve, 160, 0.09, 4), m = new THREE.MeshBasicMaterial({ map: tex, transparent: true }); m.map.repeat.set(30, 1);
+      const tube = new THREE.Mesh(geo, m), g = new THREE.Group(); g.add(tube); g.position.copy(BT); g.position.y = 0.1; g.scale.set(1, 1, 1);
+      const total = geo.index.count;
+      return { g, upd: (k, t) => { const e = Math.min(1, k / 0.25); geo.setDrawRange(0, Math.floor(total * e / 6) * 6); g.rotation.y = (L ? -1 : 1) * (1 - e) * 4; m.opacity = 1 - Math.max(0, k - 0.88) / 0.12; }, end: () => tex.dispose() }; });
+    sparks(T.clone().setY(1.2), [0xffffff, 0xf0e6d0], 20, 4, 0.25, 0.5, fly, { up: 1 });
+    if (f >= 2) { textPop(T.clone().setY(2.7), "✚", "#ff4a4a", 1.4, 1.2, fly + 0.2, { rise: 0.4 }); textPop(F.clone().setY(2.2), "✚", "#5fe08a", 1.0, 1.0, 0.1); glow(F.clone().setY(1.1), 0x8dffb5, 2.5, 0.8, 0.1, {}); }
+    if (f >= 3) rune(T, "seal", "latin", 0xff8a8a, 3.4, dur, fly, { mode: "static", op: 0.7 });
+    if (gold) glow(T.clone().setY(1.1), 0xffe9a0, 3.5, dur, fly + 0.2, {});
+    task(fly, 0.01, () => shake(0.08));
+  };
+  /* --- Isaac Newton --- */
+  META.gravity_crush = { name: "Gravity Crush", lv: 14, who: "Isaac Newton", forms: ["Táo vàng rơi, lưới lõm", "Táo to + hạt bị hút vào", "Lưới lõm sâu + vòm nổ", "Táo vàng khổng lồ + hố lớn"] };
+  SK.gravity_crush = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 3 + f * 0.4, fall = 0.55, sz = 0.9 + f * 0.35;
+    shadowUnder(T, R0 * 2, 1.8, 0);
+    prop(0, 1.7, () => {   // lưới không gian lõm xuống ở tâm
+      const N = 26, geo = new THREE.PlaneGeometry(2, 2, N, N).rotateX(-PI / 2), base = geo.attributes.position.array.slice(), tex = cvTex(128, (g2, n) => { g2.strokeStyle = "rgba(255,255,255,0.9)"; g2.lineWidth = 3; for (let i = 0; i <= 8; i++) { g2.beginPath(); g2.moveTo(i * n / 8, 0); g2.lineTo(i * n / 8, n); g2.stroke(); g2.beginPath(); g2.moveTo(0, i * n / 8); g2.lineTo(n, i * n / 8); g2.stroke(); } });
+      const m = new THREE.MeshBasicMaterial({ map: tex, color: gold ? 0xffd860 : 0x9a7aff, transparent: true, depthWrite: false, blending: ADD, side: THREE.DoubleSide }), me = new THREE.Mesh(geo, m), g = new THREE.Group(); g.add(me); g.position.set(T.x, 0.06, T.z); g.scale.set(R0, 1, R0);
+      const pa = geo.attributes.position;
+      return { g, upd: k => { const dep = (k < 0.35 ? k / 0.35 * 0.6 : 0.6 + Math.min(1, (k - 0.35) / 0.1) * (0.6 + f * 0.3)) * (1 - Math.max(0, k - 0.75) / 0.25);
+        for (let i = 0; i < pa.count; i++) { const x = base[i * 3], z = base[i * 3 + 2]; pa.setY(i, -dep * Math.exp(-(x * x + z * z) * 4) * 1.5 / R0 * 3); } pa.needsUpdate = true; m.opacity = 0.75 * pop(k, 0.1, 0.8); }, end: () => tex.dispose() }; });
+    prop(0.1, fall + 0.3, () => { const g = new THREE.Group(), am = solidMat(gold ? 0xc89010 : 0xd8a010, gold ? 0xfff6c0 : 0xffe060, 0xffffff), apple = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 18), am); apple.scale.set(1.05, 0.95, 1.05); g.add(apple);
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.5, 6), woodMat(false)); stem.position.y = 1.05; stem.rotation.z = 0.3; g.add(stem);
+      const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 6), solidMat(0x2a8a2a, 0x8ae060, 0xffffff)); leaf.scale.set(1, 0.2, 0.5); leaf.position.set(0.3, 1.15, 0); leaf.rotation.z = -0.5; g.add(leaf);
+      const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xffe080, blending: ADD, transparent: true, depthWrite: false })); halo.scale.setScalar(3.4); g.add(halo);
+      return { g, upd: (k, t) => { am.uniforms.uTime.value = t; const e = Math.min(1, k / (fall / (fall + 0.3))); g.position.set(T.x, 12 - e * e * (12 - sz * 0.9), T.z); g.rotation.y = t * 3; g.scale.setScalar(sz * (k > 0.9 ? 1 - (k - 0.9) / 0.1 : 1)); } }; });
+    if (f >= 2) emitter(80, i => { const a = R(0, PI * 2), r = R(R0 * 0.8, R0 * 1.4), p = T.clone().add(new V3(Math.cos(a) * r, R(0.2, 1.5), Math.sin(a) * r)); return { p, v: new V3().subVectors(T, p).setY(-0.3).multiplyScalar(1.6), t0: R(0, 0.55), life: 0.6, size: R(0.25, 0.45), col: gold ? 0xffd860 : 0xb39cff }; }, { grav: 0, drag: 0 });   // bị hút vào tâm
+    const hit = 0.1 + fall;
+    decal(T, TEX.crack, 0xffffff, R0 * 1.6, 1.3, hit, { add: false, op: 0.9, ro: 3 });
+    glow(T.clone().setY(1), 0xffffff, 4 + f, 0.25, hit, { flash: true }); glow(T.clone().setY(1), gold ? 0xffc040 : 0xb080ff, 6 + f, 0.45, hit, { flash: true });
+    shock(T, 0xffe0a0, R0 * 1.2, 0.5, hit); sparks(T.clone().setY(0.5), [0xb8a080, 0xd8c8a8, 0xffe0a0], 50 + f * 20, 6, 0.4, 0.8, hit, { up: 1.5 });   // bụi đất
+    if (f >= 3) dome(T, gold ? 0xffb020 : 0x8a5aff, 0xffffff, R0 * 0.9, 0.55, hit);
+    upg(T, f, gold ? 0xffd860 : 0xb39cff, hit, R0 * 0.7); task(hit, 0.01, () => shake(0.2 + f * 0.08));
+  };
+  const RAINBOW7 = [0xff3a3a, 0xff8a2a, 0xffe03a, 0x3ae060, 0x3aa8ff, 0x4a5aff, 0xb05aff];
+  META.prism_ray = { name: "Prism Ray", lv: 14, who: "Isaac Newton", forms: ["Lăng kính tách 7 tia cầu vồng", "Tia dài hơn + vòng cầu vồng", "Quét 2 vòng + tia trắng từ trời", "2 lăng kính vàng"] };
+  SK.prism_ray = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, L = 4.5 + f * 0.6, nP = gold ? 2 : 1;
+    shadowUnder(F, L * 1.6, 1.8, 0);
+    for (let p = 0; p < nP; p++) prop(p * 0.1, 1.8, () => { const g = new THREE.Group(), pm = flowMat({ c1: gold ? 0xffd860 : 0x9ae8ff, c2: 0xffffff, rep: [1, 1], spd: [0.3, -0.4], fres: 1.6, cut: -0.4, gain: 1.4, fade: [0, 0, 0, 0] });
+      const prism = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.6, 3), pm); prism.rotation.z = PI / 2; g.add(prism);
+      const rays = RAINBOW7.map((c, i) => { const r = new THREE.Mesh(new THREE.PlaneGeometry(L, 0.3), basic(TEX.beam, c, true, 1)); r.geometry.rotateX(-PI / 2); r.geometry.translate(L / 2, 0, 0); const piv = new THREE.Group(); piv.add(r); g.add(piv); return { piv, i }; });
+      g.position.set(F.x, 2.4, F.z); const spin = (f >= 3 ? 2 : 1) * PI * 2 / 1.4 * (p ? -1 : 1);
+      return { g, upd: (k, t) => { pm.uniforms.uTime.value = t; prism.rotation.x = t * 3; g.scale.setScalar(pop(k, 0.1, 0.88)); const on = k > 0.15 ? 1 : 0;
+        rays.forEach(r => { r.piv.rotation.set(0, p * PI + r.i * 0.11 + (k - 0.15) * spin, -0.45 + r.i * 0.015); r.piv.children[0].material.opacity = on * (0.8 + 0.2 * Math.sin(t * 20 + r.i)); r.piv.children[0].scale.x = Math.min(1, Math.max(0, (k - 0.15) / 0.15)); }); } }; });
+    bolt(F.clone().add(new V3(0, 14, 0)), F.clone().setY(2.4), 0xffffff, f >= 3 ? 0.5 : 0.3, 0.5, 0, { jag: 0.05 });   // tia trắng vào lăng kính
+    for (let i = 0; i < 7; i++) emitter(16, q => { const a = R(0, PI * 2), r = R(1, L); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0.1, 0.6), Math.sin(a) * r)), v: rv(0.6).setY(R(0.5, 1.5)), t0: 0.3 + R(0, 1.2), life: R(0.3, 0.6), size: R(0.25, 0.4), col: RAINBOW7[i] }; }, { grav: 0, drag: 1 });
+    if (f >= 2) prop(0.3, 1.4, () => { const g = new THREE.Group(); RAINBOW7.forEach((c, i) => { const m = new THREE.Mesh(new THREE.RingGeometry(L * 0.55 + i * 0.12, L * 0.55 + i * 0.12 + 0.12, 64).rotateX(-PI / 2), basic(null, c, true, 0.8)); g.add(m); }); g.position.set(F.x, 0.06, F.z);
+      return { g, upd: k => { g.scale.setScalar(0.5 + k * 0.7); g.children.forEach(m => m.material.opacity = 0.8 * pop(k, 0.15, 0.6)); } }; });
+    upg(F, f, gold ? 0xffd860 : 0xffffff, 0.4, L * 0.6); task(0.3, 0.01, () => shake(0.08 + f * 0.04));
+  };
+  META.third_law = { name: "Third Law", lv: 14, who: "Isaac Newton", forms: ["Khiên mũi tên phản lực", "+ mũi tên bắn ngược ra", "2 vòng mũi tên + sóng", "Khiên vàng + mưa mũi tên"] };
+  SK.third_law = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, n = 8 + f * 4, c1 = gold ? 0xffb020 : 0x5f9bff, c2 = gold ? 0xfff6c0 : 0xd8e8ff;
+    shadowUnder(F, 4, 1.6, 0); rune(F, "star", "latin", c1, 4, 1.6, 0, { mode: "spin", spin: -2 });
+    prop(0, 1.6, () => { const g = new THREE.Group(), sm = flowMat({ c1, c2, rep: [4, 2], spd: [0.5, -0.5], fres: 1.8, cut: 0.1, gain: 1.3, fade: [0, 0, 0, 0] }), sh = new THREE.Mesh(new THREE.SphereGeometry(1.6, 24, 16), sm); g.add(sh);
+      const ar = []; for (let L = 0; L < (f >= 3 ? 2 : 1); L++) for (let i = 0; i < n; i++) { const m = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.5, 4), solidMat(c1, c2, 0xffffff)); const piv = new THREE.Group(); m.position.y = 1.8 + L * 0.4; piv.add(m); piv.rotation.set(R(-1.2, 1.2), i / n * PI * 2, 0, "YXZ"); g.add(piv); ar.push({ piv, m, L }); }
+      g.position.set(F.x, 1.1, F.z);
+      return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; sm.uniforms.uAlpha.value = 0.55 * pop(k, 0.1, 0.85); g.rotation.y = t * 1.5; const burst = f >= 2 && k > 0.55 ? (k - 0.55) / 0.45 : 0;
+        ar.forEach(a => { a.m.position.y = 1.8 + a.L * 0.4 + burst * 5; a.m.material.uniforms.uTime.value = t; a.m.material.uniforms.uAlpha.value = pop(k, 0.1, 0.9); }); } }; });
+    if (f >= 3) { shock(F, c2, 4, 0.5, 0.9); shock(F, c1, 3, 0.45, 1.0); }
+    if (gold) for (let i = 0; i < 10; i++) { const a = i / 10 * PI * 2, P = F.clone().add(new V3(Math.cos(a) * 3, 0.1, Math.sin(a) * 3)); crystalArrow(F.clone().setY(1.5), P, c1, c2, 0.3, 0.9 + i * 0.02, { size: 0.8 }); }
+    upg(F, f, c1, 0.3, 2.5);
+  };
+  /* --- Mary Anning --- */
+  function fossil(len, gold) {   // bộ xương bò sát biển: sọ dài, cột sống, xương sườn, vây, đuôi
+    const g = new THREE.Group(), bm = boneMat(gold), N = 18;
+    const skull = new THREE.Mesh(new THREE.ConeGeometry(0.45, 2.0, 8), bm); skull.rotation.z = -PI / 2; skull.position.x = len / 2 + 0.8; g.add(skull);
+    const crown = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 8), bm); crown.scale.set(1.1, 0.9, 0.9); crown.position.x = len / 2 - 0.1; g.add(crown);
+    const eye = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.06, 6, 14), bm); eye.position.set(len / 2, 0.15, 0.46); g.add(eye);
+    const eye2 = eye.clone(); eye2.position.z = -0.46; g.add(eye2);
+    for (let i = 0; i < N; i++) { const u = i / (N - 1), x = len / 2 - 0.8 - u * len, s = 1 - u * 0.75, v = new THREE.Mesh(new THREE.SphereGeometry(0.2 * s + 0.05, 8, 6), bm); v.position.x = x; g.add(v);
+      if (i > 1 && i < N * 0.6) { const rib = new THREE.Mesh(new THREE.TorusGeometry(0.6 * s + 0.15, 0.04, 5, 14, PI), bm); rib.position.x = x; rib.rotation.y = PI / 2; rib.rotation.x = PI; rib.position.y = -0.05; g.add(rib); } }
+    [[len * 0.25, 1], [len * 0.25, -1], [-len * 0.1, 1], [-len * 0.1, -1]].forEach(([x, s]) => { const fin = new THREE.Mesh(new THREE.ConeGeometry(0.22, 1.1, 4), bm); fin.position.set(x, -0.25, s * 0.7); fin.rotation.set(s * 1.2, 0, -0.6); g.add(fin); });
+    const tail = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.2, 4), bm); tail.position.x = -len / 2 - 0.9; tail.rotation.z = PI / 2 + 0.6; tail.position.y = 0.3; g.add(tail);
+    const tail2 = tail.clone(); tail2.rotation.z = PI / 2 - 0.6; tail2.position.y = -0.3; g.add(tail2);
+    return { g, bm };
+  }
+  META.ichthyosaur_rise = { name: "Ichthyosaur Rise", lv: 15, who: "Mary Anning", forms: ["Bộ xương bơi dưới đất rồi đớp", "Xương to + đất nổ tung", "+ cột nước, rãnh nứt sâu", "Hoá thạch vàng dài 10 m"] };
+  SK.ichthyosaur_rise = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, len = 3.5 + f * 1.1, d = DIR(F, T), swim = 0.7, S0 = F.clone().addScaledVector(d, 1.5);
+    shadowUnder(T, 6, 2.2, 0.4);
+    for (let i = 0; i < 6; i++) { const P = S0.clone().lerp(T, i / 6); decal(P, TEX.crack, 0xffffff, 2.2 + f * 0.2, 1.6, i / 6 * swim, { add: false, op: 0.8, ro: 3 }); sparks(P.clone().setY(0.2), [0x9a7a50, 0xc8a878], 10 + f * 3, 4, 0.3, 0.5, i / 6 * swim, { up: 2 }); }   // rãnh nứt + đất bắn theo đường bơi
+    prop(0, swim + 1.0, () => { const { g: fo, bm } = fossil(len, gold), g = new THREE.Group(); g.add(fo); const tot = swim + 1.0, ks = swim / tot;
+      return { g, upd: (k, t) => { bm.uniforms.uTime.value = t; let pos, rx = 0;
+        if (k < ks) { const u = k / ks; pos = S0.clone().lerp(T, u); pos.y = -0.9 + Math.sin(t * 10) * 0.1; }   // bơi dưới đất (vây lưng lấp ló)
+        else { const u = (k - ks) / (1 - ks); pos = T.clone().addScaledVector(d, (u - 0.5) * len * 0.8); pos.y = Math.sin(u * PI) * (3 + f * 0.6) - 0.6; rx = -(u - 0.5) * 2.2; }   // nhảy lên khỏi đất, đớp rồi lặn xuống
+        g.position.copy(pos); g.quaternion.copy(basisQ(new V3(-d.z, 0, d.x))); g.rotateZ(rx); fo.rotation.x = Math.sin(t * 8) * 0.12; fo.children.forEach((c, i) => { if (i > 4) c.position.z = Math.sin(t * 9 - i * 0.4) * 0.18; }); } }; });
+    const hit = swim + 0.35;
+    glow(T.clone().setY(1.5), 0xffffff, 3 + f, 0.3, hit, { flash: true }); shock(T, 0xe8d8b0, 3.5 + f * 0.5, 0.6, hit - 0.3);
+    sparks(T.clone().setY(0.4), [0x8a6a40, 0xc8a878, 0xe8d8b0], 60 + f * 25, 7, 0.4, 0.9, swim, { up: 2.2 });   // đất nổ tung khi trồi lên
+    if (f >= 3) pillar(T, 0x2a90c8, 0xdff8ff, 1.2, 4 + f, 0.6, swim, { speed: 4, widen: 0.8, top: 1.4 });
+    upg(T, f, gold ? 0xffd860 : 0xe8d8b0, hit, 3); task(swim, 0.01, () => shake(0.15 + f * 0.07));
+  };
+  META.plesio_snap = { name: "Plesio Snap", lv: 15, who: "Mary Anning", forms: ["Cổ xương dài vươn ra cắn", "Cổ to + vết nứt", "2 cổ cắn liên tiếp", "Cổ hoá thạch vàng"] };
+  SK.plesio_snap = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nN = f >= 3 ? 2 : 1, d = DIR(F, T), side = new V3(-d.z, 0, d.x);
+    for (let n = 0; n < nN; n++) { const base = F.clone().addScaledVector(side, (n ? -1 : 1) * 1.6).addScaledVector(d, 0.5), dl = n * 0.25;
+      rune(base, "circle", "latin", 0xe8d8b0, 2.4, 1.3, dl, { mode: "spin", spin: 3, op: 0.8 }); decal(base, TEX.crack, 0xffffff, 2.5, 1.4, dl, { add: false, op: 0.8, ro: 3 });
+      prop(dl, 1.2, () => { const g = new THREE.Group(), bm = boneMat(gold), N = 16, vs = []; for (let i = 0; i < N; i++) { const v = new THREE.Mesh(new THREE.SphereGeometry(0.28 - i * 0.008, 8, 6), bm); v.scale.y = 0.8; g.add(v); vs.push(v); }
+        const head = new THREE.Group(), sk = new THREE.Mesh(new THREE.ConeGeometry(0.3, 1.1, 6), bm); sk.rotation.x = PI / 2; sk.position.z = 0.45; head.add(sk);
+        const jaw = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.9, 6), bm); jaw.rotation.x = PI / 2; jaw.position.set(0, -0.2, 0.35); head.add(jaw);
+        for (let i = 0; i < 5; i++) { const tooth = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.16, 4), boneMat(true)); tooth.position.set((i % 2 ? 1 : -1) * 0.12, -0.1, 0.2 + i * 0.15); tooth.rotation.x = PI; head.add(tooth); }
+        g.add(head); const tgt = T.clone().setY(1.2), scale = 1 + f * 0.15;
+        return { g, upd: (k, t) => { bm.uniforms.uTime.value = t; const reach = k < 0.45 ? k / 0.45 : k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4 * 0.9, whip = Math.sin(t * 9) * (1 - reach) * 0.8;
+          let prev = null; vs.forEach((v, i) => { const u = i / (N - 1), p = base.clone().lerp(tgt, u * reach * 0.92); p.y = u * reach * 2.8 * Math.sin(u * PI * 0.9) + tgt.y * u * reach * 0.4 + 0.2; p.addScaledVector(side, Math.sin(u * PI * 2 + t * 8) * 0.35 * (1 - u) + whip * u); v.position.copy(p); v.scale.setScalar(scale * (1 - u * 0.3)); prev = p; });
+          head.position.copy(prev); head.quaternion.copy(basisQ(new V3().subVectors(tgt, prev).add(new V3(0, 0.0001, 0)))); head.scale.setScalar(scale * 1.2); jaw.rotation.x = PI / 2 - (k > 0.4 && k < 0.6 ? 0 : 0.5);
+          g.visible = k < 0.98; } }; });
+      const hit = dl + 0.55; glow(T.clone().setY(1.2), 0xffffff, 2.5 + f * 0.5, 0.22, hit, { flash: true }); sparks(T.clone().setY(1.2), [0xffffff, 0xe8d8b0], 20 + f * 8, 6, 0.25, 0.45, hit, { up: 1 }); shock(T, 0xe8d8b0, 1.8 + f * 0.3, 0.35, hit); task(hit, 0.01, () => shake(0.1 + f * 0.04)); }
+    if (f >= 2) decal(T, TEX.crack, 0xffffff, 3, 1.2, 0.55, { add: false, op: 0.7, ro: 3 });
+    upg(T, f, gold ? 0xffd860 : 0xe8d8b0, 0.55, 2);
+  };
+  /* --- Johannes Gutenberg --- */
+  const LTX = {}; function letterTex(gold) { return LTX[gold] || (LTX[gold] = cvTex(256, (g, n) => { g.fillStyle = "rgba(0,0,0,0)"; g.fillRect(0, 0, n, n); g.font = "bold 50px Georgia, serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = gold ? "#ffe9a0" : "#ffd27a"; g.shadowColor = g.fillStyle; g.shadowBlur = 12;
+    const s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; for (let i = 0; i < 16; i++) { const a = i / 16 * PI * 2, r = i % 2 ? 60 : 100; g.fillText(s[(i * 7) % 26], n / 2 + Math.cos(a) * r, n / 2 + Math.sin(a) * r); } g.font = "bold 72px Georgia, serif"; g.fillText("Aa", n / 2, n / 2); })); }
+  META.press_slam = { name: "Press Slam", lv: 16, who: "Johannes Gutenberg", forms: ["Máy in gỗ dập xuống, in chữ lên đất", "+ tờ giấy in bay ra", "Máy in lớn + sóng đôi", "Máy in vàng"] };
+  SK.press_slam = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, sc = 1 + (f - 1) * 0.2, drop = 0.55;
+    shadowUnder(T, 4 * sc, 1.6, 0);
+    prop(0, 1.3, () => { const g = new THREE.Group(), wm = woodMat(gold), im = solidMat(gold ? 0xc89010 : 0x404650, gold ? 0xfff0a0 : 0xa8b0c0, 0xffffff);
+      [-1, 1].forEach(s => { const post = new THREE.Mesh(new THREE.BoxGeometry(0.35, 4.6, 0.35), wm); post.position.set(s * 1.5, 2.3, 0); g.add(post); });
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.45, 0.6), wm); beam.position.y = 4.5; g.add(beam);
+      const screw = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.6, 10), im); g.add(screw);
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 6).rotateZ(PI / 2), wm); g.add(bar);
+      const platen = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.35, 1.6), im); g.add(platen);
+      g.position.set(T.x, 0, T.z); g.lookAt(F.x, 0, F.z);
+      return { g, upd: (k, t) => { [wm, im].forEach(m => m.uniforms.uTime.value = t); const e = Math.min(1, k / (drop / 1.3)), y = 3.6 - e * e * 3.4 + (k > 0.6 ? (k - 0.6) / 0.4 * 1.5 : 0);
+        platen.position.y = y; screw.position.y = y + 1.0; bar.position.y = y + 1.4; bar.rotation.y = e * 6; g.scale.setScalar(sc * pop(k, 0.1, 0.85)); } }; });
+    const hit = drop;
+    decal(T, letterTex(gold), 0xffffff, 3.4 * sc, 1.6, hit, { op: 1, hold: 0.6, ro: 4 });   // chữ in phát sáng trên đất
+    glow(T.clone().setY(0.6), 0xfff0c0, 3 + f, 0.25, hit, { flash: true }); shock(T, 0xffd27a, 2.6 * sc, 0.45, hit); sparks(T.clone().setY(0.3), [0xd8c8a8, 0xffe0a0], 40 + f * 15, 6, 0.35, 0.7, hit, { up: 1.2 });
+    if (f >= 2) for (let i = 0; i < 3 + f; i++) prop(hit + i * 0.05, 1.2, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.95), new THREE.MeshBasicMaterial({ map: letterTex(gold), color: 0xf4ead0, side: THREE.DoubleSide, transparent: true })); g.add(m); const a = R(0, PI * 2), sp = R(2, 4);
+      return { g, upd: (k, t) => { g.position.set(T.x + Math.cos(a) * sp * k, 1 + Math.sin(k * PI) * 2.5, T.z + Math.sin(a) * sp * k); m.rotation.set(t * 5, t * 4, 0); m.material.opacity = 1 - Math.max(0, k - 0.7) / 0.3; } }; });
+    if (f >= 3) shock(T, 0xffffff, 4 * sc, 0.55, hit + 0.08);
+    upg(T, f, gold ? 0xffd860 : 0xffd27a, hit, 2.5 * sc); task(hit, 0.01, () => shake(0.18 + f * 0.06));
+  };
+  META.typeset_rain = { name: "Typeset Rain", lv: 16, who: "Johannes Gutenberg", forms: ["Sách mở, mưa chữ kim loại", "Nhiều chữ hơn", "Mưa chữ dày + tia lửa", "Chữ vàng + sóng lớn"] };
+  SK.typeset_rain = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, n = 8 + f * 6, R0 = 4;
+    magicBook(F, T, "latin", gold ? 0xffd860 : 0x9ad8ff, 0, 1.0, 0, null);   // sách nhỏ mở trên đầu (không bắn trang)
+    shadowUnder(T, R0 * 2, 2, 0.3); rune(T, "seal", "latin", gold ? 0xffd860 : 0xc8d8e8, R0 * 1.8, 1.8, 0.3, { mode: "static", op: 0.8 });
+    const L = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < n; i++) { const a = R(0, PI * 2), r = Math.sqrt(Math.random()) * R0, P = T.clone().add(new V3(Math.cos(a) * r, 0, Math.sin(a) * r)), dl = 0.35 + i * (0.9 / n), ch = L[(Math.random() * 26) | 0];
+      prop(dl, 1.3, () => { const g = new THREE.Group(), mm = solidMat(gold ? 0xc89010 : 0x5a6270, gold ? 0xfff0a0 : 0xc8d0d8, 0xffffff), blk = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.5), mm); g.add(blk);
+        const face = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex(ch, gold ? "#fff0a0" : "#e8f0ff"), transparent: true, depthWrite: false })); face.position.y = 0.75; face.scale.setScalar(0.9); g.add(face);
+        return { g, upd: (k, t) => { mm.uniforms.uTime.value = t; const e = Math.min(1, k / 0.22); g.position.set(P.x, 9 * (1 - e * e) + 0.1, P.z); g.rotation.set(0.25, a, 0.2); g.scale.setScalar(1 + f * 0.1); face.material.opacity = 1 - Math.max(0, k - 0.8) / 0.2; if (k > 0.85) g.scale.setScalar((1 + f * 0.1) * (1 - (k - 0.85) / 0.15)); } }; });
+      sparks(P.clone().setY(0.3), [0xffe0a0, 0xffffff], 6 + f * 2, 4, 0.2, 0.35, dl + 0.29, { up: 1.5 });
+      if (i % 3 === 0) task(dl + 0.29, 0.01, () => shake(0.05)); }
+    upg(T, f, gold ? 0xffd860 : 0xffe0a0, 0.9, R0 * 0.7);
+  };
+  /* --- Leonardo da Vinci --- */
+  function helicoid(r, h, turns) {   // cánh xoắn của "máy bay xoắn": mặt xoắn ốc
+    const N = 60, M = 6, pos = [], uv = [], idx = [];
+    for (let i = 0; i <= N; i++) for (let j = 0; j <= M; j++) { const u = i / N, a = u * turns * PI * 2, rr = 0.15 + j / M * r; pos.push(Math.cos(a) * rr, u * h, Math.sin(a) * rr); uv.push(u, j / M); if (i && j) { const A = (i - 1) * (M + 1) + j - 1, B = A + 1, C = i * (M + 1) + j - 1, D = C + 1; idx.push(A, C, B, B, C, D); } }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals(); return g;
+  }
+  META.aerial_screw = { name: "Aerial Screw", lv: 17, who: "Leonardo da Vinci", forms: ["Cánh xoắn vải + gỗ xoay, hút quái", "Cánh lớn + gió xoắn", "+ lốc gió", "2 cánh xoắn viền vàng"] };
+  SK.aerial_screw = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nS = gold ? 2 : 1, r = 1.3 + f * 0.2;
+    shadowUnder(F, 7, 1.8, 0); rune(F, "circle", "latin", 0xe8d8b0, 6, 1.7, 0, { mode: "converge", op: 0.7 });
+    for (let s = 0; s < nS; s++) prop(s * 0.1, 1.7, () => { const g = new THREE.Group(), cloth = new THREE.MeshBasicMaterial({ map: cvTex(64, (c, n) => { c.fillStyle = "#e8dcc0"; c.fillRect(0, 0, n, n); c.strokeStyle = "rgba(140,110,70,.6)"; for (let i = 0; i < n; i += 6) { c.beginPath(); c.moveTo(i, 0); c.lineTo(i, n); c.stroke(); } }), side: THREE.DoubleSide, transparent: true }),
+        sail = new THREE.Mesh(helicoid(r, 2.8, 1.6), cloth); sail.position.y = -1.1; g.add(sail);
+      const wm = woodMat(gold), mast = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 3.6, 8), wm); mast.position.y = 0.8; g.add(mast);
+      const rim = new THREE.Mesh(new THREE.TubeGeometry(helix(r, 2.8, 1.6, 60), 100, 0.07, 5), wm); rim.position.y = -1.1; g.add(rim);
+      const deck = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.6, r * 0.6, 0.12, 20), wm); deck.position.y = -0.9; g.add(deck);
+      g.position.set(F.x + (s ? 0 : 0), 2.2 + s * 2.4, F.z);
+      return { g, upd: (k, t) => { wm.uniforms.uTime.value = t; g.rotation.y = t * (7 + f) * (s ? -1 : 1); g.scale.setScalar(0.8 * pop(k, 0.1, 0.88)); cloth.opacity = 0.55 * pop(k, 0.1, 0.88); g.position.y = 1.8 + s * 2 + Math.sin(t * 4) * 0.15; } }; });
+    emitter(90 + f * 30, i => { const a = R(0, PI * 2), rr = R(3, 7), p = F.clone().add(new V3(Math.cos(a) * rr, R(0.2, 2), Math.sin(a) * rr)); return { p, v: new V3(-Math.sin(a) * 4 - Math.cos(a) * 3, R(0.5, 2), Math.cos(a) * 4 - Math.sin(a) * 3), t0: R(0, 1.3), life: R(0.5, 0.9), size: R(0.2, 0.4), col: [0xffffff, 0xe8dcc0, 0xbfe8ff][i % 3] }; }, { grav: 0, drag: 0.8 });   // gió xoắn hút vào
+    if (f >= 2) for (let i = 0; i < 3; i++) decal(F, TEX.ring, 0xe8f4ff, 9, 0.5, 0.2 + i * 0.45, { mode: "converge", op: 0.8 });   /* sóng hút vào */
+    if (f >= 3) tornado(F, 0xbfe8ff, 0xffffff, r * 0.7, 3.5, 1.4, 0.2);
+    upg(F, f, gold ? 0xffd860 : 0xe8dcc0, 0.3, r); task(0.3, 0.01, () => shake(0.08 + f * 0.04));
+  };
+  META.mirror_script = { name: "Mirror Script", lv: 17, who: "Leonardo da Vinci", forms: ["Gương bầu dục + chữ ngược quấn đầu", "Nhiều chữ ngược hơn", "2 gương đối nhau", "4 gương khung vàng"] };
+  SK.mirror_script = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nM = gold ? 4 : f >= 3 ? 2 : 1, dir0 = Math.atan2(F.x - T.x, F.z - T.z);
+    shadowUnder(T, 5, 2.2, 0); rune(T, "hex", "latin", 0xc8b8ff, 4, 2.1, 0, { mode: "static", op: 0.75 });
+    for (let m = 0; m < nM; m++) { const a = dir0 + m * PI * 2 / nM, P = T.clone().add(new V3(Math.sin(a) * 2.2, 0, Math.cos(a) * 2.2));
+      prop(m * 0.1, 2.1, () => { const g = new THREE.Group(), fm = gold ? solidMat(0xc89010, 0xfff0a0, 0xffffff) : woodMat(false), frame = new THREE.Mesh(new THREE.TorusGeometry(1, 0.1, 8, 40), fm); frame.scale.set(0.7, 1.15, 1); g.add(frame);
+        const gm = flowMat({ c1: 0x8aa8d8, c2: 0xffffff, rep: [1, 2], spd: [0.2, -0.6], fres: 0, cut: -0.4, gain: 1.2, fade: [0, 0, 0, 0] }), glass = new THREE.Mesh(new THREE.CircleGeometry(0.98, 32), gm); glass.scale.set(0.7, 1.15, 1); g.add(glass);
+        const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.12, 1.2, 6), fm); stand.position.y = -1.6; g.add(stand);
+        g.position.set(P.x, 0, P.z); g.lookAt(T.x, 0, T.z);
+        return { g, upd: (k, t) => { fm.uniforms.uTime.value = t; gm.uniforms.uTime.value = t; gm.uniforms.uAlpha.value = 0.8; g.position.y = Math.min(1, k / 0.2) * 2.1; g.scale.setScalar(pop(k, 0.1, 0.88)); } }; }); }
+    const W = "evarbyreveraUoY".split(""), nL = 8 + f * 4;   // chữ viết ngược (soi gương mới đọc được)
+    for (let i = 0; i < nL; i++) { const ch = W[i % W.length], ph = i / nL;
+      prop(0.25, 1.9, () => { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex(ch, "#d8c8ff"), transparent: true, depthWrite: false })); const g = new THREE.Group(); g.add(sp);
+        return { g, upd: (k, t) => { const a = ph * PI * 2 + t * 3; sp.position.set(T.x + Math.cos(a) * 1.1, 2.2 + Math.sin(a * 2) * 0.25, T.z + Math.sin(a) * 1.1); const q = 0.55 * pop(k, 0.1, 0.85); sp.scale.set(-q, q, 1); /* lật ngang = chữ ngược */ } }; }); }
+    for (let i = 0; i < 3; i++) orbitStar(T, 0xc8b8ff, 0.9, 2.7, 1.8, 0.3, i / 3);
+    upg(T, f, gold ? 0xffd860 : 0xc8b8ff, 0.3, 2.5);
+  };
+  /* --- Alexander Graham Bell --- */
+  META.ring_shock = { name: "Ring Shock", lv: 18, who: "Alexander Graham Bell", forms: ["Điện thoại đồng reo, dây xoắn quấn quái", "+ sóng chuông", "Dây quấn 2 vòng + sét", "Điện thoại vàng + sóng lớn"] };
+  SK.ring_shock = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, brass = () => solidMat(gold ? 0xc89010 : 0x8a5a18, gold ? 0xfff0a0 : 0xe8b860, 0xfff0c0), A = F.clone().add(new V3(0, 3.4, 0));
+    prop(0, 1.9, () => { const g = new THREE.Group(), bm = brass(), base = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.75, 0.5, 16), bm); g.add(base);
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 1.3, 10), bm); col.position.y = 0.9; g.add(col);
+      const horn = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.12, 0.6, 16, 1, true), bm); horn.position.y = 1.75; g.add(horn);
+      [-1, 1].forEach(s => { const bell = new THREE.Mesh(new THREE.SphereGeometry(0.32, 14, 10, 0, PI * 2, 0, PI / 2), bm); bell.position.set(s * 0.45, 0.35, 0.5); g.add(bell); });
+      g.position.copy(F).setY(2.2); const yaw = Math.atan2(T.x - F.x, T.z - F.z);
+      return { g, upd: (k, t) => { bm.uniforms.uTime.value = t; g.rotation.set(0, yaw, Math.sin(t * 60) * 0.06 * (k < 0.5 ? 1 : 0)); g.scale.setScalar(1.1 * pop(k, 0.1, 0.88)); } }; });
+    for (let i = 0; i < 3 + f; i++) { textPop(A.clone().add(new V3(R(-1, 1), R(0, 1), R(-1, 1))), "RING!", gold ? "#ffe9a0" : "#ffd27a", 1.7, 0.6, 0.05 + i * 0.15); }
+    const hit = 0.45, wraps = f >= 3 ? 2 : 1;
+    prop(0.1, 1.8, () => { const g = new THREE.Group(), cm = solidMat(0x202428, gold ? 0xffd860 : 0x8a6a40, 0xffe0a0), B = T.clone().setY(1.2), Fm = A.clone().setY(2.4);
+      const pts = []; for (let i = 0; i <= 90; i++) { const u = i / 90, p = Fm.clone().lerp(B, u); p.y += Math.sin(u * PI) * 1.4; const a = u * 40; p.x += Math.cos(a) * 0.18; p.z += Math.sin(a) * 0.18; pts.push(p); }   // dây xoắn lò xo
+      for (let w = 0; w < wraps * 26; w++) { const a = w / 26 * PI * 2, y = 0.5 + w / (wraps * 26) * 1.6; pts.push(new V3(T.x + Math.cos(a) * 0.9, y, T.z + Math.sin(a) * 0.9)); }   // quấn quanh quái
+      const curve = new THREE.CatmullRomCurve3(pts), geo = new THREE.TubeGeometry(curve, 400, 0.07, 5), m = new THREE.Mesh(geo, cm); g.add(m); const N = geo.index.count;
+      return { g, upd: (k, t) => { cm.uniforms.uTime.value = t; geo.setDrawRange(0, Math.floor(N * Math.min(1, k / 0.35))); m.visible = k < 0.92; } }; });
+    glow(T.clone().setY(1.2), 0xffe0a0, 2.5 + f, 0.3, hit, { flash: true });
+    const nW = 2 + f; for (let i = 0; i < nW; i++) shock(T, gold ? 0xffd860 : 0xffe0a0, 2.5 + i * 0.8, 0.5, hit + i * 0.12, 0.8 + i * 0.2);   // sóng âm tiếng chuông
+    if (f >= 2) for (let i = 0; i < 4; i++) shock(F, 0xfff0c0, 3, 0.45, 0.05 + i * 0.12, 2);
+    if (f >= 3) for (let i = 0; i < 3; i++) bolt(T.clone().setY(2.6), T.clone().add(new V3(R(-1.4, 1.4), 0.1, R(-1.4, 1.4))), 0xbfe0ff, 0.12, 0.3, hit + i * 0.15);
+    for (let i = 0; i < 3; i++) orbitStar(T, 0xffe080, 0.9, 2.6, 1.6, hit, i / 3);
+    upg(T, f, gold ? 0xffd860 : 0xffe0a0, hit, 2.2); task(hit, 0.01, () => shake(0.1 + f * 0.04));
+  };
+  /* --- Nicéphore Niépce --- */
+  function sepiaTex() { return TEX.sepia || (TEX.sepia = cvTex(128, (g, n) => { g.fillStyle = "rgba(0,0,0,0)"; g.fillRect(0, 0, n, n); g.fillStyle = "rgba(150,105,55,.55)"; g.fillRect(10, 10, n - 20, n - 20);
+    const gr = g.createRadialGradient(n / 2, n / 2, 10, n / 2, n / 2, n / 1.6); gr.addColorStop(0, "rgba(240,210,160,.35)"); gr.addColorStop(1, "rgba(60,35,15,.7)"); g.fillStyle = gr; g.fillRect(10, 10, n - 20, n - 20);
+    g.strokeStyle = "#f4e6c8"; g.lineWidth = 9; g.strokeRect(6, 6, n - 12, n - 12); g.strokeStyle = "#7a4a1a"; g.lineWidth = 2; g.strokeRect(13, 13, n - 26, n - 26); })); }
+  META.camera_obscura = { name: "Camera Obscura", lv: 19, who: "Nicéphore Niépce", forms: ["Hộp tối mở mắt, chớp → khung ảnh sepia", "Chớp mạnh + phim cuộn", "Khung ảnh lớn, nhiều tấm", "Máy ảnh vàng + chớp đôi"] };
+  SK.camera_obscura = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, flash = 0.55, yaw = Math.atan2(T.x - F.x, T.z - F.z);
+    const C = F.clone().add(new V3(Math.sin(yaw) * 1.2, 2.6, Math.cos(yaw) * 1.2));
+    prop(0, flash + 0.6, () => { const g = new THREE.Group(), wm = woodMat(gold), bm = solidMat(0x30261c, gold ? 0xffd860 : 0x806040, 0xffe0a0), box = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 1.3), wm); g.add(box);
+      const bel = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.65, 0.7, 4, 1, true).rotateX(PI / 2).rotateZ(PI / 4), bm); bel.position.z = 0.95; g.add(bel);
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.3, 16).rotateX(PI / 2), solidMat(0x101418, 0x6080a0, 0xffffff)); lens.position.z = 1.4; g.add(lens);
+      const eye = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xffffff, blending: ADD, transparent: true, depthWrite: false })); eye.position.z = 1.6; g.add(eye);
+      g.position.copy(C); g.rotation.y = yaw;
+      return { g, upd: (k, t) => { [wm, bm].forEach(m => m.uniforms.uTime.value = t); g.scale.setScalar(pop(k, 0.12, 0.85)); const tt = t / flash; eye.scale.setScalar(tt < 1 ? 0.2 + tt * 0.5 : 0.2); eye.material.opacity = tt < 1 ? tt : 0.3; } }; });
+    glow(C.clone().add(new V3(Math.sin(yaw) * 1.6, 0, Math.cos(yaw) * 1.6)), 0xffffff, 10 + f * 3, 0.35, flash, { flash: true });   // chớp sáng chói
+    glow(T.clone().setY(1.3), 0xfff4e0, 6 + f, 0.4, flash, { flash: true });
+    if (gold) glow(T.clone().setY(1.3), 0xffffff, 9, 0.35, flash + 0.25, { flash: true });
+    const nF = f >= 3 ? 3 : 1, hold = 3;
+    for (let i = 0; i < nF; i++) { const off = i ? (i === 1 ? -1 : 1) * 1.5 : 0;
+      prop(flash + i * 0.08, hold, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1.25), new THREE.MeshBasicMaterial({ map: sepiaTex(), transparent: true, depthWrite: false, side: THREE.DoubleSide })); g.add(m);
+        const s0 = (i ? 1.6 : 2.4) * (1 + (f - 1) * 0.12); g.position.set(T.x + Math.cos(yaw) * off, 1.4 + (i ? 0.4 : 0), T.z - Math.sin(yaw) * off); g.rotation.y = yaw + PI + (i ? off * 0.15 : 0); m.renderOrder = 10;
+        return { g, upd: (k, t) => { const inK = Math.min(1, t / 0.15); g.scale.set(s0 * (1.4 - 0.4 * inK), s0 * (1.4 - 0.4 * inK), 1); m.material.opacity = inK * (1 - Math.max(0, k - 0.88) / 0.12); } }; }); }
+    decal(T, TEX.dark, 0xffffff, 3.2, hold, flash, { add: false, op: 0.6, hold: 0.9 });
+    if (f >= 2) emitter(30 + f * 10, i => ({ p: T.clone().add(new V3(R(-1.5, 1.5), R(0.3, 2.8), R(-1.5, 1.5))), v: new V3(R(-0.3, 0.3), 0.4, R(-0.3, 0.3)), t0: flash + R(0, 1.2), life: R(0.8, 1.5), size: R(0.15, 0.3), col: [0xd8b080, 0xfff0d0][i % 2] }), { grav: 0, drag: 1 });   // bụi ảnh cũ lơ lửng
+    upg(T, f, gold ? 0xffd860 : 0xe8c890, flash, 2.4); task(flash, 0.01, () => shake(0.08 + f * 0.03));
+  };
+  /* --- Wilhelm Röntgen --- */
+  function boneHandTex() { return TEX.xhand || (TEX.xhand = cvTex(256, (g, n) => {   // tấm phim X-quang: nền xanh đen + xương bàn tay sáng
+    g.fillStyle = "#06140c"; g.fillRect(0, 0, n, n); g.strokeStyle = "#5aff9a"; g.lineWidth = 3; g.strokeRect(8, 8, n - 16, n - 16);
+    g.strokeStyle = "rgba(200,255,220,.95)"; g.lineCap = "round"; g.shadowColor = "#5aff9a"; g.shadowBlur = 10;
+    const cx = n / 2, by = n * 0.82; g.lineWidth = 16; g.beginPath(); g.moveTo(cx - 14, by + 30); g.lineTo(cx - 10, by); g.moveTo(cx + 14, by + 30); g.lineTo(cx + 10, by); g.stroke();
+    [[-58, 0.55, -0.5], [-30, 0.92, -0.18], [0, 1, 0], [30, 0.92, 0.18], [55, 0.75, 0.35]].forEach(([dx, L, a]) => { let x = cx + dx * 0.4, y = by - 20; const segs = 3; g.lineWidth = 11;
+      for (let s = 0; s < segs + 1; s++) { const len = (s ? 26 : 34) * L, nx = x + Math.sin(a) * len, ny = y - Math.cos(a) * len; g.beginPath(); g.moveTo(x, y); g.lineTo(nx, ny); g.stroke(); x = nx + Math.sin(a) * 5; y = ny - Math.cos(a) * 5; g.lineWidth -= 1.5; } }); })); }
+  function boneHand(gold) {   // bàn tay xương 3D (5 ngón, mỗi ngón 3 đốt)
+    const g = new THREE.Group(), bm = boneMat(gold), palm = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.5, 0.35), bm); palm.position.y = 0.75; g.add(palm); const fingers = [];
+    [[-0.75, 0.6, -0.6], [-0.4, 0.95, -0.12], [0, 1, 0], [0.4, 0.95, 0.12], [0.68, 0.8, 0.3]].forEach(([x, L, a], i) => { const root = new THREE.Group(); root.position.set(x * 0.85, 1.5, 0); root.rotation.z = -a * (i === 0 ? 1.4 : 0.6); g.add(root); let par = root;
+      for (let s = 0; s < 3; s++) { const len = (0.55 - s * 0.1) * L * 1.4, seg = new THREE.Group(), bn = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.13, len, 6), bm); bn.position.y = len / 2; seg.add(bn);
+        const kn = new THREE.Mesh(new THREE.SphereGeometry(0.15, 8, 6), bm); seg.add(kn); par.add(seg); fingers.push(seg); seg.userData.len = len; const nxt = new THREE.Group(); nxt.position.y = len; seg.add(nxt); par = nxt; } });
+    const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 2.2, 8), bm); wrist.position.y = -1.0; g.add(wrist);
+    return { g, bm, fingers };
+  }
+  META.x_ray_pierce = { name: "X-Ray Pierce", lv: 20, who: "Wilhelm Röntgen", forms: ["Tia X xanh xuyên qua, hiện bộ xương", "Tia to + vòng quét", "3 tia + phim X-quang", "Tia vàng-lục + nổ xương"] };
+  SK.x_ray_pierce = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, dir = T.clone().sub(F).setY(0).normalize(), L = F.distanceTo(T) + 7, nB = f >= 3 ? 3 : 1, W = 0.35 + f * 0.12, col = gold ? 0xd8ff60 : 0x40ff90;
+    glow(F.clone().setY(1.3).addScaledVector(dir, 0.8), col, 3 + f, 0.3, 0);
+    for (let b = 0; b < nB; b++) { const yaw = Math.atan2(dir.x, dir.z) + (b ? (b === 1 ? -0.18 : 0.18) : 0);
+      task(0.12 + b * 0.04, 0.6, () => { const geo = new THREE.CylinderGeometry(W, W, L, 16, 1, true).rotateX(PI / 2); geo.translate(0, 0, L / 2); const mt = flowMat({ c1: col, c2: 0xffffff, rep: [2, 6], spd: [0.3, -4], fres: 1, cut: 0.05, fade: [0.02, 0.15, 0, 0] }), m = mesh(geo, mt, 9);
+        m.position.copy(F).setY(1.3); m.rotation.y = yaw; SC.add(m);
+        return { upd: (k, t) => { mt.uniforms.uTime.value = t; const inK = Math.min(1, t / 0.08); m.scale.set(1 - k * 0.5, 1 - k * 0.5, inK); mt.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.5) / 0.5; }, end: () => kill(m) }; }); }
+    emitter(60 + f * 20, i => { const u = R(0, 1), p = F.clone().setY(1.3).addScaledVector(dir, u * L); return { p: p.add(rv(W)), v: rv(1.2), t0: 0.12 + u * 0.15, life: R(0.3, 0.6), size: R(0.15, 0.35), col: i % 2 ? col : 0xffffff }; }, { grav: 0, drag: 2 });
+    const hit = 0.18;
+    prop(hit, 1.2, () => { const h = boneHand(gold), g = new THREE.Group(), sk = new THREE.Group(), bm = boneMat(gold);   // bộ xương phát sáng hiện trong thân quái
+      const skull = new THREE.Mesh(new THREE.SphereGeometry(0.42, 12, 10), bm); skull.position.y = 2.3; sk.add(skull);
+      [-0.15, 0.15].forEach(x => { const e = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 6), new THREE.MeshBasicMaterial({ color: 0x002010 })); e.position.set(x, 2.32, 0.36); sk.add(e); });
+      const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.3, 6), bm); spine.position.y = 1.35; sk.add(spine);
+      for (let i = 0; i < 4; i++) { const rib = new THREE.Mesh(new THREE.TorusGeometry(0.42 - i * 0.04, 0.04, 4, 16, PI * 1.4), bm); rib.position.y = 1.85 - i * 0.2; rib.rotation.set(PI / 2, 0, -PI * 0.2); rib.scale.set(1, 0.7, 1); sk.add(rib); }
+      const pelvis = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.07, 6, 14, PI), bm); pelvis.position.y = 0.7; pelvis.rotation.x = PI; sk.add(pelvis);
+      g.add(sk); const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: col, blending: ADD, transparent: true, depthWrite: false })); halo.position.y = 1.5; halo.scale.set(3, 4, 1); g.add(halo);
+      g.position.copy(T); g.rotation.y = Math.atan2(-dir.x, -dir.z); g.traverse(x => { x.renderOrder = 11; if (x.material) { x.material.depthTest = false; } });
+      return { g, upd: (k, t) => { bm.uniforms.uTime.value = t; g.scale.setScalar(pop(k, 0.08, 0.8) * (1 + Math.sin(t * 30) * 0.02)); halo.material.opacity = 0.6 * pop(k, 0.08, 0.8); } }; });
+    shock(T, col, 2.2, 0.4, hit, 1.3);
+    if (f >= 2) shock(T, col, 3.5, 0.5, hit + 0.1);
+    if (f >= 3) decal(T, boneHandTex(), 0xffffff, 3, 1.2, hit, { add: true, op: 0.9, mode: "static" });
+    if (gold) { sparks(T.clone().setY(1.5), [BONE2, col], 40, 7, 0.3, 0.6, hit + 0.8); glow(T.clone().setY(1.5), col, 6, 0.3, hit + 0.8, { flash: true }); }
+    upg(T, f, col, hit, 2); task(hit, 0.01, () => shake(0.12 + f * 0.04));
+  };
+  META.skeleton_burst = { name: "Skeleton Burst", lv: 20, who: "Wilhelm Röntgen", forms: ["Phim X-quang + bàn tay xương đập xuống", "Tay lớn + sóng xanh đôi", "+ xương bắn tung", "Bàn tay xương vàng khổng lồ"] };
+  SK.skeleton_burst = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, col = gold ? 0xd8ff60 : 0x40ff90, sc = 1 + (f - 1) * 0.22, rise = 0.5, slam = 0.8;
+    decal(T, boneHandTex(), 0xffffff, 3.6 * sc, 1.7, 0, { add: false, op: 0.95, mode: "static", hold: 0.8 });   // tấm phim dưới đất
+    glow(T.clone().setY(0.3), col, 4 * sc, rise, 0);
+    prop(0.05, 1.5, () => { const h = boneHand(gold), g = new THREE.Group(); g.add(h.g); g.position.copy(T); const yaw = Math.atan2(F.x - T.x, F.z - T.z);
+      return { g, upd: (k, t) => { h.bm.uniforms.uTime.value = t; const tt = t;
+        let y, tilt; if (tt < rise) { const e = tt / rise; y = -3.5 + e * 5.5; tilt = 0; }   // trồi lên từ phim
+        else if (tt < slam) { const e = (tt - rise) / (slam - rise); y = 2 + Math.sin(e * PI) * 0.6; tilt = e * e * 1.45; }   // vung lên rồi đập xuống
+        else { y = 2; tilt = 1.45; }
+        g.position.y = y * sc * 0.6; g.rotation.set(-tilt, yaw + PI, 0, "YXZ"); g.scale.setScalar(sc * 1.3 * (1 - Math.max(0, k - 0.85) / 0.15));
+        const curl = tt < rise ? 0.6 * (1 - tt / rise) : tt < slam ? 0 : 0.2; h.fingers.forEach(s => s.rotation.x = curl); } }; });
+    emitter(50, i => ({ p: T.clone().add(new V3(R(-1.5, 1.5), 0.1, R(-1.5, 1.5))), v: new V3(0, R(2, 5), 0), t0: R(0, rise), life: R(0.3, 0.6), size: R(0.2, 0.4), col: i % 2 ? col : 0xffffff }), { grav: 0, drag: 1 });
+    glow(T.clone().setY(0.8), col, 6 * sc, 0.3, slam, { flash: true }); shock(T, col, 4 * sc, 0.55, slam); shock(T, 0xffffff, 2.5 * sc, 0.4, slam);
+    if (f >= 2) shock(T, col, 5.5 * sc, 0.7, slam + 0.12);
+    if (f >= 3) sparks(T.clone().setY(0.4), [BONE2, BONE, col], 30, 8, 0.35, 0.8, slam, { up: 1.5 });
+    upg(T, f, col, slam, 3 * sc); task(slam, 0.01, () => shake(0.2 + f * 0.06));
+  };
   // vài chiêu danh nhân dùng hiệu ứng chung (để xem trong sổ tay)
   [["ladys_lamp", "Lady's Lamp", 12, "Florence Nightingale", { kind: "self", branch: "harmony" }], ["camera_obscura", "Camera Obscura", 19, "Nicéphore Niépce", { kind: "zone", branch: "control", radius: 4 }],
    ["gravity_crush", "Gravity Crush", 14, "Isaac Newton", { kind: "zone", branch: "power", radius: 3 }], ["prism_ray", "Prism Ray", 14, "Isaac Newton", { kind: "aoe", branch: "rhythm", radius: 6 }],
    ["tesla_coil", "Tesla Coil", 40, "Nikola Tesla", { kind: "multi", branch: "rhythm" }], ["absolute_chill", "Absolute Chill", 42, "Willis Carrier", { kind: "aoe", branch: "control", radius: 6 }]]
-   .forEach(([id, name, lv, who, g]) => META[id] = { name, lv, who: who + " · hiệu ứng chung (chờ làm riêng)", g, desc: "Hiệu ứng chung theo nhánh + loại chiêu, cũng đổi hình ở bậc 4 / 7 / 10." });
-  const LEGACY = { typeset_rain: 1, ac_storm: 1, bristle_cyclone: 1, rune_sword: 1, dragon_roar: 1, basic_slash: 1 };   // hiệu ứng viết theo thang 5 bậc cũ
+   .forEach(([id, name, lv, who, g]) => META[id] = META[id] || { name, lv, who: who + " · hiệu ứng chung (chờ làm riêng)", g, desc: "Hiệu ứng chung theo nhánh + loại chiêu, cũng đổi hình ở bậc 4 / 7 / 10." });
+  const LEGACY = { ac_storm: 1, rune_sword: 1, dragon_roar: 1, basic_slash: 1 };   // hiệu ứng viết theo thang 5 bậc cũ
   api.ids = Object.keys(META);
   api.meta = META;
   api.names = {}; api.ids.forEach(id => api.names[id] = META[id].name);
   api.form = FORM;
+  api.has = id => !!SK[id];   // chiêu đã có hiệu ứng riêng
   api.setup = (scene, camera, renderer) => { SC = MAIN_SC = scene; CAM = camera; REN = renderer; if (!ready) { makeTextures(); ready = true; } };
   api.ready = () => ready;
   api.update = update;
@@ -723,7 +1139,7 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     try { const g = Object.assign({}, (META[id] || {}).g, o), F = from.clone().setY(0), r = Math.max(1, Math.min(10, rank || 1));
       const Tt = to ? to.clone().setY(0) : (g.kind === "aoe" || g.kind === "self" ? F.clone() : F.clone().add(new V3(0, 0, -6)));
       if (SK[id]) SK[id](F, Tt, LEGACY[id] ? [0, 1, 3, 4, 5][FORM(r)] : r); else generic(id, F, Tt, r, g); }
-    catch (e) {} finally { SC = sc0; CAM = cam0; }
+    catch (e) { if (window.__fxdebug) console.error("FX3D", id, e); } finally { SC = sc0; CAM = cam0; }
   };
   api.clear = () => { TASKS.forEach(T => { if (T.h && T.h.end) T.h.end(); }); TASKS.length = 0; };
   api._tasks = () => TASKS.length;
