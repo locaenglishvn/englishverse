@@ -1185,6 +1185,278 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     if (f >= 3) sparks(C.clone().setY(0.4), [col, 0xd0ffe0], 30, 8, 0.35, 0.8, slam, { up: 1.5 });
     upg(C, f, col, slam, 3 * sc); task(slam, 0.01, () => shake(0.2 + f * 0.06));
   };
+  /* ---------- CHƯƠNG 2 (Lv.22–36): Sức khoẻ & sự sống – đẹp hơn chương 1, mỗi chiêu 4 hình ---------- */
+  function ghostLens(r, col) {   /* thấu kính linh hồn: vành + mặt kính sáng */
+    const g = new THREE.Group(), rm = ghostMat(col, 0xffffff, { fres: 0.8, cut: -0.5 }), gm = flowMat({ c1: col, c2: 0xffffff, rep: [1, 1], spd: [0.2, -0.3], fres: 1.6, cut: -0.3, gain: 0.9, fade: [0, 0, 0, 0] });
+    g.add(new THREE.Mesh(new THREE.TorusGeometry(r, r * 0.08, 8, 40), rm)); const disc = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 12), gm); disc.scale.z = 0.18; g.add(disc);
+    const hd = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.07, r * 0.09, r * 1.2, 8), rm); hd.position.y = -r * 1.55; g.add(hd); return { g, mats: [rm, gm] };
+  }
+  /* --- Leeuwenhoek: thấu kính phóng to, vi sinh phát sáng tràn ra gặm quái --- */
+  META.microbe_swarm = { name: "Microbe Swarm", lv: 22, who: "Antonie van Leeuwenhoek", forms: ["Thấu kính + đàn vi khuẩn que", "+ vi khuẩn xoắn, vệt nhờn", "Đàn đông gấp đôi + thấu kính lớn", "Vi sinh vàng rực"] };
+  SK.microbe_swarm = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, d = SDIR(F, T), col = gold ? 0xffd860 : 0x7dffb0, n = [10, 16, 26, 30][f - 1], L0 = F.clone().addScaledVector(d, 1.4).setY(2.2), R0 = 2.4 + f * 0.3;
+    prop(0, 2.1, () => { const o = ghostLens(0.9 + f * 0.15, col); o.g.position.copy(L0); o.g.lookAt(T.clone().setY(2.2));
+      return { g: o.g, upd: (k, t) => { o.mats.forEach(m => { m.uniforms.uTime.value = t; m.uniforms.uAlpha.value = pop(k, 0.1, 0.8); }); o.g.scale.setScalar(Math.min(1, k / 0.1) * (1 + Math.sin(t * 4) * 0.03)); } }; });
+    glow(L0, col, 1.4 + f * 0.2, 0.3, 0.15, { flash: true });
+    for (let i = 0; i < n; i++) { const kind = f >= 2 && i % 3 === 2 ? 1 : f >= 3 && i % 5 === 4 ? 2 : 0, dl = 0.3 + i * 0.03, a0 = R(0, PI * 2), rr = R(0.6, R0), ph = R(0, 6), sp = R(2, 4) * (i % 2 ? 1 : -1);
+      prop(dl, 1.9 - i * 0.02, () => { const g = new THREE.Group(), mm = flowMat({ c1: col, c2: 0xffffff, rep: [1, 2], spd: [0, -1.5], fres: 1.2, cut: -0.3, gain: 1.4, fade: [0, 0, 0, 0] }); let body;
+        if (kind === 0) { body = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), mm); body.scale.set(1, 2.6, 1); }   /* trực khuẩn hình que */
+        else if (kind === 1) body = new THREE.Mesh(new THREE.TubeGeometry(helix(0.12, 0.8, 2.5, 30), 40, 0.05, 5), mm);   /* xoắn khuẩn */
+        else { body = new THREE.Group(); for (let q = 0; q < 4; q++) { const s = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 6), mm); s.position.set((q % 2) * 0.22, ((q / 2) | 0) * 0.22, 0); body.add(s); } }   /* cầu khuẩn chùm */
+        g.add(body); const hl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: col, blending: ADD, transparent: true, depthWrite: false })); hl.scale.setScalar(0.6); hl.material.opacity = 0.6; g.add(hl); const P = new V3(), E = new V3();
+        return { g, upd: (k, t) => { mm.uniforms.uTime.value = t; const u = Math.min(1, t / 0.45), a = a0 + t * sp; E.set(T.x + Math.cos(a) * rr, 0.4 + Math.abs(Math.sin(t * 3 + ph)) * 1.4, T.z + Math.sin(a) * rr);
+          P.lerpVectors(L0, E, u * u * (3 - 2 * u)); g.position.copy(P); body.rotation.set(t * 5 + ph, t * 3, Math.sin(t * 12 + ph) * 0.6); g.scale.setScalar((1.7 + f * 0.15) * pop(k, 0.05, 0.85)); mm.uniforms.uAlpha.value = 1; } }; }); }
+    decal(T, TEX.glow, col, R0 * 2.2, 2, 0.5, { op: 0.45, hold: 0.7 });
+    if (f >= 2) decal(T, swirlTex(), col, R0 * 2, 1.8, 0.6, { spin: 1.5, op: 0.4 });
+    for (let h = 0; h < 4 + f; h++) { const P = T.clone().add(new V3(R(-1, 1), R(0.6, 1.6), R(-1, 1))), hit = 0.8 + h * 0.18; sparks(P, [col, 0xffffff], 6 + f * 2, 3, 0.2, 0.35, hit, { up: 1 }); glow(P, col, 1 + f * 0.3, 0.15, hit, { flash: true }); }   /* gặm lốp bốp */
+    upg(T, f, col, 0.8, R0 * 0.7); task(0.8, 0.01, () => shake(0.06 + f * 0.03));
+  };
+
+  /* --- Pasteur: cột lửa xanh 100°C, nước sôi, nấm khói hơi nóng --- */
+  META.sterilize_blaze = { name: "Sterilize Blaze", lv: 24, who: "Louis Pasteur", forms: ["Cột lửa xanh + bọt sôi", "Lửa cao hơn + vòng nước sôi", "+ 3 cột phụ, nấm khói", "Lửa xanh viền vàng khổng lồ"] };
+  SK.sterilize_blaze = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, hit = 0.35, c1 = 0x2a7bff, c2 = gold ? 0xfff0a0 : 0xbfeaff, R0 = 1.4 + f * 0.3;
+    rune(T, "sun", "greek", 0x5aa8ff, R0 * 2.6, 1.6, 0, { mode: "converge", op: 0.9 }); decal(T, TEX.crack, 0xffffff, R0 * 2, 1.6, hit, { add: false, op: 0.7, ro: 3 });
+    glow(T.clone().setY(0.3), c1, 2, hit, 0);
+    pillar(T, c1, c2, 0.7 + f * 0.18, 5 + f * 1.2, 1.0, hit, { speed: 5, widen: 0.5, top: 0.6 }); pillar(T, 0xffffff, c2, 0.35 + f * 0.08, 4 + f, 0.8, hit + 0.05, { speed: 6.5, widen: 0.3, top: 0.5 });
+    glow(T.clone().setY(1.5), 0xffffff, 4 + f, 0.3, hit, { flash: true }); shock(T, c2, R0 * 1.4, 0.5, hit);
+    if (f >= 3) for (let i = 0; i < 3; i++) { const a = i / 3 * PI * 2, P = T.clone().add(new V3(Math.cos(a) * R0, 0, Math.sin(a) * R0)); pillar(P, c1, c2, 0.4, 3 + f * 0.5, 0.8, hit + 0.12 + i * 0.07, { speed: 5, widen: 0.4 }); }
+    emitter(40 + f * 20, i => { const a = R(0, PI * 2), r = Math.sqrt(Math.random()) * R0 * 1.2; return { p: T.clone().add(new V3(Math.cos(a) * r, 0.1, Math.sin(a) * r)), v: new V3(0, R(0.5, 1.6), 0), t0: hit + R(0, 0.9), life: R(0.25, 0.5), size: R(0.2, 0.45), col: i % 2 ? 0xbfeaff : 0xffffff }; }, { grav: 0, drag: 0.5 });   /* bọt nước sôi */
+    if (f >= 2) decal(T, TEX.ring, 0x9ad8ff, R0 * 2.4, 1.0, hit, { mode: "pulse", rate: 14, amp: 0.08, op: 0.8 });
+    const top = 4 + f * 1.2; emitter(f >= 3 ? 60 : 30, i => { const cap = i % 3 !== 0, a = R(0, PI * 2), r = cap ? R(0.5, 1.6 + f * 0.3) : R(0, 0.4);   /* nấm khói: thân + mũ */
+      return { p: T.clone().add(new V3(Math.cos(a) * r * 0.3, cap ? top : R(0.5, top), Math.sin(a) * r * 0.3)), v: new V3(Math.cos(a) * r * 1.2, cap ? R(0.2, 0.8) : 1, Math.sin(a) * r * 1.2), t0: hit + 0.25 + R(0, 0.3), life: R(0.7, 1.1), size: R(0.6, 1.1) * (1 + f * 0.15), col: 0xd8e8f0 }; }, { grav: 0, drag: 2 });
+    textPop(T.clone().setY(3.4), "100°C", gold ? "#fff0a0" : "#bfeaff", 1.5, 0.7, hit);
+    upg(T, f, gold ? 0xffd860 : 0x5aa8ff, hit, R0); task(hit, 0.01, () => shake(0.14 + f * 0.05));
+  };
+
+  /* --- Pasteur: kim tiêm ánh sáng + giáp tinh thể lục giác --- */
+  META.vaccine_shield = { name: "Vaccine Shield", lv: 24, who: "Louis Pasteur", forms: ["Kim tiêm sáng + giáp lục giác", "+ mảnh lục giác bay quanh", "Giáp 2 lớp xoay ngược", "Giáp vàng + hào quang"] };
+  SK.vaccine_shield = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, c1 = gold ? 0xffd860 : 0x7ad8ff, inj = 0.45;
+    prop(0, inj + 0.3, () => { const g = new THREE.Group(), gm = ghostMat(0xbfeaff, 0xffffff, { fres: 1, cut: -0.5 }), lq = ghostMat(c1, 0xffffff, { fres: 0.4, cut: -0.6 });
+      const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 1.4, 14, 1, true), gm); g.add(barrel); const liq = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 1, 12), lq); liq.position.y = -0.15; g.add(liq);
+      const plunger = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.2, 6), gm); g.add(plunger); const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.06, 14), gm); g.add(thumb);
+      const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.03, 0.9, 6), gm); needle.position.y = -1.15; g.add(needle);
+      return { g, upd: (k, t) => { [gm, lq].forEach(m => { m.uniforms.uTime.value = t; m.uniforms.uAlpha.value = pop(k, 0.12, 0.8); }); const down = Math.min(1, t / 0.25), push = Math.min(1, Math.max(0, (t - 0.25) / 0.2));
+        g.position.set(F.x + 0.35, 5 - down * 2.3, F.z + 0.2); g.rotation.z = 0.35; plunger.position.y = 1.1 - push * 0.8; thumb.position.y = 1.7 - push * 0.8; liq.scale.y = 1 - push * 0.9; liq.position.y = -0.15 - push * 0.45; } }; });
+    glow(F.clone().setY(1.6), c1, 2.5, 0.3, inj, { flash: true }); sparks(F.clone().setY(1.6), [c1, 0xffffff], 20, 4, 0.25, 0.4, inj, { up: 1 });
+    const nL = f >= 3 ? 2 : 1;
+    for (let l = 0; l < nL; l++) prop(inj + l * 0.08, 2.2, () => { const g = new THREE.Group(), r = 1.7 + l * 0.35, sm = flowMat({ c1, c2: 0xffffff, rep: [2, 2], spd: [0.2, -0.4], fres: 1.8, cut: -0.1, gain: 1.2, fade: [0, 0, 0, 0] }), geo = new THREE.IcosahedronGeometry(r, 1);
+      const shell = new THREE.Mesh(geo, sm); g.add(shell); const edge = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: gold ? 0xfff0a0 : 0xd8f4ff, transparent: true, blending: ADD, depthWrite: false })); g.add(edge);
+      g.position.set(F.x, 1.2, F.z);
+      return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; const inK = Math.min(1, t / 0.2), a = pop(k, 0.1, 0.8); g.scale.setScalar(0.6 + 0.4 * (1 - Math.pow(1 - inK, 3))); g.rotation.y = t * (l ? -0.8 : 0.6); sm.uniforms.uAlpha.value = 0.55 * a; edge.material.opacity = a; } }; });
+    if (f >= 2) for (let i = 0; i < 6; i++) prop(inj + 0.1, 2.0, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.CircleGeometry(0.35, 6), basic(null, c1, true, 0.8)); g.add(m); const a0 = i / 6 * PI * 2;
+      return { g, upd: (k, t) => { const a = a0 + t * 2; g.position.set(F.x + Math.cos(a) * 2.5, 1.2 + Math.sin(t * 3 + i) * 0.5, F.z + Math.sin(a) * 2.5); g.lookAt(F.x, 1.2, F.z); m.material.opacity = 0.8 * pop(k, 0.1, 0.8); } }; });
+    rune(F, "hex", "greek", c1, 4.4, 2.2, inj, { mode: "static", op: 0.8 });
+    if (gold) aura(F, 0xffd860, 0xfff6c0, 1.0, 3, 1.8, inj);
+    upg(F, f, c1, inj, 2.2);
+  };
+
+  /* --- Fleming: đốm nấm mốc nở thành vườn hoa phát sáng --- */
+  function flowerTex(c) { const key = "fl" + c; return TEX[key] || (TEX[key] = cvTex(128, (g, n) => { g.translate(n / 2, n / 2); const col = "#" + new THREE.Color(c).getHexString();
+    for (let i = 0; i < 6; i++) { g.save(); g.rotate(i / 6 * PI * 2); const gr = g.createLinearGradient(0, 0, 0, -56); gr.addColorStop(0, "#ffffff"); gr.addColorStop(1, col); g.fillStyle = gr; g.beginPath(); g.ellipse(0, -30, 15, 28, 0, 0, PI * 2); g.fill(); g.restore(); }
+    g.fillStyle = "#fff6b0"; g.beginPath(); g.arc(0, 0, 12, 0, PI * 2); g.fill(); })); }
+  META.penicillin_bloom = { name: "Penicillin Bloom", lv: 26, who: "Alexander Fleming", forms: ["Nấm mốc lan, hoa sáng nở quanh người", "Vườn hoa dày hơn + bào tử", "Hoa to + mưa cánh hoa", "Vườn hoa vàng"] };
+  SK.penicillin_bloom = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, c1 = gold ? 0xffd860 : 0x5affb0, R0 = 2.6 + f * 0.4, n = [8, 12, 16, 20][f - 1], dur = 2.4;
+    for (let i = 0; i < 6 + f * 2; i++) { const a = R(0, PI * 2), r = R(0, R0); decal(F.clone().add(new V3(Math.cos(a) * r, 0, Math.sin(a) * r)), TEX.glow, i % 2 ? 0x3ad8a0 : 0x7ab8ff, R(1, 2), dur, i * 0.04, { mode: "expand", expand: 0.8, op: 0.55, hold: 0.7 }); }   /* đốm mốc loang */
+    decal(F, swirlTex(), c1, R0 * 2.2, dur, 0.1, { spin: 0.6, op: 0.4 });
+    for (let i = 0; i < n; i++) { const a = i / n * PI * 2 + R(-0.2, 0.2), r = R(0.9, R0), P = F.clone().add(new V3(Math.cos(a) * r, 0, Math.sin(a) * r)), dl = 0.25 + r / R0 * 0.4, fc = [0x2ad890, 0x4a9aff, 0xff7ac8, 0x8adf3a][i % 4], h = R(0.5, 1.1) * (1 + f * 0.12);
+      prop(dl, dur - dl, () => { const g = new THREE.Group(), stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, h, 5).translate(0, h / 2, 0), basic(null, 0x5adf7a, true, 0.9)); g.add(stem);
+        const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flowerTex(gold ? 0xffd860 : fc), transparent: true, depthWrite: false })); fl.position.y = h; g.add(fl); g.position.copy(P);
+        return { g, upd: (k, t) => { const e = Math.min(1, t / 0.35), o = 1 - Math.max(0, k - 0.8) / 0.2; stem.scale.y = e + 0.01; fl.position.y = h * e; fl.scale.setScalar((0.2 + 0.8 * Math.min(1, Math.max(0, (t - 0.2) / 0.3))) * (0.8 + f * 0.12) * (1 + Math.sin(t * 4 + i) * 0.05)); fl.material.rotation = t * 0.5; fl.material.opacity = o; stem.material.opacity = 0.9 * o; } }; }); }
+    if (f >= 2) emitter(40 + f * 15, i => { const a = R(0, PI * 2), r = R(0.3, R0); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0.2, 1), Math.sin(a) * r)), v: new V3(0, R(0.4, 1.2), 0), t0: R(0.4, 2), life: R(0.6, 1.1), size: R(0.15, 0.3), col: i % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 0.4 });
+    if (f >= 3) emitter(40, i => ({ p: F.clone().add(new V3(R(-R0, R0), R(3, 4.5), R(-R0, R0))), v: new V3(R(-0.4, 0.4), -1, R(-0.4, 0.4)), t0: R(0.5, 2), life: 1.4, size: R(0.25, 0.4), col: [0xffd0f0, 0xd8fff0, 0xfff0a0][i % 3] }), { grav: 0, drag: 0.2 });
+    for (let i = 0; i < 3 + f; i++) textPop(F.clone().add(new V3(R(-1, 1), 1.5 + R(0, 0.8), R(-0.5, 0.5))), "+", "#7dff9a", 0.9, 0.9, 0.5 + i * 0.25);
+    upg(F, f, c1, 0.6, R0 * 0.8);
+  };
+
+  /* --- Mendel: dây đậu khổng lồ quấn quái, hoa tím trắng, quả đậu nổ hạt --- */
+  META.pea_vine_prison = { name: "Pea Vine Prison", lv: 28, who: "Gregor Mendel", forms: ["3 dây đậu quấn quái + hoa", "5 dây + quả đậu nổ hạt", "Lồng dây kín + hoa to", "Dây đậu vàng"] };
+  SK.pea_vine_prison = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nV = [3, 5, 7, 8][f - 1], grow = 0.5, dur = 2.4, vc = gold ? 0xffd860 : 0x5adf5a;
+    rune(T, "circle", "latin", 0x7adf7a, 4.6, dur, 0, { mode: "static", op: 0.7 }); decal(T, TEX.crack, 0xffffff, 3.4, dur, 0.05, { add: false, op: 0.7, ro: 3 });
+    sparks(T.clone().setY(0.2), [0x8a6a40, 0x6a5030], 30, 5, 0.3, 0.7, 0.05, { up: 1.5 });
+    for (let v = 0; v < nV; v++) { const a0 = v / nV * PI * 2, r0 = 1.6 + (v % 2) * 0.4, h = 3.4 + f * 0.4 + (v % 3) * 0.4, tw = (v % 2 ? 1 : -1) * (1.2 + f * 0.1);
+      const pts = []; for (let i = 0; i <= 40; i++) { const u = i / 40, a = a0 + u * tw * PI, r = r0 * (1 - u * 0.65) + 0.35; pts.push(new V3(T.x + Math.cos(a) * r, u * h, T.z + Math.sin(a) * r)); }
+      const curve = new THREE.CatmullRomCurve3(pts);
+      prop(v * 0.05, dur, () => { const g = new THREE.Group(), vm = flowMat({ c1: vc, c2: gold ? 0xfff6c0 : 0xd8ffb0, rep: [1, 6], spd: [0, -0.8], fres: 0.6, cut: -0.6, gain: 1.1, fade: [0, 0, 0, 0] }); vm.blending = THREE.NormalBlending; vm.depthWrite = true;
+        const geo = new THREE.TubeGeometry(curve, 80, 0.16 + f * 0.02, 6), m = new THREE.Mesh(geo, vm); g.add(m); const N = geo.index.count, leaves = [], flowers = [];
+        for (let q = 0; q < 5; q++) { const u = 0.2 + q * 0.16, P = curve.getPoint(u), lf = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 4), basic(null, vc, false, 1)); lf.scale.set(1, 0.25, 0.55); lf.position.copy(P); lf.rotation.y = q * 2; g.add(lf); leaves.push({ m: lf, u });
+          if (q % 2 === 1) { const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flowerTex(q === 1 ? 0xb06aff : 0xffffff), blending: ADD, transparent: true, depthWrite: false })); fl.position.copy(P).add(new V3(0, 0.15, 0)); g.add(fl); flowers.push({ s: fl, u }); } }
+        return { g, upd: (k, t) => { vm.uniforms.uTime.value = t; const e = Math.min(1, t / grow), o = 1 - Math.max(0, k - 0.85) / 0.15; geo.setDrawRange(0, Math.floor(N * e * e * (3 - 2 * e))); vm.uniforms.uAlpha.value = o;
+          leaves.forEach(L => L.m.scale.setScalar(e > L.u ? 1 : 0.001)); flowers.forEach(F2 => { const b = Math.min(1, Math.max(0, (t - grow - F2.u * 0.3) / 0.3)); F2.s.scale.setScalar(b * (0.8 + f * 0.1) + 0.001); F2.s.material.opacity = o; }); } }; }); }
+    if (f >= 2) for (let p = 0; p < 2 + f; p++) { const P = T.clone().add(new V3(R(-1.3, 1.3), R(1.5, 3.2), R(-1.3, 1.3))), at = grow + 0.5 + p * 0.15;
+      prop(grow, at - grow + 0.05, () => { const g = new THREE.Group(), pod = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 6), basic(null, 0x8aef5a, false, 1)); pod.scale.set(0.6, 0.6, 1.7); g.add(pod); g.position.copy(P); g.rotation.y = p; return { g, upd: (k, t) => g.scale.setScalar(Math.min(1, t / 0.2) * (1 + k * 0.2)) }; });
+      sparks(P, [0x9aff6a, 0x5adf5a], 8, 5, 0.3, 0.6, at, { up: 0.5, grav: -8 }); glow(P, 0xd8ffb0, 1.2, 0.15, at, { flash: true }); }   /* quả đậu nổ ra hạt */
+    if (f >= 3) dome(T, 0x5adf5a, 0xd8ffb0, 2.2, 0.6, grow);
+    glow(T.clone().setY(1.5), 0xd8ffb0, 3 + f, 0.3, grow, { flash: true }); shock(T, 0x9aff6a, 2.6, 0.4, grow);
+    upg(T, f, vc, grow, 2.4); task(grow, 0.01, () => shake(0.1 + f * 0.04));
+  };
+  /* --- Mendel: hạt giống vàng tách đôi giữa đường 2 → 4 → 8 rồi cùng nổ --- */
+  META.hybrid_shot = { name: "Hybrid Shot", lv: 28, who: "Gregor Mendel", forms: ["Hạt tách đôi (2)", "Tách 2 lần (4)", "Tách 3 lần (8)", "8 hạt vàng + nổ hoa"] };
+  SK.hybrid_shot = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, lvl = Math.min(3, f), d = SDIR(F, T), side = new V3(-d.z, 0, d.x), fly = 0.55, c1 = gold ? 0xffd040 : 0xd8ff6a, A = F.clone().setY(1.4).addScaledVector(d, 0.6), B = T.clone().setY(1.1);
+    const now = performance.now(), first = !LAST.hybrid || now - LAST.hybrid > 900; LAST.hybrid = now;
+    const splits = [0.3, 0.5, 0.7].slice(0, lvl), N = 1 << lvl, P = new V3();
+    const offAt = (j, u) => { let o = 0; splits.forEach((s, l) => { if (u > s) { const bit = (j >> (lvl - 1 - l)) & 1, w = (1.1 - l * 0.3) * Math.sin(Math.min(1, (u - s) / 0.15) * PI * 0.5) * (1 - Math.max(0, (u - 0.8) / 0.2)); o += (bit ? 1 : -1) * w; } }); return o; };   /* cây nhị phân: mỗi lần tách lệch trái / phải */
+    for (let j = 0; j < N; j++) { prop(0, fly, () => { const g = new THREE.Group(), sm = solidMat(gold ? 0xc89010 : 0x7aa830, gold ? 0xfff0a0 : 0xe8ff9a, 0xffffff), s = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), sm); s.scale.set(1, 0.8, 1.2); g.add(s);
+        const hl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); hl.scale.setScalar(1.1 + f * 0.15); g.add(hl);
+        return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; P.lerpVectors(A, B, k); P.y += Math.sin(k * PI) * 0.8; P.addScaledVector(side, offAt(j, k)); P.y += offAt(j ^ 1, k) * 0.15; g.position.copy(P); s.rotation.y = t * 8; } }; });
+      emitter(14, q => { const u = q / 14, p = A.clone().lerp(B, u); p.y += Math.sin(u * PI) * 0.8; p.addScaledVector(side, offAt(j, u)); return { p, v: rv(0.3), t0: u * fly, life: 0.3, size: R(0.15, 0.3), col: q % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 2 }); }
+    splits.forEach(s => { const p = A.clone().lerp(B, s); p.y += Math.sin(s * PI) * 0.8; glow(p, 0xffffff, 1.2, 0.15, s * fly, { flash: true }); });
+    glow(B, 0xffffff, 2 + f * 0.6, 0.22, fly, { flash: true }); glow(B, c1, 3 + f, 0.35, fly, { flash: true }); sparks(B, [c1, 0xffffff, 0x9aff6a], 14 + N * 3, 6, 0.25, 0.5, fly, { up: 1 }); shock(T, c1, 1.2 + f * 0.3, 0.35, fly);
+    if (gold) for (let i = 0; i < 6; i++) { const a = i / 6 * PI * 2; textPop(B.clone().add(new V3(Math.cos(a) * 0.9, 0.3, Math.sin(a) * 0.9)), "✿", "#fff0a0", 0.8, 0.5, fly); }
+    if (first) upg(T, f, c1, fly, 1.8); task(fly, 0.01, () => shake(0.05 + f * 0.02));
+  };
+
+  /* --- Hải Thượng Lãn Ông: nồi thuốc đồng sôi, khói thơm xanh vàng toả hồi máu --- */
+  META.herbal_mist = { name: "Herbal Mist", lv: 30, who: "Hải Thượng Lãn Ông", forms: ["Nồi thuốc sôi, khói thơm hồi máu", "Mây thuốc rộng + lá bay", "+ vòng lá xoáy, chữ Hán phù văn", "Nồi vàng + mây vàng"] };
+  SK.herbal_mist = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 3 + f * 0.5, dur = 2.6, c1 = gold ? 0xffd860 : 0x9aff8a, P0 = F.clone().add(new V3(0.9, 0, 0.6));
+    prop(0, dur, () => { const g = new THREE.Group(), bm = ghostMat(gold ? 0xffc040 : 0xc88040, 0xffe0b0, { fres: 0.7, cut: -0.5 }), pts = [];
+      for (let i = 0; i <= 10; i++) { const u = i / 10; pts.push(new THREE.Vector2(0.25 + Math.sin(u * PI * 0.85 + 0.2) * 0.5, u * 0.9)); }
+      bm.blending = THREE.NormalBlending; const pot = new THREE.Mesh(new THREE.LatheGeometry(pts, 20), bm); g.add(pot); [-1, 1].forEach(s => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.04, 6, 12), bm); h.position.set(s * 0.72, 0.65, 0); h.rotation.y = PI / 2; g.add(h); });
+      for (let i = 0; i < 3; i++) { const lg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.03, 0.35, 5), bm); const a = i / 3 * PI * 2; lg.position.set(Math.cos(a) * 0.35, -0.15, Math.sin(a) * 0.35); g.add(lg); }
+      const brew = new THREE.Mesh(new THREE.CircleGeometry(0.62, 20).rotateX(-PI / 2), flowMat({ c1, c2: 0xffffff, rep: [2, 2], spd: [0.5, -0.5], fres: 0, cut: -0.2, fade: [0, 0, 0, 0] })); brew.position.y = 0.85; brew.material.blending = THREE.NormalBlending; g.add(brew);
+      g.position.copy(P0);
+      return { g, upd: (k, t) => { bm.uniforms.uTime.value = t; brew.material.uniforms.uTime.value = t; const a = pop(k, 0.1, 0.85); bm.uniforms.uAlpha.value = a; brew.material.uniforms.uAlpha.value = a; g.scale.setScalar(1.1 * Math.min(1, k / 0.08)); g.position.y = 0.2 + Math.sin(t * 20) * 0.02; } }; });
+    emitter(30, i => ({ p: P0.clone().add(new V3(R(-0.4, 0.4), 1.1, R(-0.4, 0.4))), v: new V3(0, R(0.5, 1), 0), t0: R(0, dur * 0.8), life: R(0.3, 0.5), size: R(0.15, 0.3), col: 0xffffff }), { grav: 0, drag: 0 });   /* bọt sôi */
+    emitter(40 + f * 20, i => { const a = R(0, PI * 2), sp = R(0.6, 1.4) * R0 / 2; return { p: P0.clone().add(new V3(0, 1.2, 0)), v: new V3(Math.cos(a) * sp, R(0.6, 1.4), Math.sin(a) * sp), t0: R(0.15, dur * 0.7), life: R(1.0, 1.6), size: R(0.5, 0.95) * (1 + f * 0.1), col: [gold ? 0xc8a020 : 0x3aa83a, 0xa89020, 0x5ab84a][i % 3] }; }, { grav: -0.4, drag: 0.9 });   /* khói thơm toả rộng */
+    decal(F, TEX.glow, c1, R0 * 2.2, dur, 0.2, { op: 0.45, hold: 0.7 });
+    if (f >= 2) emitter(24 + f * 8, i => { const a = R(0, PI * 2), r = R(0.5, R0); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0.3, 2.2), Math.sin(a) * r)), v: new V3(-Math.sin(a) * 1.5, R(-0.2, 0.3), Math.cos(a) * 1.5), t0: R(0.3, 2), life: R(0.8, 1.2), size: R(0.25, 0.4), col: i % 2 ? 0x5adf5a : 0xb8ef6a }; }, { grav: 0, drag: 0.3 });
+    if (f >= 3) rune(F, "circle", "hanzi", c1, R0 * 1.8, dur, 0.2, { mode: "spin", spin: 0.5, op: 0.7 });
+    for (let i = 0; i < 3 + f; i++) textPop(F.clone().add(new V3(R(-1.2, 1.2), 1.5 + R(0, 0.8), R(-0.6, 0.6))), "+", "#7dff9a", 0.9, 0.9, 0.5 + i * 0.3);
+    upg(F, f, c1, 0.5, R0 * 0.7);
+  };
+
+  /* --- Tôn Thất Tùng: mạng mạch máu đỏ sáng lan trên đất nối các quái, nhịp tim đập --- */
+  function veinTex(seed) { const key = "vein" + seed; return TEX[key] || (TEX[key] = cvTex(512, (g, n) => { let s = seed * 9301 + 49297; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    g.translate(n / 2, n / 2); g.lineCap = "round"; g.strokeStyle = "#fff"; g.shadowColor = "#fff"; g.shadowBlur = 8;
+    const br = (x, y, a, len, w, depth) => { if (depth > 6 || w < 0.8) return; const nx = x + Math.cos(a) * len, ny = y + Math.sin(a) * len; g.lineWidth = w; g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo((x + nx) / 2 + (rnd() - 0.5) * len * 0.5, (y + ny) / 2 + (rnd() - 0.5) * len * 0.5, nx, ny); g.stroke();
+      br(nx, ny, a + (rnd() - 0.5) * 0.9, len * 0.82, w * 0.72, depth + 1); if (rnd() < 0.6) br(nx, ny, a + (rnd() < 0.5 ? -1 : 1) * (0.5 + rnd() * 0.6), len * 0.68, w * 0.6, depth + 1); };
+    for (let i = 0; i < 6; i++) br(0, 0, i / 6 * PI * 2 + rnd() * 0.5, 46, 12, 0); g.fillStyle = "#fff"; g.beginPath(); g.arc(0, 0, 16, 0, PI * 2); g.fill(); })); }
+  META.vein_map = { name: "Vein Map", lv: 32, who: "Tôn Thất Tùng", forms: ["Mạch máu đỏ lan trên đất, nhịp tim", "Mạng dày hơn + nhịp đập lan", "+ mạch cong nổi lên nối quái", "Mạch máu vàng-đỏ"] };
+  SK.vein_map = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 4.5 + f * 0.5, dur = 2.4, c1 = gold ? 0xffb030 : 0xff2a3a;
+    for (let l = 0; l < (f >= 2 ? 2 : 1); l++) decal(T, veinTex(3 + l), c1, R0 * 2 * (1 - l * 0.15), dur, 0.05 + l * 0.1, { mode: "expand", expand: 0.25, inT: 0.45, op: 1, hold: 0.75, spin: 0 });
+    shadowUnder(T, R0 * 2, dur, 0);
+    for (let b = 0; b < 3 + f; b++) { const at = 0.4 + b * 0.42; decal(T, TEX.ring, c1, R0 * 0.8, 0.45, at, { mode: "expand", expand: 1.4, op: 0.9 }); glow(T.clone().setY(0.6), c1, 2 + f * 0.5, 0.2, at, { flash: true }); task(at, 0.01, () => shake(0.04)); }   /* thình thịch */
+    textPop(T.clone().setY(2.8), "♥", gold ? "#ffd860" : "#ff4a5a", 1.4, 0.8, 0.4, { rise: 0.4 });
+    if (f >= 3) for (let i = 0; i < 4; i++) { const a = i / 4 * PI * 2 + 0.4, E = T.clone().add(new V3(Math.cos(a) * R0 * 0.9, 0, Math.sin(a) * R0 * 0.9));
+      prop(0.3 + i * 0.1, dur - 0.4, () => { const pts = []; for (let q = 0; q <= 20; q++) { const u = q / 20, p = T.clone().lerp(E, u); p.y = Math.sin(u * PI) * 1.6 + 0.2; p.x += Math.sin(u * 9 + i) * 0.15; pts.push(p); }
+        const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.09, 5), mt = flowMat({ c1, c2: 0xffd0d0, rep: [6, 1], spd: [-2.5, 0], fres: 0.5, cut: -0.3, fade: [0, 0, 0, 0] }), m = new THREE.Mesh(geo, mt), g = new THREE.Group(); g.add(m); const N = geo.index.count;
+        return { g, upd: (k, t) => { mt.uniforms.uTime.value = t; geo.setDrawRange(0, Math.floor(N * Math.min(1, k / 0.25))); mt.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.8) / 0.2; } }; }); }
+    emitter(30 + f * 10, i => { const a = R(0, PI * 2), r = R(0.5, R0 * 0.9); return { p: T.clone().add(new V3(Math.cos(a) * r, 0.15, Math.sin(a) * r)), v: new V3(-Math.cos(a), 0.3, -Math.sin(a)).multiplyScalar(r * 0.8), t0: R(0.4, 1.8), life: 0.9, size: R(0.2, 0.35), col: i % 2 ? c1 : 0xffb0b0 }; }, { grav: 0, drag: 0 });   /* dòng máu chảy về tim */
+    upg(T, f, c1, 0.4, R0 * 0.6);
+  };
+
+  /* --- Tôn Thất Tùng: đường dao sáng mảnh, khựng 0,3 giây rồi xé toạc --- */
+  META.surgeons_cut = { name: "Surgeon's Cut", lv: 32, who: "Tôn Thất Tùng", forms: ["Đường dao mảnh → xé toạc", "Vết cắt chữ X", "3 vết cắt hình sao", "Dao vàng + nổ chí mạng"] };
+  SK.surgeons_cut = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nC = [1, 2, 3, 3][f - 1], hold = 0.3, c1 = gold ? 0xffd860 : 0xd8f4ff, B = T.clone().setY(1.2), d = SDIR(F, T), yaw = Math.atan2(d.x, d.z);
+    for (let c = 0; c < nC; c++) { const ang = yaw + PI / 2 + c * PI / nC + 0.3, dl = c * 0.08, dir = new V3(Math.sin(ang), 0, Math.cos(ang)), A1 = B.clone().addScaledVector(dir, -1.8).add(new V3(0, 0.7, 0)), A2 = B.clone().addScaledVector(dir, 1.8).add(new V3(0, -0.6, 0));
+      bolt(A1, A2, 0xffffff, 0.07, hold + 0.05, dl, { jag: 0.0 }); glow(A1.clone().lerp(A2, 0.5), 0xffffff, 1.5, hold, dl);   /* đường chỉ sáng mảnh */
+      slash(T, c1, 0xffffff, 2.2 + f * 0.3, 1.3 + f * 0.12, -PI * 0.7, PI * 0.2, 0.5 * (c % 2 ? -1 : 1), ang, 0.35, dl + hold, 1.2); }
+    glow(B, 0xffffff, 0.8, hold, 0);   /* khựng: tia sáng nhỏ tụ */
+    const hit = hold + 0.05 + (nC - 1) * 0.08;
+    glow(B, 0xffffff, 4 + f, 0.2, hit, { flash: true }); glow(B, gold ? 0xffb020 : 0xff3a4a, 3 + f, 0.35, hit, { flash: true });
+    sparks(B, [0xffffff, c1, 0xff6070], 30 + f * 15, 9, 0.25, 0.45, hit, { up: 0.6, grav: -3 }); shock(T, 0xffffff, 1.8 + f * 0.4, 0.35, hit);
+    textPop(B.clone().add(new V3(0, 1.2, 0)), "CRIT!", gold ? "#ffe060" : "#ff5a6a", 1.6, 0.6, hit);
+    if (gold) { dome(T, 0xffb020, 0xffffff, 1.8, 0.4, hit); }
+    upg(T, f, c1, hit, 1.8); task(hit, 0.01, () => shake(0.16 + f * 0.05));
+  };
+
+  /* --- Marie Curie: hạt radium xanh lục phình thành mặt trời nhỏ rồi nổ --- */
+  META.radium_nova = { name: "Radium Nova", lv: 34, who: "Marie Curie", forms: ["Hạt radium → mặt trời xanh nổ", "Mặt trời to + vầng hào quang", "Nổ 2 đợt + vùng ánh xanh", "Mặt trời xanh-vàng khổng lồ"] };
+  SK.radium_nova = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 3 + f * 0.4, grow = 0.7, c1 = gold ? 0xd8ff40 : 0x4aff7a, C = T.clone().setY(1.8);
+    shadowUnder(T, R0 * 2.4, 2, 0); rune(T, "star", "cuneiform", c1, R0 * 2, grow + 0.2, 0, { mode: "converge", op: 0.9 });
+    orbFly(F.clone().setY(1.4), C, c1, 0xffffff, 0.5, 0.3, 0, { arc: 0.6 });
+    prop(0.3, grow, () => { const g = new THREE.Group(), cm = flowMat({ c1, c2: 0xffffff, rep: [2, 2], spd: [0.6, -0.8], fres: 0.6, cut: -0.4, gain: 1.5, fade: [0, 0, 0, 0] }), core = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 18), cm); g.add(core);
+      const cor = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); g.add(cor); g.position.copy(C);
+      return { g, upd: (k, t) => { cm.uniforms.uTime.value = t; const s = 0.15 + k * k * (0.9 + f * 0.25); core.scale.setScalar(s * (1 + Math.sin(t * 30) * 0.04 * k)); cor.scale.setScalar(s * (5 + f)); core.rotation.y = t * 2; } }; });
+    emitter(60 + f * 20, i => { const a = R(0, PI * 2), b = R(-1, 1), r = R(2.5, 4.5), p = C.clone().add(new V3(Math.cos(a) * r * Math.sqrt(1 - b * b), b * r * 0.6, Math.sin(a) * r * Math.sqrt(1 - b * b))); return { p, v: C.clone().sub(p).multiplyScalar(1.6), t0: 0.3 + R(0, grow - 0.3), life: 0.6, size: R(0.15, 0.3), col: i % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 0 });   /* hút năng lượng vào */
+    const hit = 0.3 + grow; const boom = h => { glow(C, 0xffffff, 6 + f * 1.5, 0.3, h, { flash: true }); glow(C, c1, 9 + f * 2, 0.5, h, { flash: true }); dome(T, c1, 0xffffff, R0, 0.6, h); shock(T, c1, R0 * 1.4, 0.6, h); shock(T, 0xffffff, R0, 0.45, h + 0.05);
+      sparks(C, [c1, 0xffffff, 0xb0ffc0], 60 + f * 20, 11, 0.35, 0.8, h, { up: 1 }); task(h, 0.01, () => shake(0.2 + f * 0.07)); };
+    boom(hit); if (f >= 3) boom(hit + 0.35);
+    decal(T, TEX.glow, c1, R0 * 2.4, 1.8, hit, { mode: "pulse", rate: 6, amp: 0.1, op: 0.7, hold: 0.6 }); if (f >= 3) decal(T, TEX.crack, 0xffffff, R0 * 1.8, 1.6, hit, { add: false, op: 0.8, ro: 3 });
+    upg(T, f, c1, hit, R0 * 0.8);
+  };
+
+  /* --- Marie Curie: xe cứu thương ánh sáng chạy vòng quanh, đi qua đâu hồi máu đó --- */
+  function ambulance(gold) {
+    const g = new THREE.Group(), bm = ghostMat(gold ? 0xffd860 : 0xe8f4ff, 0xffffff, { fres: 0.7, cut: -0.55 }), body = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.9, 2.0), bm); body.position.y = 0.75; g.add(body);
+    const cab = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.6, 0.7), bm); cab.position.set(0, 0.6, 1.3); g.add(cab);
+    [[-0.55, 0.7], [0.55, 0.7], [-0.55, -0.7], [0.55, -0.7]].forEach(([x, z]) => { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.12, 10).rotateZ(PI / 2), bm); w.position.set(x, 0.25, z); g.add(w); });
+    [-1, 1].forEach(s => { const cr = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex("✚", "#ff3a3a"), transparent: true, depthWrite: false })); cr.position.set(s * 0.6, 0.85, -0.1); cr.scale.setScalar(0.8); g.add(cr); });
+    const siren = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xff3a3a, blending: ADD, transparent: true, depthWrite: false })); siren.position.set(0, 1.35, 0.5); g.add(siren);
+    const siren2 = new THREE.Sprite(siren.material.clone()); siren2.material.color.set(0x3a8aff); siren2.position.set(0, 1.35, 0.1); g.add(siren2);
+    return { g, bm, siren, siren2 };
+  }
+  META.x_ray_ambulance = { name: "X-Ray Ambulance", lv: 34, who: "Marie Curie", forms: ["Xe cứu thương sáng chạy vòng, hồi máu", "Đèn còi quét + vệt sáng", "2 xe chạy ngược chiều", "Xe vàng + vòng hồi máu lớn"] };
+  SK.x_ray_ambulance = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, nA = f >= 3 ? 2 : 1, R0 = 2.6 + f * 0.25, dur = 2.2, c1 = gold ? 0xffd860 : 0x7dff9a;
+    rune(F, "circle", "latin", c1, R0 * 2.3, dur, 0, { mode: "static", op: 0.6 }); decal(F, TEX.ring, c1, R0 * 2.1, dur, 0, { op: 0.6, hold: 0.8 });
+    for (let a = 0; a < nA; a++) { const dirn = a ? -1 : 1, ph = a * PI;
+      prop(0, dur, () => { const o = ambulance(gold);
+        return { g: o.g, upd: (k, t) => { o.bm.uniforms.uTime.value = t; o.bm.uniforms.uAlpha.value = pop(k, 0.08, 0.88); const th = ph + dirn * t * (2.6 + f * 0.2); o.g.position.set(F.x + Math.cos(th) * R0, 0.05 + Math.abs(Math.sin(t * 18)) * 0.05, F.z + Math.sin(th) * R0);
+          o.g.rotation.y = -th + (dirn > 0 ? PI : 0); const bl = Math.sin(t * 16) > 0; o.siren.scale.setScalar(bl ? 1.4 : 0.4); o.siren2.scale.setScalar(bl ? 0.4 : 1.4); o.g.scale.setScalar(0.9 + f * 0.05); } }; });
+      emitter(60, i => { const u = i / 60, th = ph + dirn * u * dur * (2.6 + f * 0.2); return { p: F.clone().add(new V3(Math.cos(th) * R0, R(0.2, 0.8), Math.sin(th) * R0)), v: new V3(0, R(0.6, 1.4), 0), t0: u * dur, life: R(0.5, 0.8), size: R(0.25, 0.4), col: i % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 0.5 }); }   /* vệt hồi máu */
+    if (f >= 2) for (let i = 0; i < 4; i++) decal(F, TEX.ring, 0xff6060, R0 * 2.4, 0.4, 0.3 + i * 0.45, { mode: "expand", expand: 0.3, op: 0.5 });
+    for (let i = 0; i < 3 + f; i++) textPop(F.clone().add(new V3(R(-0.8, 0.8), 1.6 + R(0, 0.6), R(-0.4, 0.4))), "+", "#7dff9a", 0.9, 0.9, 0.4 + i * 0.3);
+    if (gold) pillar(F, 0xffd860, 0xffffff, 1.2, 4, 0.9, 0.5, { speed: 2.5 });
+    upg(F, f, c1, 0.5, R0 * 0.8);
+  };
+
+  /* --- Mendeleev: bảng tuần hoàn sau lưng, từng ô sáng bắn nguyên tố: H nổ, O lửa, Fe mũi sắt, Ne neon tím --- */
+  function periodicTex() { return TEX.ptab || (TEX.ptab = cvTex(512, (g, n) => {
+    const rows = ["H               He", "LiBe          BCNOFNe", "NaMg          AlSiPSClAr", "KCaScTiVCrMnFeCoNiCuZnGaGeAsSeBrKr"], cell = n / 19, pos = [[0, 0], [17, 0]];
+    const EL = [["H", 0, 0], ["He", 17, 0], ["Li", 0, 1], ["Be", 1, 1], ["B", 12, 1], ["C", 13, 1], ["N", 14, 1], ["O", 15, 1], ["F", 16, 1], ["Ne", 17, 1], ["Na", 0, 2], ["Mg", 1, 2], ["Al", 12, 2], ["Si", 13, 2], ["P", 14, 2], ["S", 15, 2], ["Cl", 16, 2], ["Ar", 17, 2]];
+    ["K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr"].forEach((s, i) => EL.push([s, i, 3])); ["Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe"].forEach((s, i) => EL.push([s, i, 4]));
+    const oy = n * 0.36; g.fillStyle = "rgba(10,20,40,.55)"; g.fillRect(0, oy - 8, n, (n / 19) * 5 + 16); g.font = "bold " + Math.round(cell * 0.48) + "px Georgia, serif"; g.textAlign = "center"; g.textBaseline = "middle";
+    EL.forEach(([s, x, y]) => { const X = cell * 0.5 + x * cell * 1.0, Y = oy + y * cell * 1.0; g.strokeStyle = "rgba(255,255,255,.9)"; g.lineWidth = 2; g.strokeRect(X + 2, Y + 2, cell - 4, cell - 4); g.fillStyle = ["H", "O", "Fe", "Ne"].includes(s) ? "#fff" : "rgba(255,255,255,.75)"; g.fillText(s, X + cell / 2, Y + cell / 2 + 1); }); })); }
+  const ELEM = { H: [0x6ab8ff, "H"], O: [0xff7a2a, "O"], Fe: [0xb8c0d0, "Fe"], Ne: [0xd060ff, "Ne"] };
+  META.periodic_barrage = { name: "Periodic Barrage", lv: 36, who: "Dmitri Mendeleev", forms: ["Bảng tuần hoàn bắn H, O", "+ Fe mũi sắt", "+ Ne neon tím, bắn dày", "Bảng vàng, mưa nguyên tố"] };
+  SK.periodic_barrage = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, d = SDIR(F, T), side = new V3(-d.z, 0, d.x), W = 7.5, H0 = 3.0, Cb = F.clone().addScaledVector(d, -0.4).setY(4.4), dur = 2.2, c1 = gold ? 0xffd860 : 0x9ad8ff;
+    const types = ["H", "O", "Fe", "Ne"].slice(0, Math.min(4, f + 1)), n = [6, 9, 12, 16][f - 1];
+    prop(0, dur, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.PlaneGeometry(W, W), basic(periodicTex(), c1, false, 1)); g.add(m); g.position.copy(Cb);
+      return { g, upd: (k, t) => { g.quaternion.copy(CAM.quaternion); /* luôn quay mặt về camera */ m.material.opacity = 0.9 * pop(k, 0.1, 0.85); g.scale.setScalar(0.8 + 0.2 * Math.min(1, k / 0.1)); } }; });
+    for (let i = 0; i < n; i++) { const ty = types[i % types.length], [col, sym] = ELEM[ty], dl = 0.35 + i * ((dur - 1) / n), S = Cb.clone().addScaledVector(side, R(-W * 0.4, W * 0.4)).add(new V3(0, R(-0.8, 0.8), 0)), E = T.clone().add(new V3(R(-1.2, 1.2), R(0.6, 1.4), R(-1.2, 1.2))), fly = 0.35;
+      glow(S, col, 1.2, 0.25, dl - 0.1);   /* ô bật sáng */
+      if (ty === "Fe") prop(dl, fly, () => { const g = new THREE.Group(), sm = solidMat(0x5a6270, 0xd8e0f0, 0xffffff), sp = new THREE.Mesh(new THREE.ConeGeometry(0.16, 1.1, 6).rotateX(PI / 2), sm); g.add(sp); const P = new V3();
+        return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; P.lerpVectors(S, E, k); g.position.copy(P); g.quaternion.copy(basisQ(E.clone().sub(S))); } }; });
+      else if (ty === "Ne") bolt(S, E, col, 0.12, fly + 0.1, dl, { jag: 0.4 });
+      else orbFly(S, E, col, 0xffffff, ty === "O" ? 0.6 : 0.45, fly, dl, { arc: 0.6 });
+      textPop(S, sym, "#" + new THREE.Color(col).getHexString(), 0.9, 0.4, dl - 0.05, { rise: 0.3 });
+      const hit = dl + fly;
+      if (ty === "H") { glow(E, 0xffffff, 2.5, 0.18, hit, { flash: true }); glow(E, col, 3, 0.3, hit, { flash: true }); }
+      else if (ty === "O") { pillar(E.clone().setY(0), 0xff5a1a, 0xffd27a, 0.35, 2.2, 0.45, hit, { speed: 4 }); sparks(E, [0xff7a2a, 0xffd27a], 14, 5, 0.25, 0.45, hit, { up: 1.4 }); }
+      else if (ty === "Fe") sparks(E, [0xd8e0f0, 0xffffff, 0xffb050], 14, 6, 0.18, 0.35, hit, { up: 0.8 });
+      else { glow(E, col, 2.5, 0.3, hit, { flash: true }); shock(E, col, 1, 0.3, hit, E.y - 0.06); }
+      if (i % 2 === 0) task(hit, 0.01, () => shake(0.05 + f * 0.015)); }
+    if (gold) shock(T, 0xffd860, 4.5, 0.7, dur - 0.5);
+    upg(T, f, c1, 0.9, 2.6);
+  };
+
+  /* --- Mendeleev: cầu nước tách 2 H + 1 O, nhập lại nổ hơi nước --- */
+  META.water_split = { name: "Water Split", lv: 36, who: "Dmitri Mendeleev", forms: ["Cầu nước tách H₂O, nhập lại nổ", "Bóng to + hơi nước dày", "Nổ đôi + mưa giọt nước", "H₂O vàng + nổ lớn"] };
+  SK.water_split = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, C = T.clone().setY(1.8), fly = 0.35, split = 0.45, merge = 0.35, wc = 0x3aa8ff;
+    orbFly(F.clone().setY(1.4), C, wc, 0xe8fbff, 0.9 + f * 0.1, fly, 0, { arc: 0.5 });
+    const atoms = [["H", 0xffffff, 0.45, 0], ["H", 0xffffff, 0.45, 2.1], ["O", gold ? 0xffd040 : 0xff4a4a, 0.7, 4.2]];
+    atoms.forEach(([s, col, r, a0], i) => prop(fly, split + merge, () => { const g = new THREE.Group(), am = flowMat({ c1: col, c2: 0xffffff, rep: [1, 1], spd: [0.3, -0.5], fres: 1.4, cut: -0.4, gain: 1.2, fade: [0, 0, 0, 0] }), b = new THREE.Mesh(new THREE.SphereGeometry(r * (1 + f * 0.1), 18, 12), am); g.add(b);
+      const lab = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex(s, "#ffffff"), transparent: true, depthWrite: false, depthTest: false })); lab.scale.setScalar(0.9); lab.renderOrder = 12; g.add(lab); const P = new V3();
+      return { g, upd: (k, t) => { am.uniforms.uTime.value = t; const sp = t < split ? Math.sin(t / split * PI * 0.5) : 1 - (t - split) / merge, ang = a0 + t * 6, rr = sp * (1.3 + f * 0.15); P.set(C.x + Math.cos(ang) * rr, C.y + Math.sin(ang * 1.3) * rr * 0.3, C.z + Math.sin(ang) * rr); g.position.copy(P); } }; }));   /* 2 H + 1 O xoay tách ra rồi nhập lại */
+    const hit = fly + split + merge;
+    const pop2 = h => { glow(C, 0xffffff, 5 + f, 0.25, h, { flash: true }); glow(C, wc, 6 + f, 0.4, h, { flash: true }); shock(T, 0xe8fbff, 2.4 + f * 0.4, 0.5, h);
+      emitter(40 + f * 15, i => { const v = rv(1); return { p: C.clone().add(v.clone().multiplyScalar(0.3)), v: v.multiplyScalar(R(1.5, 3.5)), t0: h + R(0, 0.1), life: R(0.7, 1.2), size: R(0.7, 1.3) * (1 + f * 0.12), col: 0xf0f6ff }; }, { grav: 0.4, drag: 2.2 }); task(h, 0.01, () => shake(0.14 + f * 0.05)); };   /* nổ hơi nước trắng */
+    pop2(hit); if (f >= 3) pop2(hit + 0.3);
+    textPop(C.clone().add(new V3(0, 1.3, 0)), "BOOM!", gold ? "#ffe060" : "#e8fbff", 1.5, 0.6, hit);
+    if (f >= 3) sparks(C.clone().setY(3.5), [wc, 0xe8fbff], 40, 3, 0.25, 0.9, hit + 0.1, { up: 0.2, grav: -9 });
+    upg(T, f, gold ? 0xffd860 : wc, hit, 2.2);
+  };
   // vài chiêu danh nhân dùng hiệu ứng chung (để xem trong sổ tay)
   [["ladys_lamp", "Lady's Lamp", 12, "Florence Nightingale", { kind: "self", branch: "harmony" }], ["camera_obscura", "Camera Obscura", 19, "Nicéphore Niépce", { kind: "zone", branch: "control", radius: 4 }],
    ["gravity_crush", "Gravity Crush", 14, "Isaac Newton", { kind: "zone", branch: "power", radius: 3 }], ["prism_ray", "Prism Ray", 14, "Isaac Newton", { kind: "aoe", branch: "rhythm", radius: 6 }],
