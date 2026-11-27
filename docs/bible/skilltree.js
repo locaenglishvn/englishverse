@@ -89,7 +89,7 @@ window.SKILL_TREE = {
       { who: "John Logie Baird", lv: 46, skills: [
         { name: "Screen Trap", b: "control", q: "Ti vi đầu tiên", fx: "Màn hình ti vi cổ khổng lồ hiện ra, hút quái vào trong, quái bị kẹt giữa nhiễu sóng sọc trắng đen.", seed: "Ti vi truyền hình ảnh đi xa." } ] },
       { who: "Karl & Bertha Benz", lv: 48, skills: [
-        { name: "Bertha's Drive", b: "rhythm", q: "Chuyến lái đường dài của Bertha", fx: "Lao tới như chiếc xe ba bánh rực lửa, để lại vệt bánh xe cháy, đâm xuyên cả hàng quái.", seed: "Ô tô chạy xăng đầu tiên." } ] },
+        { name: "Benz Engine", b: "rhythm", q: "Chuyến lái đường dài của Bertha", fx: "Khối động cơ xy-lanh khổng lồ dạng linh hồn hiện sau quái, piston lên xuống, từng buồng đốt nổ liên hoàn bùm bùm bùm vào quái.", seed: "Ô tô chạy xăng đầu tiên." } ] },
       { who: "George Stephenson", lv: 50, skills: [
         { name: "Steam Express", b: "power", q: "Đầu máy hơi nước", fx: "Đường ray ánh sáng hiện dưới đất, đoàn tàu hơi nước ma rú còi lao xuyên hàng quái, khói trắng cuồn cuộn.", seed: "Tàu hơi nước kéo nhiều toa." } ] },
       { who: "Anh em nhà Wright", lv: 52, skills: [

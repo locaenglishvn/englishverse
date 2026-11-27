@@ -45,3 +45,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-27 | `b32a5d1` | PR #86 – 19 hiệu ứng Chương 1 bản đầu (trước khi làm lại 16 chiêu theo góp ý) | ✅ |
 | 2026-11-27 | `90630cb` | PR #87 – làm lại 16 chiêu Chương 1 (trước hiệu ứng Chương 2) | ✅ |
 | 2026-11-27 | `5a38fb3` | PR #88 – hiệu ứng Chương 2 (trước Chương 3 + chùm X-quang) | ✅ |
+| 2026-11-27 | `dda64cf` | PR #89 – hiệu ứng Chương 3 (trước Chương 4 + động cơ Benz) | ✅ |

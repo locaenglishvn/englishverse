@@ -1633,26 +1633,41 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
   };
 
   /* --- Bertha Benz: lao tới như chiếc xe ba bánh rực lửa, vệt bánh cháy, đâm xuyên hàng quái --- */
-  function motorwagen(gold) {
-    const g = new THREE.Group(), wm = ghostMat(gold ? 0xffc040 : 0xd88a3a, 0xfff0c0, { fres: 0.7, cut: -0.5 }); wm.blending = THREE.NormalBlending;
-    const wheel = (r, x, z) => { const w = new THREE.Group(), rim = new THREE.Mesh(new THREE.TorusGeometry(r, 0.05, 6, 24), wm); w.add(rim); for (let i = 0; i < 8; i++) { const sp = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, r * 2, 4), wm); sp.rotation.z = i / 8 * PI; w.add(sp); } w.position.set(x, r, z); w.rotation.y = PI / 2; g.add(w); return w; };
-    const wh = [wheel(0.6, -0.6, -0.6), wheel(0.6, 0.6, -0.6), wheel(0.4, 0, 0.9)];
-    const seat = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.25, 0.6), wm); seat.position.set(0, 1.0, -0.4); g.add(seat); const back = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.5, 0.08), wm); back.position.set(0, 1.3, -0.7); g.add(back);
-    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 1.7), wm); frame.position.set(0, 0.6, 0.1); g.add(frame); const tiller = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.9, 5), wm); tiller.position.set(0, 1.05, 0.5); tiller.rotation.x = -0.4; g.add(tiller);
-    return { g, wm, wh };
+  /* --- Benz: động cơ xy-lanh linh hồn hiện sau quái, piston nổ liên hoàn bùm bùm bùm vào quái --- */
+  function engineBlock(nC, gold) {
+    const g = new THREE.Group(), mm = ghostMat(gold ? 0xd8a830 : 0x8a96a8, gold ? 0xfff0b0 : 0xe8eef8, { fres: 0.5, cut: -0.6, gain: 1 }); mm.blending = THREE.NormalBlending;
+    const sm = flowMat({ c1: 0x9ab0c8, c2: 0xffffff, rep: [1, 1], spd: [0, 0], fres: 1.6, cut: -0.4, gain: 0.8, fade: [0, 0, 0, 0] }), y0 = 0.7, r = 0.38, L = 1.35, gap = 1.25, cyl = [];
+    for (let i = 0; i < nC; i++) { const x = (i - (nC - 1) / 2) * gap, c = new THREE.Group(); c.position.x = x; g.add(c);
+      const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 2 * r + 1.1, 18, 1, true), sm); sleeve.position.y = y0 + L + 0.3; c.add(sleeve);   /* ống xy-lanh trong suốt */
+      const head = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.3, 1.15), mm); head.position.y = y0 + L + r + 0.95; c.add(head);
+      const piston = new THREE.Group(), pb = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.46, 0.55, 18), mm); piston.add(pb);
+      for (let q = 0; q < 3; q++) { const ring = new THREE.Mesh(new THREE.TorusGeometry(0.465, 0.025, 4, 20).rotateX(PI / 2), basic(null, 0xffffff, true, 0.6)); ring.position.y = 0.15 - q * 0.08; piston.add(ring); } c.add(piston);
+      const rod = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1, 0.12), mm); c.add(rod);
+      const fire = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xffa020, blending: ADD, transparent: true, depthWrite: false })); fire.position.y = y0 + L + r + 0.45; c.add(fire);
+      const fire2 = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.44, 0.8, 16), flowMat({ c1: 0xff6a10, c2: 0xffe080, rep: [2, 1], spd: [0.4, 1.8], fres: 0, cut: 0, gain: 1.8, fade: [0, 0, 0, 0] })); fire2.position.y = y0 + L + r + 0.45; c.add(fire2);
+      cyl.push({ piston, rod, fire, fire2, x }); }
+    const crank = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, nC * gap + 0.4, 10).rotateZ(PI / 2), mm); crank.position.y = y0; g.add(crank);
+    const base = new THREE.Mesh(new THREE.BoxGeometry(nC * gap + 0.6, 0.35, 1.2), mm); base.position.y = y0 - 0.55; g.add(base);
+    const set = (a) => cyl.forEach((c, i) => { const th = a + i * PI / 2, py = y0 + r * Math.cos(th), pz = r * Math.sin(th), top = py + Math.sqrt(L * L - pz * pz);   /* trục khuỷu → thanh truyền → piston */
+      c.piston.position.set(0, top, 0); const mid = new V3(0, (py + top) / 2, pz / 2); c.rod.position.copy(mid); c.rod.scale.y = Math.hypot(top - py, pz); c.rod.rotation.x = Math.atan2(pz, top - py); });
+    return { g, mm, sm, cyl, set, crank };
   }
-  META.berthas_drive = { name: "Bertha's Drive", lv: 48, who: "Karl & Bertha Benz", forms: ["Xe ba bánh lửa lao tới, vệt bánh cháy", "Lửa to + vệt cháy dài", "Bánh xe lửa văng + nổ xuyên", "Xe vàng, lửa vàng"] };
+  META.berthas_drive = { name: "Benz Engine", lv: 48, who: "Karl & Bertha Benz", forms: ["Động cơ 2 xy-lanh nổ liên hoàn", "3 xy-lanh, lửa to hơn", "4 xy-lanh + cầu lửa bắn vào quái", "Động cơ vàng, nổ lớn"] };
   SK.berthas_drive = (F, T, rk) => {
-    const f = FORM(rk), gold = f >= 4, d = SDIR(F, T), side = new V3(-d.z, 0, d.x), dist = Math.max(3, F.distanceTo(T)), run = 0.32, E = F.clone().addScaledVector(d, dist + 1.5), c1 = gold ? 0xffd040 : 0xff6a1a;
-    prop(0, run + 0.25, () => { const o = motorwagen(gold), P = new V3();
-      return { g: o.g, upd: (k, t) => { o.wm.uniforms.uTime.value = t; const u = Math.min(1, t / run); P.lerpVectors(F, E, u * u * (3 - 2 * u)); o.g.position.copy(P); o.g.rotation.y = Math.atan2(d.x, d.z); o.wh.forEach(w => w.rotation.x = t * 30); o.wm.uniforms.uAlpha.value = t > run ? 1 - (t - run) / 0.25 : 1; o.g.scale.setScalar(1.4 + f * 0.1); } }; });
-    emitter(70 + f * 25, i => { const u = R(0, 1), p = F.clone().lerp(E, u); return { p: p.add(new V3(R(-0.4, 0.4), R(0.2, 1), R(-0.4, 0.4))).addScaledVector(d, -0.6), v: new V3(0, R(1, 3), 0).addScaledVector(d, -R(1, 3)), t0: u * run, life: R(0.3, 0.6), size: R(0.35, 0.7) * (1 + f * 0.1), col: [c1, 0xffd27a, 0xff3a0a][i % 3] }; }, { grav: 0, drag: 1 });   /* lửa phụt phía sau */
-    [-0.6, 0.6, 0].forEach((s, i) => { for (let q = 0; q < 6; q++) { const u = (q + 0.5) / 6, P = F.clone().lerp(E, u).addScaledVector(side, s); decal(P, TEX.crack, 0xffffff, 0.9 + f * 0.1, 1.6 + f * 0.2, u * run, { add: false, op: 0.8, ro: 3 }); if (f >= 2 && i < 2) decal(P, TEX.glow, c1, 0.9, 1.0, u * run, { op: 0.8, hold: 0.4 }); } });   /* vệt bánh xe cháy */
-    const hit = run * 0.8; glow(T.clone().setY(1), 0xffffff, 3 + f, 0.2, hit, { flash: true }); glow(T.clone().setY(1), c1, 4 + f, 0.35, hit, { flash: true }); shock(T, c1, 2.6 + f * 0.3, 0.45, hit);
-    sparks(T.clone().setY(0.8), [c1, 0xffd27a, 0xffffff], 30 + f * 12, 8, 0.3, 0.6, hit, { up: 1 });
-    if (f >= 3) for (let i = 0; i < 3; i++) prop(run, 0.7, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.08, 6, 18), basic(null, c1, true, 1)); g.add(m); const dir = d.clone().applyAxisAngle(new V3(0, 1, 0), (i - 1) * 0.6), P = new V3();   /* bánh xe lửa văng ra */
-      return { g, upd: (k, t) => { P.copy(E).addScaledVector(dir, k * 4); P.y = 0.5 + Math.sin(k * PI) * 1.5; g.position.copy(P); m.rotation.set(0, Math.atan2(dir.x, dir.z) + PI / 2, t * 20); m.material.opacity = 1 - Math.max(0, k - 0.7) / 0.3; } }; });
-    upg(T, f, c1, hit, 2.4); task(hit, 0.01, () => shake(0.15 + f * 0.05));
+    const f = FORM(rk), gold = f >= 4, d = SDIR(F, T), nC = [2, 3, 4, 4][f - 1], nF = 3 + f, gapT = 0.2, t0 = 0.35, w = (PI / 2) / gapT, dur = t0 + nF * gapT + 0.4, P0 = T.clone().add(new V3(d.z, 0, -d.x).multiplyScalar(2.2 + nC * 0.3)).addScaledVector(d, -0.6), sc = 0.9 + f * 0.08;
+    shadowUnder(P0, nC * 1.6, dur, 0);
+    prop(0, dur, () => { const E = engineBlock(nC, gold); E.g.position.copy(P0); const fired = new Array(nF).fill(false);
+      return { g: E.g, upd: (k, t) => { E.mm.uniforms.uTime.value = t; E.sm.uniforms.uTime.value = t; E.g.quaternion.copy(CAM.quaternion); /* mặt cắt động cơ quay về camera */
+        E.g.scale.setScalar(sc * Math.min(1, t / 0.2)); const a = w * (t - t0); E.set(a); E.crank.rotation.x = a; const al = pop(k, 0.08, 0.88); E.mm.uniforms.uAlpha.value = al; E.sm.uniforms.uAlpha.value = 0.5 * al;
+        E.cyl.forEach((c, i) => { const ph = ((a + i * PI / 2) % (PI * 2) + PI * 2) % (PI * 2), burn = t > t0 && ph < 1.2 ? 1 - ph / 1.2 : 0;   /* nổ ở điểm chết trên rồi tắt dần */
+          c.fire.scale.setScalar(0.2 + burn * (2.4 + f * 0.4)); c.fire.material.opacity = burn; c.fire2.material.uniforms.uTime.value = t; c.fire2.material.uniforms.uAlpha.value = burn; c.fire2.visible = burn > 0.02; }); } }; });
+    for (let j = 0; j < nF; j++) { const at = t0 + j * gapT + 0.03, S = P0.clone().add(new V3(0, (2.3 + 0.38) * sc, 0)), B = T.clone().setY(1).add(new V3(R(-0.5, 0.5), R(0, 0.5), R(-0.5, 0.5)));
+      if (f >= 3) orbFly(S, B, 0xff6a10, 0xffe080, 0.6, 0.18, at, { arc: 0.6 });
+      const hit = at + (f >= 3 ? 0.18 : 0.02); glow(B, 0xffd080, 2.4 + f * 0.4, 0.2, hit, { flash: true }); glow(B, 0xff5a10, 3 + f * 0.5, 0.3, hit, { flash: true });
+      sparks(B, [0xff6a10, 0xffd27a, 0xffffff], 18 + f * 5, 7, 0.25, 0.45, hit, { up: 1 }); shock(T, 0xff8a30, 1.6 + f * 0.3, 0.3, hit); textPop(B.clone().add(new V3(R(-0.6, 0.6), 1, 0)), "BÙM!", gold ? "#ffe060" : "#ffb060", 1.3, 0.45, hit); task(hit, 0.01, () => shake(0.09 + f * 0.03)); }
+    emitter(30 + f * 10, i => ({ p: P0.clone().add(new V3(R(-1.5, 1.5), 3.4 * sc, R(-0.5, 0.5))), v: new V3(R(-0.3, 0.3), R(1, 2), R(-0.3, 0.3)), t0: R(t0, dur - 0.3), life: R(0.6, 1), size: R(0.5, 0.9), col: [0x707070, 0x909090, 0x505050][i % 3] }), { grav: 0, drag: 1 });   /* khói xả */
+    decal(T, TEX.crack, 0xffffff, 3, dur, t0, { add: false, op: 0.7, ro: 3 });
+    upg(T, f, gold ? 0xffd860 : 0xff8a30, t0 + 0.2, 2.4);
   };
 
   /* --- Stephenson: đường ray sáng hiện dưới đất, tàu hơi nước ma rú còi lao xuyên hàng quái --- */
@@ -1720,6 +1735,282 @@ void main() { float fr = pow(1.0 - abs(dot(vN, vV)), 1.5); float n = texture2D(u
     decal(T, TEX.ring, c1, R0 * 2.4, 0.6, hit, { mode: "expand", expand: 0.6, op: 0.9 }); if (f >= 2) decal(T, swirlTex(), 0xffffff, R0 * 2, 0.8, hit, { spin: 6, op: 0.6 });
     if (gold) tornado(T, 0xffd860, 0xffffff, 1.4, 3.6, 1.0, hit);
     upg(T, f, c1, hit, R0 * 0.7);
+  };
+  /* ---------- CHƯƠNG 4 (Lv.58–92): Vũ trụ & thế giới số – chương cuối, hoành tráng nhất ---------- */
+  function moonTex() { return TEX.moon || (TEX.moon = cvTex(256, (g, n) => { g.fillStyle = "#b8b8c0"; g.fillRect(0, 0, n, n); let s = 7; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    for (let i = 0; i < 60; i++) { const x = r() * n, y = r() * n, rr = 4 + r() * 22; const gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, "rgba(80,80,95,.7)"); gr.addColorStop(0.8, "rgba(110,110,120,.5)"); gr.addColorStop(0.9, "rgba(235,235,240,.7)"); gr.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = gr; g.beginPath(); g.arc(x, y, rr, 0, PI * 2); g.fill(); } }, true)); }
+  function moonDisc() { return TEX.moonD || (TEX.moonD = cvTex(256, (g, n) => { g.save(); g.beginPath(); g.arc(n / 2, n / 2, n / 2 - 4, 0, PI * 2); g.clip(); g.drawImage(moonTex().image, 0, 0, n, n); g.restore();
+    g.globalCompositeOperation = "destination-in"; const gr = g.createRadialGradient(n / 2, n / 2, n * 0.3, n / 2, n / 2, n / 2); gr.addColorStop(0, "rgba(0,0,0,1)"); gr.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = gr; g.fillRect(0, 0, n, n); })); }   /* đất mặt trăng cắt tròn, mép mờ */
+  const moonMat = (gold) => solidMat(gold ? 0xb08a30 : 0x8a8a98, gold ? 0xfff0b0 : 0xf0f0f6, gold ? 0xffd860 : 0xd8e8ff, moonTex(), [1, 1]);
+  /* --- Galileo: 4 mặt trăng nhỏ quay quanh người, lần lượt phóng vào quái như sao chổi --- */
+  META.four_moons = { name: "Four Moons", lv: 58, who: "Galileo Galilei", forms: ["4 mặt trăng quay quanh, phóng như sao chổi", "Trăng to + đuôi sao chổi dài", "+ Sao Mộc mờ trên trời", "Trăng vàng, đuôi lửa vàng"] };
+  SK.four_moons = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, now = performance.now(), first = !LAST.moons || now - LAST.moons > 900; if (first) LAST.moonI = 0; else LAST.moonI++; LAST.moons = now; const idx = LAST.moonI % 4, sz = 0.35 + f * 0.07, c1 = gold ? 0xffd860 : 0xbfe0ff;
+    const orbitP = (j, t, out) => { const a = j * PI / 2 + t * 3; return out.set(F.x + Math.cos(a) * 1.8, 2 + Math.sin(t * 2 + j) * 0.2, F.z + Math.sin(a) * 1.8); };
+    if (first) { LAST.moonT0 = now; for (let j = 0; j < 4; j++) prop(0, 0.25 + j * 0.22, () => { const g = new THREE.Group(), mm = moonMat(gold), m = new THREE.Mesh(new THREE.SphereGeometry(sz, 18, 12), mm); g.add(m); const P = new V3();
+        return { g, upd: (k, t) => { mm.uniforms.uTime.value = t; orbitP(j, t, P); g.position.copy(P); m.rotation.y = t; g.scale.setScalar(Math.min(1, t / 0.15)); } }; });
+      rune(F, "circle", "latin", c1, 4.4, 1.3, 0, { mode: "spin", spin: 1.5, op: 0.6 });
+      if (f >= 3) prop(0, 1.4, () => { const g = new THREE.Group(), jm = flowMat({ c1: 0xd8a070, c2: 0xfff0d8, rep: [1, 6], spd: [0.1, 0], fres: 1, cut: -0.4, gain: 0.8, fade: [0, 0, 0, 0] }), j = new THREE.Mesh(new THREE.SphereGeometry(2.2, 24, 16), jm); g.add(j); g.position.copy(F).add(new V3(-4, 7, -6)); return { g, upd: (k, t) => { jm.uniforms.uTime.value = t; jm.uniforms.uAlpha.value = 0.5 * pop(k, 0.2, 0.7); } }; }); }   /* Sao Mộc mờ */
+    const tt = (now - (LAST.moonT0 || now)) / 1000, A = orbitP(idx, tt, new V3()), B = T.clone().setY(1.1), fly = 0.28;
+    prop(0, fly, () => { const g = new THREE.Group(), mm = moonMat(gold), m = new THREE.Mesh(new THREE.SphereGeometry(sz, 18, 12), mm); g.add(m); const hl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); hl.scale.setScalar(sz * 5); g.add(hl); const P = new V3();
+      return { g, upd: (k, t) => { mm.uniforms.uTime.value = t; P.lerpVectors(A, B, k * k); P.y += Math.sin(k * PI) * 0.8; g.position.copy(P); m.rotation.set(t * 6, t * 4, 0); } }; });
+    emitter(30 + f * 10, i => { const u = i / (30 + f * 10), p = A.clone().lerp(B, u * u); p.y += Math.sin(u * PI) * 0.8; return { p: p.add(rv(0.1)), v: rv(0.4), t0: u * fly, life: R(0.25, 0.4) * (1 + f * 0.2), size: R(0.3, 0.55) * (1 + f * 0.1), col: i % 3 ? c1 : 0xffffff }; }, { grav: 0, drag: 2 });   /* đuôi sao chổi */
+    glow(B, 0xffffff, 2.5 + f * 0.5, 0.2, fly, { flash: true }); glow(B, c1, 3 + f * 0.6, 0.3, fly, { flash: true }); sparks(B, [0xd8d8e0, c1, 0xffffff], 16 + f * 5, 6, 0.25, 0.45, fly, { up: 1 }); shock(T, c1, 1.4 + f * 0.3, 0.3, fly); task(fly, 0.01, () => shake(0.07 + f * 0.02));
+    if (idx === 3) upg(T, f, c1, fly, 2);
+  };
+
+  /* --- Galileo: Mặt Trăng nghiêng sát đất, đá Mặt Trăng rơi tạo hố khổng lồ --- */
+  META.lunar_crater = { name: "Lunar Crater", lv: 58, who: "Galileo Galilei", forms: ["Trăng sà xuống, đá rơi tạo hố", "Hố to + bụi trăng", "3 tảng đá + vòng bụi lớn", "Trăng vàng + hố vàng khổng lồ"] };
+  SK.lunar_crater = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 3.5 + f * 0.4, fall = 0.6, nR = f >= 3 ? 3 : 1, c1 = gold ? 0xffd860 : 0xd8e0ff, M = T.clone().addScaledVector(SDIR(F, T), 2.5).add(new V3(0, 5, 0));
+    prop(0, 1.6, () => { const g = new THREE.Group(), mm = moonMat(gold), m = new THREE.Mesh(new THREE.SphereGeometry(3.8, 32, 22), mm); g.add(m); const hl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); hl.scale.setScalar(13); g.add(hl);
+      return { g, upd: (k, t) => { mm.uniforms.uTime.value = t; mm.uniforms.uAlpha.value = pop(k, 0.15, 0.75); hl.material.opacity = 0.5 * pop(k, 0.15, 0.75); g.position.copy(M).add(new V3(0, (1 - Math.min(1, t / 0.4)) * 8, 0)); m.rotation.set(0.4, t * 0.3, 0.2); } }; });   /* Mặt Trăng sà xuống */
+    decal(T, TEX.dark, 0xffffff, R0 * 3, 1.8, 0, { add: false, op: 0.7 });
+    for (let r = 0; r < nR; r++) { const E = T.clone().add(r ? new V3(R(-1.8, 1.8), 0, R(-1.8, 1.8)) : new V3()), S = M.clone().add(new V3(0, -2, 0)).addScaledVector(SDIR(F, T), -3), dl = 0.35 + r * 0.18, hit = dl + fall, s0 = (r ? 0.7 : 1.1) * (1 + f * 0.15);
+      prop(dl, fall, () => { const g = new THREE.Group(), mm = moonMat(gold), m = new THREE.Mesh(new THREE.DodecahedronGeometry(s0, 1), mm); g.add(m); const P = new V3();
+        return { g, upd: (k, t) => { mm.uniforms.uTime.value = t; P.lerpVectors(S, E.clone().setY(s0 * 0.5), k * k); g.position.copy(P); m.rotation.set(t * 3, t * 2, 0); } }; });
+      emitter(30, i => { const u = i / 30, p = S.clone().lerp(E, u * u); return { p: p.add(rv(0.3)), v: rv(0.3), t0: dl + u * fall, life: 0.4, size: R(0.4, 0.8), col: i % 2 ? 0xff9a40 : 0xffe0a0 }; }, { grav: 0, drag: 2 });   /* cháy khi rơi */
+      glow(E.clone().setY(1), 0xffffff, 4 + f, 0.25, hit, { flash: true }); shock(E, c1, (r ? 0.5 : 1) * R0 * 1.2, 0.55, hit); decal(E, TEX.crack, 0xffffff, (r ? 0.5 : 1) * R0 * 1.8, 1.6, hit, { add: false, op: 0.95, ro: 3 });
+      sparks(E.clone().setY(0.4), [0xb8b8c0, 0xd8d8e0, 0x9090a0], 40 + f * 15, 8, 0.4, 0.9, hit, { up: 2 }); task(hit, 0.01, () => shake(0.2 + f * 0.06)); }
+    const hit = 0.35 + fall; decal(T, moonDisc(), 0x9a9aa8, R0 * 1.8, 1.4, hit, { add: false, op: 0.85, hold: 0.7, ro: 3 });   /* lòng hố mặt trăng */
+    if (f >= 2) emitter(60 + f * 20, i => { const a = R(0, PI * 2); return { p: T.clone().add(new V3(Math.cos(a) * 1, 0.3, Math.sin(a) * 1)), v: new V3(Math.cos(a) * R(3, 6), R(0.3, 1.2), Math.sin(a) * R(3, 6)), t0: hit + R(0, 0.1), life: R(0.8, 1.2), size: R(0.6, 1.1), col: [0xc8c8d0, 0xa8a8b0][i % 2] }; }, { grav: -0.5, drag: 1.6 });
+    upg(T, f, c1, hit, R0 * 0.7);
+  };
+
+  /* --- Hubble: thiên hà xoắn ốc mở dưới chân, nở rộng đẩy quái văng ra --- */
+  function galaxyTex() { return TEX.gal || (TEX.gal = cvTex(512, (g, n) => { g.translate(n / 2, n / 2); let s = 3; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    const core = g.createRadialGradient(0, 0, 0, 0, 0, 90); core.addColorStop(0, "rgba(255,250,220,1)"); core.addColorStop(0.4, "rgba(255,200,150,.6)"); core.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = core; g.fillRect(-n / 2, -n / 2, n, n);
+    const cols = ["#ffffff", "#bfe0ff", "#d8b0ff", "#ffb0d8", "#9ad8ff"];
+    for (let i = 0; i < 2600; i++) { const arm = i % 3, u = Math.pow(r(), 0.7), a = arm / 3 * PI * 2 + u * 5.2 + (r() - 0.5) * 0.6 * (1 - u * 0.5), rr = u * 240; const x = Math.cos(a) * rr, y = Math.sin(a) * rr, sz = r() * 2.2 + 0.4;
+      g.fillStyle = cols[(r() * cols.length) | 0]; g.globalAlpha = 0.4 + r() * 0.6; g.beginPath(); g.arc(x, y, sz, 0, PI * 2); g.fill(); } g.globalAlpha = 1; })); }
+  META.galaxy_bloom = { name: "Galaxy Bloom", lv: 62, who: "Edwin Hubble", forms: ["Thiên hà xoắn ốc nở dưới chân", "Sao bắn ra + sóng đẩy", "2 thiên hà xoay ngược + cột sáng", "Thiên hà vàng khổng lồ"] };
+  SK.galaxy_bloom = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 7 + f * 0.4, dur = 1.9, c1 = gold ? 0xffd860 : 0xb08aff;
+    decal(F, TEX.dark, 0xffffff, R0 * 2.6, dur, 0, { add: false, op: 0.85, hold: 0.75 });
+    decal(F, galaxyTex(), gold ? 0xfff0b0 : 0xffffff, R0 * 2.2, dur, 0, { mode: "expand", expand: 0.35, spin: 1.4, op: 1, inT: 0.4, hold: 0.7 });
+    if (f >= 3) decal(F, galaxyTex(), c1, R0 * 1.5, dur, 0.1, { mode: "expand", expand: 0.4, spin: -2.2, op: 0.7, lift: 0.01 });
+    glow(F.clone().setY(0.6), 0xfff0d0, 2 + f * 0.4, dur * 0.8, 0);
+    emitter(120 + f * 40, i => { const a = R(0, PI * 2), r = R(0.3, 2.5), p = F.clone().add(new V3(Math.cos(a) * r, R(0.1, 0.6), Math.sin(a) * r)), tan = new V3(-Math.sin(a), 0, Math.cos(a)); return { p, v: new V3(Math.cos(a), 0.15, Math.sin(a)).multiplyScalar(R(4, 9)).addScaledVector(tan, 3), t0: R(0.3, 0.8), life: R(0.5, 0.9), size: R(0.15, 0.35), col: [0xffffff, 0xbfe0ff, 0xd8b0ff, 0xffb0d8][i % 4] }; }, { grav: 0, drag: 1.2 });   /* sao văng ra */
+    for (let i = 0; i < 2 + f; i++) shock(F, i % 2 ? 0xffffff : c1, R0 * (0.6 + i * 0.15), 0.6, 0.35 + i * 0.1);
+    if (f >= 3) pillar(F, c1, 0xffffff, 1.2, 7, 0.9, 0.35, { speed: 3, widen: 0.5 });
+    upg(F, f, c1, 0.4, R0 * 0.6); task(0.4, 0.01, () => shake(0.15 + f * 0.05));
+  };
+
+  /* --- Hubble: trời tối lại, mưa sao băng lửa rơi xuống cả vùng --- */
+  META.meteor_shower = { name: "Meteor Shower", lv: 62, who: "Edwin Hubble", forms: ["Trời tối, mưa sao băng", "Sao băng dày + hố cháy", "Sao băng lớn + đuôi lửa dài", "Mưa sao băng vàng"] };
+  SK.meteor_shower = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 6, n = [8, 13, 18, 24][f - 1], dur = 1.9, ca = gold ? 0xffd040 : 0xff6a1a, cb = gold ? 0xfff6c0 : 0xffd27a, dir = new V3(-0.6, -1, -0.4).normalize();
+    decal(T, TEX.dark, 0xffffff, R0 * 3.2, dur + 0.3, 0, { add: false, op: 0.9, inT: 0.3, hold: 0.8 });   /* trời tối lại */
+    rune(T, "star", "cuneiform", ca, R0 * 1.9, dur, 0.1, { mode: "static", op: 0.6 });
+    for (let i = 0; i < n; i++) { const a = R(0, PI * 2), r = Math.sqrt(Math.random()) * R0 * 0.85, E = T.clone().add(new V3(Math.cos(a) * r, 0.3, Math.sin(a) * r)), S = E.clone().addScaledVector(dir, -14), dl = 0.25 + i * (dur - 0.7) / n, fly = 0.35, big = f >= 3 && i % 3 === 0;
+      orbFly(S, E, ca, cb, (big ? 1.1 : 0.7) * (1 + f * 0.08), fly, dl, { arc: 0 });
+      const hit = dl + fly; glow(E.clone().setY(0.8), 0xffffff, big ? 4 : 2.5, 0.2, hit, { flash: true }); glow(E.clone().setY(0.6), ca, big ? 5 : 3, 0.35, hit, { flash: true });
+      sparks(E, [ca, cb, 0xffffff], big ? 30 : 14, 7, 0.3, 0.6, hit, { up: 1.5 }); shock(E, cb, big ? 2.2 : 1.2, 0.35, hit); if (f >= 2) decal(E, TEX.crack, 0xffffff, big ? 2.6 : 1.6, 1.2, hit, { add: false, op: 0.8, ro: 3 });
+      if (i % 2 === 0) task(hit, 0.01, () => shake(big ? 0.15 : 0.07)); }
+    upg(T, f, ca, 0.8, R0 * 0.6);
+  };
+
+  /* --- Armstrong: vùng trọng lực thấp, quái lơ lửng chậm chạp như phi hành gia --- */
+  META.moon_gravity = { name: "Moon Gravity", lv: 66, who: "Neil Armstrong", forms: ["Vùng trọng lực thấp, đá bay lơ lửng", "Vòng hành tinh + bụi bay", "Trái Đất hiện trên trời", "Vùng trọng lực vàng"] };
+  SK.moon_gravity = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 7, dur = 2.4, c1 = gold ? 0xffd860 : 0x9ab0ff;
+    decal(F, moonDisc(), 0xc8c8d8, R0 * 2.2, dur, 0, { add: false, op: 0.6, mode: "static", hold: 0.8 }); rune(F, "circle", "greek", c1, R0 * 2, dur, 0, { mode: "spin", spin: 0.25, op: 0.75 });
+    task(0, dur, () => { const mt = flowMat({ c1, c2: 0xffffff, rep: [4, 1], spd: [0.2, 0.3], fres: 1.4, cut: 0.25, fade: [0, 0, 0.02, 0.6] }), m = mesh(new THREE.CylinderGeometry(R0, R0, 4.5, 48, 1, true).translate(0, 2.25, 0), mt); m.position.set(F.x, 0, F.z); SC.add(m);
+      return { upd: (k, t) => { mt.uniforms.uTime.value = t; mt.uniforms.uAlpha.value = 0.4 * pop(k, 0.15, 0.8); }, end: () => kill(m) }; });   /* màn trọng lực */
+    for (let i = 0; i < 10 + f * 4; i++) { const a = R(0, PI * 2), r = R(1, R0 * 0.9), P = F.clone().add(new V3(Math.cos(a) * r, 0, Math.sin(a) * r)), s = R(0.15, 0.4), sp = R(0.8, 1.6);
+      prop(R(0, 0.3), dur - 0.3, () => { const g = new THREE.Group(), mm = moonMat(gold), m = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0), mm); g.add(m);
+        return { g, upd: (k, t) => { mm.uniforms.uTime.value = t; g.position.set(P.x, 0.2 + t * sp, P.z); m.rotation.set(t * 0.7, t * 0.5, 0); mm.uniforms.uAlpha.value = pop(k, 0.1, 0.8); } }; }); }   /* đá trôi lên chậm */
+    emitter(60 + f * 20, i => { const a = R(0, PI * 2), r = R(0.5, R0); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0, 0.3), Math.sin(a) * r)), v: new V3(0, R(0.3, 0.9), 0), t0: R(0, dur - 0.6), life: R(1.2, 1.8), size: R(0.15, 0.3), col: i % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 0 });
+    if (f >= 2) for (let i = 0; i < 3; i++) decal(F, TEX.ring, c1, R0 * 1.6, 0.9, 0.2 + i * 0.6, { mode: "converge", op: 0.6 });
+    if (f >= 3) prop(0.1, dur - 0.1, () => { const g = new THREE.Group(), em = flowMat({ c1: 0x2a7aff, c2: 0x6adf8a, rep: [2, 2], spd: [0.05, 0], fres: 1.4, cut: -0.4, gain: 1, fade: [0, 0, 0, 0] }), e = new THREE.Mesh(new THREE.SphereGeometry(1.4, 24, 16), em); g.add(e); g.position.copy(F).add(new V3(4, 7, -6));
+      return { g, upd: (k, t) => { em.uniforms.uTime.value = t; em.uniforms.uAlpha.value = 0.9 * pop(k, 0.15, 0.8); e.rotation.y = t * 0.3; } }; });   /* Trái Đất nhìn từ Mặt Trăng */
+    for (let i = 0; i < 3; i++) orbitStar(T, c1, 1, 2.6, 1.8, 0.3, i / 3);
+    upg(F, f, c1, 0.3, R0 * 0.5);
+  };
+
+  /* --- Armstrong: nhảy vọt lên cao, đáp xuống in dấu giày khổng lồ, bụi Mặt Trăng toả tròn --- */
+  function bootTex() { return TEX.boot || (TEX.boot = cvTex(256, (g, n) => { g.translate(n / 2, n / 2); g.fillStyle = "rgba(255,255,255,.95)"; g.beginPath(); g.ellipse(0, -40, 48, 70, 0, 0, PI * 2); g.fill(); g.beginPath(); g.ellipse(0, 70, 38, 48, 0, 0, PI * 2); g.fill();
+    g.globalCompositeOperation = "destination-out"; g.lineWidth = 7; for (let i = -6; i <= 6; i++) { g.beginPath(); g.moveTo(-60, -40 + i * 15); g.lineTo(60, -40 + i * 15); g.stroke(); } for (let i = -3; i <= 3; i++) { g.beginPath(); g.moveTo(-50, 70 + i * 13); g.lineTo(50, 70 + i * 13); g.stroke(); } })); }
+  META.giant_leap = { name: "Giant Leap", lv: 66, who: "Neil Armstrong", forms: ["Nhảy vọt, đáp in dấu giày", "Dấu giày to + bụi trăng", "Cờ cắm + vòng bụi lớn", "Dấu giày vàng"] };
+  SK.giant_leap = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, d = SDIR(F, T), land = 0.5, c1 = gold ? 0xffd860 : 0xd8e0ff, R0 = 3.5 + f * 0.4, top = F.clone().lerp(T, 0.5).setY(6);
+    emitter(50, i => { const u = i / 50, p = bez(F.clone().setY(1), top, T.clone().setY(1), u); return { p: p.add(rv(0.2)), v: rv(0.3), t0: u * land, life: 0.5, size: R(0.3, 0.5), col: i % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 1 });   /* vệt bay vòng cung */
+    decal(F, TEX.ring, c1, 2.5, 0.4, 0, { mode: "expand", expand: 0.6, op: 0.8 }); sparks(F.clone().setY(0.2), [0xc8c8d0, 0xa8a8b0], 20, 4, 0.4, 0.6, 0, { up: 1 });
+    decal(T, bootTex(), gold ? 0xffe080 : 0xd8d8e8, 2.6 + f * 0.4, 2.2, land, { add: gold, op: 0.95, mode: "static", hold: 0.8, ro: 3 });
+    glow(T.clone().setY(1), 0xffffff, 4 + f, 0.25, land, { flash: true }); shock(T, c1, R0, 0.6, land); shock(T, 0xffffff, R0 * 0.6, 0.45, land + 0.05);
+    emitter(80 + f * 25, i => { const a = R(0, PI * 2); return { p: T.clone().add(new V3(Math.cos(a) * 0.8, 0.2, Math.sin(a) * 0.8)), v: new V3(Math.cos(a) * R(3, 7), R(0.3, 1.5), Math.sin(a) * R(3, 7)), t0: land, life: R(0.9, 1.4), size: R(0.5, 1) * (1 + f * 0.1), col: [0xc8c8d0, 0xb0b0b8, 0xd8d8e0][i % 3] }; }, { grav: -0.6, drag: 1.4 });   /* bụi Mặt Trăng toả tròn, rơi chậm */
+    textPop(T.clone().setY(3), "ONE GIANT LEAP!", gold ? "#ffe060" : "#ffffff", 2.2, 0.9, land);
+    if (f >= 3) prop(land + 0.1, 1.8, () => { const g = new THREE.Group(), pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6, 6), basic(null, 0xffffff, false, 1)); pole.position.y = 1.3; g.add(pole);
+      const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.75), basic(null, gold ? 0xffd860 : 0xffffff, true, 0.85)); fl.position.set(0.62, 2.2, 0); g.add(fl); g.position.copy(T).addScaledVector(d, 1.5);
+      return { g, upd: (k, t) => { g.scale.set(1, Math.min(1, t / 0.15), 1); fl.rotation.y = Math.sin(t * 2) * 0.15; fl.material.opacity = 0.85 * pop(k, 0.1, 0.8); pole.material.opacity = pop(k, 0.1, 0.8); } }; });   /* cờ cắm */
+    upg(T, f, c1, land, R0 * 0.7); task(land, 0.01, () => shake(0.2 + f * 0.06));
+  };
+
+  /* --- Einstein: tia laser photon trắng xuyên thẳng, electron vàng văng ra từ thân quái --- */
+  META.photon_lance = { name: "Photon Lance", lv: 70, who: "Albert Einstein", forms: ["Tia photon trắng + electron văng", "Tia to + gợn sóng ánh sáng", "3 tia hội tụ", "Tia vàng-trắng khổng lồ"] };
+  SK.photon_lance = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, d = SDIR(F, T), dist = F.distanceTo(T), L = dist + 8, W = 0.25 + f * 0.1, c1 = gold ? 0xffe080 : 0xffffff, A = F.clone().setY(1.3).addScaledVector(d, 0.5), nB = f >= 3 ? 3 : 1, charge = 0.25;
+    glow(A, 0xffffff, 1.5, charge, 0); emitter(30, i => { const p = A.clone().add(rv(1.5)); return { p, v: A.clone().sub(p).multiplyScalar(4), t0: R(0, charge * 0.7), life: 0.25, size: R(0.15, 0.3), col: 0xffffff }; }, { grav: 0, drag: 0 });   /* tụ sáng */
+    for (let b = 0; b < nB; b++) { const S = b ? A.clone().add(new V3(-d.z, 0, d.x).multiplyScalar(b === 1 ? 1.6 : -1.6)).add(new V3(0, 1, 0)) : A, dir = T.clone().setY(1.2).sub(S).normalize(), len = b ? S.distanceTo(T.clone().setY(1.2)) + 0.3 : L;
+      task(charge, 0.55, () => { const geo = new THREE.CylinderGeometry(W * (b ? 0.6 : 1), W * (b ? 0.6 : 1), len, 14, 1, true).rotateX(PI / 2).translate(0, 0, len / 2), mt = flowMat({ c1, c2: gold ? 0xffd040 : 0xbfe0ff, rep: [2, 10], spd: [0, -8], fres: 0.8, cut: -0.1, gain: 1.6, fade: [0, 0, 0, 0.1] }), m = mesh(geo, mt, 10);
+        m.position.copy(S); m.quaternion.copy(basisQ(dir)); SC.add(m);
+        return { upd: (k, t) => { mt.uniforms.uTime.value = t; m.scale.set(1 - k * 0.6, 1 - k * 0.6, Math.min(1, t / 0.06)); mt.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.6) / 0.4; }, end: () => kill(m) }; }); }
+    if (f >= 2) for (let i = 0; i < 4; i++) task(charge + i * 0.08, 0.3, () => { const m = mesh(new THREE.TorusGeometry(W * 2.2, 0.04, 6, 24), basic(null, 0xffffff, true, 1), 10); m.quaternion.copy(basisQ(d)); SC.add(m);
+      return { upd: k => { m.position.copy(A).addScaledVector(d, k * L); m.material.opacity = 1 - k; }, end: () => kill(m) }; });   /* gợn sóng ánh sáng */
+    const hit = charge + 0.04, B = T.clone().setY(1.2);
+    glow(B, 0xffffff, 3 + f, 0.25, hit, { flash: true }); shock(T, c1, 2 + f * 0.3, 0.4, hit, 1.1);
+    for (let e = 0; e < 4 + f * 2; e++) prop(hit, 0.7, () => { const g = new THREE.Group(), s = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xffd040, blending: ADD, transparent: true, depthWrite: false })); s.scale.setScalar(0.6); g.add(s); const v = rv(1).setY(Math.abs(rv(1).y) + 0.3).normalize().multiplyScalar(R(3, 6)), P = new V3();
+      return { g, upd: (k, t) => { P.copy(B).addScaledVector(v, t); P.y -= t * t * 2; g.position.copy(P); s.material.opacity = 1 - k; } }; });   /* electron vàng văng ra */
+    textPop(B.clone().add(new V3(0, 1.1, 0)), "e⁻", "#ffd860", 1, 0.5, hit);
+    upg(T, f, c1, hit, 1.8); task(hit, 0.01, () => shake(0.12 + f * 0.04));
+  };
+  /* --- Einstein: mặt đồng hồ khổng lồ quay chậm dưới chân, quái chậm như phim quay chậm --- */
+  function clockTex() { return TEX.clock || (TEX.clock = cvTex(512, (g, n) => { g.translate(n / 2, n / 2); g.strokeStyle = g.fillStyle = "#fff"; g.shadowColor = "#fff"; g.shadowBlur = 8;
+    g.lineWidth = 10; g.beginPath(); g.arc(0, 0, 238, 0, PI * 2); g.stroke(); g.lineWidth = 3; g.beginPath(); g.arc(0, 0, 214, 0, PI * 2); g.stroke();
+    for (let i = 0; i < 60; i++) { const a = i / 60 * PI * 2, l = i % 5 ? 10 : 24; g.lineWidth = i % 5 ? 2 : 5; g.beginPath(); g.moveTo(Math.cos(a) * 212, Math.sin(a) * 212); g.lineTo(Math.cos(a) * (212 - l), Math.sin(a) * (212 - l)); g.stroke(); }
+    const RN = ["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"]; g.font = "bold 38px Georgia, serif"; g.textAlign = "center"; g.textBaseline = "middle";
+    RN.forEach((s, i) => { const a = i / 12 * PI * 2 - PI / 2; g.fillText(s, Math.cos(a) * 160, Math.sin(a) * 160); }); g.beginPath(); g.arc(0, 0, 12, 0, PI * 2); g.fill(); })); }
+  META.time_dilation = { name: "Time Dilation", lv: 70, who: "Albert Einstein", forms: ["Mặt đồng hồ quay chậm dưới chân", "Gợn thời gian + kim chậm dần", "+ đồng hồ đứng trên trời", "Đồng hồ vàng khổng lồ"] };
+  SK.time_dilation = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 8, dur = 2.6, c1 = gold ? 0xffd860 : 0x9ad8ff;
+    decal(F, TEX.dark, 0xffffff, R0 * 2.4, dur, 0, { add: false, op: 0.7, hold: 0.8 }); decal(F, clockTex(), c1, R0 * 2, dur, 0, { mode: "static", op: 0.95, inT: 0.3, hold: 0.8 });
+    const hands = [[R0 * 0.55, 0.22, 1], [R0 * 0.8, 0.12, 12]];   /* kim giờ, kim phút: quay nhanh rồi chậm dần gần như đứng */
+    hands.forEach(([len, w, sp], i) => prop(0.1, dur - 0.1, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.PlaneGeometry(w, len).translate(0, len / 2, 0).rotateX(-PI / 2), basic(null, i ? 0xffffff : c1, true, 1)); g.add(m); g.position.set(F.x, 0.08 + i * 0.01, F.z);
+      return { g, upd: (k, t) => { g.rotation.y = -sp * (1 - Math.exp(-t * 2.5)) * 1.2; m.material.opacity = pop(k, 0.1, 0.85); } }; }));
+    for (let i = 0; i < 3 + f; i++) decal(F, TEX.ring, c1, R0 * 2.2, 1.1, 0.2 + i * 0.4, { mode: "converge", op: 0.7 });   /* gợn thời gian thu vào chậm */
+    emitter(50 + f * 20, i => { const a = R(0, PI * 2), r = R(1, R0); return { p: F.clone().add(new V3(Math.cos(a) * r, R(0.2, 2.5), Math.sin(a) * r)), v: new V3(-Math.sin(a), 0, Math.cos(a)).multiplyScalar(0.4), t0: R(0, dur - 0.8), life: R(1.2, 1.8), size: R(0.15, 0.3), col: i % 2 ? c1 : 0xffffff }; }, { grav: 0, drag: 0 });   /* hạt trôi rất chậm */
+    if (f >= 3) prop(0.2, dur - 0.2, () => { const g = new THREE.Group(), m = new THREE.Mesh(new THREE.CircleGeometry(1.6, 40), basic(clockTex(), c1, true, 0.9)); g.add(m); g.position.copy(T).setY(4.2);
+      return { g, upd: (k, t) => { g.quaternion.copy(CAM.quaternion); m.material.opacity = 0.9 * pop(k, 0.1, 0.8); } }; });
+    textPop(F.clone().setY(3), "SLOW...", gold ? "#ffe060" : "#bfeaff", 1.6, 1.2, 0.3, { rise: 0.3 });
+    for (let i = 0; i < 3; i++) orbitStar(T, c1, 1, 2.6, 2, 0.3, i / 3);
+    upg(F, f, c1, 0.3, R0 * 0.5);
+  };
+
+  /* --- Einstein: hạt nhỏ tụ ánh sáng, im lặng 1 giây, rồi bùng thành mặt trời nổ tung (E = mc²) --- */
+  META.e_mc2_nova = { name: "E=mc² Nova", lv: 70, who: "Albert Einstein", forms: ["Hạt tụ sáng, im lặng, bùng nổ", "Nổ to + vòng năng lượng", "Nổ 2 tầng + cột sáng trời", "Mặt trời vàng khổng lồ"] };
+  SK.e_mc2_nova = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 5 + f * 0.5, C = T.clone().setY(1.8), quiet = 1.0, c1 = gold ? 0xffd040 : 0xffffff, c2 = gold ? 0xff8a20 : 0x9ad8ff;
+    emitter(90 + f * 30, i => { const p = C.clone().add(rv(R(3, 6))); return { p, v: C.clone().sub(p).multiplyScalar(1 / 0.55), t0: R(0, 0.45), life: 0.55, size: R(0.15, 0.3), col: i % 2 ? c2 : 0xffffff }; }, { grav: 0, drag: 0 });   /* ánh sáng bị hút vào 1 điểm */
+    prop(0, quiet + 0.15, () => { const g = new THREE.Group(), s = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xffffff, blending: ADD, transparent: true, depthWrite: false })); g.add(s); g.position.copy(C);
+      return { g, upd: (k, t) => s.scale.setScalar(0.3 + Math.min(1, t / 0.5) * 0.5 + (t > quiet - 0.1 ? (t - quiet + 0.1) * 12 : 0)) }; });   /* điểm sáng nhỏ xíu, im lặng */
+    decal(T, TEX.dark, 0xffffff, R0 * 3, quiet + 1.2, 0, { add: false, op: 0.85, inT: 0.5, hold: 0.85 });
+    textPop(C.clone().add(new V3(0, 1.2, 0)), "E = mc²", gold ? "#ffe060" : "#ffffff", 2, quiet - 0.3, 0.35, { rise: 0.2 });
+    const boom = quiet + 0.1;
+    prop(boom, 0.9, () => { const g = new THREE.Group(), sm = flowMat({ c1: c2, c2: c1, rep: [2, 2], spd: [0.8, -1], fres: 0.5, cut: -0.4, gain: 1.6, fade: [0, 0, 0, 0] }), sun = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), sm); g.add(sun); g.position.copy(C);
+      return { g, upd: (k, t) => { sm.uniforms.uTime.value = t; sun.scale.setScalar(0.3 + (1 - Math.pow(1 - k, 3)) * R0 * 0.75); sm.uniforms.uAlpha.value = 1 - Math.max(0, k - 0.4) / 0.6; } }; });   /* bùng thành mặt trời */
+    glow(C, 0xffffff, 6 + f * 1.5, 0.35, boom, { flash: true }); glow(C, c2, 8 + f * 1.5, 0.6, boom, { flash: true }); dome(T, c2, c1, R0, 0.8, boom + 0.05);
+    for (let i = 0; i < 3; i++) shock(T, i % 2 ? c2 : 0xffffff, R0 * (1 + i * 0.35), 0.7, boom + i * 0.08);
+    sparks(C, [c1, c2, 0xffffff], 90 + f * 30, 13, 0.4, 0.9, boom, { up: 1 }); decal(T, TEX.crack, 0xffffff, R0 * 2, 1.6, boom, { add: false, op: 0.9, ro: 3 });
+    if (f >= 3) { pillar(T, c2, 0xffffff, 1.6, 12, 0.8, boom, { speed: 5, widen: 0.8 }); dome(T, c1, 0xffffff, R0 * 1.4, 0.9, boom + 0.25); }
+    upg(T, f, c2, boom, R0 * 0.8); task(boom, 0.01, () => shake(0.35 + f * 0.08));
+  };
+
+  /* --- Ada Lovelace: cỗ máy bánh răng đồng quay sau lưng, chơi nhạc: cả đội tăng sát thương + hồi chiêu nhanh --- */
+  function gearGeo(r, teeth, depth) { const s = new THREE.Shape(), N = teeth * 4; for (let i = 0; i <= N; i++) { const a = i / N * PI * 2, rr = (i % 4 < 2) ? r : r * 0.82; i ? s.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : s.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+    const h = new THREE.Path(); h.absarc(0, 0, r * 0.25, 0, PI * 2, true); s.holes.push(h); return nuv(new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false })).translate(0, 0, -depth / 2); }
+  META.analytical_engine = { name: "Analytical Engine", lv: 74, who: "Ada Lovelace", forms: ["Bánh răng đồng quay + nhạc, đội mạnh lên", "Nhiều bánh răng + thẻ đục lỗ", "Cỗ máy lớn + vòng nốt nhạc", "Bánh răng vàng"] };
+  SK.analytical_engine = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, dur = 2.4, c1 = gold ? 0xffd860 : 0xffb060, P0 = F.clone().add(new V3(SDIR(F, T).z, 0, -SDIR(F, T).x).multiplyScalar(1.6)).setY(4.8);
+    const gears = [[0, 0, 1.2, 16, 1], [1.75, 0.55, 0.7, 10, -1.6], [-1.6, 0.7, 0.75, 10, -1.5], [0.9, -1.4, 0.55, 8, -2.2], [-0.95, -1.35, 0.55, 8, -2.2], [2.6, -0.6, 0.45, 8, 2.5], [-2.5, -0.5, 0.45, 8, 2.6]].slice(0, [3, 5, 7, 7][f - 1]);
+    prop(0, dur, () => { const g = new THREE.Group(), gm = ghostMat(gold ? 0xffc030 : 0xc88a3a, 0xffe8c0, { fres: 0.6, cut: -0.55 }); gm.blending = THREE.NormalBlending;
+      const list = gears.map(([x, y, r, n, sp]) => { const m = new THREE.Mesh(gearGeo(r, n, 0.22), gm); m.position.set(x, y, 0); g.add(m); return { m, sp }; }); g.position.copy(P0);
+      return { g, upd: (k, t) => { gm.uniforms.uTime.value = t; gm.uniforms.uAlpha.value = pop(k, 0.1, 0.85); g.quaternion.copy(CAM.quaternion); list.forEach(q => q.m.rotation.z = t * q.sp * 2); g.scale.setScalar((0.8 + f * 0.1) * Math.min(1, t / 0.2)); } }; });
+    if (f >= 2) for (let i = 0; i < 4; i++) prop(0.2 + i * 0.3, 0.9, () => { const g = new THREE.Group(), card = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.5), basic(cvTex(64, (c, n) => { c.fillStyle = "#f4e6c0"; c.fillRect(0, 0, n, n); c.fillStyle = "#3a2a10"; for (let q = 0; q < 14; q++) c.fillRect(((q * 37) % 6) * 10 + 4, ((q * 13) % 5) * 12 + 4, 5, 6); }), 0xffffff, false, 1)); g.add(card);
+      return { g, upd: (k, t) => { g.position.copy(P0).add(new V3(2.6 - k * 5.2, -1.8, 0)); g.quaternion.copy(CAM.quaternion); card.material.opacity = Math.sin(k * PI); } }; });   /* thẻ đục lỗ chạy qua máy */
+    for (let i = 0; i < 6 + f * 2; i++) textPop(P0.clone().add(new V3(R(-2, 2), R(-0.5, 1.5), 0)), i % 2 ? "♪" : "♫", gold ? "#ffe060" : "#ffd8a0", 1, 0.9, 0.2 + i * 0.15);
+    aura(F, c1, 0xfff0d0, 1.0, 3, dur - 0.4, 0.3); rune(F, "circle", "latin", c1, 4.2, dur, 0.2, { mode: "spin", spin: 1.2, op: 0.7 });
+    if (f >= 3) for (let i = 0; i < 2; i++) decal(F, TEX.ring, c1, 6, 0.8, 0.5 + i * 0.6, { mode: "expand", expand: 0.5, op: 0.8 });
+    textPop(F.clone().setY(2.6), "ATK ↑  CD ↓", gold ? "#ffe060" : "#ffd8a0", 1.6, 1, 0.6, { rise: 0.4 });
+    upg(F, f, c1, 0.5, 2.4);
+  };
+
+  /* --- Hedy Lamarr: dịch chuyển chớp nhoáng giữa 5 quái, mỗi bước để lại sóng tần số màu khác, rồi cùng nổ --- */
+  META.frequency_hop = { name: "Frequency Hop", lv: 78, who: "Hedy Lamarr", forms: ["Chớp nhảy để lại sóng tần số 5 màu", "Sóng dày + vòng phát", "Sóng cầu vồng nối các bước", "Sóng vàng + nổ chung lớn"] };
+  SK.frequency_hop = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, now = performance.now(), first = !LAST.hop || now - LAST.hop > 900; if (first) { LAST.hopI = 0; LAST.hopP = F.clone(); } else LAST.hopI++; LAST.hop = now;
+    const i = LAST.hopI, HUES = [0xff4a6a, 0xffb040, 0x5aff8a, 0x4ab0ff, 0xc060ff], col = gold ? 0xffd860 : HUES[i % 5], B = T.clone().setY(1.2); let A = (LAST.hopP || F).clone().setY(1.2); if (A.distanceTo(B) < 1.5) { const a = i * 1.3 + 0.5; A = B.clone().add(new V3(Math.cos(a) * 3.2, 0, Math.sin(a) * 3.2)); } LAST.hopP = T.clone();   /* cùng 1 quái: nhảy vòng quanh nó */
+    task(0, 0.9, () => { const N = 60, pos = [], side = new V3().subVectors(B, A).cross(new V3(0, 1, 0)).normalize(); for (let q = 0; q <= N; q++) { const u = q / N, p = A.clone().lerp(B, u), amp = 0.35 + f * 0.08; p.addScaledVector(side, Math.sin(u * PI * (6 + i * 2)) * amp * Math.sin(u * PI)); pos.push(p); }
+      const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pos), 120, 0.05 + f * 0.012, 4), m = mesh(geo, basic(null, col, true, 1), 9); SC.add(m); const n = geo.index.count;
+      return { upd: k => { geo.setDrawRange(0, Math.floor(n * Math.min(1, k / 0.15))); m.material.opacity = 1 - Math.max(0, k - 0.6) / 0.4; }, end: () => kill(m) }; });   /* sóng tần số hình sin, mỗi bước 1 màu, tần số khác nhau */
+    glow(A, 0xffffff, 2.5, 0.15, 0, { flash: true }); glow(B, col, 2.5 + f * 0.4, 0.2, 0.06, { flash: true }); sparks(B, [col, 0xffffff], 12 + f * 4, 5, 0.2, 0.35, 0.06, { up: 1 });
+    if (f >= 2) decal(T, TEX.ring, col, 2.6, 0.5, 0.06, { mode: "expand", expand: 0.6, op: 0.9 });
+    task(0.06, 0.01, () => shake(0.05 + f * 0.02));
+    if (i === 4) { const at = 0.25; glow(B, 0xffffff, 5 + f * 1.2, 0.3, at, { flash: true }); for (let q = 0; q < 5; q++) shock(T, gold ? 0xffd860 : HUES[q], 1.5 + q * 0.6, 0.5, at + q * 0.04, 0.5); sparks(B, HUES, 40 + f * 15, 9, 0.3, 0.6, at, { up: 1 }); upg(T, f, col, at, 2.4); task(at, 0.01, () => shake(0.15 + f * 0.05)); }   /* 5 sóng cùng nổ */
+  };
+
+  /* --- Turing: bánh răng máy mã Enigma xoay quanh quái, chữ mã hoá vỡ vụn: quái mất kỹ năng --- */
+  function rotorTex() { return TEX.rotor || (TEX.rotor = cvTex(512, (g, n) => { g.fillStyle = "#2a2418"; g.fillRect(0, 0, n, n); g.font = "bold 30px Georgia, serif"; g.textAlign = "center"; g.textBaseline = "middle"; const L = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < 26; i++) { const x = (i + 0.5) / 26 * n; g.fillStyle = "#f4e6c0"; g.fillRect(x - 8, n * 0.25, 16, n * 0.5); g.fillStyle = "#2a2418"; g.save(); g.translate(x, n / 2); g.rotate(PI / 2); g.fillText(L[i], 0, 0); g.restore(); } }, true)); }
+  META.code_breaker = { name: "Code Breaker", lv: 82, who: "Alan Turing", forms: ["3 rô-to Enigma xoay quanh quái", "Chữ mã vỡ vụn bay ra", "+ ổ khoá vỡ, mã nhị phân", "Rô-to vàng + nổ mã"] };
+  SK.code_breaker = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, dur = 2.2, c1 = gold ? 0xffd860 : 0x7affb0, rt = rotorTex();
+    rune(T, "seal", "latin", c1, 5, dur, 0, { mode: "spin", spin: 0.8, op: 0.8 });
+    for (let r = 0; r < 3; r++) prop(r * 0.08, dur, () => { const g = new THREE.Group(), rim = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.35, 26, 1, true), new THREE.MeshBasicMaterial({ map: rt, transparent: true, side: THREE.DoubleSide })), cm = solidMat(gold ? 0xb08a30 : 0x5a5040, gold ? 0xfff0b0 : 0xd8c8a0, 0xffffff);
+      g.add(rim); [-1, 1].forEach(s => { const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.78, 0.78, 0.04, 26), cm); cap.position.y = s * 0.19; g.add(cap); }); const ax = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.9, 8), cm); g.add(ax);
+      const ph = r / 3 * PI * 2;
+      return { g, upd: (k, t) => { cm.uniforms.uTime.value = t; const a = ph + t * 1.8; g.position.set(T.x + Math.cos(a) * 2, 1.6 + Math.sin(t * 2 + r) * 0.3, T.z + Math.sin(a) * 2); g.rotation.set(PI / 2, 0, a); rim.rotation.y = Math.floor(t * 8 * (r + 1)) * (PI * 2 / 26);   /* nhảy từng nấc chữ */
+        rim.material.opacity = pop(k, 0.1, 0.85); cm.uniforms.uAlpha.value = pop(k, 0.1, 0.85); g.scale.setScalar(0.9 + f * 0.1); } }; });
+    const L = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < 6 + f * 3; i++) { const P = T.clone().add(new V3(R(-1, 1), R(1, 2.4), R(-1, 1))), at = 0.4 + i * 0.12; textPop(P, L[(Math.random() * 26) | 0], gold ? "#ffe060" : "#c8ffd8", 1, 0.4, at, { rise: 0.2 }); if (f >= 2) sparks(P, [c1, 0xffffff], 8, 4, 0.15, 0.35, at + 0.35, { up: 1 }); }   /* chữ mã hiện rồi vỡ vụn */
+    if (f >= 3) { textPop(T.clone().setY(3.2), "🔓", "#ffffff", 1.6, 0.8, 0.5); for (let i = 0; i < 10; i++) textPop(T.clone().add(new V3(R(-2, 2), R(0.5, 3), R(-2, 2))), Math.random() < 0.5 ? "0" : "1", gold ? "#ffe060" : "#7affb0", 0.7, 0.8, 0.3 + i * 0.1); }
+    glow(T.clone().setY(1.5), c1, 3 + f, 0.3, 0.4, { flash: true }); shock(T, c1, 2.6, 0.4, 0.4); textPop(T.clone().setY(2.8), "SILENCED", gold ? "#ffe060" : "#c8ffd8", 1.5, 1, 0.9, { rise: 0.3 });
+    upg(T, f, c1, 0.4, 2.4);
+  };
+
+  /* --- Paul Baran: mạng lưới nút sáng nối quái, gói tin ánh sáng bắn qua lại --- */
+  META.packet_storm = { name: "Packet Storm", lv: 86, who: "Paul Baran", forms: ["Mạng nút sáng + gói tin bắn", "Mạng dày + gói tin nhiều màu", "Mạng 3 tầng + vòng dữ liệu", "Mạng vàng + bão gói tin"] };
+  SK.packet_storm = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, now = performance.now(), first = !LAST.pkt || now - LAST.pkt > 900; LAST.pkt = now; const c1 = gold ? 0xffd860 : 0x5ad8ff;
+    if (first) { const nN = 6 + f * 2, nodes = []; for (let i = 0; i < nN; i++) { const a = i / nN * PI * 2 + R(-0.3, 0.3), r = R(2.2, 4.5); nodes.push(T.clone().add(new V3(Math.cos(a) * r, R(1.2, 3.2), Math.sin(a) * r))); } nodes.push(F.clone().setY(2.2)); LAST.pktN = nodes;
+      prop(0, 2.2, () => { const g = new THREE.Group(), pts = []; nodes.forEach((a, i) => nodes.forEach((b, j) => { if (j > i && (a.distanceTo(b) < 4.5 || j === nodes.length - 1)) pts.push(a.x, a.y, a.z, b.x, b.y, b.z); })); nodes.forEach(a => pts.push(a.x, a.y, a.z, T.x, 1.2, T.z));
+        const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3)); const ln = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: c1, transparent: true, blending: ADD, depthWrite: false })); g.add(ln);
+        const dots = nodes.map(p => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); s.position.copy(p); g.add(s); return s; });
+        return { g, upd: (k, t) => { ln.material.opacity = 0.7 * pop(k, 0.1, 0.85); dots.forEach((s, i) => s.scale.setScalar((0.8 + Math.sin(t * 10 + i) * 0.2) * Math.min(1, t / 0.15) * (1 + f * 0.1))); } }; });   /* mạng lưới nút */
+      if (f >= 3) for (let i = 0; i < 3; i++) decal(T, TEX.ring, c1, 6 + i * 2, 1.6, i * 0.2, { mode: "spin", spin: i % 2 ? 1 : -1, op: 0.5 }); }
+    const nodes = LAST.pktN || [F.clone().setY(2)], B = T.clone().setY(1.2), cols = gold ? [0xffd860, 0xffffff] : [0x5ad8ff, 0x7affb0, 0xffb040, 0xff6ab0];
+    for (let p = 0; p < 2 + f; p++) { const S = nodes[(Math.random() * nodes.length) | 0], M = nodes[(Math.random() * nodes.length) | 0], dl = p * 0.04, fly = 0.22, col = cols[p % cols.length], P = new V3();
+      prop(dl, fly, () => { const g = new THREE.Group(), cube = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.22), basic(null, col, true, 1)), hl = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: col, blending: ADD, transparent: true, depthWrite: false })); hl.scale.setScalar(0.9); g.add(cube); g.add(hl);
+        return { g, upd: (k, t) => { if (k < 0.5) P.lerpVectors(S, M, k * 2); else P.lerpVectors(M, B, (k - 0.5) * 2); g.position.copy(P); cube.rotation.set(t * 9, t * 7, 0); } }; });   /* gói tin nảy qua 1 nút rồi vào quái */
+      sparks(B, [col, 0xffffff], 5, 4, 0.15, 0.25, dl + fly, { up: 1 }); }
+    glow(B, c1, 1.6 + f * 0.3, 0.15, 0.24, { flash: true }); task(0.24, 0.01, () => shake(0.03 + f * 0.01));
+    if (first) upg(T, f, c1, 0.3, 2.2);
+  };
+
+  /* --- Al-Khwarizmi: số 0 vàng khổng lồ trên trời, lòng số 0 hoá hố đen hút quái rồi khép lại --- */
+  META.zero_void = { name: "Zero Void", lv: 92, who: "Al-Khwarizmi", forms: ["Số 0 vàng → hố đen hút quái", "Đĩa bồi tụ xoáy + sao bị hút", "Số 0 khổng lồ + 2 vòng chữ số", "Hố đen vàng nuốt cả vùng"] };
+  SK.zero_void = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, R0 = 6 + f * 0.4, C = T.clone().setY(3.2), dur = 2.4, close = 1.9, c1 = 0xffc030, rz = 1.6 + f * 0.25;
+    decal(T, TEX.dark, 0xffffff, R0 * 2.8, dur, 0, { add: false, op: 0.9, inT: 0.4, hold: 0.85 });
+    prop(0, dur, () => { const g = new THREE.Group(), zm = solidMat(0xc08a10, 0xfff0a0, 0xffe080), zero = new THREE.Mesh(new THREE.TorusGeometry(rz, 0.32, 14, 48), zm); zero.scale.set(0.78, 1.1, 1); g.add(zero);   /* số 0 (hình bầu dục) */
+      const hole = new THREE.Mesh(new THREE.CircleGeometry(rz * 0.92, 40), new THREE.MeshBasicMaterial({ color: 0x000000 })); hole.scale.set(0.78, 1.1, 1); hole.renderOrder = 12; g.add(hole);   /* lòng đen đặc, che quầng sáng phía sau */
+      const disk = new THREE.Mesh(new THREE.RingGeometry(rz * 0.95, rz * 1.8, 48), basic(swirlTex(), gold ? 0xffd860 : 0xb06aff, true, 0.9)); g.add(disk);
+      const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: c1, blending: ADD, transparent: true, depthWrite: false })); halo.scale.setScalar(rz * 4); halo.position.z = -0.6; halo.renderOrder = 8; g.add(halo); g.position.copy(C);
+      return { g, upd: (k, t) => { zm.uniforms.uTime.value = t; g.quaternion.copy(CAM.quaternion); const open = Math.min(1, Math.max(0, (t - 0.35) / 0.3)), shut = t > close ? 1 - Math.min(1, (t - close) / 0.2) : 1;
+        hole.scale.set(0.78 * open * shut + 0.001, 1.1 * open * shut + 0.001, 1); disk.rotation.z = -t * 4; disk.material.opacity = 0.9 * open * shut; zero.scale.set(0.78 * (0.6 + 0.4 * shut), 1.1 * (0.6 + 0.4 * shut), 1); g.scale.setScalar(Math.min(1, t / 0.25) * (t > close + 0.2 ? 1 - (t - close - 0.2) / (dur - close - 0.2) : 1)); } }; });
+    emitter(120 + f * 40, i => { const a = R(0, PI * 2), r = R(R0 * 0.5, R0 * 1.2), p = T.clone().add(new V3(Math.cos(a) * r, R(0.2, 2), Math.sin(a) * r)), tan = new V3(-Math.sin(a), 0, Math.cos(a)); return { p, v: C.clone().sub(p).multiplyScalar(1.4).addScaledVector(tan, 3), t0: R(0.5, close - 0.4), life: 0.65, size: R(0.15, 0.35), col: [0xffffff, 0xb06aff, c1][i % 3] }; }, { grav: 0, drag: 0 });   /* mọi thứ bị hút vào */
+    if (f >= 3) [6, 8.5].forEach((rr, q) => prop(0.3, close, () => { const g = new THREE.Group(), D = "0123456789"; for (let i = 0; i < 14; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex(D[(i * 3 + q) % 10], "#ffd860"), transparent: true, depthWrite: false })); s.scale.setScalar(0.9); g.add(s); s.userData.a = i / 14 * PI * 2; }
+      return { g, upd: (k, t) => { const sh = 1 - Math.max(0, k - 0.6) / 0.4; g.children.forEach(s => { const a = s.userData.a + t * (q ? -1.2 : 1.6); s.position.set(T.x + Math.cos(a) * rr * 0.5 * sh, 1.6 + q * 1.2, T.z + Math.sin(a) * rr * 0.5 * sh); s.material.opacity = sh; }); } }; }));   /* vòng chữ số Ả Rập */
+    glow(C, 0xffffff, 8 + f * 2, 0.35, close + 0.15, { flash: true }); glow(C, c1, 10 + f * 2, 0.6, close + 0.15, { flash: true }); shock(T, c1, R0 * 1.2, 0.7, close + 0.15); shock(T, 0xffffff, R0 * 0.8, 0.5, close + 0.2);
+    sparks(C, [c1, 0xffffff, 0xb06aff], 60 + f * 20, 10, 0.35, 0.8, close + 0.15, { up: 0.5 }); textPop(C.clone().add(new V3(0, rz * 1.4 + 0.6, 0)), "0", "#ffe060", 2.4, 0.6, 0.1, { rise: 0.2 });
+    upg(T, f, c1, close + 0.15, R0 * 0.7); task(close + 0.15, 0.01, () => shake(0.3 + f * 0.08)); task(0.6, 0.01, () => shake(0.05));
+  };
+
+  /* --- Al-Khwarizmi: thuật toán – chuỗi 3 bước sáng lần lượt, 3 chiêu tiếp theo không cần chờ hồi --- */
+  META.algorithm = { name: "Algorithm", lv: 92, who: "Al-Khwarizmi", forms: ["3 ô bước 1 → 2 → 3 sáng lần lượt", "+ vòng chữ số xoay", "+ mũi tên lưu đồ nối các bước", "Thuật toán vàng + cột sáng"] };
+  SK.algorithm = (F, T, rk) => {
+    const f = FORM(rk), gold = f >= 4, dur = 2.3, c1 = gold ? 0xffd860 : 0x7ad8ff, step = 0.4;
+    rune(F, "hex", "latin", c1, 4.6, dur, 0, { mode: "static", op: 0.8 }); aura(F, c1, 0xffffff, 0.9, 3, dur - 0.3, 0.2);
+    for (let s = 0; s < 3; s++) { const a = -PI / 2 + (s - 1) * 1.1, P = F.clone().add(new V3(Math.cos(a) * 2.2, 2.6 + (s === 1 ? 0.5 : 0), Math.sin(a) * 2.2)), on = 0.3 + s * step;
+      prop(0.1, dur - 0.1, () => { const g = new THREE.Group(), box = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), basic(null, c1, true, 0.35)), num = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex(String(s + 1), "#ffffff"), transparent: true, depthWrite: false })); num.scale.setScalar(0.9); num.position.z = 0.02; g.add(box); g.add(num);
+        const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(1.1, 1.1)), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, blending: ADD })); g.add(edge); g.position.copy(P);
+        return { g, upd: (k, t) => { g.quaternion.copy(CAM.quaternion); const lit = t > on - 0.1; box.material.opacity = (lit ? 0.85 : 0.2) * pop(k, 0.08, 0.85); num.material.opacity = pop(k, 0.08, 0.85); edge.material.opacity = pop(k, 0.08, 0.85); g.scale.setScalar(lit && t < on + 0.15 ? 1.25 : 1); } }; });
+      glow(P, c1, 2.2, 0.25, on - 0.1, { flash: true }); if (f >= 3 && s < 2) { const Q = F.clone().add(new V3(Math.cos(a + 1.1) * 2.2, 2.6 + (s === 0 ? 0.5 : 0), Math.sin(a + 1.1) * 2.2)); bolt(P, Q, 0xffffff, 0.08, 0.4, on, { jag: 0 }); }   /* mũi tên lưu đồ */
+      textPop(P.clone().add(new V3(0, 0.9, 0)), "✓", "#7dff9a", 0.9, 0.5, on); }
+    if (f >= 2) prop(0.2, dur - 0.2, () => { const g = new THREE.Group(), D = "0123456789"; for (let i = 0; i < 20; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: txtTex(D[i % 10], gold ? "#ffe060" : "#bfeaff"), transparent: true, depthWrite: false })); s.scale.setScalar(0.55); s.userData.a = i / 20 * PI * 2; g.add(s); }
+      return { g, upd: (k, t) => g.children.forEach(s => { const a = s.userData.a + t * 1.4; s.position.set(F.x + Math.cos(a) * 1.5, 0.6 + Math.sin(a * 3 + t * 4) * 0.15, F.z + Math.sin(a) * 1.5); s.material.opacity = pop(k, 0.1, 0.85); }) }; });   /* vòng chữ số Ả Rập (0–9) */
+    textPop(F.clone().setY(4.2), "CD = 0 ×3", gold ? "#ffe060" : "#bfeaff", 1.7, 1, 0.3 + 3 * step, { rise: 0.3 });
+    if (gold) pillar(F, 0xffd860, 0xffffff, 1.1, 6, 0.8, 0.3 + 3 * step, { speed: 3 });
+    upg(F, f, c1, 0.3 + 3 * step, 2.4);
   };
   // vài chiêu danh nhân dùng hiệu ứng chung (để xem trong sổ tay)
   [["ladys_lamp", "Lady's Lamp", 12, "Florence Nightingale", { kind: "self", branch: "harmony" }], ["camera_obscura", "Camera Obscura", 19, "Nicéphore Niépce", { kind: "zone", branch: "control", radius: 4 }],
