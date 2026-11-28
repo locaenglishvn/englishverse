@@ -52,3 +52,4 @@ Khôi phục: `git revert <mã merge lỗi>` (gỡ 1 đợt) hoặc đưa `main`
 | 2026-11-27 | `0ba05f0` | PR #93–94 – hồn thần 3D (trước chỉnh khoảng cách thần + font thư pháp) | ✅ |
 | 2026-11-27 | `16ec7f4` | PR #95 – chữ thư pháp, khoảng chờ thần 2,2 s (trước dời thần ra hướng 10 giờ) | ✅ |
 | 2026-11-27 | `552efff` | PR #96 – thần hướng 10 giờ (trước ô icon vuông + ảnh NPC) | ✅ |
+| 2026-11-28 | `bb582b6` | PR #98 – đề xuất nhiệm vụ bản 1 (trước bản 2 + tab Lan truyền) | ✅ |
