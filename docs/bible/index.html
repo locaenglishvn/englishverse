@@ -355,27 +355,34 @@ const PAGES = [
    <h2>${T.chapters.length + 4} · Nội tại (tối đa bậc 5)</h2>
    <div class="tbl"><table><thead><tr><th>Nội tại</th><th>Nhánh</th><th>Mở</th><th>Tác dụng</th></tr></thead><tbody>${pas.sort((a, b) => a.lv - b.lv).map(s => `<tr><td>${s.icon} <b>${esc(s.name)}</b></td><td>${tag(s.branch)}</td><td class="num">Lv.${s.lv}</td><td class="small">${esc(s.desc)}</td></tr>`).join("")}</tbody></table></div>
    <p class="small muted">Xem tận mắt từng chiêu ở 4 hình dạng: tab <b>Hiệu ứng chiêu</b>.</p>`; } },
- { id:"nhiem-vu", name:"Nhiệm vụ danh nhân", blurb:"Đề xuất: mỗi danh nhân 1 chuỗi Gặp → Tìm → Làm → Nói → Đánh → Dạy, mở chiêu", render(){
-   const Q = window.QUEST_PLAN || { beats: [], rules: [], chapters: [], pacing: [], newPlaces: [], newItems: [] }, all = Q.chapters.flatMap(c => c.list);
-   const BC = { "GẶP": "#7a6cff", "TÌM": "#2f9e8a", "LÀM": "#e8590c", "NÓI": "#1c7ed6", "ĐÁNH": "#e03131", "DẠY": "#2b8a3e" };
-   const step = ([ic, k, t]) => `<li style="margin:4px 0"><span class="pill" style="color:${BC[k] || "inherit"}">${ic} ${k}</span> ${esc(t)}</li>`;
+ { id:"nhiem-vu", name:"Nhiệm vụ danh nhân", blurb:"Đề xuất bản 2: Nhận → Gặp → Tìm → Làm → Nói → Dạy lại → Hồi ức, mở chiêu", render(){
+   const Q = window.QUEST_PLAN || { beats: [], rules: [], flow: [], chapters: [], pacing: [], places: [], items: [] }, all = Q.chapters.flatMap(c => c.list);
+   const BC = { "NHẬN": "#8a5a00", "GẶP": "#7a6cff", "TÌM": "#2f9e8a", "LÀM": "#e8590c", "NÓI": "#1c7ed6", "DẠY LẠI": "#2b8a3e", "HỒI ỨC": "#c2255c" };
+   const card2 = ([h, p]) => `<div class="card"><h3>${esc(h)}</h3><p class="small">${esc(p)}</p></div>`;
+   const skIcon = n => { const s = skills.find(q => q.name === n); return s ? skIc(s, 26) + " " : ""; };
    return `<h1 class="pg">Nhiệm vụ danh nhân</h1>
-   <p class="lede">${esc(Q.pitch)} <span class="pill new">đề xuất, chờ duyệt</span></p>
-   <div class="stats"><div class="stat"><b>${all.length}</b><span>danh nhân · chuỗi nhiệm vụ</span></div><div class="stat"><b>${all.reduce((n, x) => n + x.steps.length, 0)}</b><span>bước nhiệm vụ</span></div><div class="stat"><b>${all.reduce((n, x) => n + x.skills.length, 0)}</b><span>chiêu mở bằng nhiệm vụ</span></div><div class="stat"><b>${Q.newPlaces.length}</b><span>địa điểm mới</span></div></div>
-   <h2>Một chuỗi nhiệm vụ gồm 6 nhịp</h2>
+   <p class="lede">${esc(Q.pitch)} <span class="pill new">đề xuất bản 2, chờ duyệt</span></p>
+   <div class="stats"><div class="stat"><b>${all.length}</b><span>danh nhân</span></div><div class="stat"><b>${all.reduce((n, x) => n + 1 + x.more.length, 0)}</b><span>nhiệm vụ (chính + ký ức)</span></div><div class="stat"><b>${all.reduce((n, x) => n + x.skills.length, 0)}</b><span>chiêu trao bằng nhiệm vụ</span></div><div class="stat"><b>${all.length}</b><span>bài đọc hồi ức + câu "Vì sao?"</span></div></div>
+   <h2>1 · Một nhiệm vụ đi qua 7 nhịp</h2>
+   <div class="flow">${Q.beats.map(([ic, k]) => `<span style="border-color:${BC[k]}">${ic} ${k}</span>`).join("<i>→</i>")}</div>
    <div class="grid">${Q.beats.map(([ic, k, t]) => `<div class="card"><h3>${ic} <span style="color:${BC[k]}">${k}</span></h3><p class="small">${esc(t)}</p></div>`).join("")}</div>
-   <h2>Luật</h2><div class="grid">${Q.rules.map(([h, p]) => `<div class="card"><h3>${esc(h)}</h3><p class="small">${esc(p)}</p></div>`).join("")}</div>
-   <h2>Phân bổ theo cấp</h2>
-   <div class="tbl"><table><thead><tr><th>Chương</th><th>Cấp</th><th>Khối lượng</th><th>Kiến thức</th><th>Thời lượng</th><th>Trùm chương</th></tr></thead><tbody>${Q.pacing.map(r => `<tr>${r.map((c, i) => `<td class="${i ? "small" : ""}">${i ? esc(c) : "<b>" + esc(c) + "</b>"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
-   <h2>Thêm vào thế giới</h2>
-   <div class="grid">${Q.newPlaces.map(([n, d, lv]) => `<div class="card"><h3>${esc(n)}</h3><p class="small muted">mở ${esc(lv)}</p><p class="small">${esc(d)}</p></div>`).join("")}</div>
-   <h3 style="margin-top:14px">Vật phẩm mới</h3><div class="grid">${Q.newItems.map(([n, d]) => `<div class="card"><h3>${esc(n)}</h3><p class="small">${esc(d)}</p></div>`).join("")}</div>
+   <h2>2 · Luật</h2><div class="grid">${Q.rules.map(card2).join("")}</div>
+   <h2>3 · Dẫn đường và ràng buộc</h2><div class="grid">${Q.flow.map(card2).join("")}</div>
+   <div class="tbl"><table><thead><tr><th>Chương</th><th>Cấp</th><th>Khối lượng</th><th>Quái rơi mảnh</th><th>Trùm chương (quái cũ)</th><th>Bắt buộc trước</th></tr></thead><tbody>${Q.pacing.map(r => `<tr>${r.map((c, i) => `<td class="${i ? "small" : ""}">${i ? esc(c) : "<b>" + esc(c) + "</b>"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+   <h2>4 · Địa điểm</h2><div class="grid">${Q.places.map(([n, d, lv]) => `<div class="card"><h3>${esc(n)}</h3><p class="small muted">${esc(lv)}</p><p class="small">${esc(d)}</p></div>`).join("")}</div>
+   <h2>5 · Vật phẩm</h2><div class="grid">${Q.items.map(card2).join("")}</div>
    ${Q.chapters.map(c => { const C = ((window.SKILL_TREE || {}).chapters || []).find(x => x.n === c.n) || {};
      return `<h2>Chương ${c.n} · ${esc(C.name || "")} <span class="muted small">${esc(C.lv || "")}</span></h2><div class="grid">${c.list.map(x => `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3>${esc(x.who)}</h3><span class="pill">Lv.${x.lv}</span></div>
-       <p class="small muted">📍 ${esc(x.place)}</p><p class="small"><i>${esc(x.hook)}</i></p><ol class="tight small" style="list-style:none;padding-left:0">${x.steps.map(step).join("")}</ol>
-       <p class="small"><b>Chiêu mở:</b> ${x.skills.map(n => { const s = skills.find(q => q.name === n); return s ? skIc(s, 26) + " " + esc(n) : esc(n); }).join(" · ")}</p>
-       <p class="small"><b>Tiếng Anh:</b> ${esc(x.en)}</p><p class="small"><b>Thẻ kiến thức:</b> “${esc(x.card)}”</p>
-       <p class="small"><b>Ở lại thành phố:</b> ${esc(x.keep)}</p><p class="small" style="color:var(--teal)"><b>🧠 Đọng lại:</b> ${esc(x.remember)}</p></div>`).join("")}</div>`; }).join("")}`; } },
+       <p class="small"><b>🔔 Hỏi:</b> <i>“${esc(x.ask)}”</i><br><span class="muted">${esc(x.clue)}</span></p>
+       <p class="small" style="margin-top:6px"><b>🔍 Tìm</b></p><ul class="tight small">${x.find.map(([how, it, where, r]) => `<li>${how} <b>${esc(it)}</b> · ${esc(where)}${r ? ` <span class="pill">${esc(r)}</span>` : ""}</li>`).join("")}</ul>
+       <p class="small"><b>🧪 Làm:</b> ${esc(x.make)}</p><p class="small"><b>🎤 Nói:</b> “${esc(x.say)}” → 📄 ${esc(x.note)}</p>
+       <p class="small"><b>📖 Hồi ức:</b> ${esc(x.story)}<br><span class="muted">Đọc hiểu: ${esc(x.quiz)}</span><br><b>Vì sao?</b> <i>${esc(x.why)}</i></p>
+       <p class="small"><b>Chiêu:</b> ${skIcon(x.skills[0])}${esc(x.skills[0])} (nhiệm vụ chính)${x.more.map(([n, t]) => `<br>${skIcon(n)}${esc(n)} · <span class="muted">${esc(t)}</span>`).join("")}</p>
+       <p class="small"><b>🎁 Quà ngẫu nhiên:</b> ${esc(x.gift)}</p><p class="small"><b>🎴</b> “${esc(x.card)}” · <span class="muted">${esc(x.en)}</span></p></div>`).join("")}</div>`; }).join("")}`; } },
+ { id:"lan-truyen", name:"Lan truyền & giữ chân", blurb:"Tâm lý người chơi, khoe mạng xã hội, Sổ Tri Thức, Nhà Của Tôi, phụ huynh, trường lớp", render(){
+   const G = (window.QUEST_PLAN || {}).growth || { pillars: [] };
+   return `<h1 class="pg">Lan truyền & giữ chân</h1><p class="lede">${esc(G.pitch || "")} <span class="pill new">đề xuất, chờ duyệt</span></p>
+   <div class="grid">${G.pillars.map(([h, L]) => `<div class="card"><h3>${esc(h)}</h3><ul class="tight small">${L.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>`).join("")}</div>`; } },
  { id:"hieu-ung", name:"Hiệu ứng chiêu", blurb:"Bản mẫu chiêu 3D: phù văn của các vị thần, rồng, kiếm, sách", render(){
    return `<h1 class="pg">Hiệu ứng chiêu ✨</h1>
    <p class="lede">Bản mẫu chạy thật bằng chính mã hiệu ứng của game (parts/combat/fx3d.js). Bấm từng chiêu, đổi bậc 1 / 4 / 7 / 10: mỗi mốc chiêu đổi sang hình dạng mới. Chọn nhóm (Khởi đầu, Chương 1–4, Tuyệt chiêu). Chiêu có dấu ⏳ đang dùng bộ hiệu ứng chung theo nhánh, sẽ làm riêng dần.</p>
