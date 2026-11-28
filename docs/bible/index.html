@@ -145,6 +145,8 @@ document.getElementById("built").textContent = "Dữ liệu lấy từ code ngà
 
 const AREA = { vn:"🌾 Khu Việt", jp:"⛩️ Nhật", eg:"🏜️ Ai Cập", no:"❄️ Bắc Âu", ce:"🍁 Celt", my:"🏝️ Maya", gr:"🏛️ Hy Lạp", cn:"🖌️ Trung Hoa", me:"🗿 Lưỡng Hà", pa:"✨ Thần & The Mute" };
 const areaOf = m => m.area || "vn";
+const QDROPS = (() => { const L = []; ((window.QUEST_PLAN || {}).chapters || []).forEach(c => c.list.forEach(x => x.find.forEach(([how, it, where, r]) => { if (!how.includes("đánh")) return; const m = B.monsters.find(q => where.includes(q.name)); L.push({ mon: m, ch: c.n, who: x.who, lv: x.lv, it, r, where }); }))); return L; })();   // mảnh tri thức rơi từ quái (quests.js)
+const dropsOf = m => QDROPS.filter(d => d.mon === m);
 window.NPC_PIC = { oracle: 1, commander: 1, huy: 1, collector: 1 };   // ảnh concept NPC cốt lõi (assets/concept/npcs)
 const skills = Object.entries(B.SKILLS).map(([id, s]) => Object.assign({ id }, s));
 const skIc = (s, sz) => s.type === "passive" ? s.icon : `<img src="icons/${s.id}.webp" alt="" width="${sz || 40}" height="${sz || 40}" style="border-radius:22%;vertical-align:middle" onerror="this.replaceWith(document.createTextNode('${s.icon}'))">`;
@@ -281,7 +283,7 @@ const PAGES = [
    <div class="tbl"><table><thead><tr><th>Quái</th><th>Sợ dạng bài</th><th>Máu</th><th>Sát thương</th><th>Tốc độ</th></tr></thead><tbody>${Object.values(B.MON).map(m => `<tr><td>${m.icon} ${esc(m.name)}</td><td>${B.TASK_ICON[m.weak]} ${esc(B.TASK_NAME[m.weak])}</td><td class="num">×${m.hp}</td><td class="num">×${m.dmg}</td><td class="num">×${m.speed}</td></tr>`).join("")}</tbody></table></div>`; },
    after(){ const G = document.getElementById("monG"), F = { a:"all", t:"all" };
      const draw = () => { const list = B.monsters.filter(m => (F.a === "all" || areaOf(m) === F.a) && (F.t === "all" || m.tier === F.t));
-       G.innerHTML = list.map(m => `<button class="card mon" data-id="${m.id}"><div class="art">${m.img ? `<img src="${m.img}" alt="${esc(m.name)}" loading="lazy">` : m.emo}</div><span class="tier">${esc(B.tierName[m.tier] || m.tier)}</span><b>${esc(m.name)}</b><span class="small muted">${esc(m.vn)}</span></button>`).join("") || '<p class="muted">Không có quái nào khớp bộ lọc.</p>'; };
+       G.innerHTML = list.map(m => `<button class="card mon" data-id="${m.id}"><div class="art">${m.img ? `<img src="${m.img}" alt="${esc(m.name)}" loading="lazy">` : m.emo}</div><span class="tier">${esc(B.tierName[m.tier] || m.tier)}${dropsOf(m).length ? " · 💎" + dropsOf(m).length : ""}</span><b>${esc(m.name)}</b><span class="small muted">${esc(m.vn)}</span></button>`).join("") || '<p class="muted">Không có quái nào khớp bộ lọc.</p>'; };
      chips("monA", v => { F.a = v; draw(); }); chips("monT", v => { F.t = v; draw(); }); draw();
      G.addEventListener("click", e => { const b = e.target.closest(".mon"); if (b) openMon(B.monsters.find(m => m.id === b.dataset.id)); }); } },
  { id:"trang-phuc", name:"Trang bị", blurb:"5 ô trang bị, chỉ số hên xui, 8 loại vũ khí, 21 bộ giáp", render(){
@@ -371,6 +373,8 @@ const PAGES = [
    <div class="tbl"><table><thead><tr><th>Chương</th><th>Cấp</th><th>Khối lượng</th><th>Quái rơi mảnh</th><th>Trùm chương (quái cũ)</th><th>Bắt buộc trước</th></tr></thead><tbody>${Q.pacing.map(r => `<tr>${r.map((c, i) => `<td class="${i ? "small" : ""}">${i ? esc(c) : "<b>" + esc(c) + "</b>"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
    <h2>4 · Địa điểm</h2><div class="grid">${Q.places.map(([n, d, lv]) => `<div class="card"><h3>${esc(n)}</h3><p class="small muted">${esc(lv)}</p><p class="small">${esc(d)}</p></div>`).join("")}</div>
    <h2>5 · Vật phẩm</h2><div class="grid">${Q.items.map(card2).join("")}</div>
+   <h2>6 · Mảnh tri thức rơi từ quái nào · ${QDROPS.length} mảnh</h2><p class="small muted" style="margin-top:-6px">Xếp theo vùng. Ai đánh quái đó cũng có thể rơi (ngẫu nhiên), mọi mảnh đều trao đổi, bán được. Trong tab Quái, thẻ quái có 💎 là quái rơi mảnh.</p>
+   <div class="tbl"><table><thead><tr><th>Quái</th><th>Bậc</th><th>Vùng</th><th>Mảnh</th><th>Tỉ lệ</th><th>Cho nhiệm vụ</th></tr></thead><tbody>${QDROPS.slice().sort((a, b) => ((a.mon || {}).zone || "").localeCompare((b.mon || {}).zone || "") || a.lv - b.lv).map(d => `<tr><td>${d.mon ? d.mon.emo + " <b>" + esc(d.mon.name) + "</b>" : esc(d.where)}</td><td class="small">${d.mon ? esc(B.tierName[d.mon.tier] || d.mon.tier) : ""}</td><td class="small">${d.mon ? esc(d.mon.zone || AREA[areaOf(d.mon)] || "") : ""}</td><td>${esc(d.it)}</td><td class="num">${d.r}</td><td class="small">${esc(d.who)} <span class="muted">· Ch.${d.ch} · Lv.${d.lv}</span></td></tr>`).join("")}</tbody></table></div>
    ${Q.chapters.map(c => { const C = ((window.SKILL_TREE || {}).chapters || []).find(x => x.n === c.n) || {};
      return `<h2>Chương ${c.n} · ${esc(C.name || "")} <span class="muted small">${esc(C.lv || "")}</span></h2><div class="grid">${c.list.map(x => `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3>${esc(x.who)}</h3><span class="pill">Lv.${x.lv}</span></div>
        <p class="small"><b>🔔 Hỏi:</b> <i>“${esc(x.ask)}”</i><br><span class="muted">${esc(x.clue)}</span></p>
@@ -480,7 +484,7 @@ function openMon(m){ if (!m) return;
    <div><p>${esc(m.lore)}</p>${m.mean ? `<p><b>Lời chưa nói:</b> ${esc(m.mean)}</p>` : ""}${m.idiom ? `<p><b>Thành ngữ:</b> ${esc(m.idiom)}</p>` : ""}
    <p><b>Thân:</b> ${esc(m.body)}</p><ul class="tight">${(m.shape || []).map(s => `<li>${esc(s)}</li>`).join("")}</ul>
    <p>${(m.pal || []).map(([c, n]) => `<span class="sw" style="background:${c}"></span>${esc(n)}`).join(" &nbsp; ")}</p>
-   <p><b>Tính cách:</b> ${esc(m.pers)}</p><p><b>Cách đánh:</b> ${esc(m.fight)}</p></div></div>`;
+   <p><b>Tính cách:</b> ${esc(m.pers)}</p><p><b>Cách đánh:</b> ${esc(m.fight)}</p>${dropsOf(m).length ? `<p style="margin-top:10px"><b>💎 Mảnh tri thức rơi ra</b> <span class="small muted">(ai đánh cũng có thể rơi, ngẫu nhiên)</span></p><ul class="tight">${dropsOf(m).map(d => `<li><b>${esc(d.it)}</b> · ${d.r} · nhiệm vụ <b>${esc(d.who)}</b> (Ch.${d.ch}, Lv.${d.lv})</li>`).join("")}</ul>` : ""}</div></div>`;
   ov.hidden = false; document.getElementById("ovX").focus(); }
 ov.addEventListener("click", e => { if (e.target === ov || e.target.id === "ovX") ov.hidden = true; });
 addEventListener("keydown", e => { if (e.key === "Escape") ov.hidden = true; });
